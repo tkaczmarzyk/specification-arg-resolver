@@ -21,6 +21,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Handling non-present HTTP parameters](#handling-non-present-http-parameters)
       * [Mapping HTTP parameter name to property path of an entity](#mapping-http-parameter-name-to-property-path-of-an-entity)
    * [Static parts of queries](#static-parts-of-queries) -- adding static (not bound to HTTP params) predicates such as `deleted = false`
+   * [Default value of queries](#default-value-of-queries) -- providing a fallback value when HTTP parameter is not present
    * [Annotated specification interfaces](#annotated-specification-interfaces) -- resolving specifications from annotated interfaces
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
@@ -98,11 +99,15 @@ Filters using JPAQL `like` expression. It adds a wildcard `%` at the beginning a
 
 Usage: `@Spec(path="firstName", spec=Like.class)`.
 
+There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `@StartingWith` and `@EndingWith`.
+
 ### LikeIgnoreCase  ###
 
 Works as `Like`, but the query is also case-insensitive.
 
 Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
+
+There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `@StartingWithIgnoreCase` and `@EndingWithIgnoreCase`.
 
 ### Equal ###
 
@@ -182,16 +187,6 @@ NOTE: comparisons are dependent on the actual type and the underlying database (
 
 You can configure the date/datetime pattern as with `LessThan` described above.
 
-Default value of queries
------------------------
-
-The default value to use as a fallback when the request parameter is not provided or has an empty value.
-
-```java
-@Spec(path="role", spec=Equal.class, defaultVal="USER")
-```
-
-Supplying `constVal` implicitly sets `defaultVal` to empty.
 
 Combining specs
 ---------------
@@ -421,6 +416,27 @@ If you don't want to bind your Specification to any HTTP parameter, you can use 
 ```
 
 will alwas produce the following: `where deleted = false`. It is often convenient to combine such a static part with dynamic ones using `@And` or `@Or` described below.
+
+
+Default value of queries
+------------------------
+
+When the request parameter is not provided or has an empty value, you can use `defaultVal` atatribute of `@Spec` to provide a value to fallback to. For example this controller method:
+
+```java
+@RequestMapping("/users")
+public Object findByRole(
+                  @Spec(path="role", spec=Equal.class, defaultVal="USER") Specification<User> spec) {
+
+    return userRepo.findAll(spec);
+}
+```
+
+Would handle request such as `GET /users` with the following query: `select u from Users u where u.role = 'USER'`.
+
+
+Supplying `constVal` implicitly sets `defaultVal` to empty.
+
 
 Annotated specification interfaces
 ----------------------------------
