@@ -99,7 +99,9 @@ Filters using JPAQL `like` expression. It adds a wildcard `%` at the beginning a
 
 Usage: `@Spec(path="firstName", spec=Like.class)`.
 
-There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `@StartingWith` and `@EndingWith`.
+There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWith` and `EndingWith`.
+
+The negated version is available: `NotLike` which executes queries such as `(..) where firstName not like %Homer%`
 
 ### LikeIgnoreCase  ###
 
@@ -107,7 +109,7 @@ Works as `Like`, but the query is also case-insensitive.
 
 Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
-There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `@StartingWithIgnoreCase` and `@EndingWithIgnoreCase`.
+There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWithIgnoreCase` and `EndingWithIgnoreCase`.
 
 ### Equal ###
 
@@ -119,9 +121,13 @@ Usage: `@Spec(path="gender", spec=Equal.class)`.
 
 The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
 
+A negation for this specification is also available: `NotEqual`.
+
 ### EqualIgnoreCase ###
 
 Works as `Equal`, but the query is also case-insensitive.
+
+A negation for this specification is also available: `NotEqualIgnoreCase`.
 
 ### In ###
 

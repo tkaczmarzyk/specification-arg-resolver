@@ -15,12 +15,9 @@
  */
 package net.kaczmarzyk;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,11 +26,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.domain.NotLike;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-public class LikeE2eTest extends E2eTestBase {
+public class NotLikeE2eTest2 extends E2eTestBase {
 
 	@Controller
 	public static class LikeSpecController {
@@ -41,10 +43,10 @@ public class LikeE2eTest extends E2eTestBase {
 		@Autowired
 		CustomerRepository customerRepo;
 		
-		@RequestMapping(value = "/customers", params = "lastName")
+		@RequestMapping(value = "/not-like/customers", params = "lastName")
 		@ResponseBody
-		public Object findCustomersByLastName(
-				@Spec(path="lastName", spec=Like.class) Specification<Customer> spec) {
+		public Object findCustomersByLastNameNotLike(
+				@Spec(path="lastName", spec=NotLike.class) Specification<Customer> spec) {
 			
 			return customerRepo.findAll(spec);
 		}
@@ -52,15 +54,12 @@ public class LikeE2eTest extends E2eTestBase {
 	
 	@Test
 	public void filtersByFirstName() throws Exception {
-		mockMvc.perform(get("/customers")
+		mockMvc.perform(get("/not-like/customers")
 				.param("lastName", "im")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
-			.andExpect(jsonPath("$[5]").doesNotExist());
+			.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
+			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 }
