@@ -46,14 +46,14 @@ public class DateBetweenTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateBetween<Customer> between6and13 = new DateBetween<>("registrationDate", new String[] {"2014-03-06", "2014-03-13"}, null);
+        DateBetween<Customer> between6and13 = new DateBetween<>("registrationDate", "2014-03-06", "2014-03-13");
         
         List<Customer> result = customerRepo.findAll(between6and13);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
         
-        DateBetween<Customer> between11and19 = new DateBetween<>("registrationDate", new String[] {"2014-03-11", "2014-03-19"}, null);
+        DateBetween<Customer> between11and19 = new DateBetween<>("registrationDate", "2014-03-11", "2014-03-19");
         
         result = customerRepo.findAll(between11and19);
         assertThat(result)
@@ -73,12 +73,12 @@ public class DateBetweenTest extends IntegrationTestBase {
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsTooFewArguments() throws ParseException {
-        new DateBetween<>("path", new String[] {"2014-03-10"}, null);
+        new DateBetween<>("path", "2014-03-10");
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsTooManyArguments() throws ParseException {
-        new DateBetween<>("path", new String[] {"2014-03-10", "2014-03-11", "2014-03-11"}, null);
+        new DateBetween<>("path", "2014-03-10", "2014-03-11", "2014-03-11");
     }
     
     @Test(expected = IllegalArgumentException.class)

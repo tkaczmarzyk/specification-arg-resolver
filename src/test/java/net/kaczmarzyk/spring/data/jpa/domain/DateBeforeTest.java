@@ -46,14 +46,14 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateBefore<Customer> before13th = new DateBefore<>("registrationDate", new String[] {"2014-03-13"}, null);
+        DateBefore<Customer> before13th = new DateBefore<>("registrationDate", "2014-03-13");
         
         List<Customer> result = customerRepo.findAll(before13th);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
         
-        DateBefore<Customer> before10th = new DateBefore<>("registrationDate", new String[] {"2014-03-10"}, null);
+        DateBefore<Customer> before10th = new DateBefore<>("registrationDate", "2014-03-10");
         
         result = customerRepo.findAll(before10th);
         assertThat(result)
@@ -73,12 +73,12 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateBefore<>("path", new String[] {"2014-03-10", "2014-03-11"}, null);
+        new DateBefore<>("path", "2014-03-10", "2014-03-11");
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateBefore<>("path", new String[] {}, null);
+        new DateBefore<>("path", new String[] {});
     }
     
     @Test(expected = IllegalArgumentException.class)

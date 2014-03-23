@@ -35,6 +35,10 @@ public class DateBefore<T> extends PathSpecification<T> {
     static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     private Date date;
 
+    public DateBefore(String path, String... args) throws ParseException {
+        this(path, args, null);
+    }
+    
     public DateBefore(String path, String[] args, String[] config) throws ParseException {
         super(path);
         if (args == null || args.length != 1 || (config != null && config.length != 1)) {

@@ -34,6 +34,10 @@ public class DateBetween<T> extends PathSpecification<T> {
 
     private Date after;
     private Date before;
+    
+    public DateBetween(String path, String... args) throws ParseException {
+        this(path, args, null);
+    }
 
     public DateBetween(String path, String[] args, String[] config) throws ParseException {
         super(path);
