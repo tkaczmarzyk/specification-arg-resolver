@@ -173,14 +173,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>nexus-releases</id>
-			<name>Nexus Release Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>kaczmarzyk.net</id>
+			<name>kaczmarzyk.net repository</name>
+			<url>ftp://repo.kaczmarzyk.net</url>
 		</repository>
 		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<name>Nexus Snapshot Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<id>kaczmarzyk.net</id>
+			<name>kaczmarzyk.net repository</name>
+			<url>ftp://repo.kaczmarzyk.net</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
