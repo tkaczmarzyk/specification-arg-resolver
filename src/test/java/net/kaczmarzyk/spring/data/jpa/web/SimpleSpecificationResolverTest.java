@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
@@ -33,7 +34,7 @@ public class SimpleSpecificationResolverTest {
     
     
     @Test
-    public void returnsNullIfTheWebParameterIsMissing() throws Exception {
+    public void returnsNullIfTheWebParameterIsMissing_defaultParameterName() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         
@@ -43,7 +44,17 @@ public class SimpleSpecificationResolverTest {
     }
     
     @Test
-    public void returnsNullIfTheWebParameterIsEmpty() throws Exception {
+    public void returnsNullIfTheWebParameterIsMissing_customParameterName() throws Exception {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+        
+        assertThat(resolved).isNull();
+    }
+    
+    @Test
+    public void returnsNullIfTheWebParameterIsEmpty_defaultParameterName() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameter("thePath")).thenReturn("");
@@ -51,6 +62,51 @@ public class SimpleSpecificationResolverTest {
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
         
         assertThat(resolved).isNull();
+    }
+    
+    @Test
+    public void returnsNullIfTheWebParameterIsEmpty_customParameterName() throws Exception {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameter("theParameter")).thenReturn("");
+        
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+        
+        assertThat(resolved).isNull();
+    }
+    
+    @Test
+    public void rejectsMissingWebParameter_defaultParameterName() {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        
+        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
+    }
+    
+    @Test
+    public void rejectsMissingWebParameter_customParameterName() {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        
+        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
+    }
+    
+    @Test
+    public void rejectsEmptyWebParameter_defaultParameterName() {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameter("thePath")).thenReturn("");
+        
+        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
+    }
+    
+    @Test
+    public void rejectsEmptyWebParameter_customParameterName() {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameter("theParameter")).thenReturn("");
+        
+        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
     }
     
     @Test
@@ -83,7 +139,7 @@ public class SimpleSpecificationResolverTest {
         }
     }
     
-    public class TestController {
+    public static class TestController {
         
         public void testMethod1(@Spec(path="thePath", spec=Like.class) Specification<Object> spec) {
         }

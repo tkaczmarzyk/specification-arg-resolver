@@ -83,12 +83,16 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
     }
     
     boolean canBuildSpecification(NativeWebRequest req, Spec def) {
-        for (String param : def.params()) {
-            if (req.getParameter(param) == null) {
-                return false;
+        if (def.params().length == 0) {
+            return !StringUtils.isEmpty(req.getParameter(def.path()));
+        } else {
+            for (String param : def.params()) {
+                if (StringUtils.isEmpty(req.getParameter(param))) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
     }
 
     @Override
