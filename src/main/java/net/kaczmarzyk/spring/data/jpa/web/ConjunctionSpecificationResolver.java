@@ -31,6 +31,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 
+/**
+ * @author Tomasz Kaczmarzyk
+ */
 class ConjunctionSpecificationResolver implements HandlerMethodArgumentResolver {
 
     private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
