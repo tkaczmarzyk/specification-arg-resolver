@@ -26,31 +26,32 @@ import javax.persistence.criteria.Root;
 
 
 /**
- * Filters with {@code path < date} where-clause.
+ * Filters with {@code path between arg1 and arg2} where-clause.
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class DateBefore<T> extends PathSpecification<T> {
+public class DateBetween<T> extends PathSpecification<T> {
 
-    static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-    private Date date;
+    private Date after;
+    private Date before;
 
-    public DateBefore(String path, String[] args, String[] config) throws ParseException {
+    public DateBetween(String path, String[] args, String[] config) throws ParseException {
         super(path);
-        if (args == null || args.length != 1 || (config != null && config.length != 1)) {
+        if (args == null || args.length != 2 || (config != null && config.length != 1)) {
             throw new IllegalArgumentException();
         }
-        String pattern = DEFAULT_DATE_FORMAT;
-        if (config != null) {
+        String pattern = DateBefore.DEFAULT_DATE_FORMAT;
+        if (config != null && config[0] != null) {
             pattern = config[0];
         }
-        String dateStr = args[0];
-        this.date = new SimpleDateFormat(pattern).parse(dateStr);
+        String afterDateStr = args[0];
+        String beforeDateStr = args[1];
+        this.after = new SimpleDateFormat(pattern).parse(afterDateStr);
+        this.before = new SimpleDateFormat(pattern).parse(beforeDateStr);
     }
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return cb.lessThan(this.<Date>path(root), date);
+        return cb.between(this.<Date>path(root), after, before);
     }
-
 }
