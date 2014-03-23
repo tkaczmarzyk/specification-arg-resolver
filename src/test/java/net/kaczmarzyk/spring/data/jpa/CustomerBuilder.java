@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import java.util.Calendar;
+
 import javax.persistence.EntityManager;
 
 /**
@@ -33,6 +35,15 @@ public class CustomerBuilder {
     
     public CustomerBuilder street(String street) {
         customer.getAddress().setStreet(street);
+        return this;
+    }
+    
+    public CustomerBuilder registrationDate(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        customer.setRegistrationDate(cal.getTime());
         return this;
     }
     

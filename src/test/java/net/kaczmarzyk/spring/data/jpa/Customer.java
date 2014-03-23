@@ -90,5 +90,9 @@ public class Customer {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
 }
 

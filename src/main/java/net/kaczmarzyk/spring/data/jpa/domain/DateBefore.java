@@ -15,33 +15,42 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+
 /**
- * Filters with {@code path like %pattern%} where-clause.
+ * Filters with {@code path < date} where-clause.
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class Like<T> extends PathSpecification<T> {
+public class DateBefore<T> extends PathSpecification<T> {
 
-    private String pattern;
-    
-    public Like(String path, String... args) {
+    private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+    private Date date;
+
+    public DateBefore(String path, String[] args, String[] config) throws ParseException {
         super(path);
-        if (args == null || args.length != 1) {
-            throw new IllegalArgumentException("Expected exactly one argument (the fragment to match against), but got: " + Arrays.toString(args));
-        } else {
-            this.pattern = "%" + args[0] + "%";
+        if (args == null || args.length != 1 || (config != null && config.length != 1)) {
+            throw new IllegalArgumentException();
         }
+        String pattern = DEFAULT_DATE_FORMAT;
+        if (config != null) {
+            pattern = config[0];
+        }
+        String dateStr = args[0];
+        this.date = new SimpleDateFormat(pattern).parse(dateStr);
     }
 
     @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        return builder.like(this.<String>path(root), pattern);
+    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        return cb.lessThan(this.<Date>path(root), date);
     }
+
 }
