@@ -15,11 +15,16 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static org.junit.Assert.assertNotNull;
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import java.util.List;
 
+import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+
+import org.junit.Before;
+import org.junit.Test;
 
 
 /**
@@ -27,9 +32,46 @@ import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
  */
 public class LikeTest extends IntegrationTestBase {
 
+    Customer homerSimpson;
+    Customer margeSimpson;
+    Customer moeSzyslak;
+    
+    @Before
+    public void initData() {
+        homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
+        margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
+        moeSzyslak = customer("Moe", "Szyslak").street("Unknown").build(em);
+    }
+    
     @Test
-    public void tmpTest() {
-        assertNotNull(em);
-        assertNotNull(customerRepo);
+    public void filtersByFirstLevelProperty() {
+        Like<Customer> lastNameSimpson = new Like<>("lastName", "Simpson");
+        List<Customer> result = customerRepo.findAll(lastNameSimpson);
+        assertThat(result)
+            .hasSize(2)
+            .containsOnly(homerSimpson, margeSimpson);
+        
+        Like<Customer> firstNameWithO = new Like<>("firstName", "o");
+        result = customerRepo.findAll(firstNameWithO);
+        assertThat(result)
+            .hasSize(2)
+            .containsOnly(homerSimpson, moeSzyslak);
+    }
+
+    @Test
+    public void filtersByNestedProperty() {
+        Like<Customer> streetWithEvergreen = new Like<>("address.street", "Evergreen");
+        List<Customer> result = customerRepo.findAll(streetWithEvergreen);
+        assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsMissingArgument() {
+        new Like<>("path", new String[] {});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsInvalidNumberOfArguments() {
+        new Like<>("path", new String[] {"a", "b"});
     }
 }

@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import java.util.Date;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -40,6 +41,9 @@ public class Customer {
     
     private String lastName;
     
+    @Embedded
+    private Address address = new Address();
+    
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date registrationDate;
     
@@ -47,11 +51,12 @@ public class Customer {
     public Customer() {
     }
     
-    public Customer(String firstName, String lastName, String gender, Date registrationDate) {
+    public Customer(String firstName, String lastName, String gender, Date registrationDate, String street) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.registrationDate = registrationDate;
+        this.address.setStreet(street);
     }
     
     public Long getId() {
@@ -66,12 +71,24 @@ public class Customer {
         return lastName;
     }
     
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    
     public String getGender() {
         return gender;
     }
     
     public Date getRegistrationDate() {
         return registrationDate;
+    }
+    
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 }
 
