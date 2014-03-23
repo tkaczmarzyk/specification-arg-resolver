@@ -30,5 +30,5 @@ public @interface And {
 
     Spec[] value() default {};
     
-    Or[] or() default {};
+    Or[] and() default {};
 }
