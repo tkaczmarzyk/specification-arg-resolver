@@ -29,8 +29,8 @@ import javax.persistence.criteria.Root;
  */
 public class Like<T> extends PathSpecification<T> {
 
-    private String pattern;
-    
+    protected String pattern;
+
     public Like(String path, String... args) {
         super(path);
         if (args == null || args.length != 1) {
