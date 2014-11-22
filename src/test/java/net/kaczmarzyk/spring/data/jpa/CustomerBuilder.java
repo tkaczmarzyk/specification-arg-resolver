@@ -38,6 +38,11 @@ public class CustomerBuilder {
         return this;
     }
     
+    public CustomerBuilder gender(Gender gender) {
+        customer.setGender(gender);
+        return this;
+    }
+    
     public CustomerBuilder registrationDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);

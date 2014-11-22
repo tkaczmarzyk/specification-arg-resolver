@@ -35,9 +35,9 @@ public class Customer {
     @Id @GeneratedValue
     private Long id;
     
-    private String gender;
+    private Gender gender;
     
-    private String firstName;
+	private String firstName;
     
     private String lastName;
     
@@ -51,7 +51,7 @@ public class Customer {
     public Customer() {
     }
     
-    public Customer(String firstName, String lastName, String gender, Date registrationDate, String street) {
+    public Customer(String firstName, String lastName, Gender gender, Date registrationDate, String street) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -75,9 +75,13 @@ public class Customer {
         this.lastName = lastName;
     }
     
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
+    
+    public void setGender(Gender gender) {
+		this.gender = gender;
+	}
     
     public Date getRegistrationDate() {
         return registrationDate;

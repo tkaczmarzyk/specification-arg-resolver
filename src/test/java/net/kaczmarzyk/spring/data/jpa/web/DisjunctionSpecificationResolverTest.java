@@ -40,8 +40,8 @@ public class DisjunctionSpecificationResolverTest {
     public void resolvesWrapperOfInnerSpecs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        when(req.getParameter("path2")).thenReturn("value2");
+        when(req.getParameterValues("path1")).thenReturn(new String[]{"value1"});
+        when(req.getParameterValues("path2")).thenReturn(new String[]{"value2"});
         
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
         
@@ -53,7 +53,7 @@ public class DisjunctionSpecificationResolverTest {
     public void skipsMissingInnerSpec() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
+        when(req.getParameterValues("path1")).thenReturn(new String[]{"value1"});
         
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
         
