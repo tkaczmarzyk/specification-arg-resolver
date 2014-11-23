@@ -41,8 +41,8 @@ public class ConjunctionSpecificationResolverTest {
     public void resolvesWrapperOfInnerSpecs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        when(req.getParameter("path2")).thenReturn("value2");
+        when(req.getParameterValues("path1")).thenReturn(new String[]{"value1"});
+        when(req.getParameterValues("path2")).thenReturn(new String[]{"value2"});
         
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
         
@@ -54,10 +54,10 @@ public class ConjunctionSpecificationResolverTest {
     public void resolvesWrapperOfOrs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        when(req.getParameter("path2")).thenReturn("value2");
-        when(req.getParameter("path3")).thenReturn("value3");
-        when(req.getParameter("path4")).thenReturn("value4");
+        when(req.getParameterValues("path1")).thenReturn(new String[]{"value1"});
+        when(req.getParameterValues("path2")).thenReturn(new String[]{"value2"});
+        when(req.getParameterValues("path3")).thenReturn(new String[]{"value3"});
+        when(req.getParameterValues("path4")).thenReturn(new String[]{"value4"});
         
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
         
@@ -73,10 +73,10 @@ public class ConjunctionSpecificationResolverTest {
     public void resolvesWrapperOfSimpleSpecsAndOrs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        when(req.getParameter("path2")).thenReturn("value2");
-        when(req.getParameter("path3")).thenReturn("value3");
-        when(req.getParameter("path4")).thenReturn("value4");
+        when(req.getParameterValues("path1")).thenReturn(new String[]{"value1"});
+        when(req.getParameterValues("path2")).thenReturn(new String[]{"value2"});
+        when(req.getParameterValues("path3")).thenReturn(new String[]{"value3"});
+        when(req.getParameterValues("path4")).thenReturn(new String[]{"value4"});
         
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
         
@@ -91,7 +91,7 @@ public class ConjunctionSpecificationResolverTest {
     public void skipsMissingInnerSpec() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
+        when(req.getParameterValues("path1")).thenReturn(new String[]{"value1"});
         
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
         
