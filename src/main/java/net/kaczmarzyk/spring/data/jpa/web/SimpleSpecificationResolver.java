@@ -37,9 +37,9 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
     @Override
     public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
             WebDataBinderFactory binderFactory) throws Exception {
-        
+
         Spec def = param.getParameterAnnotation(Spec.class);
-        
+
         return buildSpecification(req, def);
     }
 
@@ -49,23 +49,18 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
             Collection<String> args = new ArrayList<String>();
             if (def.params().length != 0) {
                 for (String webParam : def.params()) {
-                    String paramValue = req.getParameter(webParam);
-                    if (!StringUtils.isEmpty(paramValue)) {
-                        args.add(paramValue);
-                    }
+                    String[] paramValues = req.getParameterValues(webParam);
+                    addParametersValuesToArgs(paramValues, args);
                 }
             } else {
-                String paramValue = req.getParameter(def.path());
-                if (!StringUtils.isEmpty(paramValue)) {
-                    args.add(paramValue);
-                }
+                String[] paramValues = req.getParameterValues(def.path());
+                addParametersValuesToArgs(paramValues, args);
             }
-            
             if (args.isEmpty()) {
                 return null;
             } else {
                 String[] argsArray = args.toArray(new String[args.size()]);
-                
+
                 Specification<Object> spec;
                 if (def.config().length == 0) {
                     spec = def.spec().getConstructor(String.class, String[].class)
@@ -74,20 +69,43 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
                     spec = def.spec().getConstructor(String.class, String[].class, String[].class)
                             .newInstance(def.path(), argsArray, def.config());
                 }
-                
+
                 return spec;
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
-    
+
+    private void addParametersValuesToArgs(String[] paramValues, Collection<String> args) {
+        if (paramValues != null) {
+            for (String paramValue : paramValues) {
+                if (!StringUtils.isEmpty(paramValue)) {
+                    args.add(paramValue);
+                }
+            }
+        }
+    }
+
     boolean canBuildSpecification(NativeWebRequest req, Spec def) {
         if (def.params().length == 0) {
-            return !StringUtils.isEmpty(req.getParameter(def.path()));
+            return isNotNullAndContainsNoEmptyValues(req.getParameterValues(def.path()));
         } else {
             for (String param : def.params()) {
-                if (StringUtils.isEmpty(req.getParameter(param))) {
+                if (!isNotNullAndContainsNoEmptyValues(req.getParameterValues(param))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    private boolean isNotNullAndContainsNoEmptyValues(String[] parameterValues) {
+        if (parameterValues == null) {
+            return false;
+        } else {
+            for (String value : parameterValues) {
+                if (StringUtils.isEmpty(value)) {
                     return false;
                 }
             }

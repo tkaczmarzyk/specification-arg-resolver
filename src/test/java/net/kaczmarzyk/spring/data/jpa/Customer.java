@@ -24,6 +24,7 @@ import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+
 /**
  * A simple entity for specification testing
  * 
@@ -31,58 +32,62 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @Entity
 public class Customer {
-    
-    @Id @GeneratedValue
+
+    @Id
+    @GeneratedValue
     private Long id;
-    
-    private String gender;
-    
+
+    private Gender gender;
+
     private String firstName;
-    
+
     private String lastName;
-    
+
     @Embedded
     private Address address = new Address();
-    
-    @JsonFormat(pattern="yyyy-MM-dd")
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date registrationDate;
-    
-    
+
     public Customer() {
     }
-    
-    public Customer(String firstName, String lastName, String gender, Date registrationDate, String street) {
+
+    public Customer(String firstName, String lastName, Gender gender, Date registrationDate, String street) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.registrationDate = registrationDate;
         this.address.setStreet(street);
     }
-    
+
     public Long getId() {
         return id;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
-    public String getGender() {
+
+    public Gender getGender() {
         return gender;
     }
-    
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     public Date getRegistrationDate() {
         return registrationDate;
     }
-    
+
     public Address getAddress() {
         return address;
     }
@@ -95,4 +100,3 @@ public class Customer {
         this.registrationDate = registrationDate;
     }
 }
-
