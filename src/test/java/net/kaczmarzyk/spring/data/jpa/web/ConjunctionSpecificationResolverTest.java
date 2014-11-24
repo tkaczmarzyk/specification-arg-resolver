@@ -30,84 +30,85 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
+
 /**
  * @author Tomasz Kaczmarzyk
  */
 public class ConjunctionSpecificationResolverTest {
 
     ConjunctionSpecificationResolver resolver = new ConjunctionSpecificationResolver();
-    
+
     @Test
     public void resolvesWrapperOfInnerSpecs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        when(req.getParameter("path2")).thenReturn("value2");
-        
+        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
+        when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
+
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
-        
+
         assertThat(result).isEqualTo(new Conjunction<>(new Like<>("path1", "value1"),
                 new Like<>("path2", "value2")));
     }
-    
+
     @Test
     public void resolvesWrapperOfOrs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        when(req.getParameter("path2")).thenReturn("value2");
-        when(req.getParameter("path3")).thenReturn("value3");
-        when(req.getParameter("path4")).thenReturn("value4");
-        
+        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
+        when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
+        when(req.getParameterValues("path3")).thenReturn(new String[] { "value3" });
+        when(req.getParameterValues("path4")).thenReturn(new String[] { "value4" });
+
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
-        
+
         Specification<Object> or1 = new Disjunction<>(new Like<>("path1", "value1"),
                 new Like<>("path2", "value2"));
         Specification<Object> or2 = new Disjunction<>(new Like<>("path3", "value3"),
-                        new Like<>("path4", "value4"));
-        
+                new Like<>("path4", "value4"));
+
         assertThat(result).isEqualTo(new Conjunction<>(or1, or2));
     }
-    
+
     @Test
     public void resolvesWrapperOfSimpleSpecsAndOrs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        when(req.getParameter("path2")).thenReturn("value2");
-        when(req.getParameter("path3")).thenReturn("value3");
-        when(req.getParameter("path4")).thenReturn("value4");
-        
+        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
+        when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
+        when(req.getParameterValues("path3")).thenReturn(new String[] { "value3" });
+        when(req.getParameterValues("path4")).thenReturn(new String[] { "value4" });
+
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
-        
+
         Specification<Object> or = new Disjunction<>(new Like<>("path3", "value3"),
-                        new Like<>("path4", "value4"));
-        
+                new Like<>("path4", "value4"));
+
         assertThat(result).isEqualTo(new Conjunction<>(new Like<>("path1", "value1"),
                 new Like<>("path2", "value2"), or));
     }
-    
+
     @Test
     public void skipsMissingInnerSpec() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameter("path1")).thenReturn("value1");
-        
+        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
+
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
-        
+
         assertThat(result).isEqualTo(new Conjunction<>(new Like<>("path1", "value1")));
     }
-    
+
     @Test
     public void returnsNullIfNoInnerSpecCanBeResolved() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        
+
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
-        
+
         assertThat(result).isNull();
     }
-    
+
     private Object testMethod(String methodName) {
         try {
             return TestController.class.getMethod(methodName, Specification.class);
@@ -115,20 +116,21 @@ public class ConjunctionSpecificationResolverTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static class TestController {
+
         public void testMethod(
-                @And({@Spec(path="path1", spec=Like.class), @Spec(path="path2", spec=Like.class)}) Specification<Object> spec) {
+                @And({ @Spec(path = "path1", spec = Like.class), @Spec(path = "path2", spec = Like.class) }) Specification<Object> spec) {
         }
-        
+
         public void testMethod2(
-                @And(and={@Or({@Spec(path="path1", spec=Like.class), @Spec(path="path2", spec=Like.class)}),
-                    @Or({@Spec(path="path3", spec=Like.class), @Spec(path="path4", spec=Like.class)})}) Specification<Object> spec) {
+                @And(and = { @Or({ @Spec(path = "path1", spec = Like.class), @Spec(path = "path2", spec = Like.class) }),
+                        @Or({ @Spec(path = "path3", spec = Like.class), @Spec(path = "path4", spec = Like.class) }) }) Specification<Object> spec) {
         }
-        
+
         public void testMethod3(
-                @And(value={@Spec(path="path1", spec=Like.class), @Spec(path="path2", spec=Like.class)},
-                    and={@Or({@Spec(path="path3", spec=Like.class), @Spec(path="path4", spec=Like.class)})}) Specification<Object> spec) {
+                @And(value = { @Spec(path = "path1", spec = Like.class), @Spec(path = "path2", spec = Like.class) },
+                        and = { @Or({ @Spec(path = "path3", spec = Like.class), @Spec(path = "path4", spec = Like.class) }) }) Specification<Object> spec) {
         }
     }
 }

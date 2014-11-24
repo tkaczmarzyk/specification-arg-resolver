@@ -25,7 +25,8 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Tomasz Kaczmarzyk
  */
 public abstract class PathSpecification<T> implements Specification<T> {
-    private String path;
+    
+    protected String path;
 
     public PathSpecification(String path) {
         this.path = path;
