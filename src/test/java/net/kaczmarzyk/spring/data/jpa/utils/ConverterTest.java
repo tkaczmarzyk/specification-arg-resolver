@@ -15,16 +15,28 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import net.kaczmarzyk.spring.data.jpa.Gender;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 
 public class ConverterTest {
 
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
+	
 	Converter converter = Converter.withDateFormat("yyyy-MM-dd");
 	
 	
@@ -39,13 +51,21 @@ public class ConverterTest {
 	}
 	
 	@Test
-	public void convertsToLong() {
-		assertThat(converter.convert("143", Long.class)).isEqualTo(143L);
-	}
-	
-	@Test
-	public void convertsToInt() {
-		assertThat(converter.convert("143", Integer.class)).isEqualTo(143);
+	public void convertsToMultipleDates() {
+		List<Date> converted = converter.convert(Arrays.asList("2015-03-01", "2015-04-02"), Date.class);
+		
+		assertThat(converted)
+			.hasSize(2);
+		
+		assertThat(converted.get(0))
+			.isWithinMonth(3)
+			.isWithinDayOfMonth(1)
+			.isWithinYear(2015);
+		
+		assertThat(converted.get(1))
+			.isWithinMonth(4)
+			.isWithinDayOfMonth(2)
+			.isWithinYear(2015);
 	}
 	
 	@Test
@@ -54,7 +74,42 @@ public class ConverterTest {
 	}
 	
 	@Test
+	public void stringArePassedThrough() {
+		List<String> values = Arrays.asList("1", "2", "3");
+		assertThat(converter.convert(values, String.class)).isSameAs(values);
+	}
+	
+	@Test
 	public void convertsToEnum() {
 		assertThat(converter.convert("FEMALE", Gender.class)).isEqualTo(Gender.FEMALE);
+	}
+	
+	@Test
+	public void convertsToMultipleEnums() {
+		assertThat(converter.convert(Arrays.asList("FEMALE", "MALE"), Gender.class))
+			.isEqualTo(Arrays.asList(Gender.FEMALE, Gender.MALE));
+	}
+	
+	@Test
+	public void throwsExceptionWithRejectedEnumNames() {
+		expected.expect(ValuesRejectedException.class);
+		expected.expect(valuesRejected("ROBOT", "ALIEN"));
+		
+		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
+	}
+
+	private Matcher<?> valuesRejected(final String... values) {
+		return new BaseMatcher<ValuesRejectedException>() {
+
+			@Override
+			public boolean matches(Object item) {
+				return Arrays.asList(values).equals(((ValuesRejectedException) item).getRejectedValues());
+			}
+
+			@Override
+			public void describeTo(Description desc) {
+				desc.appendText("ValuesRejectedException with items: " + Arrays.toString(values));
+			}
+		};
 	}
 }

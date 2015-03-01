@@ -17,7 +17,10 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -26,6 +29,48 @@ import java.util.Date;
 @SuppressWarnings("unchecked")
 public class Converter {
 
+	public static class ValuesRejectedException extends IllegalArgumentException {
+		
+		private static final long serialVersionUID = 1L;
+
+		private Collection<String> rejectedValues;
+		
+		public ValuesRejectedException(Collection<String> rejectedValues, String message) {
+			super(message);
+			this.rejectedValues = rejectedValues;
+		}
+		
+		public Collection<String> getRejectedValues() {
+			return rejectedValues;
+		}
+		
+		@Override
+		public String toString() {
+			return this.getClass() + ": " + getMessage();
+		}
+	}
+	
+	private static class ValueRejectedException extends IllegalArgumentException {
+		
+		private static final long serialVersionUID = 1L;
+		
+		private String rejectedValue;
+		
+		public ValueRejectedException(String constantName, String message) {
+			super(message);
+			this.rejectedValue = constantName;
+		}
+		
+		public String getRejectedValue() {
+			return rejectedValue;
+		}
+		
+		@Override
+		public String toString() {
+			return this.getClass().getSimpleName() + ": " + getMessage();
+		}
+	}
+	
 	private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 	
 	private String dateFormat;
@@ -36,19 +81,35 @@ public class Converter {
 	}
 	
 	public <T> T convert(String value, Class<T> expectedClass) {
-		if (expectedClass == Long.class) {
-			return (T) Long.valueOf(value);
-		}
-		if (expectedClass == Integer.class) {
-			return (T) Integer.valueOf(value);
-		}
-		else if (expectedClass.isEnum()) {
+		if (expectedClass.isEnum()) {
 			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
 		}
 		else if (expectedClass.isAssignableFrom(Date.class)) {
 			return (T) convertToDate(value);
 		}
 		return (T) value;
+	}
+	
+	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
+		if (expectedClass == String.class) {
+			return (List<T>) values;
+		}
+		List<String> rejected = null;
+		List<T> result = new ArrayList<>();
+		for (String value : values) {
+			try {
+				result.add(convert(value, expectedClass));
+			} catch (ValueRejectedException e) {
+				if (rejected == null) {
+					rejected = new ArrayList<>();
+				}
+				rejected.add(e.getRejectedValue());
+			}
+		}
+		if (rejected != null) {
+			throw new ValuesRejectedException(rejected, "rejected values " + rejected + " for class " + expectedClass.getSimpleName());
+		}
+		return result;
 	}
 
 	public Date convertToDate(String value) {
@@ -65,7 +126,7 @@ public class Converter {
 				return (T) enumVal;
 			}
 		}
-		throw new IllegalArgumentException("could not find value " + value + " for enum class " + enumClass.getSimpleName());
+		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
 	}
 
 	public static Converter withDateFormat(String dateFormat) {

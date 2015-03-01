@@ -34,11 +34,12 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
  * @author Tomasz Kaczmarzyk
  * @author Maciej Szewczyszyn
  */
-public class EqualTest extends IntegrationTestBase {
+public class InTest extends IntegrationTestBase {
 
     private Customer homerSimpson;
     private Customer margeSimpson;
     private Customer moeSzyslak;
+	private Customer joeQuimby;
 
     @Before
     public void initData() {
@@ -46,60 +47,76 @@ public class EqualTest extends IntegrationTestBase {
         margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);
         moeSzyslak = customer("Moe", "Szyslak").gender(Gender.MALE).registrationDate(2015, 03, 02).weight(65).build(em);
 
-        customer("Joe", "Quimby").build(em); // Gender nor Weight nor Registration Date not specifed
+        joeQuimby = customer("Joe", "Quimby").build(em); // Gender nor Weight nor Registration Date not specifed
     }
     
     @Test
-    public void filtersByEnumValue() {
-        Equal<Customer> genderMale = new Equal<>("gender", new String[] { "MALE" });
+    public void filtersByEnumValue_singleValue() {
+        In<Customer> genderMale = new In<>("gender", new String[] { "MALE" });
         List<Customer> males = customerRepo.findAll(genderMale);
         assertThat(males).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
 
-        Equal<Customer> genderFemale = new Equal<>("gender", new String[] { "FEMALE" });
+        In<Customer> genderFemale = new In<>("gender", new String[] { "FEMALE" });
         List<Customer> females = customerRepo.findAll(genderFemale);
         assertThat(females).hasSize(1).containsOnly(margeSimpson);
 
-        Equal<Customer> genderOther = new Equal<>("gender", new String[] { "OTHER" });
+        In<Customer> genderOther = new In<>("gender", new String[] { "OTHER" });
         List<Customer> others = customerRepo.findAll(genderOther);
         assertThat(others).hasSize(0);
+    }
+    
+    @Test
+    public void filtersWithTwoEnumValues() {
+    	In<Customer> genderMaleOrFemale = new In<>("gender", new String[] { "MALE", "FEMALE" });
+        List<Customer> malesOrFemales = customerRepo.findAll(genderMaleOrFemale);
+        assertThat(malesOrFemales).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
 
     @Test
     public void rejectsNotExistingEnumConstantName() {
-        Equal<Customer> genderRobot = new Equal<>("gender", new String[] { "ROBOT" });
+        In<Customer> genderRobot = new In<>("gender", new String[] { "ROBOT" });
         expectedException.expect(InvalidDataAccessApiUsageException.class);
         expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("could not find value ROBOT for enum class Gender");
+        expectedException.expectMessage("rejected values [ROBOT] for class Gender");
         customerRepo.findAll(genderRobot);
     }
     
     @Test
     public void filtersByLongValue() {
-    	Equal<Customer> homerId = new Equal<>("id", new String[] { homerSimpson.getId().toString() });
+    	In<Customer> simpsonsIds = new In<>("id", new String[] { homerSimpson.getId().toString(), margeSimpson.getId().toString() });
     	
-    	List<Customer> homers = customerRepo.findAll(homerId);
+    	List<Customer> simpsons = customerRepo.findAll(simpsonsIds);
     	
-    	assertThat(homers).hasSize(1).containsOnly(homerSimpson);
+    	assertThat(simpsons).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+    }
+    
+    @Test
+    public void filtersByLongValue_withAdditionalNonExistingValue() {
+    	In<Customer> simpsonsIdsWithTrash = new In<>("id", new String[] { "12345", homerSimpson.getId().toString(), margeSimpson.getId().toString() });
+    	
+    	List<Customer> simpsons = customerRepo.findAll(simpsonsIdsWithTrash);
+    	
+    	assertThat(simpsons).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     }
     
     @Test
     public void filtersByIntegerValue() {
-    	Equal<Customer> weight121 = new Equal<>("weight", new String[] { "121" });
+    	In<Customer> weights = new In<>("weight", new String[] { "121", "65" });
 
-    	List<Customer> found = customerRepo.findAll(weight121);
+    	List<Customer> found = customerRepo.findAll(weights);
     	
-    	assertThat(found).hasSize(1).containsOnly(homerSimpson);
+    	assertThat(found).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
     }
     
     @Test
     public void filtersByString() {
-    	Equal<Customer> simpsons = new Equal<>("lastName", new String[] { "Simpson" });
+    	In<Customer> simpsons = new In<>("lastName", new String[] { "Simpson", "Quimby" });
     	List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
     	
-    	assertThat(simpsonsFound).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+    	assertThat(simpsonsFound).hasSize(3).containsOnly(homerSimpson, margeSimpson, joeQuimby);
     	
     	
-    	Equal<Customer> lastNameS = new Equal<>("lastName", new String[] { "s" });
+    	In<Customer> lastNameS = new In<>("lastName", new String[] { "s" });
     	List<Customer> found = customerRepo.findAll(lastNameS);
     	
     	assertThat(found).isEmpty();
@@ -107,23 +124,28 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByDateWithDefaultDateFormat() {
-    	Equal<Customer> registered1stMarch = new Equal<>("registrationDate", new String[] { "2015-03-01" });
+    	In<Customer> registered1stMarch = new In<>("registrationDate", new String[] { "2015-03-01" });
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     	
-    	Equal<Customer> registered2ndMarch = new Equal<>("registrationDate", new String[] { "2015-03-02" });
-    	found = customerRepo.findAll(registered2ndMarch);
+    	In<Customer> registered1stOr2ndMarch = new In<>("registrationDate", new String[] { "2015-03-02", "2015-03-01" });
+    	found = customerRepo.findAll(registered1stOr2ndMarch);
     	
-    	assertThat(found).hasSize(1).containsOnly(moeSzyslak);
+    	assertThat(found).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
     
     @Test
     public void filterByDateWithCustomDateFormat() {
-    	Equal<Customer> registered1stMarch = new Equal<>("registrationDate", new String[] { "01-03-2015" }, new String[] { "dd-MM-yyyy" });
+    	In<Customer> registered1stMarch = new In<>("registrationDate", new String[] { "01-03-2015" }, new String[] { "dd-MM-yyyy" });
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+    	
+    	In<Customer> registered1stOr2ndMarch = new In<>("registrationDate", new String[] { "01-03-2015", "02-03-2015" }, new String[] { "dd-MM-yyyy" });
+    	found = customerRepo.findAll(registered1stOr2ndMarch);
+    	
+    	assertThat(found).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
     
     @Test
@@ -132,7 +154,7 @@ public class EqualTest extends IntegrationTestBase {
 
     	expectedException.expect(IllegalArgumentException.class);
     	
-    	new Equal<>("registrationDate", new String[] { "01-03-2015" }, emptyConfig);
+    	new In<>("registrationDate", new String[] { "01-03-2015" }, emptyConfig);
     }
     
     @Test
@@ -141,6 +163,15 @@ public class EqualTest extends IntegrationTestBase {
     	
     	expectedException.expect(IllegalArgumentException.class);
     	
-    	new Equal<>("registrationDate", new String[] { "01-03-2015" }, invalidConfig);
+    	new In<>("registrationDate", new String[] { "01-03-2015" }, invalidConfig);
+    }
+    
+    @Test
+    public void rejectsNotExistingEnumConstantName_twoExistingTwoNot() {
+        In<Customer> genderRobot = new In<>("gender", new String[] { "MALE", "ROBOT", "FEMALE", "ALIEN" });
+        expectedException.expect(InvalidDataAccessApiUsageException.class);
+        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
+        expectedException.expectMessage("rejected values [ROBOT, ALIEN] for class Gender");
+        customerRepo.findAll(genderRobot);
     }
 }

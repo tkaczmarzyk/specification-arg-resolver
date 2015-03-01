@@ -74,13 +74,27 @@ Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
 ### Equal ###
 
-Compares the value of the parameter with an attribute of an entity (exact match). E.g. `(..) where gender = FEMALE`.
+Compares an attribute of an entity with the value of a HTTP parameter (exact match). E.g. `(..) where gender = FEMALE`.
 
 Supports multiple data types: numbers, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=Enum.class)`.
 
-Date format can be provided as configuration parameter (see `DateBefore` below).
+The default date format is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `DateBefore` below).
+
+### In ###
+
+Compares an attribute of an entity with multiple values of a HTTP parameter. E.g. `(..) where gender in (MALE, FEMALE)`.
+
+HTTP request example:
+
+    GET http://myhost/customers?gender=MALE&gender=FEMALE
+
+Supports multiple data types: numbers, strings, dates, enums.
+
+Usage: `@Spec(path="gender", spec=In.class)`.
+
+The default date format is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `DateBefore` below).
 
 ### DateBefore ###
 

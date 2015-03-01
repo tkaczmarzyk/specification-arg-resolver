@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 import org.junit.Test;
@@ -32,90 +32,97 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
-public class EqualE2eTest extends E2eTestBase {
+public class InE2eTest extends E2eTestBase {
 
 	@Controller
-	public static class EqualSpecController {
+	public static class InSpecController {
 		
 		@Autowired
 		CustomerRepository customerRepo;
 		
-		@RequestMapping(value = "/customers", params = "firstName")
+		@RequestMapping(value = "/customers", params = "firstNameIn")
 		@ResponseBody
 		public Object findCustomersByFirstName(
-				@Spec(path="firstName", spec=Equal.class) Specification<Customer> spec) {
+				@Spec(path="firstName", params = "firstNameIn", spec=In.class) Specification<Customer> spec) {
 			
 			return customerRepo.findAll(spec);
 		}
 		
-		@RequestMapping(value = "/customers", params = "id")
+		@RequestMapping(value = "/customers", params = "idIn")
 		@ResponseBody
 		public Object findCustomersById(
-				@Spec(path="id", spec=Equal.class) Specification<Customer> spec) {
+				@Spec(path="id", params ="idIn", spec=In.class) Specification<Customer> spec) {
 			
 			return customerRepo.findAll(spec);
 		}
 		
-		@RequestMapping(value = "/customers", params = "registrationDateEq")
+		@RequestMapping(value = "/customers", params = "registrationDateIn")
 		@ResponseBody
 		public Object findCustomersByRegistrationDate(
-				@Spec(path="registrationDate", params = "registrationDateEq", spec=Equal.class) Specification<Customer> spec) {
+				@Spec(path="registrationDate", params = "registrationDateIn", spec=In.class) Specification<Customer> spec) {
 			
 			return customerRepo.findAll(spec);
 		}
 		
-		@RequestMapping(value = "/customers", params = "gender")
+		@RequestMapping(value = "/customers", params = "genderIn")
 		@ResponseBody
 		public Object findCustomersByGender(
-				@Spec(path="gender", spec=Equal.class) Specification<Customer> spec) {
+				@Spec(path="gender", params="genderIn", spec=In.class) Specification<Customer> spec) {
 			
 			return customerRepo.findAll(spec);
 		}
 	}
 	
 	@Test
-	public void findsByExactStringValue() throws Exception {
+	public void findsByListOfAllowedStringValues() throws Exception {
 		mockMvc.perform(get("/customers")
-				.param("firstName", "Homer")
+				.param("firstNameIn", "Homer", "Marge")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
-			.andExpect(jsonPath("$[1]").doesNotExist());
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 	
 	@Test
-	public void findsByExactLongValue() throws Exception {
+	public void findsByListOfAllowedLongValues() throws Exception {
 		mockMvc.perform(get("/customers")
-				.param("id", homerSimpson.getId().toString())
+				.param("idIn", homerSimpson.getId().toString(), moeSzyslak.getId().toString())
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
-			.andExpect(jsonPath("$[1]").doesNotExist());
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 	
 	@Test
-	public void findsByExactDateValue() throws Exception {
+	public void findsByListOfAllowedDateValues() throws Exception {
 		mockMvc.perform(get("/customers")
-				.param("registrationDateEq", "2014-03-31")
+				.param("registrationDateIn", "2014-03-30", "2014-03-31")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[0].firstName").value("Maggie"))
-			.andExpect(jsonPath("$[1]").doesNotExist());
+			.andExpect(jsonPath("$[0].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[1].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 	
 	@Test
-	public void findsByExactEnumValue() throws Exception {
+	public void findsByListOfAllowedEnumValues() throws Exception {
 		mockMvc.perform(get("/customers")
-				.param("gender", "FEMALE")
+				.param("genderIn", "MALE", "FEMALE")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[0].firstName").value("Marge"))
-			.andExpect(jsonPath("$[1].firstName").value("Lisa"))
-			.andExpect(jsonPath("$[2].firstName").value("Maggie"))
-			.andExpect(jsonPath("$[3]").doesNotExist());
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[4].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[5].firstName").value("Moe"))
+			.andExpect(jsonPath("$[6].firstName").value("Ned"))
+			.andExpect(jsonPath("$[7]").doesNotExist());
 	}
 }
