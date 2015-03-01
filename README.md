@@ -86,6 +86,14 @@ Usage: `@Spec(path="creationDate", spec=DateBefore.class)`.
 
 The default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=DateBefore.class, config="dd-MM-yyyy")`.
 
+### DateAfter ###
+
+Filters by checking if a temporal field of an entity has a value after the given one. E.g. `(..) where creationDate > :date`.
+
+Usage: `@Spec(path="creationDate", spec=DateAfter.class)`.
+
+You can configure the date pattern as with `DateBefore` described above.
+
 ### DateBetween ###
 
 Filters by checking if a temporal field of an entity is in the provided date range. E.g. `(..) where creation date between :after and :before`.
