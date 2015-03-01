@@ -33,12 +33,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class LikeE2eTest extends E2eTestBase {
 
 	@Controller
-	public static class TestController {
+	public static class LikeSpecController {
 		
 		@Autowired
 		CustomerRepository customerRepo;
 		
-		@RequestMapping("/customers")
+		@RequestMapping(value = "/customers", params = "lastName")
 		@ResponseBody
 		public Object findCustomersByLastName(
 				@Spec(path="lastName", spec=Like.class) Specification<Customer> spec) {

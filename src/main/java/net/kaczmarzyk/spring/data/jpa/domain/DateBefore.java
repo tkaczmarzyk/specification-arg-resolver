@@ -16,7 +16,6 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -30,9 +29,8 @@ import javax.persistence.criteria.Root;
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class DateBefore<T> extends PathSpecification<T> {
+public class DateBefore<T> extends DateSpecification<T> {
 
-    static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     private Date date;
 
     public DateBefore(String path, String... args) throws ParseException {
@@ -40,16 +38,12 @@ public class DateBefore<T> extends PathSpecification<T> {
     }
     
     public DateBefore(String path, String[] args, String[] config) throws ParseException {
-        super(path);
-        if (args == null || args.length != 1 || (config != null && config.length != 1)) {
-            throw new IllegalArgumentException();
-        }
-        String pattern = DEFAULT_DATE_FORMAT;
-        if (config != null) {
-            pattern = config[0];
+        super(path, args, config);
+        if (args == null || args.length != 1) {
+            throw new IllegalArgumentException("expected a single http-param, but was: " + args);
         }
         String dateStr = args[0];
-        this.date = new SimpleDateFormat(pattern).parse(dateStr);
+        this.date = format.parse(dateStr);
     }
 
     @Override
