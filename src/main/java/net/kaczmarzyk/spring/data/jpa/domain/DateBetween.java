@@ -45,8 +45,8 @@ public class DateBetween<T> extends DateSpecification<T> {
         }
         String afterDateStr = args[0];
         String beforeDateStr = args[1];
-        this.after = format.parse(afterDateStr);
-        this.before = format.parse(beforeDateStr);
+        this.after = converter.convertToDate(afterDateStr);
+        this.before = converter.convertToDate(beforeDateStr);
     }
 
     @Override

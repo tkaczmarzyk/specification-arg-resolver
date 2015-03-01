@@ -16,7 +16,8 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 
 /**
@@ -24,8 +25,7 @@ import java.text.SimpleDateFormat;
  */
 abstract class DateSpecification<T> extends PathSpecification<T> {
 
-	protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-    protected SimpleDateFormat format;
+    protected Converter converter;
 
     protected DateSpecification(String path, String... args) throws ParseException {
         this(path, args, null);
@@ -36,10 +36,7 @@ abstract class DateSpecification<T> extends PathSpecification<T> {
         if (config != null && config.length != 1) {
             throw new IllegalArgumentException("invalid configuration (expected only date format): " + config);
         }
-        String pattern = DEFAULT_DATE_FORMAT;
-        if (config != null) {
-            pattern = config[0];
-        }
-        this.format = new SimpleDateFormat(pattern);
+        String dateFormat = config != null ? config[0] : null;
+        this.converter = Converter.withDateFormat(dateFormat);
     }
 }

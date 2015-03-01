@@ -54,34 +54,10 @@ public class EqualEnumTest extends IntegrationTestBase {
     }
 
     @Test
-    public void filtersGender() {
-        EqualEnum<Customer> genderMale = new EqualEnum<>("gender", "MALE");
-        List<Customer> males = customerRepo.findAll(genderMale);
-        assertThat(males).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
-
-        EqualEnum<Customer> genderFemale = new EqualEnum<>("gender", "FEMALE");
-        List<Customer> females = customerRepo.findAll(genderFemale);
-        assertThat(females).hasSize(1).containsOnly(margeSimpson);
-
-        EqualEnum<Customer> genderOther = new EqualEnum<>("gender", "OTHER");
-        List<Customer> others = customerRepo.findAll(genderOther);
-        assertThat(others).hasSize(0);
-    }
-
-    @Test
     public void filtersWithTwoGenders() {
         EqualEnum<Customer> genderMaleOrFemale = new EqualEnum<>("gender", new String[] { "MALE", "FEMALE" });
         List<Customer> malesOrFemales = customerRepo.findAll(genderMaleOrFemale);
         assertThat(malesOrFemales).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
-    }
-
-    @Test
-    public void rejectsNotExistingEnumConstantName_singleNotExisting() {
-        EqualEnum<Customer> genderRobot = new EqualEnum<>("gender", "ROBOT");
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("The following enum constants do not exists: ROBOT");
-        customerRepo.findAll(genderRobot);
     }
 
     @Test

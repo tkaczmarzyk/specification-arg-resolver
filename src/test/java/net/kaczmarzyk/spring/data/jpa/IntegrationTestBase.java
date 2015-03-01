@@ -18,6 +18,8 @@ package net.kaczmarzyk.spring.data.jpa;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class IntegrationTestBase {
 
+	@Rule
+    public ExpectedException expectedException = ExpectedException.none();
+	
     @Autowired
     protected CustomerRepository customerRepo;
     

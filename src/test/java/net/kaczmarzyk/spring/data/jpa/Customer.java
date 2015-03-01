@@ -49,6 +49,8 @@ public class Customer {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date registrationDate;
 
+    private Integer weight;
+    
     public Customer() {
     }
 
@@ -99,4 +101,8 @@ public class Customer {
     public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
     }
+
+	public void setWeight(int weight) {
+		this.weight = weight;
+	}
 }

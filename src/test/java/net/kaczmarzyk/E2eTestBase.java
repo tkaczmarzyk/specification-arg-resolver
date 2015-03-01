@@ -16,6 +16,7 @@
 package net.kaczmarzyk;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static net.kaczmarzyk.spring.data.jpa.Gender.*;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
@@ -46,13 +47,13 @@ public abstract class E2eTestBase extends IntegrationTestBase {
 	
     @Before
     public void initialize() {
-        homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 15).street("Evergreen Terrace").build(em);
-        margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 20).street("Evergreen Terrace").build(em);
-        bartSimpson = customer("Bart", "Simpson").registrationDate(2014, 03, 25).street("Evergreen Terrace").build(em);
-        lisaSimpson = customer("Lisa", "Simpson").registrationDate(2014, 03, 30).street("Evergreen Terrace").build(em);
-        maggieSimpson = customer("Maggie", "Simpson").registrationDate(2014, 03, 31).street("Evergreen Terrace").build(em);
-        moeSzyslak = customer("Moe", "Szyslak").registrationDate(2014, 03, 15).street("Unknown").build(em);
-        nedFlanders = customer("Ned", "Flanders").registrationDate(2014, 03, 25).street("Evergreen Terrace").build(em);
+        homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 15).gender(MALE).street("Evergreen Terrace").build(em);
+        margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 20).gender(FEMALE).street("Evergreen Terrace").build(em);
+        bartSimpson = customer("Bart", "Simpson").registrationDate(2014, 03, 25).gender(MALE).street("Evergreen Terrace").build(em);
+        lisaSimpson = customer("Lisa", "Simpson").registrationDate(2014, 03, 30).gender(FEMALE).street("Evergreen Terrace").build(em);
+        maggieSimpson = customer("Maggie", "Simpson").registrationDate(2014, 03, 31).gender(FEMALE).street("Evergreen Terrace").build(em);
+        moeSzyslak = customer("Moe", "Szyslak").registrationDate(2014, 03, 15).gender(MALE).street("Unknown").build(em);
+        nedFlanders = customer("Ned", "Flanders").registrationDate(2014, 03, 25).gender(MALE).street("Evergreen Terrace").build(em);
         
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }

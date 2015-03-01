@@ -33,7 +33,11 @@ import org.apache.commons.lang3.StringUtils;
  * regardless of the (chosen by user) way of persisting enums in the database.
  * 
  * @author Maciej Szewczyszyn
+ * 
+ * @deprecated use {@link net.kaczmarzyk.spring.data.jpa.domain.Equal Equal}
+ *  or {@link net.kaczmarzyk.spring.data.jpa.domain.In In} specifications that handle enums and other data types
  */
+@Deprecated
 public class EqualEnum<T> extends PathSpecification<T> {
 
     protected String[] searchedNames;

@@ -72,11 +72,15 @@ Works as `Like`, but the query is also case-insensitive.
 
 Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
-### EqualEnum ###
+### Equal ###
 
-Compares the value of the parameter with an enum attribute of an entity. E.g. `(..) where gender = FEMALE`.
+Compares the value of the parameter with an attribute of an entity (exact match). E.g. `(..) where gender = FEMALE`.
 
-Usage: `@Spec(path="gender", spec=EqualEnum.class)`.
+Supports multiple data types: numbers, strings, dates, enums.
+
+Usage: `@Spec(path="gender", spec=Enum.class)`.
+
+Date format can be provided as configuration parameter (see `DateBefore` below).
 
 ### DateBefore ###
 

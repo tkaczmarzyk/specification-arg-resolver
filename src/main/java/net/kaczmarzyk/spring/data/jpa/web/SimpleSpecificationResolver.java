@@ -72,6 +72,8 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
                 return spec;
             }
+        } catch (NoSuchMethodException e) {
+        	throw new IllegalStateException("Does the specification class expose at least one of supported constuctors?\nIt can be either 2-arg (String path, String[] httpParamValues) or 3-arg (String path, String[] httpParamValues, String[] config)", e);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
