@@ -33,7 +33,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 /**
  * @author Tomasz Kaczmarzyk
  */
-public class DisjunctionSpecificationResolverTest {
+public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
 
     DisjunctionSpecificationResolver resolver = new DisjunctionSpecificationResolver();
 
@@ -79,18 +79,15 @@ public class DisjunctionSpecificationResolverTest {
         assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Or.class)));
     }
 
-    private Object testMethod(String methodName) {
-        try {
-            return TestController.class.getMethod(methodName, Specification.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static class TestController {
 
         public void testMethod(
                 @Or({ @Spec(path = "path1", spec = Like.class), @Spec(path = "path2", spec = Like.class) }) Specification<Object> spec) {
         }
     }
+
+	@Override
+	protected Class<?> controllerClass() {
+		return TestController.class;
+	}
 }

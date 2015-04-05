@@ -29,7 +29,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
 
-public class SimpleSpecificationResolverTest {
+public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
     SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
@@ -172,14 +172,6 @@ public class SimpleSpecificationResolverTest {
         assertThat(resolved).isEqualTo(new EqualEnum<>("thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
     }
 
-    private Object testMethod(String methodName) {
-        try {
-            return TestController.class.getMethod(methodName, Specification.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static class TestController {
 
         public void testMethod1(@Spec(path = "thePath", spec = Like.class) Specification<Object> spec) {
@@ -195,4 +187,9 @@ public class SimpleSpecificationResolverTest {
                 @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = EqualEnum.class) Specification<Object> spec) {
         }
     }
+
+	@Override
+	protected Class<?> controllerClass() {
+		return TestController.class;
+	}
 }

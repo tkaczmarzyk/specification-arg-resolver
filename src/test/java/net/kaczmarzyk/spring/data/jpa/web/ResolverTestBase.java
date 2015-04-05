@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.web.annotation;
+package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.springframework.data.jpa.domain.Specification;
 
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.TYPE })
-public @interface Or {
+public abstract class ResolverTestBase {
 
-    Spec[] value();
+	protected Object testMethod(String methodName) {
+        return testMethod(methodName, Specification.class);
+    }
+	
+	protected Object testMethod(String methodName, Class<?> specClass) {
+        try {
+            return controllerClass().getMethod(methodName, specClass);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+	
+	protected abstract Class<?> controllerClass();
 }

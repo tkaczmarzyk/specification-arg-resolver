@@ -34,7 +34,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 /**
  * @author Tomasz Kaczmarzyk
  */
-public class ConjunctionSpecificationResolverTest {
+public class ConjunctionSpecificationResolverTest extends ResolverTestBase {
 
     ConjunctionSpecificationResolver resolver = new ConjunctionSpecificationResolver();
 
@@ -109,14 +109,6 @@ public class ConjunctionSpecificationResolverTest {
         assertThat(result).isNull();
     }
 
-    private Object testMethod(String methodName) {
-        try {
-            return TestController.class.getMethod(methodName, Specification.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static class TestController {
 
         public void testMethod(
@@ -133,4 +125,9 @@ public class ConjunctionSpecificationResolverTest {
                         and = { @Or({ @Spec(path = "path3", spec = Like.class), @Spec(path = "path4", spec = Like.class) }) }) Specification<Object> spec) {
         }
     }
+
+	@Override
+	protected Class<?> controllerClass() {
+		return TestController.class;
+	}
 }

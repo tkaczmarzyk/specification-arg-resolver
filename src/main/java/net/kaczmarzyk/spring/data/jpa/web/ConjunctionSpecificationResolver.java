@@ -51,7 +51,11 @@ class ConjunctionSpecificationResolver implements HandlerMethodArgumentResolver 
 
         And def = param.getParameterAnnotation(And.class);
         
-        List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
+        return buildSpecification(webRequest, def);
+    }
+
+	Specification<Object> buildSpecification(NativeWebRequest webRequest, And def) {
+		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
         for (Spec innerDef : def.value()) {
             if (specResolver.canBuildSpecification(webRequest, innerDef)) {
                 innerSpecs.add(specResolver.buildSpecification(webRequest, innerDef));
@@ -64,6 +68,6 @@ class ConjunctionSpecificationResolver implements HandlerMethodArgumentResolver 
         }
         
         return innerSpecs.isEmpty() ? null : new Conjunction<Object>(innerSpecs);
-    }
+	}
 
 }

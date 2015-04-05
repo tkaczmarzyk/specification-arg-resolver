@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * @author Tomasz Kaczmarzyk
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ ElementType.PARAMETER, ElementType.TYPE })
 public @interface And {
 
     Spec[] value() default {};

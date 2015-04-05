@@ -27,7 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Tomasz Kaczmarzyk
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ ElementType.PARAMETER, ElementType.TYPE })
 public @interface Spec {
 
     String[] params() default {};
