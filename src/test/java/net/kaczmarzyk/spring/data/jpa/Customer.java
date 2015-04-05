@@ -51,6 +51,8 @@ public class Customer {
 
     private Integer weight;
     
+    private boolean gold;
+    
     public Customer() {
     }
 
@@ -104,5 +106,13 @@ public class Customer {
 
 	public void setWeight(int weight) {
 		this.weight = weight;
+	}
+	
+	public boolean isGold() {
+		return gold;
+	}
+	
+	public void setGold(boolean gold) {
+		this.gold = gold;
 	}
 }

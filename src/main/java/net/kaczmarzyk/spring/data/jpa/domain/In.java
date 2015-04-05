@@ -32,7 +32,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
  * <p>Values to match against should be provided as multiple values of a single HTTP parameter, eg.: 
  *  {@code GET http://myhost/customers?firstName=Homer&firstName=Marge}.</p>
  * 
- * <p>Supports multiple field types: strings, numbers, enums, dates.</p>
+ * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  * 
  * @author Tomasz Kaczmarzyk
  * @author Maciej Szewczyszyn

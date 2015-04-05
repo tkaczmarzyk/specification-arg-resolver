@@ -85,6 +85,23 @@ public class ConverterTest {
 	}
 	
 	@Test
+	public void convertsToBoolean() {
+		assertThat(converter.convert("true", Boolean.class)).isEqualTo(true);
+		assertThat(converter.convert("false", Boolean.class)).isEqualTo(false);
+	}
+	
+	@Test
+	public void convertsToBooleanByPrimitiveType() {
+		assertThat(converter.convert("true", boolean.class)).isEqualTo(true);
+		assertThat(converter.convert("false", boolean.class)).isEqualTo(false);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void throwsExceptionOnInvalidBooleanValue() {
+		converter.convert("TRUE", Boolean.class);
+	}
+	
+	@Test
 	public void convertsToMultipleEnums() {
 		assertThat(converter.convert(Arrays.asList("FEMALE", "MALE"), Gender.class))
 			.isEqualTo(Arrays.asList(Gender.FEMALE, Gender.MALE));

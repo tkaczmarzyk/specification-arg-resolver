@@ -61,6 +61,11 @@ public class CustomerBuilder {
 		return this;
 	}
     
+    public CustomerBuilder gold() {
+    	customer.setGold(true);
+		return this;
+	}
+    
     public Customer build(EntityManager em) {
         em.persist(customer);
         return customer;

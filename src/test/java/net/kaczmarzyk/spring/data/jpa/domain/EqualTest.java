@@ -39,6 +39,7 @@ public class EqualTest extends IntegrationTestBase {
     private Customer homerSimpson;
     private Customer margeSimpson;
     private Customer moeSzyslak;
+    private Customer joeQuimby;
 
     @Before
     public void initData() {
@@ -46,7 +47,7 @@ public class EqualTest extends IntegrationTestBase {
         margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);
         moeSzyslak = customer("Moe", "Szyslak").gender(Gender.MALE).registrationDate(2015, 03, 02).weight(65).build(em);
 
-        customer("Joe", "Quimby").build(em); // Gender nor Weight nor Registration Date not specifed
+        joeQuimby = customer("Joe", "Quimby").gold().build(em); // Gender nor Weight nor Registration Date not specifed
     }
     
     @Test
@@ -89,6 +90,15 @@ public class EqualTest extends IntegrationTestBase {
     	List<Customer> found = customerRepo.findAll(weight121);
     	
     	assertThat(found).hasSize(1).containsOnly(homerSimpson);
+    }
+    
+    @Test
+    public void filtersByBooleanValue() {
+    	Equal<Customer> gold = new Equal<>("gold", new String[] { "true" });
+
+    	List<Customer> found = customerRepo.findAll(gold);
+    	
+    	assertThat(found).hasSize(1).containsOnly(joeQuimby);
     }
     
     @Test

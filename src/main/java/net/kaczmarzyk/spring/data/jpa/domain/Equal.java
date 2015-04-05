@@ -25,7 +25,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 /**
  * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
  * 
- * <p>Supports multiple field types: strings, numbers, enums, dates.</p>
+ * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  * 
  * @author Tomasz Kaczmarzyk
  */

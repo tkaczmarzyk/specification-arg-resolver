@@ -87,6 +87,9 @@ public class Converter {
 		else if (expectedClass.isAssignableFrom(Date.class)) {
 			return (T) convertToDate(value);
 		}
+		else if (expectedClass.isAssignableFrom(Boolean.class) || expectedClass.isAssignableFrom(boolean.class)) {
+			return (T) convertToBoolean(value);
+		}
 		return (T) value;
 	}
 	
@@ -112,6 +115,16 @@ public class Converter {
 		return result;
 	}
 
+	private Boolean convertToBoolean(String value) {
+		if ("true".equals(value)) {
+			return true;
+		} else if ("false".equals(value)) {
+			return false;
+		} else {
+			throw new IllegalArgumentException("unrecognized boolean: " + value);
+		}
+	}
+	
 	public Date convertToDate(String value) {
 		try {
 			return new SimpleDateFormat(dateFormat).parse(value);
