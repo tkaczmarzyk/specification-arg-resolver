@@ -21,7 +21,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
- * Filters with {@code path like %pattern%} where-clause and ignore pattern case
+ * Filters with {@code path like %pattern%} where-clause and ignores pattern case
  * 
  * @author Michal Jankowski, Hazecod
  *
