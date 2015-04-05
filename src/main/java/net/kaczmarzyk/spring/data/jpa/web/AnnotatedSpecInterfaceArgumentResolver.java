@@ -76,7 +76,7 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		
 		Enhancer enhancer = new Enhancer();
 		enhancer.setInterfaces(new Class[] { parameter.getParameterType() });
-		enhancer.setCallback(proxyFor(spec));
+		enhancer.setCallback(delegateTo(spec));
 		
 		return enhancer.create();
 	}
@@ -95,7 +95,7 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		return null;
 	}
 	
-	private Callback proxyFor(final Specification<Object> targetSpec) {
+	private Callback delegateTo(final Specification<Object> targetSpec) {
 		return new MethodInterceptor() {
 			@Override
 			public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
