@@ -87,9 +87,9 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 	
 	private final Object getAnnotation(Class<?> target) {
 		for (Class<? extends Annotation> annotationType : annotationTypes) {
-			Object[] potentialAnnotation = target.getAnnotationsByType(annotationType);
-			if (potentialAnnotation.length > 0) {
-				return potentialAnnotation[0];
+			Annotation potentialAnnotation = target.getAnnotation(annotationType);
+			if (potentialAnnotation != null) {
+				return potentialAnnotation;
 			}
 		}
 		return null;
