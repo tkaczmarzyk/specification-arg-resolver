@@ -17,8 +17,10 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -137,6 +139,28 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         assertThat(resolved).isEqualTo(new Like<>("thePath", new String[] { "theValue" }));
     }
+    
+    @Test
+    public void buildsTheSpecUsingConstValue() throws Exception {
+    	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithConst1"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+
+        assertTrue(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
+        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }));
+    }
+    
+    @Test
+    public void ignoresHttpParamIfConstValueIsSpecified() throws Exception {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithConst1"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
+
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+
+        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }));
+    }
 
     @Test
     public void buildsTheSpecUsingCustomWebParameterName() throws Exception {
@@ -185,6 +209,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         public void testMethod4(
                 @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = EqualEnum.class) Specification<Object> spec) {
+        }
+        
+        public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1") Specification<Object> spec) {
         }
     }
 

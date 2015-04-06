@@ -34,6 +34,8 @@ public @interface Spec {
     
     String[] config() default {};
     
+    String[] constVal() default {};
+    
     String path();
     
     @SuppressWarnings("rawtypes")
