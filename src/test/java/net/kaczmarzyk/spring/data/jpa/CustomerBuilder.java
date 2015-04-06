@@ -42,6 +42,11 @@ public class CustomerBuilder {
         customer.setGender(gender);
         return this;
     }
+
+    public CustomerBuilder nickName(String nickName) {
+		customer.setNickName(nickName);
+		return this;
+	}
     
     public CustomerBuilder registrationDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();

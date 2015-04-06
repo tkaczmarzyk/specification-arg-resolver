@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
+import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -43,6 +44,16 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
         assertThat(resolved).isNull();
+    }
+    
+    @Test
+    public void resolvesZeroArgSpecificatinEvenWithoutAnyWebParameters() throws Exception {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithZeroArgSpec"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+
+        assertThat(resolved).isInstanceOf(IsNull.class);
     }
 
     @Test
@@ -213,6 +224,8 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1") Specification<Object> spec) {
         }
+        
+        public void testMethodWithZeroArgSpec(@Spec(path = "thePath", spec = IsNull.class) Specification<Object> spec) {}
     }
 
 	@Override

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,20 +49,24 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
     Specification<Object> buildSpecification(NativeWebRequest req, Spec def) {
         try {
             Collection<String> args = resolveSpecArguments(req, def);
-            if (args.isEmpty()) {
+            if (args.isEmpty() && !isZeroArgSpec(def)) {
                 return null;
             } else {
                 String[] argsArray = args.toArray(new String[args.size()]);
                 return newSpecification(def, argsArray);
             }
         } catch (NoSuchMethodException e) {
-        	throw new IllegalStateException("Does the specification class expose at least one of supported constuctors?\nIt can be either 2-arg (String path, String[] httpParamValues) or 3-arg (String path, String[] httpParamValues, String[] config)", e);
+        	throw new IllegalStateException("Does the specification class expose at least one of the supported constuctors?\nIt can be either 2-arg (String path, String[] args) or 3-arg (String path, String[] args, String[] config)", e);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
 
-    @SuppressWarnings("unchecked")
+    private boolean isZeroArgSpec(Spec def) {
+		return ZeroArgSpecification.class.isAssignableFrom(def.spec());
+	}
+
+	@SuppressWarnings("unchecked")
 	private Specification<Object> newSpecification(Spec def, String[] argsArray) throws InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException {
     	

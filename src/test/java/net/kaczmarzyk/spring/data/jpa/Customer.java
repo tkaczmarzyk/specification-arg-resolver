@@ -43,6 +43,8 @@ public class Customer {
 
     private String lastName;
 
+    private String nickName;
+    
     @Embedded
     private Address address = new Address();
 
@@ -114,5 +116,18 @@ public class Customer {
 	
 	public void setGold(boolean gold) {
 		this.gold = gold;
+	}
+	
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+	
+	public String getNickName() {
+		return nickName;
+	}
+	
+	@Override
+	public String toString() {
+		return "Customer[" + firstName + " " + lastName + "]";
 	}
 }
