@@ -15,5 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+/**
+ * Marker interface for specifications that work without any
+ *  arguments (i.e. http parameters or constant values) present.
+ * 
+ * @see IsNull
+ * 
+ * @author Tomasz Kaczmarzyk
+ */
 public interface ZeroArgSpecification {
 }
