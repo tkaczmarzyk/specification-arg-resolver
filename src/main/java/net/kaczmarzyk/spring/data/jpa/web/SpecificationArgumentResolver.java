@@ -35,7 +35,7 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 			new OrSpecificationResolver(), new DisjunctionSpecificationResolver(),
 			new AnnotatedSpecInterfaceArgumentResolver());
 
-    @Override
+	@Override
     public Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
             WebDataBinderFactory bider) throws Exception {
         

@@ -69,15 +69,29 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 		
+		@RequestMapping(value = "/anno-iface/customersByLastNameAndFirstName")
+		@ResponseBody
+		public List<Customer> getCustomersWithCustomSimpleSpecExtenedWithParamSimpleSpec(
+				@Spec(path = "firstName", spec = Like.class) LastNameSpec spec) {
+			return customerRepo.findAll(spec);
+		}
+		
 		@RequestMapping(value = "/anno-iface/customers", params = "name")
 		@ResponseBody
-		public List<Customer> getCustomersWithCustomDisjunctionSpec(FullNameSpec spec) {
+		public List<Customer> getCustomersWithCustomOrSpec(FullNameSpec spec) {
+			return customerRepo.findAll(spec);
+		}
+		
+		@RequestMapping(value = "/anno-iface/customers", params = {"name", "address.street"})
+		@ResponseBody
+		public List<Customer> getCustomersWithCustomOrSpecExtendedWithParamSimpleSpec(
+				@Spec(path="address.street", spec = Like.class) FullNameSpec spec) {
 			return customerRepo.findAll(spec);
 		}
 		
 		@RequestMapping(value = "/anno-iface/customers", params = { "lastName", "gender" })
 		@ResponseBody
-		public List<Customer> getCustomersWithCustomConjunctionSpec(NameGenderSpec spec) {
+		public List<Customer> getCustomersWithCustomAndSpec(NameGenderSpec spec) {
 			return customerRepo.findAll(spec);
 		}
 	}
@@ -97,6 +111,54 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 	}
 	
 	@Test
+	public void filtersAccordingToAnnotatedSimpleSpecInterfaceExtendedWithParamSpecificSpec() throws Exception {
+		mockMvc.perform(get("/anno-iface/customersByLastNameAndFirstName")
+				.param("lastName", "im")
+				.param("firstName", "ar")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
+			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+	
+	@Test
+	public void filtersAccordingToParamSpecificSpecIfInterfaceSpecParamIsMissing() throws Exception {
+		mockMvc.perform(get("/anno-iface/customersByLastNameAndFirstName")
+				.param("firstName", "o")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+	
+	@Test
+	public void filtersAccordingInterfaceSpecIfParamSpecParameterIsMissing() throws Exception {
+		mockMvc.perform(get("/anno-iface/customersByLastNameAndFirstName")
+				.param("lastName", "lak")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+			.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+	
+	@Test
+	public void doesNotFilterAtAllIfBothIfaceAndParamParametersAreMissing() throws Exception {
+		mockMvc.perform(get("/anno-iface/customersByLastNameAndFirstName")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
+			.andExpect(jsonPath("$[7]").doesNotExist());
+	}
+	
+	@Test
 	public void doesNoFilteringIfParametersAreMissing() throws Exception {
 		mockMvc.perform(get("/anno-iface/customersByLastName")
 				.accept(MediaType.APPLICATION_JSON))
@@ -105,7 +167,7 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 	}
 	
 	@Test
-	public void filtersAccordingToAnnotatedDisjunctionSpecInterface() throws Exception {
+	public void filtersAccordingToAnnotatedOrSpecInterface() throws Exception {
 		mockMvc.perform(get("/anno-iface/customers")
 				.param("name", "o")
 				.accept(MediaType.APPLICATION_JSON))
@@ -120,7 +182,22 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 	}
 	
 	@Test
-	public void filtersAccordingToAnnotatedConjunctionSpecInterface() throws Exception {
+	public void filtersAccordingToAnnotatedOrSpecInterfaceExtendedWithParamSpec() throws Exception {
+		mockMvc.perform(get("/anno-iface/customers")
+				.param("name", "o")
+				.param("address.street", "green")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
+			.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
+			.andExpect(jsonPath("$[5]").doesNotExist());
+	}
+	
+	@Test
+	public void filtersAccordingToAnnotatedAndSpecInterface() throws Exception {
 		mockMvc.perform(get("/anno-iface/customers")
 				.param("lastName", "im")
 				.param("gender", "FEMALE")
@@ -129,6 +206,6 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
 			.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
 			.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
-			.andExpect(jsonPath("$[4]").doesNotExist());
+			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 }
