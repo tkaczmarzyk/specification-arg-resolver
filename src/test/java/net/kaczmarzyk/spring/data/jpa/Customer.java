@@ -53,7 +53,11 @@ public class Customer {
 
     private Integer weight;
     
+    private int weightInt;
+    private long weightLong;
+    
     private boolean gold;
+    private Boolean goldObj;
     
     public Customer() {
     }
@@ -108,6 +112,8 @@ public class Customer {
 
 	public void setWeight(int weight) {
 		this.weight = weight;
+		this.weightInt = weight;
+		this.weightLong = weight;
 	}
 	
 	public boolean isGold() {
@@ -116,6 +122,7 @@ public class Customer {
 	
 	public void setGold(boolean gold) {
 		this.gold = gold;
+		this.goldObj = gold;
 	}
 	
 	public void setNickName(String nickName) {

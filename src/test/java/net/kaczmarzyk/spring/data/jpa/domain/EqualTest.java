@@ -84,6 +84,15 @@ public class EqualTest extends IntegrationTestBase {
     }
     
     @Test
+    public void filtersByPrimitiveLongValue() {
+    	Equal<Customer> homerId = new Equal<>("weightLong", new String[] { "121" });
+    	
+    	List<Customer> homers = customerRepo.findAll(homerId);
+    	
+    	assertThat(homers).hasSize(1).containsOnly(homerSimpson);
+    }
+    
+    @Test
     public void filtersByIntegerValue() {
     	Equal<Customer> weight121 = new Equal<>("weight", new String[] { "121" });
 
@@ -93,8 +102,26 @@ public class EqualTest extends IntegrationTestBase {
     }
     
     @Test
-    public void filtersByBooleanValue() {
+    public void filtersByPrimitiveIntValue() {
+    	Equal<Customer> weight121 = new Equal<>("weightInt", new String[] { "121" });
+
+    	List<Customer> found = customerRepo.findAll(weight121);
+    	
+    	assertThat(found).hasSize(1).containsOnly(homerSimpson);
+    }
+    
+    @Test
+    public void filtersByPrimitiveBooleanValue() {
     	Equal<Customer> gold = new Equal<>("gold", new String[] { "true" });
+
+    	List<Customer> found = customerRepo.findAll(gold);
+    	
+    	assertThat(found).hasSize(1).containsOnly(joeQuimby);
+    }
+    
+    @Test
+    public void filtersByBooleanValue() {
+    	Equal<Customer> gold = new Equal<>("goldObj", new String[] { "true" });
 
     	List<Customer> found = customerRepo.findAll(gold);
     	
