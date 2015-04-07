@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 import org.junit.Test;
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * @author Tomasz Kaczmarzyk
  */
-public class ConjunctionE2eTest extends E2eTestBase {
+public class AndE2eTest extends E2eTestBase {
 
 	@Controller
 	public static class TestController {
@@ -45,46 +45,26 @@ public class ConjunctionE2eTest extends E2eTestBase {
 		@Autowired
 		CustomerRepository customerRepo;
 		
-		@RequestMapping(value = "/conj/customers", params = {"name", "street"})
+		@RequestMapping(value = "/and/customers")
 		@ResponseBody
-		public Object findByNameAndStreet(
-				@Conjunction(value = @Or({
-							@Spec(path = "firstName", params = "name", spec = Like.class),
-							@Spec(path = "lastName", params = "name", spec = Like.class)
-						}), and = @Spec(path = "address.street", params = "street", spec = Like.class)) Specification<Customer> spec) {
+		public Object findByFirstNameOrGoldenByLastName(
+				@And({
+					@Spec(path = "gold", spec = Equal.class, constVal = "true"),
+					@Spec(path = "lastName", params = "name", spec = LikeIgnoreCase.class)
+				}) Specification<Customer> spec) {
 			
 			return customerRepo.findAll(spec);
 		}
 	}
 	
 	@Test
-	public void findsByStreetAndFullName() throws Exception {
-		mockMvc.perform(get("/conj/customers")
-				.param("street", "Evergreen")
-				.param("name", "e")
+	public void findsByGoldenCusomersByLastName() throws Exception {
+		mockMvc.perform(get("/and/customers")
+				.param("name", "l")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[?(@.firstName=='Moe')]").doesNotExist());
-			
-		mockMvc.perform(get("/conj/customers")
-					.param("street", "")
-					.param("name", "e")
-					.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists());
-		
-		mockMvc.perform(get("/conj/customers")
-				.param("street", "Evergreen")
-				.param("name", "e")
-				.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
-			.andExpect(jsonPath("$[4]").doesNotExist());
+			.andExpect(jsonPath("$[0].firstName").value("Ned"))
+			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 }
