@@ -129,7 +129,7 @@ If the HTTP parameter is not present, the resolved `Specification` will be `null
 
 ### Mapping HTTP parameter name to property path of an entity ###
 
-By default, the expected HTTP parameters is the same as property path. If you want it to differ, you can use `params` attribute of `@Spec`. For example this method:
+By default, the expected HTTP parameter is the same as the property path. If you want them to differ, you can use `params` attribute of `@Spec`. For example this method:
 
 ```java
 @RequestMapping("/customers")
@@ -147,7 +147,7 @@ Combining specs
 
 You can combine the specs described above with `or` & `and`. Remember that by default all of the HTTP params are optional. If you want to make all parts of your query required, you must state that explicitly in `@RequestMapping` annotation (see above).
 
-### Conjunction (@And) ###
+### @And ###
 
 Usage:
 
@@ -167,7 +167,7 @@ would handle requests like `GET http://myhost/customers?registeredBefore=2015-01
 and execute queries like: `select c from Customer c where c.registrationDate < :registeredBefore and c.lastName like '%Simpson%'`.
 
 
-### Disjunction (@Or) ###
+### @Or ###
 
 Usage:
 
@@ -188,12 +188,12 @@ and execute queries like: `select c from Customer c where c.firstName like '%Mo%
 
 ### Nested conjunctions and disjunctions ###
 
-You can put multiple `@And` inside an `@Or` and vice versa by using their `disjunction` and `conjunction` attributes respectively. For example:
+You can put multiple `@And` inside `@Disjunction` or multiple `@Or` inside `@Conjunction`. `@Disjunction` joins nested `@And` queries with 'or' operator. `@Conjunction` joins nested `@Or` queries with 'and' operator. For example:
 
 ```java
 @RequestMapping("/customers")
-public Object findByName(
-        @And(conjunction = {
+public Object findByFullNameAndAddress(
+        @Conjunction({
             @Or(@Spec(path="firstName", params="name", spec=Like.class),
                 @Spec(path="lastName", params="name", spec=Like.class)),
             @Or(@Spec(path="address.street", params="address", spec=Like.class),
@@ -207,6 +207,37 @@ public Object findByName(
 would handle requests like `GET http://myhost/customers?name=Sim&address=Ever`
 
 and execute queries like `select c from Customer c where (c.firstName like '%Sim%' or c.lastName like '%Sim%') and (c.address.street like '%Ever%' or c.address.city like '%Ever%')`.
+
+You must use `@Conjunction` and `@Disjunction` as top level annotations (instead of regular `@And` and `@Or`) because of limitations of Java annotation syntax (it does not allow cycle in annotation references).
+
+You can join nested `@And` and `@Or` queries with simple `@Spec`, for example:
+
+```java
+@RequestMapping("/customers")
+public Object findByFullNameAndAddressAndNickName(
+        @Conjunction(value = {
+            @Or(@Spec(path="firstName", params="name", spec=Like.class),
+                @Spec(path="lastName", params="name", spec=Like.class)),
+            @Or(@Spec(path="address.street", params="address", spec=Like.class),
+                @Spec(path="address.city", params="address", spec=Like.class))
+        }, and = @Spec(path="nickName", spec=Like.class) Specification<Customer> customerSpec) {
+
+    return customerRepo.findAll(customerSpec);
+}
+
+```
+
+```java
+@RequestMapping("/customers")
+public Object findByLastNameOrGoldenByFirstName(
+        @Disjunction(value = {
+            @And(@Spec(path="golden", spec=Equal.class, constVal="true"),
+                @Spec(path="firstName", params="name", spec=Like.class))
+        }, or = @Spec(path="lastName", params="name", spec=Like.class) Specification<Customer> customerSpec) {
+
+    return customerRepo.findAll(customerSpec);
+}
+```
 
 Download binary releases
 ------------------------
