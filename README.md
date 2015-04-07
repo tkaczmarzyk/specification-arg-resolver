@@ -30,9 +30,19 @@ public Iterable<Customer> findByFirstName(
 
 which will result in the follwing JPA query:
 
-```
+```sql
 select c from Customer c where c.firstName like '%Homer%'
 ```
+
+Alternatively you can annotate an interface:
+
+```java
+  @Spec(path="firstName", params="name", spec=Like.class),
+  public interface NameSpec extends Specification<Customer> {
+  }
+```
+
+and then use it as a controller parameter without any further annotations.
 
 ### Enabling spec annotations in your Spring app ###
 
@@ -76,11 +86,11 @@ Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
 Compares an attribute of an entity with the value of a HTTP parameter (exact match). E.g. `(..) where gender = FEMALE`.
 
-Supports multiple data types: numbers, strings, dates, enums.
+Supports multiple data types: numbers, booleans, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=Enum.class)`.
 
-The default date format is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `DateBefore` below).
+The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `DateBefore` below).
 
 ### In ###
 
@@ -90,11 +100,17 @@ HTTP request example:
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-Supports multiple data types: numbers, strings, dates, enums.
+Supports multiple data types: numbers, booleans, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=In.class)`.
 
-The default date format is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `DateBefore` below).
+The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `DateBefore` below).
+
+### IsNull ###
+
+Does not use any HTTP-parameters. Represents static where clause: `path is null`.
+
+Usage: `@Spec(path="activationDate", spec=IsNull.class`.
 
 ### DateBefore ###
 
@@ -141,6 +157,17 @@ public Object findByCity(
 ```
 
 will handle `GET http://myhost/customers?town=Springfield` as `select c from Customer c where city.address like '%Springfield%'`.
+
+Static parts of queries
+-----------------------
+
+If you don't want to bind your Specification to any HTTP parameter, you can use `constVal` attribute of `@Spec`. For example:
+
+```java
+@Spec(path="deleted", spec=Equal.class, constVal="false")
+```
+
+will alwas produce the following: `where deleted = false`. It is often convenient to combine such a static part with dynamic ones using `@And` or `@Or` described below.
 
 Combining specs
 ---------------
@@ -239,6 +266,51 @@ public Object findByLastNameOrGoldenByFirstName(
 }
 ```
 
+Annotated specification interfaces
+----------------------------------
+
+You can annotate a custom interface that extends `Specification`, eg.:
+
+```java
+@Or({
+    @Spec(path="firstName", params="name", spec=Like.class),
+    @Spec(path="lastName", params="name", spec=Like.class)
+})
+public interface FullNameSpec extends Specification<Customer> {
+}
+```
+
+It can be then used as a controller parameter without further annotations, i.e.:
+
+```java
+@RequestMapping("/customers")
+@ResponseBody
+public Object findByFullName(FullNameSpec spec) {
+    return repository.findAll(spec);
+}
+```
+
+When such parameter is additionally annotated, the both specifications (from the interface and the parameter annotations) are joined with 'and' operator. For example you can define a base interface like this:
+
+```java
+@Spec(path="deleted", spec=Equal.class, constVal="false")
+public interface NotDeletedEntitySpec<T> extends Specification<T> {}
+```
+
+and then use it as a foundation for you controller as follows:
+
+```java
+@RequestMapping("/customers")
+@ResponseBody
+public Object findNotDeletedCustomerByLastName(
+            @Spec(path="lastName", spec=Equal.class) NotDeletedEntitySpec<Customer> spec) {
+
+    return repository.findAll(spec);
+}
+```
+
+to execute queries such as `select c from Customer c where c.deleted = false and c.lastName like %Homer%`.
+
 Download binary releases
 ------------------------
 
@@ -248,7 +320,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 
