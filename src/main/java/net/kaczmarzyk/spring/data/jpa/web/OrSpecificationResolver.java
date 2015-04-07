@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.domain.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -29,46 +29,37 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-
 /**
  * @author Tomasz Kaczmarzyk
  */
-class ConjunctionSpecificationResolver implements HandlerMethodArgumentResolver {
+class OrSpecificationResolver implements HandlerMethodArgumentResolver {
 
     private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
-    private OrSpecificationResolver orResolver = new OrSpecificationResolver();
-    
     
     @Override
     public boolean supportsParameter(MethodParameter param) {
-        return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Conjunction.class);
+        return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Or.class);
     }
 
     @Override
     public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-        Conjunction def = param.getParameterAnnotation(Conjunction.class);
+        Or def = param.getParameterAnnotation(Or.class);
         
         return buildSpecification(webRequest, def);
     }
 
-	Specification<Object> buildSpecification(NativeWebRequest webRequest, Conjunction def) {
-		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
-        for (Or innerOrDef : def.value()) {
-        	Specification<Object> innerOr = orResolver.buildSpecification(webRequest, innerOrDef);
-        	if (innerOr != null) {
-        		innerSpecs.add(innerOr);
-        	}
-        }
-        for (Spec innerDef : def.and()) {
-        	Specification<Object> innerSpec = specResolver.buildSpecification(webRequest, innerDef);
-        	if (innerSpec != null) {
-        		innerSpecs.add(innerSpec);
-        	}
+    Specification<Object> buildSpecification(NativeWebRequest webRequest, Or def) {
+        List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
+        for (Spec innerDef : def.value()) {
+            Specification<Object> innerSpec = specResolver.buildSpecification(webRequest, innerDef);
+            if (innerSpec != null) {
+                innerSpecs.add(specResolver.buildSpecification(webRequest, innerDef));
+            }
         }
         
-        return innerSpecs.isEmpty() ? null : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(innerSpecs);
-	}
+        return innerSpecs.isEmpty() ? null : new Disjunction<Object>(innerSpecs);
+    }
 
 }

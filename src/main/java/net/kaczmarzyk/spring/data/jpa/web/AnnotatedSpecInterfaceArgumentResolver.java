@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -41,8 +42,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private SimpleSpecificationResolver simpleResolver = new SimpleSpecificationResolver();
-	private DisjunctionSpecificationResolver disjunctionResolver = new DisjunctionSpecificationResolver();
+	private OrSpecificationResolver disjunctionResolver = new OrSpecificationResolver();
 	private ConjunctionSpecificationResolver conjunctionResolver = new ConjunctionSpecificationResolver();
+	private AndSpecificationResolver andResolver = new AndSpecificationResolver();
 	
 	private List<Class<? extends Annotation>> annotationTypes = Arrays.asList(Spec.class, Or.class, And.class);
 	
@@ -64,8 +66,10 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 			spec = simpleResolver.buildSpecification(webRequest, (Spec) specDef);
 		} else if (specDef instanceof Or) {
 			spec = disjunctionResolver.buildSpecification(webRequest, (Or) specDef);
+		} else if (specDef instanceof Conjunction) {
+			spec = conjunctionResolver.buildSpecification(webRequest, (Conjunction) specDef);
 		} else if (specDef instanceof And) {
-			spec = conjunctionResolver.buildSpecification(webRequest, (And) specDef);
+			spec = andResolver.buildSpecification(webRequest, (And) specDef);
 		} else {
 			throw new IllegalStateException();
 		}

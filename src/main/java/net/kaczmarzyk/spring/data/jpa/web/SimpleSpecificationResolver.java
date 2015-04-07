@@ -114,36 +114,6 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
         }
     }
 
-    boolean canBuildSpecification(NativeWebRequest req, Spec def) {
-    	if (isNotEmptyAndContainsNoEmptyValues(def.constVal())) {
-    		return true;
-    	}
-    	
-        if (def.params().length == 0) {
-            return isNotEmptyAndContainsNoEmptyValues(req.getParameterValues(def.path()));
-        } else {
-            for (String param : def.params()) {
-                if (!isNotEmptyAndContainsNoEmptyValues(req.getParameterValues(param))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    private boolean isNotEmptyAndContainsNoEmptyValues(String[] parameterValues) {
-        if (parameterValues == null || parameterValues.length == 0) {
-            return false;
-        } else {
-            for (String value : parameterValues) {
-                if (StringUtils.isEmpty(value)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
     @Override
     public boolean supportsParameter(MethodParameter param) {
         return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Spec.class);

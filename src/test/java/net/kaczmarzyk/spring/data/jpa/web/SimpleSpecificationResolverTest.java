@@ -16,8 +16,6 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -89,55 +87,21 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void rejectsMissingWebParameter_defaultParameterName() {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-
-        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
-    }
-
-    @Test
-    public void rejectsMissingWebParameter_customParameterName() {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-
-        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
-    }
-
-    @Test
-    public void rejectsSingleEmptyWebParameter_defaultParameterName() {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameterValues("thePath")).thenReturn(new String[] { "" });
-
-        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
-    }
-
-    @Test
-    public void rejectsSingleEmptyWebParameter_customParameterName() {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] { "" });
-
-        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
-    }
-
-    @Test
-    public void rejectsAtLeastOneEmptyWebParameter_defaultParameterName() {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
+    public void returnsNullIfAtLeastOneEmptyWebParameter_defaultParameterName() {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue", "theValue2", "" });
 
-        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
+        assertThat(resolver.buildSpecification(req, param.getParameterAnnotation(Spec.class))).isNull();;
     }
 
     @Test
-    public void rejectsAtLeastOneEmptyWebParameter_customParameterName() {
+    public void returnsNullIfAtLeastOneEmptyWebParameter_customParameterName() {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue", "theValue2", "" });
 
-        assertFalse(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
+        assertThat(resolver.buildSpecification(req, param.getParameterAnnotation(Spec.class))).isNull();;
     }
 
     @Test
@@ -158,7 +122,6 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertTrue(resolver.canBuildSpecification(req, param.getParameterAnnotation(Spec.class)));
         assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }));
     }
     
@@ -193,6 +156,17 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
         assertThat(resolved).isEqualTo(new EqualEnum<>("thePath", new String[] { "theValue", "theValue2" }));
+    }
+    
+    @Test
+    public void skipsEmptyWebParameterValues() {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod3"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] { "value1", "" });
+
+        Specification<Object> resolved = resolver.buildSpecification(req, param.getParameterAnnotation(Spec.class));
+        
+        assertThat(resolved).isEqualTo(new EqualEnum<>("thePath", new String[] { "value1" }));
     }
 
     @Test

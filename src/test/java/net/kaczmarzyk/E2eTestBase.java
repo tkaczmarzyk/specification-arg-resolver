@@ -54,7 +54,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
         lisaSimpson = customer("Lisa", "Simpson").registrationDate(2014, 03, 30).gender(FEMALE).street("Evergreen Terrace").build(em);
         maggieSimpson = customer("Maggie", "Simpson").registrationDate(2014, 03, 31).gender(FEMALE).street("Evergreen Terrace").build(em);
         moeSzyslak = customer("Moe", "Szyslak").registrationDate(2014, 03, 15).gender(MALE).street("Unknown").build(em);
-        nedFlanders = customer("Ned", "Flanders").nickName("Flanders").registrationDate(2014, 03, 25).gender(MALE).street("Evergreen Terrace").build(em);
+        nedFlanders = customer("Ned", "Flanders").golden().nickName("Flanders").registrationDate(2014, 03, 25).gender(MALE).street("Evergreen Terrace").build(em);
         
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }

@@ -26,7 +26,9 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.TYPE })
-public @interface And {
+public @interface Conjunction {
 
-    Spec[] value();
+	Or[] value();
+	
+    Spec[] and() default {};
 }

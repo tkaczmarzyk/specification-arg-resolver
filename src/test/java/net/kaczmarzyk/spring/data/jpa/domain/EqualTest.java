@@ -47,7 +47,7 @@ public class EqualTest extends IntegrationTestBase {
         margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);
         moeSzyslak = customer("Moe", "Szyslak").gender(Gender.MALE).registrationDate(2015, 03, 02).weight(65).build(em);
 
-        joeQuimby = customer("Joe", "Quimby").gold().build(em); // Gender nor Weight nor Registration Date not specifed
+        joeQuimby = customer("Joe", "Quimby").golden().build(em); // Gender nor Weight nor Registration Date not specifed
     }
     
     @Test

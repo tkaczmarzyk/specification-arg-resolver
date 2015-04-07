@@ -66,7 +66,7 @@ public class CustomerBuilder {
 		return this;
 	}
     
-    public CustomerBuilder gold() {
+    public CustomerBuilder golden() {
     	customer.setGold(true);
 		return this;
 	}
