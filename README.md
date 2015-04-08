@@ -28,7 +28,7 @@ public Iterable<Customer> findByFirstName(
 }
 ```
 
-which will result in the follwing JPA query:
+which will result in the following JPA query:
 
 ```sql
 select c from Customer c where c.firstName like '%Homer%'
@@ -108,9 +108,9 @@ The default date format used for temporal fields is `yyyy-MM-dd`. It can be over
 
 ### IsNull ###
 
-Does not use any HTTP-parameters. Represents static where clause: `path is null`.
+Does not use any HTTP-parameters. Represents static `where` clause: `path is null`.
 
-Usage: `@Spec(path="activationDate", spec=IsNull.class`.
+Usage: `@Spec(path="activationDate", spec=IsNull.class)`.
 
 ### DateBefore ###
 
