@@ -35,10 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  *
- * @author sutkowski
+ * @author Kamil Sutkowski
  */
-public class DateInclusiveE2eTest
-        extends E2eTestBase {
+public class DateInclusiveE2eTest extends E2eTestBase {
 
     @Controller
     public static class DateInclusiveSpecsController {
@@ -46,8 +45,7 @@ public class DateInclusiveE2eTest
         @Autowired
         CustomerRepository customerRepo;
 
-        @RequestMapping(value = "/customersInclusive",
-                        params = "registeredBefore")
+        @RequestMapping(value = "/customersInclusive", params = "registeredBefore")
         @ResponseBody
         public Object findCustomersRegisteredBefore(
                 @Spec(path = "registrationDate",
@@ -58,8 +56,7 @@ public class DateInclusiveE2eTest
             return customerRepo.findAll(spec);
         }
 
-        @RequestMapping(value = "/customersInclusive",
-                        params = "registeredAfter")
+        @RequestMapping(value = "/customersInclusive", params = "registeredAfter")
         @ResponseBody
         public Object findCustomersRegisteredAfter(
                 @Spec(path = "registrationDate",
@@ -69,8 +66,7 @@ public class DateInclusiveE2eTest
             return customerRepo.findAll(spec);
         }
 
-        @RequestMapping(value = "/customersInclusive",
-                        params = {"registeredBefore", "registeredAfter"})
+        @RequestMapping(value = "/customersInclusive", params = {"registeredBefore", "registeredAfter"})
         @ResponseBody
         public Object findCustomersRegisteredBetween(
                 @And({
@@ -86,8 +82,7 @@ public class DateInclusiveE2eTest
     }
 
     @Test
-    public void findsByDateBeforeWithCustomDateFormat()
-            throws Exception {
+    public void findsByDateBeforeWithCustomDateFormat() throws Exception {
         mockMvc.perform(get("/customersInclusive")
                 .param("registeredBefore", "15-03-2014")
                 .accept(MediaType.APPLICATION_JSON))
@@ -99,8 +94,7 @@ public class DateInclusiveE2eTest
     }
 
     @Test
-    public void findsByDateBetween()
-            throws Exception {
+    public void findsByDateBetween() throws Exception {
         mockMvc.perform(get("/customersInclusive")
                 .param("registeredAfter", "2014-03-20")
                 .param("registeredBefore", "2014-03-30")
@@ -115,8 +109,7 @@ public class DateInclusiveE2eTest
     }
 
     @Test
-    public void findsByDateAfter()
-            throws Exception {
+    public void findsByDateAfter() throws Exception {
         mockMvc.perform(get("/customersInclusive")
                 .param("registeredAfter", "2014-03-30")
                 .accept(MediaType.APPLICATION_JSON))

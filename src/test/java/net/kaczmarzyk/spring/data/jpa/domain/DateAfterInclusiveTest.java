@@ -25,11 +25,11 @@ import org.junit.Test;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 /**
- * @author sutkowski
+ * @author Kamil Sutkowski
  */
-public class DateAfterInclusiveTest
-        extends IntegrationTestBase {
+public class DateAfterInclusiveTest extends IntegrationTestBase {
 
     Customer homerSimpson;
     Customer margeSimpson;
@@ -43,8 +43,7 @@ public class DateAfterInclusiveTest
     }
 
     @Test
-    public void filtersByRegistrationDateWithDefaultDateFormat()
-            throws ParseException {
+    public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
         DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>("registrationDate", "2014-03-13");
 
         List<Customer> result = customerRepo.findAll(after13th);
@@ -68,9 +67,9 @@ public class DateAfterInclusiveTest
     }
 
     @Test
-    public void filtersByRegistrationDateWithCustomDateFormat()
-            throws ParseException {
-        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>("registrationDate", new String[]{"13-03-2014"}, new String[]{"dd-MM-yyyy"});
+    public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
+        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>("registrationDate", new String[] { "13-03-2014" },
+                new String[] { "dd-MM-yyyy" });
 
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)
@@ -79,20 +78,17 @@ public class DateAfterInclusiveTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void rejectsInvalidNumberOfArguments()
-            throws ParseException {
+    public void rejectsInvalidNumberOfArguments() throws ParseException {
         new DateAfterInclusive<>("path", "2014-03-10", "2014-03-11");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void rejectsMissingArgument()
-            throws ParseException {
-        new DateAfterInclusive<>("path", new String[]{});
+    public void rejectsMissingArgument() throws ParseException {
+        new DateAfterInclusive<>("path", new String[] {});
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void rejectsInvalidNumberOfConfigArguments()
-            throws ParseException {
-        new DateAfterInclusive<>("path", new String[]{"2014-03-10"}, new String[]{"yyyy-MM-dd", "MM-dd-yyyy"});
+    public void rejectsInvalidNumberOfConfigArguments() throws ParseException {
+        new DateAfterInclusive<>("path", new String[] { "2014-03-10" }, new String[] { "yyyy-MM-dd", "MM-dd-yyyy" });
     }
 }

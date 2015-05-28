@@ -26,6 +26,7 @@ import javax.persistence.criteria.Root;
  * Filters with {@code path <= date} where-clause.
  *
  * @author Tomasz Kaczmarzyk
+ * @author Kamil Sutkowski
  */
 public class DateBeforeInclusive<T>
         extends DateSpecification<T> {

@@ -26,10 +26,9 @@ import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author sutkowski
+ * @author Kamil Sutkowski
  */
-public class DateBeforeInclusiveTest
-        extends IntegrationTestBase {
+public class DateBeforeInclusiveTest extends IntegrationTestBase {
 
     Customer homerSimpson;
     Customer margeSimpson;
@@ -43,8 +42,7 @@ public class DateBeforeInclusiveTest
     }
 
     @Test
-    public void filtersByRegistrationDateWithDefaultDateFormat()
-            throws ParseException {
+    public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
         DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>("registrationDate", "2014-03-12");
 
         List<Customer> result = customerRepo.findAll(before12th);
@@ -61,8 +59,7 @@ public class DateBeforeInclusiveTest
     }
 
     @Test
-    public void filtersByRegistrationDateWithCustomDateFormat()
-            throws ParseException {
+    public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
         DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>("registrationDate", new String[]{"12-03-2014"}, new String[]{"dd-MM-yyyy"});
 
         List<Customer> result = customerRepo.findAll(before12th);
@@ -72,20 +69,17 @@ public class DateBeforeInclusiveTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void rejectsInvalidNumberOfArguments()
-            throws ParseException {
+    public void rejectsInvalidNumberOfArguments() throws ParseException {
         new DateBeforeInclusive<>("path", "2014-03-10", "2014-03-11");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void rejectsMissingArgument()
-            throws ParseException {
+    public void rejectsMissingArgument() throws ParseException {
         new DateBeforeInclusive<>("path", new String[]{});
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void rejectsInvalidNumberOfConfigArguments()
-            throws ParseException {
+    public void rejectsInvalidNumberOfConfigArguments() throws ParseException {
         new DateBeforeInclusive<>("path", new String[]{"2014-03-10"}, new String[]{"yyyy-MM-dd", "MM-dd-yyyy"});
     }
 }
