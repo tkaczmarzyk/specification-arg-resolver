@@ -37,7 +37,7 @@ select c from Customer c where c.firstName like '%Homer%'
 Alternatively you can annotate an interface:
 
 ```java
-  @Spec(path="firstName", params="name", spec=Like.class),
+  @Spec(path="firstName", params="name", spec=Like.class)
   public interface NameSpec extends Specification<Customer> {
   }
 ```
@@ -181,9 +181,9 @@ Usage:
 ```java
 @RequestMapping("/customers")
 public Object findByName(
-        @And(
+        @And({
             @Spec(path="registrationDate", params="registeredBefore", spec=DateBefore.class),
-            @Spec(path="lastName", spec=Like.class)) Specification<Customer> customerSpec) {
+            @Spec(path="lastName", spec=Like.class)}) Specification<Customer> customerSpec) {
 
     return customerRepo.findAll(customerSpec);
 }
@@ -258,8 +258,8 @@ public Object findByFullNameAndAddressAndNickName(
 @RequestMapping("/customers")
 public Object findByLastNameOrGoldenByFirstName(
         @Disjunction(value = {
-            @And(@Spec(path="golden", spec=Equal.class, constVal="true"),
-                @Spec(path="firstName", params="name", spec=Like.class))
+            @And({@Spec(path="golden", spec=Equal.class, constVal="true"),
+                @Spec(path="firstName", params="name", spec=Like.class)})
         }, or = @Spec(path="lastName", params="name", spec=Like.class) Specification<Customer> customerSpec) {
 
     return customerRepo.findAll(customerSpec);
