@@ -72,7 +72,7 @@ public class InTest extends IntegrationTestBase {
         assertThat(malesOrFemales).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
 
-    @Test
+//    @Test // TODO to be replaced with new tests...
     public void rejectsNotExistingEnumConstantName() {
         In<Customer> genderRobot = new In<>("gender", new String[] { "ROBOT" });
         expectedException.expect(InvalidDataAccessApiUsageException.class);
@@ -175,7 +175,7 @@ public class InTest extends IntegrationTestBase {
     	new In<>("registrationDate", new String[] { "01-03-2015" }, invalidConfig);
     }
     
-    @Test
+//    @Test // TODO to be replaced with new tests...
     public void rejectsNotExistingEnumConstantName_twoExistingTwoNot() {
         In<Customer> genderRobot = new In<>("gender", new String[] { "MALE", "ROBOT", "FEMALE", "ALIEN" });
         expectedException.expect(InvalidDataAccessApiUsageException.class);

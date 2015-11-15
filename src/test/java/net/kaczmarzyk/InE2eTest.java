@@ -16,6 +16,7 @@
 package net.kaczmarzyk;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -84,7 +85,7 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[1].firstName").value("Marge"))
 			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
-	
+
 	@Test
 	public void findsByListOfAllowedLongValues() throws Exception {
 		mockMvc.perform(get("/customers")
@@ -96,7 +97,7 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[1].firstName").value("Moe"))
 			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
-	
+
 	@Test
 	public void findsByListOfAllowedDateValues() throws Exception {
 		mockMvc.perform(get("/customers")
@@ -108,7 +109,7 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[1].firstName").value("Maggie"))
 			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
-	
+
 	@Test
 	public void findsByListOfAllowedEnumValues() throws Exception {
 		mockMvc.perform(get("/customers")
@@ -124,5 +125,16 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[5].firstName").value("Moe"))
 			.andExpect(jsonPath("$[6].firstName").value("Ned"))
 			.andExpect(jsonPath("$[7]").doesNotExist());
+	}
+	
+	@Test
+	public void ignoresUnparseableIntsWhenFilteringOnIntProperty() throws Exception {
+	    mockMvc.perform(get("/customers")
+                .param("idIn", homerSimpson.getId().toString(), "abc")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$[0].firstName").value("Homer"))
+            .andExpect(jsonPath("$[1]").doesNotExist());
 	}
 }

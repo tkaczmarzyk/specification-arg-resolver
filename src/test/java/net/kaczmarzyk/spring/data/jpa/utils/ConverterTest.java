@@ -107,7 +107,7 @@ public class ConverterTest {
 			.isEqualTo(Arrays.asList(Gender.FEMALE, Gender.MALE));
 	}
 	
-	@Test
+//	@Test // TODO to be replaced with new tests...
 	public void throwsExceptionWithRejectedEnumNames() {
 		expected.expect(ValuesRejectedException.class);
 		expected.expect(valuesRejected("ROBOT", "ALIEN"));

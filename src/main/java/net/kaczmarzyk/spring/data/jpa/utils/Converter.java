@@ -89,11 +89,21 @@ public class Converter {
 		}
 		else if (expectedClass.isAssignableFrom(Boolean.class) || expectedClass.isAssignableFrom(boolean.class)) {
 			return (T) convertToBoolean(value);
+		} else if (expectedClass.isAssignableFrom(Integer.class) || expectedClass.isAssignableFrom(Long.class)) {
+		    return (T) convertToLong(value);
 		}
 		return (T) value;
 	}
 	
-	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
+	private Long convertToLong(String value) {
+        try {
+            return Long.valueOf(value);
+        } catch (NumberFormatException e) {
+            throw new ValueRejectedException(value, "number format exception");
+        }
+    }
+
+    public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
 		if (expectedClass == String.class) {
 			return (List<T>) values;
 		}
@@ -108,9 +118,6 @@ public class Converter {
 				}
 				rejected.add(e.getRejectedValue());
 			}
-		}
-		if (rejected != null) {
-			throw new ValuesRejectedException(rejected, "rejected values " + rejected + " for class " + expectedClass.getSimpleName());
 		}
 		return result;
 	}
