@@ -15,12 +15,17 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -58,6 +63,10 @@ public class Customer {
     
     private boolean gold;
     private Boolean goldObj;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private Collection<Order> orders;
+    
     
     public Customer() {
     }
@@ -131,6 +140,13 @@ public class Customer {
 	
 	public String getNickName() {
 		return nickName;
+	}
+
+	public Collection<Order> getOrders() {
+	    if (orders == null) {
+	        orders = new ArrayList<>();
+	    }
+	    return orders;
 	}
 	
 	@Override

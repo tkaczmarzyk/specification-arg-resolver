@@ -70,6 +70,13 @@ public class CustomerBuilder {
     	customer.setGold(true);
 		return this;
 	}
+
+    public CustomerBuilder orders(String... orderItems) {
+        for (String orderItem : orderItems) {
+            new Order(customer, orderItem);
+        }
+        return this;
+    }
     
     public Customer build(EntityManager em) {
         em.persist(customer);

@@ -16,7 +16,6 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,10 +25,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
-import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -71,7 +67,7 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		
 		Enhancer enhancer = new Enhancer();
 		enhancer.setInterfaces(new Class[] { parameter.getParameterType() });
-		enhancer.setCallback(delegateTo(spec));
+		enhancer.setCallback(EnhancerUtil.delegateTo(spec));
 		
 		return enhancer.create();
 	}
@@ -129,17 +125,4 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		}
 		return null;
 	}
-	
-	private Callback delegateTo(final Specification<Object> targetSpec) {
-		return new MethodInterceptor() {
-			@Override
-			public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-				if (method.getName().equals("toPredicate")) {
-					return proxy.invoke(targetSpec, args);
-				}
-				return proxy.invoke(obj, args);
-			}
-		};
-	}
-
 }

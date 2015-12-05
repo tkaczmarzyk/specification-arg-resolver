@@ -30,22 +30,30 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
-	private List<HandlerMethodArgumentResolver> delegates = Arrays.asList(new SimpleSpecificationResolver(),
-			new AndSpecificationResolver(), new ConjunctionSpecificationResolver(), 
+	private List<HandlerMethodArgumentResolver> delegates = Arrays.asList(
+	        new JoinFetchSpecificationResolver(this),
+	        new SimpleSpecificationResolver(),
+			new AndSpecificationResolver(), new ConjunctionSpecificationResolver(),
 			new OrSpecificationResolver(), new DisjunctionSpecificationResolver(),
 			new AnnotatedSpecInterfaceArgumentResolver());
 
-	@Override
-    public Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
-            WebDataBinderFactory bider) throws Exception {
-        
-        for (HandlerMethodArgumentResolver delegate : delegates) {
-            if (delegate.supportsParameter(param)) {
+	Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
+            WebDataBinderFactory bider, HandlerMethodArgumentResolver recursiveCaller) throws Exception {
+	    
+	    for (HandlerMethodArgumentResolver delegate : delegates) {
+            if (delegate != recursiveCaller && delegate.supportsParameter(param)) {
                 return delegate.resolveArgument(param, mav, req, bider);
             }
         }
         
         return null;
+	}
+	
+	@Override
+    public Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
+            WebDataBinderFactory bider) throws Exception {
+        
+        return resolveArgument(param, mav, req, bider, null);
     }
 
     @Override
