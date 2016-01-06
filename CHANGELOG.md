@@ -1,3 +1,13 @@
+v0.7.0
+======
+
+* added `@JoinFetch` and `@Joins` (see README.md for the details)
+
+v0.6.1
+======
+
+* added date inclusive specs
+
 v0.6.0
 ======
 

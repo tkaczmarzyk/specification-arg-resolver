@@ -136,6 +136,39 @@ It requires 2 HTTP parameters (for lower and upper bound). You should use `param
 
 You can configure the date pattern as with `DateBefore` described above.
 
+Join fetch
+----------
+
+You can use `@JoinFetch` annotation to specify paths to perform fetch join on. For example:
+
+```java
+@RequestMapping("/customers")
+public Object findByCityFetchOrdersAndAddresses(
+        @JoinFetch(paths = { "orders", "addresses" })
+        @Spec(path="address.city", params="town", spec=Like.class) Specification<Customer> customersByCitySpec) {
+
+    return customerRepo.findAll(customersByCitySpec);
+}
+```
+
+The default join type is `LEFT`. You can use `joinType` attribute of the annotation to specify different value. You can specify multiple different joins with container annotation `@Joins`, for example:
+
+```java
+@RequestMapping("/customers")
+public Object findByCityFetchOrdersAndAddresses(
+        @Joins({
+            @JoinFetch(paths = "orders")
+            @JoinFetch(paths = "addresses", joinType = JoinType.INNER)
+        })
+        @Spec(path="address.city", params="town", spec=Like.class) Specification<Customer> customersByCitySpec) {
+
+    return customerRepo.findAll(customersByCitySpec);
+}
+```
+
+You can use join annotations with custom specification interfaces (see below).
+
+
 Advanced HTTP parameter handling
 --------------------------------
 
