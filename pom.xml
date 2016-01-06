@@ -141,7 +141,7 @@
 					<useDefaultExcludes>true</useDefaultExcludes>
 					<useDefaultMapping>true</useDefaultMapping>
 					<properties>
-						<year>${project.inceptionYear}-2015</year>
+						<year>${project.inceptionYear}-2016</year>
 					</properties>
 					<encoding>UTF-8</encoding>
 				</configuration>

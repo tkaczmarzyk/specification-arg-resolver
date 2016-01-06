@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,9 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Customer customer2;
+    
     
     Order() {
     }
@@ -43,5 +46,7 @@ public class Order {
         this.itemName = itemName;
         this.customer = customer;
         customer.getOrders().add(this);
+        this.customer2 = customer;
+        customer.getOrders2().add(this);
     }
 }

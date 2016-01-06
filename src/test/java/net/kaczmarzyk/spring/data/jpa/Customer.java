@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package net.kaczmarzyk.spring.data.jpa;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -65,7 +67,10 @@ public class Customer {
     private Boolean goldObj;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private Collection<Order> orders;
+    private Set<Order> orders;
+    
+    @OneToMany(mappedBy = "customer2", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private Set<Order> orders2;
     
     
     public Customer() {
@@ -144,9 +149,16 @@ public class Customer {
 
 	public Collection<Order> getOrders() {
 	    if (orders == null) {
-	        orders = new ArrayList<>();
+	        orders = new HashSet<>();
 	    }
 	    return orders;
+	}
+	
+	public Collection<Order> getOrders2() {
+		if (orders2 == null) {
+			orders2 = new HashSet<>();
+		}
+		return orders2;
 	}
 	
 	@Override

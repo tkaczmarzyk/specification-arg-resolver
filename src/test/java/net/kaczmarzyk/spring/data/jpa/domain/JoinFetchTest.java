@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,23 @@ public class JoinFetchTest extends IntegrationTestBase {
         
         for (Customer customer : customers) {
             assertTrue(Hibernate.isInitialized(customer.getOrders()));
+        }
+    }
+    
+    @Test
+    public void performsTwoFetches() {
+    	JoinFetch<Customer> spec1 = new JoinFetch<Customer>(new String[] { "orders" }, JoinType.LEFT);
+    	JoinFetch<Customer> spec2 = new JoinFetch<Customer>(new String[] { "orders2" }, JoinType.INNER);
+        
+    	Conjunction<Customer> spec = new Conjunction<Customer>(spec1, spec2);
+    	
+        List<Customer> customers = customerRepo.findAll(spec);
+        
+        assertThat(customers).isNotEmpty();
+        
+        for (Customer customer : customers) {
+        	assertTrue(Hibernate.isInitialized(customer.getOrders()));
+        	assertTrue(Hibernate.isInitialized(customer.getOrders2()));
         }
     }
 

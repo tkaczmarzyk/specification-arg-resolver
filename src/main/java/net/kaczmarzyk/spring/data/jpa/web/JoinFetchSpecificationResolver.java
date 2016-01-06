@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.MethodParameter;
@@ -44,8 +48,12 @@ class JoinFetchSpecificationResolver implements HandlerMethodArgumentResolver {
     public boolean supportsParameter(MethodParameter param) {
         Class<?> paramType = param.getParameterType();
         return paramType.isInterface() && Specification.class.isAssignableFrom(paramType) &&
-                (param.hasParameterAnnotation(JoinFetch.class) || paramType.isAnnotationPresent(JoinFetch.class));
+                (isAnnotatedWith(JoinFetch.class, param) || isAnnotatedWith(Joins.class, param));
     }
+
+	private boolean isAnnotatedWith(Class<? extends Annotation> annotation, MethodParameter param) {
+		return param.hasParameterAnnotation(annotation) || param.getParameterType().isAnnotationPresent(annotation);
+	}
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
@@ -66,15 +74,29 @@ class JoinFetchSpecificationResolver implements HandlerMethodArgumentResolver {
     }
 
     private Specification<Object> resolveFetchSpec(MethodParameter parameter) {
-        JoinFetch fetchDef = getFetchDef(parameter);
-        
-        return new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(fetchDef.paths(), fetchDef.joinType());
+    	if (isAnnotatedWith(JoinFetch.class, parameter)) {
+    		JoinFetch fetchDef = getFetchDef(JoinFetch.class, parameter);
+    		return newJoinFetch(fetchDef);
+    	} else if (isAnnotatedWith(Joins.class, parameter)) {
+    		Joins joinsDef = getFetchDef(Joins.class, parameter);
+    		Collection<Specification<Object>> joins = new ArrayList<>();
+    		for (JoinFetch fetchDef : joinsDef.value()) {
+    			joins.add(newJoinFetch(fetchDef));
+    		}
+    		return new Conjunction<Object>(joins);
+    	} else {
+    		throw new IllegalArgumentException("either @JoinFetch or @Joins expected!");
+    	}
     }
 
-    private JoinFetch getFetchDef(MethodParameter parameter) {
-        JoinFetch fetchDef = parameter.getParameterAnnotation(JoinFetch.class);
+	private net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object> newJoinFetch(JoinFetch fetchDef) {
+		return new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(fetchDef.paths(), fetchDef.joinType());
+	}
+
+    private <A extends Annotation> A getFetchDef(Class<A> annotation, MethodParameter parameter) {
+        A fetchDef = parameter.getParameterAnnotation(annotation);
         if (fetchDef == null) {
-            fetchDef = parameter.getParameterType().getAnnotation(JoinFetch.class);
+            fetchDef = parameter.getParameterType().getAnnotation(annotation);
         }
         return fetchDef;
     }

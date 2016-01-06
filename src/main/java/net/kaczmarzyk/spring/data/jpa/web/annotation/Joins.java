@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.TYPE })
-public @interface Or {
+public @interface Joins {
 
-	Spec[] value();
+	JoinFetch[] value();
 }
