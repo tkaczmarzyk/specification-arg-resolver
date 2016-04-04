@@ -20,14 +20,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 
 /**
@@ -179,5 +180,19 @@ public class EqualTest extends IntegrationTestBase {
     	expectedException.expect(IllegalArgumentException.class);
     	
     	new Equal<>("registrationDate", new String[] { "01-03-2015" }, invalidConfig);
+    }
+    
+    @Test
+    public void filtersByDouble() {
+    	Equal<Customer> homerId = new Equal<>("weightDouble", new String[] { String.valueOf(homerSimpson.getWeightDouble()) });
+    	assertFilterMembers(homerId, homerSimpson);
+    }
+    
+    @Ignore
+    @Test
+    // this test should work, but fails, probabaly because of how floats are compared by the underlying database.
+    public void filtersByFloat() {
+    	Equal<Customer> homerId = new Equal<>("weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) });
+    	assertFilterMembers(homerId, homerSimpson);
     }
 }

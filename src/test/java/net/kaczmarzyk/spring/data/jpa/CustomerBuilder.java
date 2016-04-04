@@ -70,6 +70,11 @@ public class CustomerBuilder {
     	customer.setGold(true);
 		return this;
 	}
+    
+    public CustomerBuilder notGolden() {
+    	customer.setGold(false);
+		return this;
+	}
 
     public CustomerBuilder orders(String... orderItems) {
         for (String orderItem : orderItems) {
