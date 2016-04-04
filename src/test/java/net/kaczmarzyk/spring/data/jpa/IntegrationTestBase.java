@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -22,6 +24,7 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -36,6 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class IntegrationTestBase {
 
+	private static final Customer[] EMPTY_SET = new Customer[]{};
+
 	@Rule
     public ExpectedException expectedException = ExpectedException.none();
 	
@@ -44,4 +49,12 @@ public abstract class IntegrationTestBase {
     
     @PersistenceContext
     protected EntityManager em;
+    
+    protected void assertFilterMembers(Specification<Customer> spec, Customer... expectedMembers) {
+    	assertThat(customerRepo.findAll(spec)).hasSize(expectedMembers.length).containsOnly(expectedMembers);
+    }
+    
+    protected void assertFilterEmpty(Specification<Customer> spec) {
+    	assertFilterMembers(spec, EMPTY_SET);
+    }
 }

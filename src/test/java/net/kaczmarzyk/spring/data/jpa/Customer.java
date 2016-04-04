@@ -24,6 +24,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -45,6 +47,9 @@ public class Customer {
     private Long id;
 
     private Gender gender;
+    
+    @Enumerated(EnumType.STRING)
+    private Gender genderAsString;
 
     private String firstName;
 
@@ -62,6 +67,8 @@ public class Customer {
     
     private int weightInt;
     private long weightLong;
+    private float weightFloat;
+    private Double weightDouble;
     
     private boolean gold;
     private Boolean goldObj;
@@ -80,6 +87,7 @@ public class Customer {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
+        this.genderAsString = gender;
         this.registrationDate = registrationDate;
         this.address.setStreet(street);
     }
@@ -106,6 +114,7 @@ public class Customer {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+        this.genderAsString = gender;
     }
 
     public Date getRegistrationDate() {
@@ -124,10 +133,17 @@ public class Customer {
         this.registrationDate = registrationDate;
     }
 
+    /**
+     * 
+     * @param weight
+     * NOTE: weightFloat has 0.1 added, weightDouble has 0.2 added
+     */
 	public void setWeight(int weight) {
 		this.weight = weight;
 		this.weightInt = weight;
 		this.weightLong = weight;
+		this.weightFloat = weight + 0.1f;
+		this.weightDouble = weight + 0.2;
 	}
 	
 	public boolean isGold() {
@@ -165,4 +181,33 @@ public class Customer {
 	public String toString() {
 		return "Customer[" + firstName + " " + lastName + "]";
 	}
+
+	public Gender getGenderAsString() {
+		return genderAsString;
+	}
+
+	public Integer getWeight() {
+		return weight;
+	}
+
+	public int getWeightInt() {
+		return weightInt;
+	}
+
+	public long getWeightLong() {
+		return weightLong;
+	}
+
+	public float getWeightFloat() {
+		return weightFloat;
+	}
+
+	public Double getWeightDouble() {
+		return weightDouble;
+	}
+
+	public Boolean getGoldObj() {
+		return goldObj;
+	}
+	
 }
