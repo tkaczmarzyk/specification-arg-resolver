@@ -24,11 +24,12 @@ import javax.persistence.criteria.Root;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 /**
- * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
+ * <p>Base class for Comparable comparisons..</p>
  * 
  * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  * 
  * @author Tomasz Kaczmarzyk
+ * @author TP Diffenbach
  */
 public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 
@@ -57,7 +58,7 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		Expression<?> rootPath = path(root);
 		Class<?> typeOnPath = rootPath.getJavaType();
-		//return cb.equal(path(root), converter.convert(comparedTo, typeOnPath));
+
 		return this.makePredicate(cb, (Expression<? extends Comparable<?>>) rootPath, 
 				(Comparable) converter.convert(comparedTo, typeOnPath));
 		
