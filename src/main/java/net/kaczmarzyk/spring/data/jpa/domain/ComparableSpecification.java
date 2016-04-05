@@ -24,11 +24,12 @@ import javax.persistence.criteria.Root;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 /**
- * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
+ * <p>Base class for Comparable comparisons..</p>
  * 
  * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  * 
  * @author Tomasz Kaczmarzyk
+ * @author TP Diffenbach
  */
 public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 
@@ -57,17 +58,19 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		Expression<?> rootPath = path(root);
 		Class<?> typeOnPath = rootPath.getJavaType();
-		//return cb.equal(path(root), converter.convert(comparedTo, typeOnPath));
-		return this.makePredicate(cb, (Expression<? extends Comparable<?>>) rootPath, 
+
+		return makePredicate(cb, (Expression<? extends Comparable<?>>) rootPath, 
 				(Comparable) converter.convert(comparedTo, typeOnPath));
 		
-		// the line below actually works (!), if Y doesn't need to extend Comparable. --tpd
-		//return this.makePredicate(cb, rootPath.as(typeOnPath.asSubclass(typeOnPath)), converter.convert(comparedTo, typeOnPath));
+		//  the line below actually works (!), if Y doesn't need to extend Comparable. --tpd
+		//return this.makePredicate(cb, rootPath.as(typeOnPath.asSubclass(typeOnPath)), 
+		//		converter.convert(comparedTo, typeOnPath));
 		
-		// the line below DOES work, but using the casts above is probably more efficient.
+		//  the line below DOES work, but using the casts above is probably more efficient.
 		//return this.makePredicate(cb, rootPath.as(typeOnPath.asSubclass(Comparable.class)), 
 		//		(Comparable) converter.convert(comparedTo, typeOnPath));
 	}
 	
-	protected abstract <Y extends Comparable<? super Y>> Predicate makePredicate(CriteriaBuilder cb, Expression<? extends Y> x, Y y);
+	protected abstract <Y extends Comparable<? super Y>> 
+		Predicate makePredicate(CriteriaBuilder cb, Expression<? extends Y> x, Y y);
 }
