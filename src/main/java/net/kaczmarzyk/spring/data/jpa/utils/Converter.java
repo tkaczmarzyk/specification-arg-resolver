@@ -134,8 +134,7 @@ public class Converter {
 	
 	public Date convertToDate(String value) {
 		try {
-			Date d = new SimpleDateFormat(dateFormat).parse(value);
-			return d;
+			return new SimpleDateFormat(dateFormat).parse(value);
 		} catch (ParseException e) {
 			throw new IllegalArgumentException(e);
 		}
