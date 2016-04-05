@@ -59,16 +59,18 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 		Expression<?> rootPath = path(root);
 		Class<?> typeOnPath = rootPath.getJavaType();
 
-		return this.makePredicate(cb, (Expression<? extends Comparable<?>>) rootPath, 
+		return makePredicate(cb, (Expression<? extends Comparable<?>>) rootPath, 
 				(Comparable) converter.convert(comparedTo, typeOnPath));
 		
-		// the line below actually works (!), if Y doesn't need to extend Comparable. --tpd
-		//return this.makePredicate(cb, rootPath.as(typeOnPath.asSubclass(typeOnPath)), converter.convert(comparedTo, typeOnPath));
+		//  the line below actually works (!), if Y doesn't need to extend Comparable. --tpd
+		//return this.makePredicate(cb, rootPath.as(typeOnPath.asSubclass(typeOnPath)), 
+		//		converter.convert(comparedTo, typeOnPath));
 		
-		// the line below DOES work, but using the casts above is probably more efficient.
+		//  the line below DOES work, but using the casts above is probably more efficient.
 		//return this.makePredicate(cb, rootPath.as(typeOnPath.asSubclass(Comparable.class)), 
 		//		(Comparable) converter.convert(comparedTo, typeOnPath));
 	}
 	
-	protected abstract <Y extends Comparable<? super Y>> Predicate makePredicate(CriteriaBuilder cb, Expression<? extends Y> x, Y y);
+	protected abstract <Y extends Comparable<? super Y>> 
+		Predicate makePredicate(CriteriaBuilder cb, Expression<? extends Y> x, Y y);
 }

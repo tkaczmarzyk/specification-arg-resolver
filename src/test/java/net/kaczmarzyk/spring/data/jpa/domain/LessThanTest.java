@@ -16,7 +16,6 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
@@ -24,64 +23,64 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 
 
 /**
- * @author Tomasz Kaczmarzyk
- * @author Maciej Szewczyszyn
+ * Tests for the LessThan Specification.
+ * 
  * @author TP Diffenbach
  */
 public class LessThanTest extends ComparableTestBase {
 
 	@Override
-    protected Specification<Customer> make(String path, String[] value, String[] config) {
+    protected Specification<Customer> makeUUT(String path, String[] value, String[] config) {
     	return new LessThan<Customer>(path, value, config);
     }
     
         
     @Test
     public void filtersByEnumValue() {
-        assertFilterMembers("gender", "MALE");
-        assertFilterMembers("gender", "FEMALE", homerSimpson, moeSzyslak);
-        assertFilterMembers("gender", "OTHER", homerSimpson, moeSzyslak, margeSimpson);
+        assertFilterContainsOnlyExpectedMembers("gender", "MALE");
+        assertFilterContainsOnlyExpectedMembers("gender", "FEMALE", homerSimpson, moeSzyslak);
+        assertFilterContainsOnlyExpectedMembers("gender", "OTHER", homerSimpson, moeSzyslak, margeSimpson);
     }
     
     @Test
     public void filtersByEnumString() {
-        assertFilterMembers("genderAsString", "MALE", margeSimpson);
-        assertFilterMembers("genderAsString", "FEMALE");
-        assertFilterMembers("genderAsString", "OTHER", homerSimpson, moeSzyslak, margeSimpson);
+        assertFilterContainsOnlyExpectedMembers("genderAsString", "MALE", margeSimpson);
+        assertFilterContainsOnlyExpectedMembers("genderAsString", "FEMALE");
+        assertFilterContainsOnlyExpectedMembers("genderAsString", "OTHER", homerSimpson, moeSzyslak, margeSimpson);
     }
     
     @Test
     public void filtersByLongValue() {
-    	assertFilterMembers("id", homerSimpson.getId().toString());
-    	assertFilterMembers("id", moeSzyslak.getId().toString(), homerSimpson, margeSimpson);
+    	assertFilterContainsOnlyExpectedMembers("id", homerSimpson.getId().toString());
+    	assertFilterContainsOnlyExpectedMembers("id", moeSzyslak.getId().toString(), homerSimpson, margeSimpson);
     }
     
     @Test
     public void filtersByPrimitiveLongValue() {
-    	assertFilterMembers("weightLong", String.valueOf(margeSimpson.getWeightLong()), joeQuimby); // Joe's null maps to zero for primitive
+    	assertFilterContainsOnlyExpectedMembers("weightLong", String.valueOf(margeSimpson.getWeightLong()), joeQuimby); // Joe's null maps to zero for primitive
     }
     
     @Test
     public void filtersByIntegerValue() {
-    	assertFilterMembers("weight", margeSimpson.getWeight().toString());
+    	assertFilterContainsOnlyExpectedMembers("weight", margeSimpson.getWeight().toString());
     }
     
     
     @Test
     public void filtersByPrimitiveIntValue() {
-    	assertFilterMembers("weightInt", String.valueOf(margeSimpson.getWeightInt()), joeQuimby);  // Joe's null maps to zero for primitive
+    	assertFilterContainsOnlyExpectedMembers("weightInt", String.valueOf(margeSimpson.getWeightInt()), joeQuimby);  // Joe's null maps to zero for primitive
     }
     
     @Test
     public void filtersByDoubleValue() {
-    	assertFilterMembers("weightDouble", Double.toString(margeSimpson.getWeightDouble() + 0.0001), margeSimpson);
-    	assertFilterMembers("weightDouble", Double.toString(margeSimpson.getWeightDouble()));
+    	assertFilterContainsOnlyExpectedMembers("weightDouble", Double.toString(margeSimpson.getWeightDouble() + 0.0001), margeSimpson);
+    	assertFilterContainsOnlyExpectedMembers("weightDouble", Double.toString(margeSimpson.getWeightDouble()));
     }
     
     @Test
     public void filtersByPrimitiveFloatValue() {
-    	assertFilterMembers("weightFloat", HEAVIER_THAN_MOE_DOUBLE, margeSimpson, moeSzyslak, joeQuimby);
-    	assertFilterMembers("weightFloat", Double.toString(margeSimpson.getWeightFloat() - 0000.1), joeQuimby);
+    	assertFilterContainsOnlyExpectedMembers("weightFloat", HEAVIER_THAN_MOE_DOUBLE, margeSimpson, moeSzyslak, joeQuimby);
+    	assertFilterContainsOnlyExpectedMembers("weightFloat", Double.toString(margeSimpson.getWeightFloat() - 0000.1), joeQuimby);
     	
     	//this test fails:
     	//assertFilterMembers("weightFloat", Double.toString(margeSimpson.getWeightFloat()), joeQuimby);
@@ -89,41 +88,41 @@ public class LessThanTest extends ComparableTestBase {
     
     @Test
     public void filtersByPrimitiveBooleanValue() {
-    	assertFilterMembers("gold", "true", homerSimpson, margeSimpson, moeSzyslak);
+    	assertFilterContainsOnlyExpectedMembers("gold", "true", homerSimpson, margeSimpson, moeSzyslak);
     	
     	// filters gold... or no gold, as (true >= false) == true
-    	assertFilterMembers("gold", "false");
+    	assertFilterContainsOnlyExpectedMembers("gold", "false");
     }
     
     @Test
     public void filtersByBooleanValue() {
-    	assertFilterMembers("goldObj", "true", moeSzyslak);
+    	assertFilterContainsOnlyExpectedMembers("goldObj", "true", moeSzyslak);
     	
     	// filters goldObj... or no goldObj, as (true >= false) == true, but not the nulls
-    	assertFilterMembers("goldObj", "false");
+    	assertFilterContainsOnlyExpectedMembers("goldObj", "false");
     }
     
     @Test
     public void filtersByString() {
-    	assertFilterMembers("lastName", "Szyslak", homerSimpson, margeSimpson, joeQuimby);
+    	assertFilterContainsOnlyExpectedMembers("lastName", "Szyslak", homerSimpson, margeSimpson, joeQuimby);
     	
-    	assertFilterMembers("lastName", "S", joeQuimby);
+    	assertFilterContainsOnlyExpectedMembers("lastName", "S", joeQuimby);
     	
     	// but with lower case...
-    	assertFilterMembers("lastName", "s", homerSimpson, margeSimpson, moeSzyslak, joeQuimby);
+    	assertFilterContainsOnlyExpectedMembers("lastName", "s", homerSimpson, margeSimpson, moeSzyslak, joeQuimby);
     }
     
     @Test
     public void filtersByDateWithDefaultDateFormat() {
-    	assertFilterMembers("registrationDate", "2015-03-01");
+    	assertFilterContainsOnlyExpectedMembers("registrationDate", "2015-03-01");
     	
-    	assertFilterMembers("registrationDate", "2015-03-02", homerSimpson, margeSimpson);
+    	assertFilterContainsOnlyExpectedMembers("registrationDate", "2015-03-02", homerSimpson, margeSimpson);
     }
     
     @Test
     public void filterByDateWithCustomDateFormat() {
-    	assertFilterMembers("registrationDate", "01-03-2015", "dd-MM-yyyy");
-    	assertFilterMembers("registrationDate", "03-03-2015", "dd-MM-yyyy", homerSimpson, margeSimpson, moeSzyslak);
+    	assertFilterContainsOnlyExpectedMembers("registrationDate", "01-03-2015", "dd-MM-yyyy");
+    	assertFilterContainsOnlyExpectedMembers("registrationDate", "03-03-2015", "dd-MM-yyyy", homerSimpson, margeSimpson, moeSzyslak);
     }
   
 }

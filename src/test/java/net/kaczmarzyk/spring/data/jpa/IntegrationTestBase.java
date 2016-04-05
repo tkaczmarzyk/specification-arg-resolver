@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Tomasz Kaczmarzyk
+ * @author TP Diffenbach
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class })
@@ -39,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class IntegrationTestBase {
 
-	private static final Customer[] EMPTY_SET = new Customer[]{};
+	private static final Customer[] EMPTY_LIST = {};
 
 	@Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -50,11 +51,20 @@ public abstract class IntegrationTestBase {
     @PersistenceContext
     protected EntityManager em;
     
+    /**
+     * Call findAll with the Specification, and assert its members match the expectedMembers
+     * @param spec the Specification 
+     * @param expectedMembers the expected members after the Specification has filtered.
+     */
     protected void assertFilterMembers(Specification<Customer> spec, Customer... expectedMembers) {
     	assertThat(customerRepo.findAll(spec)).hasSize(expectedMembers.length).containsOnly(expectedMembers);
     }
     
+    /**
+     * Call findAll with the Specification, and assert its returns the empty list.
+     * @param the Specification
+     */
     protected void assertFilterEmpty(Specification<Customer> spec) {
-    	assertFilterMembers(spec, EMPTY_SET);
+    	assertFilterMembers(spec, EMPTY_LIST);
     }
 }
