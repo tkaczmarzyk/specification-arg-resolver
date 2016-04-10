@@ -24,7 +24,7 @@ import javax.persistence.criteria.Predicate;
  * 
  * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  * 
- * <p>Field types must be Comparable<T> (e.g, implement the Comparable interface); this is 
+ * <p>Field types must be Comparable (e.g, implement the Comparable interface); this is 
  * a JPA constraint.</p>
  * 
  * <p>NOTE: comparisons are dependent on the underlying database.</p>

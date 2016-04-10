@@ -184,15 +184,15 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByDouble() {
-    	Equal<Customer> homerId = new Equal<>("weightDouble", new String[] { String.valueOf(homerSimpson.getWeightDouble()) });
-    	assertFilterMembers(homerId, homerSimpson);
+    	Equal<Customer> homerWeightDouble = new Equal<>("weightDouble", new String[] { String.valueOf(homerSimpson.getWeightDouble()) });
+    	assertFilterMembers(homerWeightDouble, homerSimpson);
     }
     
     @Ignore
     @Test
     // this test should work, but fails, probabaly because of how floats are compared by the underlying database.
     public void filtersByFloat() {
-    	Equal<Customer> homerId = new Equal<>("weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) });
-    	assertFilterMembers(homerId, homerSimpson);
+    	Equal<Customer> homerWeightFloat = new Equal<>("weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) });
+    	assertFilterMembers(homerWeightFloat, homerSimpson);
     }
 }
