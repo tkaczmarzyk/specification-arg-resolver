@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import java.util.Arrays;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -43,10 +45,10 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 	public ComparableSpecification(String path, String[] httpParamValues, String[] config) {
 		super(path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("expected one http-param, but was " + Arrays.toString(httpParamValues));
 		}
 		if (config != null && config.length != 1) {
-			throw new IllegalArgumentException("config may contain only one value (date format), but was: " + config);
+			throw new IllegalArgumentException("config may contain only one value (date format), but was: " + Arrays.toString(config));
 		}
 		String dateFormat = config != null ? config[0] : null;
 		comparedTo = httpParamValues[0];

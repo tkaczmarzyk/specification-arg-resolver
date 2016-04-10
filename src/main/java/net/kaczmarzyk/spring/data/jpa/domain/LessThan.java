@@ -24,14 +24,14 @@ import javax.persistence.criteria.Predicate;
  * 
  * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  * 
- * <p>Field types must be Comparable (e.g, implement the Comparable interface); this is 
+ * <p>Field types must be Comparable (e.g, implement the {@code Comparable} interface); this is 
  * a JPA constraint.</p>
  * 
  * <p>NOTE: comparisons are dependent on the underlying database.</p>
  * <p>Comparisons of floats and doubles (especially floats) may be incorrect due to precision loss.</p>
  * <p>Comparisons of booleans may be dependent on the underlying database representation.</p>
  * <p>Comparisons of enums will be of their ordinal or string representations, depending on what you specified to JPA,
- * e.g., @Enumerated(EnumType.STRING), @Enumerated(EnumType.ORDINAL) or the default (@Enumerated(EnumType.ORDINAL))</p>
+ * e.g., {@code @Enumerated(EnumType.STRING)}, {@code @Enumerated(EnumType.ORDINAL)} or the default ({@code @Enumerated(EnumType.ORDINAL)})</p>
  * 
  * @author TP Diffenbach
  */
