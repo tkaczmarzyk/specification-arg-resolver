@@ -1,3 +1,9 @@
+v0.8.0
+======
+
+* added `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` specs
+* `DateAfter`, `DateBefore` and their invlusive versions are now deprecated (use the above specs)
+
 v0.7.0
 ======
 
