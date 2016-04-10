@@ -112,21 +112,18 @@ Does not use any HTTP-parameters. Represents static `where` clause: `path is nul
 
 Usage: `@Spec(path="activationDate", spec=IsNull.class)`.
 
-### DateBefore ###
+### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
-Filters by checking if a temporal field of an entity has a value before the given one. E.g. `(..) where creationDate < :date`.
+Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.
 
-Usage: `@Spec(path="creationDate", spec=DateBefore.class)`.
+Usage: `@Spec(path="creationDate", spec=LessThan.class)`.
 
-The default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=DateBefore.class, config="dd-MM-yyyy")`.
+For temporal values, the default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")`.
 
-### DateAfter ###
-
-Filters by checking if a temporal field of an entity has a value after the given one. E.g. `(..) where creationDate > :date`.
-
-Usage: `@Spec(path="creationDate", spec=DateAfter.class)`.
-
-You can configure the date pattern as with `DateBefore` described above.
+NOTE: comparisons are dependent on the underlying database.
+ * Comparisons of floats and doubles (especially floats) may be incorrect due to precision loss.
+ * Comparisons of booleans may be dependent on the underlying database representation.
+ * Comparisons of enums will be of their ordinal or string representations, depending on what you specified to JPA, e.g., `@Enumerated(EnumType.STRING)`, `@Enumerated(EnumType.ORDINAL)` or the default (`@Enumerated(EnumType.ORDINAL)`)
 
 ### DateBetween ###
 
