@@ -182,6 +182,15 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
         assertTrue(resolver.supportsParameter(param));
         assertThat(resolver.resolveArgument(param, null, req, null)).isInstanceOf(IfaceWithOr.class);
 	}
+	
+	@Test
+	public void resolvedSpecHasWorkingToStringMethod() throws Exception {
+		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithOr", IfaceWithOr.class), 0);
+        
+		Object resolved = resolver.resolveArgument(param, null, req, null);
+		
+		assertThat(resolved.toString()).startsWith("IfaceWithOr[");
+	}
 
 	@Override
 	protected Class<?> controllerClass() {

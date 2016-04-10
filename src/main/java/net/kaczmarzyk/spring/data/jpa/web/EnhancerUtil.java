@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.lang.reflect.Method;
 
-import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,15 +28,20 @@ import org.springframework.data.jpa.domain.Specification;
  */
 class EnhancerUtil {
 
-    static Callback delegateTo(final Specification<Object> targetSpec) {
-        return new MethodInterceptor() {
+    @SuppressWarnings("unchecked")
+	static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
+    	Enhancer enhancer = new Enhancer();
+		enhancer.setInterfaces(new Class[] { iface });
+		enhancer.setCallback(new MethodInterceptor() {
             @Override
             public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-                if (method.getName().equals("toPredicate")) {
-                    return proxy.invoke(targetSpec, args);
-                }
-                return proxy.invoke(obj, args);
+            	if ("toString".equals(method.getName())) {
+            		return iface.getSimpleName() + "[" + proxy.invoke(targetSpec, args) + "]";
+            	}
+            	return proxy.invoke(targetSpec, args);
             }
-        };
+        });
+		
+		return (T) enhancer.create();
     }
 }

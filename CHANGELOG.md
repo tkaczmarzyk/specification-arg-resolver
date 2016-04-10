@@ -1,6 +1,7 @@
 v0.8.0
 ======
 
+* fixed stack overflow issue with annotated interfaces!
 * added `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` specs
 * `DateAfter`, `DateBefore` and their invlusive versions are now deprecated (use the above specs)
 

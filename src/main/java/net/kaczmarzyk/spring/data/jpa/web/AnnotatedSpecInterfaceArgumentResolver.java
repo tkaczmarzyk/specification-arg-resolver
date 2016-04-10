@@ -25,7 +25,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
-import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -65,11 +64,7 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		
 		Specification<Object> spec = new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(ifaceSpec, paramSpec);
 		
-		Enhancer enhancer = new Enhancer();
-		enhancer.setInterfaces(new Class[] { parameter.getParameterType() });
-		enhancer.setCallback(EnhancerUtil.delegateTo(spec));
-		
-		return enhancer.create();
+		return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), spec);
 	}
 
 	private Specification<Object> resolveSpecFromParameterAnnotations(NativeWebRequest webRequest, MethodParameter parameter) throws Exception {

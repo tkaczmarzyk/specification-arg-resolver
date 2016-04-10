@@ -24,7 +24,6 @@ import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 
-import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -66,10 +65,7 @@ class JoinFetchSpecificationResolver implements HandlerMethodArgumentResolver {
         if (Specification.class == parameter.getParameterType()) {
             return spec;
         } else {
-            Enhancer enhancer = new Enhancer();
-            enhancer.setInterfaces(new Class[] { parameter.getParameterType() });
-            enhancer.setCallback(EnhancerUtil.delegateTo(spec));
-            return enhancer.create();
+            return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), spec);
         }
     }
 
