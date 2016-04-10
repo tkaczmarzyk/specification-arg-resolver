@@ -27,8 +27,11 @@ import javax.persistence.criteria.Root;
 /**
  * Filters with {@code path < date} where-clause.
  * 
+ * @deprecated Consider using {@link net.kaczmarzyk.spring.data.jpa.domain.LessThan LessThan}
+ * 
  * @author Tomasz Kaczmarzyk
  */
+@Deprecated
 public class DateBefore<T> extends DateSpecification<T> {
 
     private Date date;

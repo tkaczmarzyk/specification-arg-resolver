@@ -24,10 +24,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
- * Filters with {@code path > date} where-clause.
+ * <p>Filters with {@code path > date} where-clause.</p>
+ * 
+ * @deprecated Consider using {@link net.kaczmarzyk.spring.data.jpa.domain.GreaterThan GreaterThan}
  * 
  * @author Tomasz Kaczmarzyk
  */
+@Deprecated
 public class DateAfter<T> extends DateSpecification<T> {
 
     private Date date;

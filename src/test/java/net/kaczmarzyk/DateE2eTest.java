@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.DateAfter;
-import net.kaczmarzyk.spring.data.jpa.domain.DateBefore;
 import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
+import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
+import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class DateE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/customers", params = "registeredBefore")
 		@ResponseBody
 		public Object findCustomersRegisteredBefore(
-				@Spec(path="registrationDate", params="registeredBefore", config="dd-MM-yyyy", spec=DateBefore.class) Specification<Customer> spec) {
+				@Spec(path="registrationDate", params="registeredBefore", config="dd-MM-yyyy", spec=LessThan.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}
@@ -53,7 +53,7 @@ public class DateE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/customers", params = "registeredAfter")
 		@ResponseBody
 		public Object findCustomersRegisteredAfter(
-				@Spec(path="registrationDate", params="registeredAfter", spec=DateAfter.class) Specification<Customer> spec) {
+				@Spec(path="registrationDate", params="registeredAfter", spec=GreaterThan.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}

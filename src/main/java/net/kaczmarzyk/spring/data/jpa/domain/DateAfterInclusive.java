@@ -25,9 +25,12 @@ import javax.persistence.criteria.Root;
 /**
  * Filters with {@code path >= date} where-clause.
  *
+ * @deprecated Consider using {@link net.kaczmarzyk.spring.data.jpa.domain.GreaterThanOrEqual GreaterThanOrEqual}
+ *
  * @author Tomasz Kaczmarzyk
  * @author Kamil Sutkowski
  */
+@Deprecated
 public class DateAfterInclusive<T>
         extends DateSpecification<T> {
 
