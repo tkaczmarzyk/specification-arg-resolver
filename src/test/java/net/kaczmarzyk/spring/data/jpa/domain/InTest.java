@@ -23,6 +23,8 @@ import java.util.List;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -52,29 +54,29 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filtersByEnumValue_singleValue() {
-        In<Customer> genderMale = new In<>("gender", new String[] { "MALE" });
+        In<Customer> genderMale = new In<>("gender", new String[] { "MALE" }, defaultConverter);
         List<Customer> males = customerRepo.findAll(genderMale);
         assertThat(males).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
 
-        In<Customer> genderFemale = new In<>("gender", new String[] { "FEMALE" });
+        In<Customer> genderFemale = new In<>("gender", new String[] { "FEMALE" }, defaultConverter);
         List<Customer> females = customerRepo.findAll(genderFemale);
         assertThat(females).hasSize(1).containsOnly(margeSimpson);
 
-        In<Customer> genderOther = new In<>("gender", new String[] { "OTHER" });
+        In<Customer> genderOther = new In<>("gender", new String[] { "OTHER" }, defaultConverter);
         List<Customer> others = customerRepo.findAll(genderOther);
         assertThat(others).hasSize(0);
     }
     
     @Test
     public void filtersWithTwoEnumValues() {
-    	In<Customer> genderMaleOrFemale = new In<>("gender", new String[] { "MALE", "FEMALE" });
+    	In<Customer> genderMaleOrFemale = new In<>("gender", new String[] { "MALE", "FEMALE" }, defaultConverter);
         List<Customer> malesOrFemales = customerRepo.findAll(genderMaleOrFemale);
         assertThat(malesOrFemales).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
 
 //    @Test // TODO to be replaced with new tests...
     public void rejectsNotExistingEnumConstantName() {
-        In<Customer> genderRobot = new In<>("gender", new String[] { "ROBOT" });
+        In<Customer> genderRobot = new In<>("gender", new String[] { "ROBOT" }, defaultConverter);
         expectedException.expect(InvalidDataAccessApiUsageException.class);
         expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
         expectedException.expectMessage("rejected values [ROBOT] for class Gender");
@@ -83,7 +85,7 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filtersByLongValue() {
-    	In<Customer> simpsonsIds = new In<>("id", new String[] { homerSimpson.getId().toString(), margeSimpson.getId().toString() });
+    	In<Customer> simpsonsIds = new In<>("id", new String[] { homerSimpson.getId().toString(), margeSimpson.getId().toString() }, defaultConverter);
     	
     	List<Customer> simpsons = customerRepo.findAll(simpsonsIds);
     	
@@ -92,7 +94,7 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filtersByLongValue_withAdditionalNonExistingValue() {
-    	In<Customer> simpsonsIdsWithTrash = new In<>("id", new String[] { "12345", homerSimpson.getId().toString(), margeSimpson.getId().toString() });
+    	In<Customer> simpsonsIdsWithTrash = new In<>("id", new String[] { "12345", homerSimpson.getId().toString(), margeSimpson.getId().toString() }, defaultConverter);
     	
     	List<Customer> simpsons = customerRepo.findAll(simpsonsIdsWithTrash);
     	
@@ -101,7 +103,7 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filtersByBooleanValue() {
-    	In<Customer> goldCustomers = new In<>("gold", new String[] { "true" });
+    	In<Customer> goldCustomers = new In<>("gold", new String[] { "true" }, defaultConverter);
     	
     	List<Customer> simpsons = customerRepo.findAll(goldCustomers);
     	
@@ -110,7 +112,7 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filtersByIntegerValue() {
-    	In<Customer> weights = new In<>("weight", new String[] { "121", "65" });
+    	In<Customer> weights = new In<>("weight", new String[] { "121", "65" }, defaultConverter);
 
     	List<Customer> found = customerRepo.findAll(weights);
     	
@@ -119,13 +121,13 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filtersByString() {
-    	In<Customer> simpsons = new In<>("lastName", new String[] { "Simpson", "Quimby" });
+    	In<Customer> simpsons = new In<>("lastName", new String[] { "Simpson", "Quimby" }, defaultConverter);
     	List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
     	
     	assertThat(simpsonsFound).hasSize(3).containsOnly(homerSimpson, margeSimpson, joeQuimby);
     	
     	
-    	In<Customer> lastNameS = new In<>("lastName", new String[] { "s" });
+    	In<Customer> lastNameS = new In<>("lastName", new String[] { "s" }, defaultConverter);
     	List<Customer> found = customerRepo.findAll(lastNameS);
     	
     	assertThat(found).isEmpty();
@@ -133,12 +135,12 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filtersByDateWithDefaultDateFormat() {
-    	In<Customer> registered1stMarch = new In<>("registrationDate", new String[] { "2015-03-01" });
+    	In<Customer> registered1stMarch = new In<>("registrationDate", new String[] { "2015-03-01" }, defaultConverter);
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     	
-    	In<Customer> registered1stOr2ndMarch = new In<>("registrationDate", new String[] { "2015-03-02", "2015-03-01" });
+    	In<Customer> registered1stOr2ndMarch = new In<>("registrationDate", new String[] { "2015-03-02", "2015-03-01" }, defaultConverter);
     	found = customerRepo.findAll(registered1stOr2ndMarch);
     	
     	assertThat(found).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
@@ -146,41 +148,18 @@ public class InTest extends IntegrationTestBase {
     
     @Test
     public void filterByDateWithCustomDateFormat() {
-    	In<Customer> registered1stMarch = new In<>("registrationDate", new String[] { "01-03-2015" }, new String[] { "dd-MM-yyyy" });
+    	In<Customer> registered1stMarch = new In<>("registrationDate", new String[] { "01-03-2015" },
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+    	
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     	
-    	In<Customer> registered1stOr2ndMarch = new In<>("registrationDate", new String[] { "01-03-2015", "02-03-2015" }, new String[] { "dd-MM-yyyy" });
+    	In<Customer> registered1stOr2ndMarch = new In<>("registrationDate", new String[] { "01-03-2015", "02-03-2015" },
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+    	
     	found = customerRepo.findAll(registered1stOr2ndMarch);
     	
     	assertThat(found).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
-    }
-    
-    @Test
-    public void rejectsInvalidConfig_zeroArguments() {
-    	String[] emptyConfig = new String[] {};
-
-    	expectedException.expect(IllegalArgumentException.class);
-    	
-    	new In<>("registrationDate", new String[] { "01-03-2015" }, emptyConfig);
-    }
-    
-    @Test
-    public void rejectsInvalidConfig_tooManyArgument() {
-    	String[] invalidConfig = new String[] {"yyyy-MM-dd", "unexpected"};
-    	
-    	expectedException.expect(IllegalArgumentException.class);
-    	
-    	new In<>("registrationDate", new String[] { "01-03-2015" }, invalidConfig);
-    }
-    
-//    @Test // TODO to be replaced with new tests...
-    public void rejectsNotExistingEnumConstantName_twoExistingTwoNot() {
-        In<Customer> genderRobot = new In<>("gender", new String[] { "MALE", "ROBOT", "FEMALE", "ALIEN" });
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("rejected values [ROBOT, ALIEN] for class Gender");
-        customerRepo.findAll(genderRobot);
     }
 }

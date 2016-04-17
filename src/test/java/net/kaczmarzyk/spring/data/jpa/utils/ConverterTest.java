@@ -23,6 +23,7 @@ import java.util.List;
 
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -37,7 +38,7 @@ public class ConverterTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	
-	Converter converter = Converter.withDateFormat("yyyy-MM-dd");
+	Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT);
 	
 	
 	@Test
@@ -107,12 +108,23 @@ public class ConverterTest {
 			.isEqualTo(Arrays.asList(Gender.FEMALE, Gender.MALE));
 	}
 	
-//	@Test // TODO to be replaced with new tests...
+	@Test
 	public void throwsExceptionWithRejectedEnumNames() {
 		expected.expect(ValuesRejectedException.class);
 		expected.expect(valuesRejected("ROBOT", "ALIEN"));
 		
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION);
+		
 		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
+	}
+	
+	@Test
+	public void ignoresRejectedEnumValues() {
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT);
+		
+		List<Gender> result = converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
+		
+		assertThat(result).containsOnly(Gender.MALE, Gender.FEMALE);
 	}
 
 	private Matcher<?> valuesRejected(final String... values) {

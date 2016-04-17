@@ -42,21 +42,13 @@ public class In<T> extends PathSpecification<T> {
 	private String[] allowedValues;
 	private Converter converter;
 
-	public In(String path, String[] httpParamValues) {
-		this(path, httpParamValues, null);
-	}
-	
-	public In(String path, String[] httpParamValues, String[] config) {
+	public In(String path, String[] httpParamValues, Converter converter) {
 		super(path);
 		if (httpParamValues == null || httpParamValues.length < 1) {
 			throw new IllegalArgumentException();
 		}
-		if (config != null && config.length != 1) {
-			throw new IllegalArgumentException("config may contain only one value (date format), but was: " + config);
-		}
-		String dateFormat = config != null ? config[0] : null;
-		allowedValues = httpParamValues;
-		converter = Converter.withDateFormat(dateFormat);
+		this.allowedValues = httpParamValues;
+		this.converter = converter;
 	}
 	
 	@Override

@@ -22,6 +22,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 /**
  * Filters with {@code path <= date} where-clause.
  *
@@ -36,14 +38,8 @@ public class DateBeforeInclusive<T>
 
     private Date date;
 
-    public DateBeforeInclusive(String path, String... args)
-            throws ParseException {
-        this(path, args, null);
-    }
-
-    public DateBeforeInclusive(String path, String[] args, String[] config)
-            throws ParseException {
-        super(path, args, config);
+    public DateBeforeInclusive(String path, String[] args, Converter converter)  throws ParseException {
+        super(path, args, converter);
         if (args == null || args.length != 1) {
             throw new IllegalArgumentException("expected a single http-param, but was: " + args);
         }

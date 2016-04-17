@@ -15,19 +15,21 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
-import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
+import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
@@ -122,7 +124,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }));
+        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }, defaultConverter));
     }
     
     @Test
@@ -133,7 +135,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }));
+        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }, defaultConverter));
     }
 
     @Test
@@ -180,26 +182,26 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         assertThat(resolved).isEqualTo(new EqualEnum<>("thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
     }
-
+    
     public static class TestController {
 
-        public void testMethod1(@Spec(path = "thePath", spec = Like.class) Specification<Object> spec) {
+        public void testMethod1(@Spec(path = "thePath", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
-        public void testMethod2(@Spec(path = "thePath", params = "theParameter", spec = Like.class) Specification<Object> spec) {
+        public void testMethod2(@Spec(path = "thePath", params = "theParameter", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
-        public void testMethod3(@Spec(path = "thePath", params = "theParameter", spec = EqualEnum.class) Specification<Object> spec) {
+        public void testMethod3(@Spec(path = "thePath", params = "theParameter", spec = EqualEnum.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethod4(
-                @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = EqualEnum.class) Specification<Object> spec) {
+                @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = EqualEnum.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
         
-        public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1") Specification<Object> spec) {
+        public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
         
-        public void testMethodWithZeroArgSpec(@Spec(path = "thePath", spec = IsNull.class) Specification<Object> spec) {}
+        public void testMethodWithZeroArgSpec(@Spec(path = "thePath", spec = IsNull.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {}
     }
 
 	@Override

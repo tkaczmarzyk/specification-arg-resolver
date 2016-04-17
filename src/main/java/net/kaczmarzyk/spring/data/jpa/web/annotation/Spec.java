@@ -36,6 +36,8 @@ public @interface Spec {
     
     String[] constVal() default {};
     
+    OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
+    
     String path();
     
     @SuppressWarnings("rawtypes")

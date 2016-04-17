@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 
 /**
@@ -30,8 +31,8 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 public class GreaterThanOrEqualTest extends ComparableTestBase {
     
 	@Override
-    protected Specification<Customer> makeUUT(String path, String[] value, String[] config) {
-    	return new GreaterThanOrEqual<Customer>(path, value, config);
+    protected Specification<Customer> makeUUT(String path, String[] value, Converter converter) {
+    	return new GreaterThanOrEqual<Customer>(path, value, converter);
     }
     
    

@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -50,15 +52,15 @@ public class Converter {
 		}
 	}
 	
-	private static class ValueRejectedException extends IllegalArgumentException {
+	public static class ValueRejectedException extends IllegalArgumentException {
 		
 		private static final long serialVersionUID = 1L;
 		
 		private String rejectedValue;
 		
-		public ValueRejectedException(String constantName, String message) {
+		public ValueRejectedException(String rejectedValue, String message) {
 			super(message);
-			this.rejectedValue = constantName;
+			this.rejectedValue = rejectedValue;
 		}
 		
 		public String getRejectedValue() {
@@ -72,12 +74,16 @@ public class Converter {
 	}
 	
 	private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+
+	public static final Converter DEFAULT = Converter.withDateFormat(DEFAULT_DATE_FORMAT, OnTypeMismatch.DEFAULT);
 	
 	private String dateFormat;
+	private OnTypeMismatch onTypeMismatch;
 	
 	
-	private Converter(String dateFormat) {
+	private Converter(String dateFormat, OnTypeMismatch onTypeMismatch) {
 		this.dateFormat = dateFormat;
+		this.onTypeMismatch = onTypeMismatch;
 	}
 	
 	public <T> T convert(String value, Class<T> expectedClass) {
@@ -119,6 +125,7 @@ public class Converter {
 				rejected.add(e.getRejectedValue());
 			}
 		}
+		onTypeMismatch.handleRejectedValues(rejected);
 		return result;
 	}
 
@@ -128,7 +135,7 @@ public class Converter {
 		} else if ("false".equals(value)) {
 			return false;
 		} else {
-			throw new IllegalArgumentException("unrecognized boolean: " + value);
+			throw new ValueRejectedException(value, "unparseable boolean");
 		}
 	}
 	
@@ -136,7 +143,7 @@ public class Converter {
 		try {
 			return new SimpleDateFormat(dateFormat).parse(value);
 		} catch (ParseException e) {
-			throw new IllegalArgumentException(e);
+			throw new ValueRejectedException(value, "invalid date, expected format: " + dateFormat);
 		}
 	}
 
@@ -149,7 +156,39 @@ public class Converter {
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
 	}
 
-	public static Converter withDateFormat(String dateFormat) {
-		return new Converter(dateFormat != null ? dateFormat : DEFAULT_DATE_FORMAT);
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dateFormat == null) ? 0 : dateFormat.hashCode());
+		result = prime * result + ((onTypeMismatch == null) ? 0 : onTypeMismatch.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Converter other = (Converter) obj;
+		if (dateFormat == null) {
+			if (other.dateFormat != null)
+				return false;
+		} else if (!dateFormat.equals(other.dateFormat))
+			return false;
+		if (onTypeMismatch != other.onTypeMismatch)
+			return false;
+		return true;
+	}
+
+	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch) {
+		return new Converter(dateFormat != null ? dateFormat : DEFAULT_DATE_FORMAT, onTypeMismatch);
+	}
+
+	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch) {
+		return new Converter(DEFAULT_DATE_FORMAT, onTypeMismatch);
 	}
 }

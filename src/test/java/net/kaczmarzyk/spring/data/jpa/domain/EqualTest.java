@@ -29,6 +29,8 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 
 /**
@@ -53,22 +55,22 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByEnumValue() {
-        Equal<Customer> genderMale = new Equal<>("gender", new String[] { "MALE" });
+        Equal<Customer> genderMale = new Equal<>("gender", new String[] { "MALE" }, defaultConverter);
         List<Customer> males = customerRepo.findAll(genderMale);
         assertThat(males).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
 
-        Equal<Customer> genderFemale = new Equal<>("gender", new String[] { "FEMALE" });
+        Equal<Customer> genderFemale = new Equal<>("gender", new String[] { "FEMALE" }, defaultConverter);
         List<Customer> females = customerRepo.findAll(genderFemale);
         assertThat(females).hasSize(1).containsOnly(margeSimpson);
 
-        Equal<Customer> genderOther = new Equal<>("gender", new String[] { "OTHER" });
+        Equal<Customer> genderOther = new Equal<>("gender", new String[] { "OTHER" }, defaultConverter);
         List<Customer> others = customerRepo.findAll(genderOther);
         assertThat(others).hasSize(0);
     }
 
     @Test
     public void rejectsNotExistingEnumConstantName() {
-        Equal<Customer> genderRobot = new Equal<>("gender", new String[] { "ROBOT" });
+        Equal<Customer> genderRobot = new Equal<>("gender", new String[] { "ROBOT" }, defaultConverter);
         expectedException.expect(InvalidDataAccessApiUsageException.class);
         expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
         expectedException.expectMessage("could not find value ROBOT for enum class Gender");
@@ -77,7 +79,7 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByLongValue() {
-    	Equal<Customer> homerId = new Equal<>("id", new String[] { homerSimpson.getId().toString() });
+    	Equal<Customer> homerId = new Equal<>("id", new String[] { homerSimpson.getId().toString() }, defaultConverter);
     	
     	List<Customer> homers = customerRepo.findAll(homerId);
     	
@@ -86,7 +88,7 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByPrimitiveLongValue() {
-    	Equal<Customer> homerId = new Equal<>("weightLong", new String[] { "121" });
+    	Equal<Customer> homerId = new Equal<>("weightLong", new String[] { "121" }, defaultConverter);
     	
     	List<Customer> homers = customerRepo.findAll(homerId);
     	
@@ -95,7 +97,7 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByIntegerValue() {
-    	Equal<Customer> weight121 = new Equal<>("weight", new String[] { "121" });
+    	Equal<Customer> weight121 = new Equal<>("weight", new String[] { "121" }, defaultConverter);
 
     	List<Customer> found = customerRepo.findAll(weight121);
     	
@@ -104,7 +106,7 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByPrimitiveIntValue() {
-    	Equal<Customer> weight121 = new Equal<>("weightInt", new String[] { "121" });
+    	Equal<Customer> weight121 = new Equal<>("weightInt", new String[] { "121" }, defaultConverter);
 
     	List<Customer> found = customerRepo.findAll(weight121);
     	
@@ -113,7 +115,7 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByPrimitiveBooleanValue() {
-    	Equal<Customer> gold = new Equal<>("gold", new String[] { "true" });
+    	Equal<Customer> gold = new Equal<>("gold", new String[] { "true" }, defaultConverter);
 
     	List<Customer> found = customerRepo.findAll(gold);
     	
@@ -122,7 +124,7 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByBooleanValue() {
-    	Equal<Customer> gold = new Equal<>("goldObj", new String[] { "true" });
+    	Equal<Customer> gold = new Equal<>("goldObj", new String[] { "true" }, defaultConverter);
 
     	List<Customer> found = customerRepo.findAll(gold);
     	
@@ -131,13 +133,13 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByString() {
-    	Equal<Customer> simpsons = new Equal<>("lastName", new String[] { "Simpson" });
+    	Equal<Customer> simpsons = new Equal<>("lastName", new String[] { "Simpson" }, defaultConverter);
     	List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
     	
     	assertThat(simpsonsFound).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     	
     	
-    	Equal<Customer> lastNameS = new Equal<>("lastName", new String[] { "s" });
+    	Equal<Customer> lastNameS = new Equal<>("lastName", new String[] { "s" }, defaultConverter);
     	List<Customer> found = customerRepo.findAll(lastNameS);
     	
     	assertThat(found).isEmpty();
@@ -145,12 +147,12 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filtersByDateWithDefaultDateFormat() {
-    	Equal<Customer> registered1stMarch = new Equal<>("registrationDate", new String[] { "2015-03-01" });
+    	Equal<Customer> registered1stMarch = new Equal<>("registrationDate", new String[] { "2015-03-01" }, defaultConverter);
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     	
-    	Equal<Customer> registered2ndMarch = new Equal<>("registrationDate", new String[] { "2015-03-02" });
+    	Equal<Customer> registered2ndMarch = new Equal<>("registrationDate", new String[] { "2015-03-02" }, defaultConverter);
     	found = customerRepo.findAll(registered2ndMarch);
     	
     	assertThat(found).hasSize(1).containsOnly(moeSzyslak);
@@ -158,33 +160,16 @@ public class EqualTest extends IntegrationTestBase {
     
     @Test
     public void filterByDateWithCustomDateFormat() {
-    	Equal<Customer> registered1stMarch = new Equal<>("registrationDate", new String[] { "01-03-2015" }, new String[] { "dd-MM-yyyy" });
+    	Equal<Customer> registered1stMarch = new Equal<>("registrationDate", new String[] { "01-03-2015" },
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     }
     
     @Test
-    public void rejectsInvalidConfig_zeroArguments() {
-    	String[] emptyConfig = new String[] {};
-
-    	expectedException.expect(IllegalArgumentException.class);
-    	
-    	new Equal<>("registrationDate", new String[] { "01-03-2015" }, emptyConfig);
-    }
-    
-    @Test
-    public void rejectsInvalidConfig_tooManyArgument() {
-    	String[] invalidConfig = new String[] {"yyyy-MM-dd", "unexpected"};
-    	
-    	expectedException.expect(IllegalArgumentException.class);
-    	
-    	new Equal<>("registrationDate", new String[] { "01-03-2015" }, invalidConfig);
-    }
-    
-    @Test
     public void filtersByDouble() {
-    	Equal<Customer> homerWeightDouble = new Equal<>("weightDouble", new String[] { String.valueOf(homerSimpson.getWeightDouble()) });
+    	Equal<Customer> homerWeightDouble = new Equal<>("weightDouble", new String[] { String.valueOf(homerSimpson.getWeightDouble()) }, defaultConverter);
     	assertFilterMembers(homerWeightDouble, homerSimpson);
     }
     
@@ -192,7 +177,7 @@ public class EqualTest extends IntegrationTestBase {
     @Test
     // this test should work, but fails, probabaly because of how floats are compared by the underlying database.
     public void filtersByFloat() {
-    	Equal<Customer> homerWeightFloat = new Equal<>("weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) });
+    	Equal<Customer> homerWeightFloat = new Equal<>("weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) }, defaultConverter);
     	assertFilterMembers(homerWeightFloat, homerSimpson);
     }
 }

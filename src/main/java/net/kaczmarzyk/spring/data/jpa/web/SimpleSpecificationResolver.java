@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,6 +27,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 /**
@@ -53,10 +54,15 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
                 return null;
             } else {
                 String[] argsArray = args.toArray(new String[args.size()]);
-                return newSpecification(def, argsArray);
+                Specification<Object> spec = newSpecification(def, argsArray);
+                return def.onTypeMismatch().wrap(spec);
             }
         } catch (NoSuchMethodException e) {
-        	throw new IllegalStateException("Does the specification class expose at least one of the supported constuctors?\nIt can be either 2-arg (String path, String[] args) or 3-arg (String path, String[] args, String[] config)", e);
+        	throw new IllegalStateException("Does the specification class expose at least one of the supported constuctors?\n"
+        			+ "It can be either:\n"
+        			+ "  2-arg (String path, String[] args)\n"
+        			+ "  3-arg (String path, String[] args, Converter converter)\n"
+        			+ "  4-arg (String path, String[] args, Converter converter, String[] config)", e);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -69,16 +75,45 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 	@SuppressWarnings("unchecked")
 	private Specification<Object> newSpecification(Spec def, String[] argsArray) throws InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException {
-    	
+
+		Converter converter = resolveConverter(def);
+		
 		Specification<Object> spec;
 		if (def.config().length == 0) {
-		    spec = def.spec().getConstructor(String.class, String[].class)
-		            .newInstance(def.path(), argsArray);
+	    	try {
+	    		spec = def.spec().getConstructor(String.class, String[].class)
+			            .newInstance(def.path(), argsArray);
+	    	} catch (NoSuchMethodException e) {
+	    		spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
+			            .newInstance(def.path(), argsArray, converter);
+	    	}
 		} else {
-		    spec = def.spec().getConstructor(String.class, String[].class, String[].class)
-		            .newInstance(def.path(), argsArray, def.config());
+		    try {
+		    	spec = def.spec().getConstructor(String.class, String[].class, Converter.class, String[].class)
+			            .newInstance(def.path(), argsArray, converter, def.config());
+		    } catch (NoSuchMethodException e) {
+		    	try {
+		    		spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
+				            .newInstance(def.path(), argsArray, converter);
+		    	} catch (NoSuchMethodException e2) {
+		    		// legacy constructor support, to retain backward-compatibility
+		    		spec = def.spec().getConstructor(String.class, String[].class, String[].class)
+				            .newInstance(def.path(), argsArray, def.config());
+		    	}
+		    }
 		}
 		return spec;
+	}
+
+	private Converter resolveConverter(Spec def) {
+		if (def.config().length == 0) {
+			return Converter.withTypeMismatchBehaviour(def.onTypeMismatch());
+		}
+		if (def.config().length == 1) {
+			String dateFormat = def.config()[0];
+			return Converter.withDateFormat(dateFormat, def.onTypeMismatch());
+		}
+		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}
 
 	private Collection<String> resolveSpecArguments(NativeWebRequest req, Spec specDef) {

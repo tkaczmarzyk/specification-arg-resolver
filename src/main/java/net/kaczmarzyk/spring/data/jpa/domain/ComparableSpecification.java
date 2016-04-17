@@ -38,21 +38,13 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 	private String comparedTo;
 	private Converter converter;	
 	
-	public ComparableSpecification(String path, String[] httpParamValues) {
-		this(path, httpParamValues, null);
-	}
-	
-	public ComparableSpecification(String path, String[] httpParamValues, String[] config) {
+	public ComparableSpecification(String path, String[] httpParamValues, Converter converter) {
 		super(path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
 			throw new IllegalArgumentException("expected one http-param, but was " + Arrays.toString(httpParamValues));
 		}
-		if (config != null && config.length != 1) {
-			throw new IllegalArgumentException("config may contain only one value (date format), but was: " + Arrays.toString(config));
-		}
-		String dateFormat = config != null ? config[0] : null;
-		comparedTo = httpParamValues[0];
-		converter = Converter.withDateFormat(dateFormat);
+		this.comparedTo = httpParamValues[0];
+		this.converter = converter;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

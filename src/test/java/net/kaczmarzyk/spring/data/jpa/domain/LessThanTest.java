@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 
 /**
@@ -30,7 +31,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 public class LessThanTest extends ComparableTestBase {
 
 	@Override
-    protected Specification<Customer> makeUUT(String path, String[] value, String[] config) {
+    protected Specification<Customer> makeUUT(String path, String[] value, Converter config) {
     	return new LessThan<Customer>(path, value, config);
     }
     

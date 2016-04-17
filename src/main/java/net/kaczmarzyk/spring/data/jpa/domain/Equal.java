@@ -34,21 +34,14 @@ public class Equal<T> extends PathSpecification<T> {
 	private String expectedValue;
 	private Converter converter;	
 	
-	public Equal(String path, String[] httpParamValues) {
-		this(path, httpParamValues, null);
-	}
 	
-	public Equal(String path, String[] httpParamValues, String[] config) {
+	public Equal(String path, String[] httpParamValues, Converter converter) {
 		super(path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
 			throw new IllegalArgumentException();
 		}
-		if (config != null && config.length != 1) {
-			throw new IllegalArgumentException("config may contain only one value (date format), but was: " + config);
-		}
-		String dateFormat = config != null ? config[0] : null;
-		expectedValue = httpParamValues[0];
-		converter = Converter.withDateFormat(dateFormat);
+		this.expectedValue = httpParamValues[0];
+		this.converter = converter;
 	}
 	
 	@Override

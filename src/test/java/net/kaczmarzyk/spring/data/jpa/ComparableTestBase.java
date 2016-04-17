@@ -23,6 +23,9 @@ import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+
 /**
  * Base class for all Comparable Specification tests, 
  * providing data and methods to make and test ComparableSpecifications.
@@ -52,11 +55,11 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * 
 	 * @param path the Specification's path
 	 * @param value the value to compare against the database values 
-	 * @param config the config
+	 * @param converter the converter
 	 * @return a Specification created with the passed-in parameters, 
 	 * 	e.g: return new Spec(path, value, config);
 	 */
-	protected abstract Specification<Customer> makeUUT(String path, String[] value, String[] config);
+	protected abstract Specification<Customer> makeUUT(String path, String[] value, Converter converter);
 
 	/**
 	 * Convenience function to create an instance of the class under test, 
@@ -64,36 +67,23 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * 
 	 * @param path the Specification's path
 	 * @param value the value to compare against the database values 
-	 * @param config the config
+	 * @param converter the converter
 	 * @return a Specification, by calling subclass's makeUUT.
 	 */
-	protected Specification<Customer> makeUUT(String path, String value, String[] config) {
-		return makeUUT(path, new String[] { value }, config);
+	protected Specification<Customer> makeUUT(String path, String value, Converter converter) {
+		return makeUUT(path, new String[] { value }, converter);
 	}
 	
 	/**
 	 * Convenience function to create an instance of the class under test, 
-	 * 	converting String into String[].
-	 * 
-	 * @param path the Specification's path
-	 * @param value the value to compare against the database values 
-	 * @param config the config
-	 * @return a Specification, by calling subclass's makeUUT.
-	 */
-	protected Specification<Customer> makeUUT(String path, String value, String config) {
-		return makeUUT(path, new String[] { value }, config == null ? null : new String[] { config });
-	}
-
-	/**
-	 * Convenience function to create an instance of the class under test, 
-	 * 	converting String into String[].
+	 * 	with default Converter.
 	 * 
 	 * @param path the Specification's path
 	 * @param value the value to compare against the database values 
 	 * @return a Specification, by calling subclass's makeUUT, with an empty config.
 	 */
 	protected Specification<Customer> makeUUT(String path, String value) {
-		return makeUUT(path, value, (String[]) null);
+		return makeUUT(path, value, defaultConverter);
 	}
 
 	/**
@@ -124,11 +114,11 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * are only those expected 
 	 * @param path Specification path
 	 * @param value Specification value 
-	 * @config the Specification's configuration
+	 * @param dateFormat date-time format
 	 * @param expectedMembers the Customers we expect to be filtered in
 	 */
-	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String config, Customer... members) {
-		assertFilterMembers(makeUUT(path, value, config), members);
+	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String dateFormat, Customer... members) {
+		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)), members);
 	}
 
 	/**
@@ -137,11 +127,24 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * This function is redundant, as assertFilterMembers(path, value) works just as well. 
 	 * But we retain it as the name suggests the expected outcome.
 	 * @param path Specification path
-	 * @config the Specification's configuration
+	 * @param converter the converter
 	 * @param value Specification value 
 	 */
-	protected void assertFilterIsEmpty(String path, String value, String config) {
-		assertFilterEmpty(makeUUT(path, value, config));
+	protected void assertFilterIsEmpty(String path, String value, Converter converter) {
+		assertFilterEmpty(makeUUT(path, value, converter));
+	}
+	
+	/**
+	 * Create the Specification under test, filter with it, and assert it returns no Customers.
+	 * 
+	 * This function is redundant, as assertFilterMembers(path, value) works just as well. 
+	 * But we retain it as the name suggests the expected outcome.
+	 * @param path Specification path
+	 * @param converter the converter
+	 * @param value Specification value 
+	 */
+	protected void assertFilterIsEmpty(String path, String value, String dateFormat) {
+		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)));
 	}
 	
     @Test
@@ -150,24 +153,6 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
         expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
         expectedException.expectMessage("could not find value ROBOT for enum class Gender");
         customerRepo.findAll(makeUUT("gender", "ROBOT"));
-    }
-	
-    @Test
-    public void rejectsInvalidConfig_zeroArguments() {
-    	String[] emptyConfig = new String[] {};
-
-    	expectedException.expect(IllegalArgumentException.class);
-    	
-    	makeUUT("registrationDate", "01-03-2015", emptyConfig);
-    }
-    
-    @Test
-    public void rejectsInvalidConfig_tooManyArgument() {
-    	String[] invalidConfig = new String[] {"yyyy-MM-dd", "unexpected"};
-    	
-    	expectedException.expect(IllegalArgumentException.class);
-    	
-    	makeUUT("registrationDate", "01-03-2015", invalidConfig);
     }
 
     @Test

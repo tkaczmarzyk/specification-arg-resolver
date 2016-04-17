@@ -27,7 +27,7 @@ import javax.persistence.criteria.Root;
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class Like<T> extends PathSpecification<T> {
+public class Like<T> extends PathSpecification<T> implements WithoutTypeConversion {
 
     protected String pattern;
 

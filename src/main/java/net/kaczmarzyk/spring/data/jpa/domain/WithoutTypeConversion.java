@@ -15,20 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.text.ParseException;
-
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-
-
 /**
+ * Marker interface to indicate that a {@code Specification} doesn't need
+ *  data type conversions. It's just for the resolver to optimize spec building 
+ * 
  * @author Tomasz Kaczmarzyk
  */
-abstract class DateSpecification<T> extends PathSpecification<T> {
+public interface WithoutTypeConversion {
 
-    protected Converter converter;
-
-    protected DateSpecification(String path, String[] args, Converter converter) throws ParseException {
-        super(path);
-        this.converter = converter;
-    }
 }

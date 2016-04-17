@@ -17,12 +17,16 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 
 /**
  * @author Tomasz Kaczmarzyk
  */
 public abstract class ResolverTestBase {
 
+	protected Converter defaultConverter = Converter.DEFAULT;
+	
 	protected Object testMethod(String methodName) {
         return testMethod(methodName, Specification.class);
     }

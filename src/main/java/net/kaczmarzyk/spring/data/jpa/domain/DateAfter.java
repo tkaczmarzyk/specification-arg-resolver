@@ -23,6 +23,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 /**
  * <p>Filters with {@code path > date} where-clause.</p>
  * 
@@ -35,12 +37,8 @@ public class DateAfter<T> extends DateSpecification<T> {
 
     private Date date;
 
-    public DateAfter(String path, String... args) throws ParseException {
-        this(path, args, null);
-    }
-    
-    public DateAfter(String path, String[] args, String[] config) throws ParseException {
-        super(path, args, config);
+    public DateAfter(String path, String[] args, Converter converter) throws ParseException {
+        super(path, args, converter);
         if (args == null || args.length != 1) {
             throw new IllegalArgumentException("expected a single http-param, but was: " + args);
         }

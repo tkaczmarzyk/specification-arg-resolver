@@ -26,6 +26,8 @@ import org.junit.Test;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 
 /**
@@ -46,14 +48,14 @@ public class DateAfterTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-    	DateAfter<Customer> after13th = new DateAfter<>("registrationDate", "2014-03-13");
+    	DateAfter<Customer> after13th = new DateAfter<>("registrationDate", new String[] { "2014-03-13" }, defaultConverter);
         
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)
             .hasSize(1)
             .containsOnly(moeSzyslak);
         
-        DateAfter<Customer> after10th = new DateAfter<>("registrationDate", "2014-03-10");
+        DateAfter<Customer> after10th = new DateAfter<>("registrationDate", new String[] { "2014-03-10" }, defaultConverter);
         
         result = customerRepo.findAll(after10th);
         assertThat(result)
@@ -63,7 +65,8 @@ public class DateAfterTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-    	DateAfter<Customer> after13th = new DateAfter<>("registrationDate", new String[] {"13-03-2014"}, new String[] {"dd-MM-yyyy"});
+    	DateAfter<Customer> after13th = new DateAfter<>("registrationDate", new String[] {"13-03-2014"},
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
         
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)
@@ -73,16 +76,11 @@ public class DateAfterTest extends IntegrationTestBase {
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateAfter<>("path", "2014-03-10", "2014-03-11");
+        new DateAfter<>("path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateAfter<>("path", new String[] {});
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void rejectsInvalidNumberOfConfigArguments() throws ParseException {
-        new DateAfter<>("path", new String[] {"2014-03-10"}, new String[] {"yyyy-MM-dd", "MM-dd-yyyy"});
+        new DateAfter<>("path", new String[] {}, defaultConverter);
     }
 }

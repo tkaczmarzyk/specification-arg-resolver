@@ -30,6 +30,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+
 /**
  * @author Tomasz Kaczmarzyk
  * @author TP Diffenbach
@@ -50,6 +53,8 @@ public abstract class IntegrationTestBase {
     
     @PersistenceContext
     protected EntityManager em;
+    
+    protected Converter defaultConverter = Converter.DEFAULT;
     
     /**
      * Call findAll with the Specification, and assert its members match the expectedMembers

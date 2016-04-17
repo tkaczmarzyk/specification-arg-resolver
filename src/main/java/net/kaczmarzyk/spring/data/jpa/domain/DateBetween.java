@@ -23,6 +23,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 
 /**
  * Filters with {@code path between arg1 and arg2} where-clause.
@@ -34,12 +36,8 @@ public class DateBetween<T> extends DateSpecification<T> {
     private Date after;
     private Date before;
     
-    public DateBetween(String path, String... args) throws ParseException {
-        this(path, args, null);
-    }
-
-    public DateBetween(String path, String[] args, String[] config) throws ParseException {
-        super(path, args, config);
+    public DateBetween(String path, String[] args, Converter converter) throws ParseException {
+        super(path, args, converter);
         if (args == null || args.length != 2) {
             throw new IllegalArgumentException("expected 2 http params (date boundaries), but was: " + args);
         }

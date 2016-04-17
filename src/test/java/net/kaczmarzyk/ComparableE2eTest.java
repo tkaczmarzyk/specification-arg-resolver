@@ -34,6 +34,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+/**
+ * @author Tomasz Kaczmarzyk
+ */
 public class ComparableE2eTest extends E2eTestBase {
 
 	@Controller
@@ -42,7 +45,7 @@ public class ComparableE2eTest extends E2eTestBase {
 		@Autowired
 		CustomerRepository customerRepo;
 		
-		@RequestMapping(value = "/customers", params = { "nameAfter", "nameBefore"})
+		@RequestMapping(value = "/comparable/customers", params = { "nameAfter", "nameBefore"})
 		@ResponseBody
 		public Object findCustomersByNameRange(
 				@And({
@@ -52,11 +55,33 @@ public class ComparableE2eTest extends E2eTestBase {
 
 			return customerRepo.findAll(spec);
 		}
+		
+		@RequestMapping(value = "/comparable/customers", params = { "registeredAfter", "registeredBefore"})
+		@ResponseBody
+		public Object findCustomersByRegistrationDateRange(
+				@And({
+					@Spec(path="registrationDate", params="registeredAfter", spec=GreaterThanOrEqual.class),
+					@Spec(path="registrationDate", params="registeredBefore", spec=LessThanOrEqual.class)
+				}) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+		
+		@RequestMapping(value = "/comparable/customers2", params = { "registeredAfter", "registeredBefore"})
+		@ResponseBody
+		public Object findCustomersByRegistrationDateRange_customDateFormat(
+				@And({
+					@Spec(path="registrationDate", params="registeredAfter", spec=GreaterThanOrEqual.class, config = { "dd.MM.yyyy" }),
+					@Spec(path="registrationDate", params="registeredBefore", spec=LessThanOrEqual.class, config = { "dd.MM.yyyy" })
+				}) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
 	}
 	
 	@Test
 	public void findsByNameRange() throws Exception {
-		mockMvc.perform(get("/customers")
+		mockMvc.perform(get("/comparable/customers")
 				.param("nameAfter", "Homer")
 				.param("nameBefore", "Mah")
 				.accept(MediaType.APPLICATION_JSON))
@@ -65,6 +90,34 @@ public class ComparableE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1].firstName").value("Lisa"))
 			.andExpect(jsonPath("$[2].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[3]").doesNotExist());
+	}
+	
+	@Test
+	public void filtersByRegistrationDateRange_defaultDateFormat() throws Exception {
+		mockMvc.perform(get("/comparable/customers")
+				.param("registeredAfter", "2014-03-20")
+				.param("registeredBefore", "2014-03-26")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Marge"))
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[2].firstName").value("Ned"))
+			.andExpect(jsonPath("$[3]").doesNotExist());
+	}
+	
+	@Test
+	public void filtersByRegistrationDateRange_customDateFormat() throws Exception {
+		mockMvc.perform(get("/comparable/customers2")
+				.param("registeredAfter", "20.03.2014")
+				.param("registeredBefore", "26.03.2014")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Marge"))
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[2].firstName").value("Ned"))
 			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 }
