@@ -39,10 +39,10 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
  */
 public class EqualTest extends IntegrationTestBase {
 
-    private Customer homerSimpson;
-    private Customer margeSimpson;
-    private Customer moeSzyslak;
-    private Customer joeQuimby;
+    protected Customer homerSimpson;
+    protected Customer margeSimpson;
+    protected Customer moeSzyslak;
+    protected Customer joeQuimby;
 
     @Before
     public void initData() {

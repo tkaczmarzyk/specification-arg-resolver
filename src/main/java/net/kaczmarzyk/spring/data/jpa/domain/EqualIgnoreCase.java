@@ -15,39 +15,35 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-
 /**
  * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
- * 
+ *
  * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
- * 
- * @author Tomasz Kaczmarzyk
+ *
+ * <p>If the field type is string, the where-clause is case insensitive</p>
+ *
+ * @author Ricardo Pardinho
  */
-public class Equal<T> extends PathSpecification<T> {
+public class EqualIgnoreCase<T> extends Equal<T> {
 
-	protected String expectedValue;
-	private Converter converter;	
-	
-	
-	public Equal(String path, String[] httpParamValues, Converter converter) {
-		super(path);
-		if (httpParamValues == null || httpParamValues.length != 1) {
-			throw new IllegalArgumentException();
-		}
-		this.expectedValue = httpParamValues[0];
-		this.converter = converter;
-	}
-	
-	@Override
-	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		Class<?> typeOnPath = path(root).getJavaType();
-		return cb.equal(path(root), converter.convert(expectedValue, typeOnPath));
-	}
+    public EqualIgnoreCase(String path, String[] httpParamValues, Converter converter) {
+        super(path, httpParamValues, converter);
+    }
 
+    @Override
+    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+
+        if (path(root).getJavaType().equals(String.class)) {
+            return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase());
+        }
+
+        return super.toPredicate(root, query, cb);
+    }
 }
