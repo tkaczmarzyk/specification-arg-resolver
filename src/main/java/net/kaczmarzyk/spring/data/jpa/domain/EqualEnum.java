@@ -15,17 +15,16 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -43,7 +42,7 @@ public class EqualEnum<T> extends PathSpecification<T> {
     protected String[] searchedNames;
 
     public EqualEnum(String path, String... args) {
-        super(path);
+        super(new String[] {path});
         if (args == null || args.length == 0) {
             throw new IllegalArgumentException("Expected at least one argument (the enum constant name to match against)");
         } else {

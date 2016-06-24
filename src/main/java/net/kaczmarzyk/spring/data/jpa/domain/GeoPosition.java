@@ -15,7 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import net.kaczmarzyk.spring.data.jpa.domain.PathSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 import javax.persistence.criteria.*;
@@ -37,7 +36,7 @@ public class GeoPosition<T> extends PathSpecification<T> {
     private BigDecimal longitude;
     private BigDecimal distance;
 
-    public GeoPosition(String path, String... args) {
+    public GeoPosition(String[] path, String... args) {
         super(path);
         if (args == null || args.length != 3) {
             throw new IllegalArgumentException("Expected exactly three argument (the fragment to match against), but got: " + Arrays.toString(args));
@@ -50,12 +49,12 @@ public class GeoPosition<T> extends PathSpecification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        String[] paths = path.split(";");
-        if (paths.length != 2) {
+        if (path.length != 2) {
             throw new IllegalArgumentException("Expected exactly two paths united with \";\", but got: " + path);
         }
-        Expression latitudeEx = root.get(paths[0]);
-        Expression longitudeEx = root.get(paths[1]);
+
+        Expression latitudeEx = root.get(path[0]);
+        Expression longitudeEx = root.get(path[1]);
 
         return builder.and(
                 builder.greaterThan(latitudeEx, latitude.subtract(distance)),

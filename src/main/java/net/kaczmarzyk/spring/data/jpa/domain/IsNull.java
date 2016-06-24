@@ -31,7 +31,7 @@ import javax.persistence.criteria.Root;
 public class IsNull<T> extends PathSpecification<T> implements ZeroArgSpecification {
 
 	public IsNull(String path, String[] args) {
-		super(path);
+		super(new String[] {path});
 	}
 
 	@Override

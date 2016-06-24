@@ -15,15 +15,10 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.util.Arrays;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
+import javax.persistence.criteria.*;
+import java.util.Arrays;
 
 /**
  * <p>Base class for Comparable comparisons..</p>
@@ -39,7 +34,7 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 	private Converter converter;	
 	
 	public ComparableSpecification(String path, String[] httpParamValues, Converter converter) {
-		super(path);
+		super(new String[] {path});
 		if (httpParamValues == null || httpParamValues.length != 1) {
 			throw new IllegalArgumentException("expected one http-param, but was " + Arrays.toString(httpParamValues));
 		}

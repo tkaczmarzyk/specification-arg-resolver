@@ -15,12 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 /**
  * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
@@ -36,7 +36,7 @@ public class Equal<T> extends PathSpecification<T> {
 	
 	
 	public Equal(String path, String[] httpParamValues, Converter converter) {
-		super(path);
+		super(new String[] {path});
 		if (httpParamValues == null || httpParamValues.length != 1) {
 			throw new IllegalArgumentException();
 		}

@@ -15,14 +15,14 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.text.ParseException;
-import java.util.Date;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Filters with {@code path <= date} where-clause.

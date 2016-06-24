@@ -15,12 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.util.Arrays;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Arrays;
 
 /**
  * Filters with {@code path like %pattern%} where-clause.
@@ -32,7 +31,7 @@ public class Like<T> extends PathSpecification<T> implements WithoutTypeConversi
     protected String pattern;
 
     public Like(String path, String... args) {
-        super(path);
+        super(new String[] {path});
         if (args == null || args.length != 1) {
             throw new IllegalArgumentException("Expected exactly one argument (the fragment to match against), but got: " + Arrays.toString(args));
         } else {

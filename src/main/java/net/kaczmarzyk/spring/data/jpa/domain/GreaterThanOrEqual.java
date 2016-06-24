@@ -15,11 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
 /**
  * <p>Filters with greater than or equal where-clause (e.g. {@code where firstName >= "Homer"}).</p>

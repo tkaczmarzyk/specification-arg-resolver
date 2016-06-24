@@ -15,9 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.text.ParseException;
-
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
+import java.text.ParseException;
 
 
 /**
@@ -28,7 +28,7 @@ abstract class DateSpecification<T> extends PathSpecification<T> {
     protected Converter converter;
 
     protected DateSpecification(String path, String[] args, Converter converter) throws ParseException {
-        super(path);
+        super(new String[] {path});
         this.converter = converter;
     }
 }

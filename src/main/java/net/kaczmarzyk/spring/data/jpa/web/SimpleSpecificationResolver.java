@@ -15,11 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
+import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,9 +26,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 
 /**
@@ -79,26 +78,33 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 		Converter converter = resolveConverter(def);
 		
 		Specification<Object> spec;
+		Object path;
+		if (def.path().length > 1) {
+			path = def.path();
+		} else {
+			path = def.path()[0];
+		}
+
 		if (def.config().length == 0) {
 	    	try {
 	    		spec = def.spec().getConstructor(String.class, String[].class)
-			            .newInstance(def.path(), argsArray);
+			            .newInstance(path, argsArray);
 	    	} catch (NoSuchMethodException e) {
 	    		spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
-			            .newInstance(def.path(), argsArray, converter);
+			            .newInstance(path, argsArray, converter);
 	    	}
 		} else {
 		    try {
 		    	spec = def.spec().getConstructor(String.class, String[].class, Converter.class, String[].class)
-			            .newInstance(def.path(), argsArray, converter, def.config());
+			            .newInstance(path, argsArray, converter, def.config());
 		    } catch (NoSuchMethodException e) {
 		    	try {
 		    		spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
-				            .newInstance(def.path(), argsArray, converter);
+				            .newInstance(path, argsArray, converter);
 		    	} catch (NoSuchMethodException e2) {
 		    		// legacy constructor support, to retain backward-compatibility
 		    		spec = def.spec().getConstructor(String.class, String[].class, String[].class)
-				            .newInstance(def.path(), argsArray, def.config());
+				            .newInstance(path, argsArray, def.config());
 		    	}
 		    }
 		}
@@ -133,8 +139,10 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 		        addValuesToArgs(httpParamValues, args);
 		    }
 		} else {
-		    String[] httpParamValues = req.getParameterValues(specDef.path());
-		    addValuesToArgs(httpParamValues, args);
+			for (String path : specDef.path()) {
+				String[] httpParamValues = req.getParameterValues(path);
+				addValuesToArgs(httpParamValues, args);
+			}
 		}
 		return args;
 	}

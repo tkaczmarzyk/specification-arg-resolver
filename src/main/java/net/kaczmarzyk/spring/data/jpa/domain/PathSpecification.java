@@ -15,10 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import org.springframework.data.jpa.domain.Specification;
+
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
-
-import org.springframework.data.jpa.domain.Specification;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -26,15 +28,28 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public abstract class PathSpecification<T> implements Specification<T> {
     
-    protected String path;
+    protected String[] path;
 
-    public PathSpecification(String path) {
+    public PathSpecification(String[] path) {
         this.path = path;
     }
     
     @SuppressWarnings("unchecked")
     protected <F> Path<F> path(Root<T> root) {
+        return getPathFromRoot(root, path[0]);
+    }
+
+    protected <F> List<Path<F>> paths(Root<T> root) {
+        List<Path<F>> paths = new ArrayList<>();
+        for (String field : path) {
+            paths.add((Path<F>) getPathFromRoot(root, field));
+        }
+        return paths;
+    }
+
+    private <F> Path<F> getPathFromRoot(Root<T> root, String path) {
         Path<?> expr = null;
+
         for (String field : path.split("\\.")) {
             if (expr == null) {
                 expr = root.get(field);
