@@ -35,8 +35,13 @@ public class GeoPosition<T> extends PathSpecification<T> {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private BigDecimal distance;
+    private boolean allowNull = false;
 
-    public GeoPosition(String[] path, String... args) {
+    public GeoPosition(String path[], String[] args) {
+        this(path, args, null);
+    }
+    
+    public GeoPosition(String[] path, String[] args, String[] config) {
         super(path);
         if (args == null || args.length != 3) {
             throw new IllegalArgumentException("Expected exactly three argument (the fragment to match against), but got: " + Arrays.toString(args));
@@ -44,6 +49,7 @@ public class GeoPosition<T> extends PathSpecification<T> {
             latitude = new BigDecimal(args[0]);
             longitude = new BigDecimal(args[1]);
             distance = new BigDecimal(args[2]);
+            allowNull = Boolean.parseBoolean(config[0]);
         }
     }
 
@@ -56,11 +62,20 @@ public class GeoPosition<T> extends PathSpecification<T> {
         Expression latitudeEx = root.get(path[0]);
         Expression longitudeEx = root.get(path[1]);
 
-        return builder.and(
-                builder.greaterThan(latitudeEx, latitude.subtract(distance)),
-                builder.lessThan(latitudeEx, latitude.add(distance)),
-                builder.greaterThan(longitudeEx, longitude.subtract(distance)),
-                builder.lessThan(longitudeEx, longitude.add(distance)));
+        Predicate latitudeGt = builder.greaterThan(latitudeEx, latitude.subtract(distance));
+        Predicate latitudeLs = builder.lessThan(latitudeEx, latitude.add(distance));
+        Predicate longitudeGt = builder.greaterThan(longitudeEx, longitude.subtract(distance));
+        Predicate longitudeLs = builder.lessThan(longitudeEx, longitude.add(distance));
+
+        return allowNull ?
+                builder.and(
+                        builder.or(
+                                builder.isNull(latitudeEx),
+                                builder.and(latitudeGt, latitudeLs)),
+                        builder.or(
+                                builder.isNull(latitudeEx),
+                                builder.and(longitudeGt, longitudeLs))) :
+                builder.and(latitudeGt, latitudeLs, longitudeGt, longitudeLs);
     }
 
     @Override
