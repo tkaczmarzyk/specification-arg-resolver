@@ -31,11 +31,13 @@ import java.util.Arrays;
 public class GeoPosition<T> extends PathSpecification<T> {
 
     private Converter converter;
+    private DistanceHelper distanceHelper = new DistanceHelper();
 
     private BigDecimal latitude;
     private BigDecimal longitude;
     private BigDecimal distance;
     private boolean allowNull = false;
+    private DistanceUnit distanceUnit = DistanceUnit.METER;
 
     public GeoPosition(String path[], String[] args) {
         this(path, args, null);
@@ -50,6 +52,9 @@ public class GeoPosition<T> extends PathSpecification<T> {
             longitude = new BigDecimal(args[1]);
             distance = new BigDecimal(args[2]);
             allowNull = Boolean.parseBoolean(config[0]);
+            if (config.length > 1) {
+                distanceUnit = DistanceUnit.valueOf(config[1].toUpperCase());
+            }
         }
     }
 
@@ -62,10 +67,25 @@ public class GeoPosition<T> extends PathSpecification<T> {
         Expression latitudeEx = root.get(path[0]);
         Expression longitudeEx = root.get(path[1]);
 
-        Predicate latitudeGt = builder.greaterThan(latitudeEx, latitude.subtract(distance));
-        Predicate latitudeLs = builder.lessThan(latitudeEx, latitude.add(distance));
-        Predicate longitudeGt = builder.greaterThan(longitudeEx, longitude.subtract(distance));
-        Predicate longitudeLs = builder.lessThan(longitudeEx, longitude.add(distance));
+        BigDecimal latitudeDistance;
+        BigDecimal longitudeDistance;
+        switch (distanceUnit) {
+            case DEGREE:
+                latitudeDistance=distance;
+                longitudeDistance=distance;
+                break;
+            case METER:
+                latitudeDistance=distanceHelper.transformLatitude(distance, latitude);
+                longitudeDistance=distanceHelper.transformLongitude(distance);
+                break;
+            default:
+                throw new IllegalStateException("Unknown Distant unit. Unit: "+distanceUnit.name());
+        }
+
+        Predicate latitudeGt = builder.greaterThan(latitudeEx, latitude.subtract(latitudeDistance));
+        Predicate latitudeLs = builder.lessThan(latitudeEx, latitude.add(latitudeDistance));
+        Predicate longitudeGt = builder.greaterThan(longitudeEx, longitude.subtract(longitudeDistance));
+        Predicate longitudeLs = builder.lessThan(longitudeEx, longitude.add(longitudeDistance));
 
         return allowNull ?
                 builder.and(
@@ -86,18 +106,65 @@ public class GeoPosition<T> extends PathSpecification<T> {
 
         GeoPosition<?> that = (GeoPosition<?>) o;
 
-        if (latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) return false;
-        if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
-        return distance != null ? distance.equals(that.distance) : that.distance == null;
+        if (allowNull != that.allowNull) return false;
+        if (!latitude.equals(that.latitude)) return false;
+        if (!longitude.equals(that.longitude)) return false;
+        if (!distance.equals(that.distance)) return false;
+        return distanceUnit == that.distanceUnit;
 
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
-        result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
-        result = 31 * result + (distance != null ? distance.hashCode() : 0);
+        result = 31 * result + latitude.hashCode();
+        result = 31 * result + longitude.hashCode();
+        result = 31 * result + distance.hashCode();
+        result = 31 * result + (allowNull ? 1 : 0);
+        result = 31 * result + distanceUnit.hashCode();
         return result;
+    }
+
+    public class DistanceHelper {
+        /**
+         * In meters
+         */
+        public final BigDecimal PARALLELS_DEGREE_LENGTH_ON_EQUATOR = new BigDecimal(111321.377778);
+        /**
+         * In meters
+         */
+        public final BigDecimal MERIDIANS_DEGREE_LENGTH = new BigDecimal(111134.86111);
+
+        private int scale = 6;
+        /**
+         *
+         * @param meters
+         * @return degree
+         */
+        public BigDecimal transformLatitude(BigDecimal meters, BigDecimal latitude) {
+            return meters.divide(PARALLELS_DEGREE_LENGTH_ON_EQUATOR
+                    .multiply(new BigDecimal(Math.cos(latitude.doubleValue()))), scale, BigDecimal.ROUND_HALF_DOWN);
+        }
+
+        /**
+         *
+         * @param meters
+         * @return degree
+         */
+        public BigDecimal transformLongitude(BigDecimal meters) {
+            return meters.divide(MERIDIANS_DEGREE_LENGTH, scale, BigDecimal.ROUND_HALF_DOWN);
+        }
+
+        public int getScale() {
+            return scale;
+        }
+
+        public void setScale(int scale) {
+            this.scale = scale;
+        }
+    }
+
+    public enum DistanceUnit {
+        DEGREE, METER
     }
 }
