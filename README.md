@@ -351,6 +351,32 @@ public Object findNotDeletedCustomerByLastName(
 
 to execute queries such as `select c from Customer c where c.deleted = false and c.lastName like %Homer%`.
 
+Handling different field types
+------------------------------
+
+Consider a field `age` of type `Integer` and the following specification definition:
+
+```java
+@Spec(path="age", spec=Equal.class)
+```
+
+If non-numeric values is passed with the HTTP request (e.g. `?age=test`), then the result list will be empty. If you want an exception to be thrown instead, use `onTypeMismatch` property of the `Spec` annotation, i.e:
+
+```java
+@Spec(path="age", spec=Equal.class, onTypeMismatch=OnTypeMismatch.EXCEPTION)
+```
+
+This behaviour has changed in version `0.9.0` (exception was the default value in previous ones). The default `OnTypeMismatch.EMPTY_RESULT` is useful when using `@And` or `@Or` and their inner specs refer to fields of different types, e.g.:
+
+```java
+@And({
+    @Spec(path="firstName", params="query", spec=Equal.class),
+    @Spec(path="customerId", params="query", spec=Equal.class)})
+```
+
+(assuming that `firstName` is `String` and `customerId` is a numeric type)
+
+
 Download binary releases
 ------------------------
 
