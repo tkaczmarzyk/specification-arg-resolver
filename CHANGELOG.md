@@ -1,3 +1,10 @@
+v0.9.0
+======
+
+* added `EqualIgnoreCase` specification
+* introduced `Null` specification which accepts a boolean HTTP param to dynamically add `is null` or `is not null` part to the query
+* introduced `onTypeMismatch` property of `@Spec` to define whether an exception should be thrown or empty result returned when an invalid value is passed (e.g. a non numeric value while field type is `Integer`). Default behaviour is to return an empty result, which __is a breaking change__ (an exception was thrown in previous versions). Use `onTypeMismatch=EXCEPTION` to match old behaviour.
+
 v0.8.0
 ======
 
