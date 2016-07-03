@@ -92,6 +92,10 @@ Usage: `@Spec(path="gender", spec=Enum.class)`.
 
 The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
 
+### EqualIgnoreCase ###
+
+Works as `Equal`, but the query is also case-insensitive.
+
 ### In ###
 
 Compares an attribute of an entity with multiple values of a HTTP parameter. E.g. `(..) where gender in (MALE, FEMALE)`.
@@ -113,6 +117,10 @@ Filters using `is null` or `is not null`, depending on the value of the paramete
 The data type of the field specified in `path` can be anything, but the HTTP parameter must be a Boolean. You should use `params` attribute to make it clear that the parameter is filtering for null values.
 
 Usage: `@Spec(path="activationDate", params="activationDateNull" spec=Null.class)`.
+
+If you want the query to be static, i.e. not depend on any HTTP param, use `constVal` attribute of `Spec` annotation:
+
+For example `@Spec(path="nickname", spec=Null.class, constVal="true")` will always add `nickname is null` to the query.
 
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
