@@ -106,11 +106,13 @@ Usage: `@Spec(path="gender", spec=In.class)`.
 
 The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
 
-### IsNull ###
+### Null ###
 
-Does not use any HTTP-parameters. Represents static `where` clause: `path is null`.
+Filters using `is null` or `is not null`, depending on the value of the parameter passed in. A value of `true` will filter for `is null`, and a value of `false` will filter for `is not null`.
 
-Usage: `@Spec(path="activationDate", spec=IsNull.class)`.
+The data type of the field specified in `path` can be anything, but the HTTP parameter must be a Boolean. You should use `params` attribute to make it clear that the parameter is filtering for null values.
+
+Usage: `@Spec(path="activationDate", params="activationDateNull" spec=Null.class)`.
 
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 

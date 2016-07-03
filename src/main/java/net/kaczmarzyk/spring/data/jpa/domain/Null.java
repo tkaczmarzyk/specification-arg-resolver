@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -22,24 +24,34 @@ import javax.persistence.criteria.Root;
 
 
 /**
- * <p>Filers with "is null" where clause (e.g. {@code where nickName is null}).</p>
+ * <p>Filers with "is null" or "is not null" where clause (e.g. {@code where nickName is null}).</p>
  *
- * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p>
+ * <p>Requires boolean parameter.</p>
  *
  * @author Tomasz Kaczmarzyk
- *
- * @deprecated Consider using {@link net.kaczmarzyk.spring.data.jpa.domain.Null Null}
+ * @author Gerald Humphries
  */
-@Deprecated
-public class IsNull<T> extends PathSpecification<T> implements ZeroArgSpecification {
+public class Null<T> extends PathSpecification<T> {
 
-	public IsNull(String path, String[] args) {
+	protected String expectedValue;
+	private Converter converter;
+
+	public Null(String path, String[] httpParamValues, Converter converter) {
 		super(path);
+		if (httpParamValues == null || httpParamValues.length != 1) {
+			throw new IllegalArgumentException();
+		}
+		this.expectedValue = httpParamValues[0];
+		this.converter = converter;
 	}
 
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		return cb.isNull(path(root));
+		if (converter.convert(expectedValue, Boolean.class)) {
+			return cb.isNull(path(root));
+		} else {
+			return cb.isNotNull(path(root));
+		}
 	}
 
 }
