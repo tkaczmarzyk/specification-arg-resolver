@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,18 +26,42 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+
 
 /**
+ * Allow to set custom {@code Converter}, like:
+ * 
+ * <pre>
+ * {
+ *   &#64;code
+ *   ObjectMapper myMapper = new ObjectMapper();
+ *   myMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+ *   new SpecificationArgumentResolver(new Converter(myMapper));
+ * }
+ * </pre>
+ * 
  * @author Tomasz Kaczmarzyk
+ * @author Matt S.Y. Ho
  */
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
-	private List<HandlerMethodArgumentResolver> delegates = Arrays.asList(
-	        new JoinFetchSpecificationResolver(this),
-	        new SimpleSpecificationResolver(),
-			new AndSpecificationResolver(), new ConjunctionSpecificationResolver(),
-			new OrSpecificationResolver(), new DisjunctionSpecificationResolver(),
-			new AnnotatedSpecInterfaceArgumentResolver());
+	private List<HandlerMethodArgumentResolver> delegates;
+	
+	public SpecificationArgumentResolver() {
+      this(Converter.DEFAULT);
+    }
+	
+	public SpecificationArgumentResolver(Converter converter) {
+      super();
+      requireNonNull("converter");
+      delegates = Arrays.asList(
+          new JoinFetchSpecificationResolver(this),
+          new SimpleSpecificationResolver(converter),
+          new AndSpecificationResolver(converter), new ConjunctionSpecificationResolver(converter),
+          new OrSpecificationResolver(converter), new DisjunctionSpecificationResolver(converter),
+          new AnnotatedSpecInterfaceArgumentResolver(converter));
+    }
 
 	Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
             WebDataBinderFactory bider, HandlerMethodArgumentResolver recursiveCaller) throws Exception {

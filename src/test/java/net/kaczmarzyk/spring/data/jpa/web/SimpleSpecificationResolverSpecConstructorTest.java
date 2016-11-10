@@ -31,12 +31,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTestBase {
 
-	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(Converter.DEFAULT);
 
 	public static class SpecWith2ArgConstructor extends DummySpec {
 		String path;
@@ -97,7 +96,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
-		assertThat(resolved.converter).isEqualTo(Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION));
+		assertThat(resolved.converter).isEqualTo(new Converter());
 	}
 	
 	@Test
@@ -114,18 +113,19 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 	}
 
 	@Test
-	public void resolves4ArgsSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWith4argSpec"), 0);
-		NativeWebRequest req = mock(NativeWebRequest.class);
-		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
+    public void resolves4ArgsSpec() throws Exception {
+        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWith4argSpec"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
-		SpecWith4ArgConstructor resolved = (SpecWith4ArgConstructor) resolver.resolveArgument(param, null, req, null);
+        SpecWith4ArgConstructor resolved = (SpecWith4ArgConstructor) resolver.resolveArgument(param, null, req, null);
 
-		assertThat(resolved.path).isEqualTo("thePath");
-		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
-		assertThat(resolved.converter).isEqualTo(Converter.withDateFormat("yyyyMMdd", OnTypeMismatch.EXCEPTION));
-		assertThat(resolved.config).isEqualTo(new String[] { "yyyyMMdd" });
-	}
+        assertThat(resolved.path).isEqualTo("thePath");
+        assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
+        assertThat(resolved.converter.getObjectMapper().getDeserializationConfig().getDateFormat())
+            .isEqualTo(withDateFormat("yyyyMMdd").getObjectMapper().getDeserializationConfig().getDateFormat());
+        assertThat(resolved.config).isEqualTo(new String[] { "yyyyMMdd" });
+    }
 
 	public static class DummySpec implements Specification<Object> {
 		@Override

@@ -18,10 +18,6 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.domain.Disjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -29,12 +25,22 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import net.kaczmarzyk.spring.data.jpa.domain.Disjunction;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+
 /**
  * @author Tomasz Kaczmarzyk
  */
 class OrSpecificationResolver implements HandlerMethodArgumentResolver {
 
-    private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
+    private SimpleSpecificationResolver specResolver;
+    
+    OrSpecificationResolver(Converter converter) {
+      super();
+      this.specResolver = new SimpleSpecificationResolver(converter);
+    }
     
     @Override
     public boolean supportsParameter(MethodParameter param) {

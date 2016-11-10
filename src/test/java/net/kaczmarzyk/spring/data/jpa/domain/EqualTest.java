@@ -29,8 +29,6 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 
 /**
@@ -161,7 +159,7 @@ public class EqualTest extends IntegrationTestBase {
     @Test
     public void filterByDateWithCustomDateFormat() {
     	Equal<Customer> registered1stMarch = new Equal<>("registrationDate", new String[] { "01-03-2015" },
-    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+    	    withDateFormat("dd-MM-yyyy"));
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);

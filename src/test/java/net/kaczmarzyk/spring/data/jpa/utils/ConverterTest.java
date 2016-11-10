@@ -21,10 +21,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.Gender;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -32,13 +28,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import net.kaczmarzyk.spring.data.jpa.Gender;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+
 
 public class ConverterTest {
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	
-	Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT);
+	Converter converter = Converter.DEFAULT;
 	
 	
 	@Test
@@ -53,7 +53,7 @@ public class ConverterTest {
 	
 	@Test
 	public void convertsToMultipleDates() {
-		List<Date> converted = converter.convert(Arrays.asList("2015-03-01", "2015-04-02"), Date.class);
+		List<Date> converted = converter.convert(Arrays.asList("2015-03-01", "2015-04-02"), Date.class, OnTypeMismatch.DEFAULT);
 		
 		assertThat(converted)
 			.hasSize(2);
@@ -77,7 +77,7 @@ public class ConverterTest {
 	@Test
 	public void stringArePassedThrough() {
 		List<String> values = Arrays.asList("1", "2", "3");
-		assertThat(converter.convert(values, String.class)).isSameAs(values);
+		assertThat(converter.convert(values, String.class, OnTypeMismatch.DEFAULT)).isSameAs(values);
 	}
 	
 	@Test
@@ -104,7 +104,7 @@ public class ConverterTest {
 	
 	@Test
 	public void convertsToMultipleEnums() {
-		assertThat(converter.convert(Arrays.asList("FEMALE", "MALE"), Gender.class))
+		assertThat(converter.convert(Arrays.asList("FEMALE", "MALE"), Gender.class, OnTypeMismatch.DEFAULT))
 			.isEqualTo(Arrays.asList(Gender.FEMALE, Gender.MALE));
 	}
 	
@@ -113,16 +113,12 @@ public class ConverterTest {
 		expected.expect(ValuesRejectedException.class);
 		expected.expect(valuesRejected("ROBOT", "ALIEN"));
 		
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION);
-		
-		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
+		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class, OnTypeMismatch.EXCEPTION);
 	}
 	
 	@Test
 	public void ignoresRejectedEnumValues() {
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT);
-		
-		List<Gender> result = converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
+		List<Gender> result = converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class, OnTypeMismatch.EMPTY_RESULT);
 		
 		assertThat(result).containsOnly(Gender.MALE, Gender.FEMALE);
 	}
@@ -141,4 +137,5 @@ public class ConverterTest {
 			}
 		};
 	}
+	
 }

@@ -17,6 +17,8 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.SimpleDateFormat;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -29,6 +31,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
@@ -55,6 +59,7 @@ public abstract class IntegrationTestBase {
     protected EntityManager em;
     
     protected Converter defaultConverter = Converter.DEFAULT;
+    protected OnTypeMismatch defaultOnTypeMismatch = OnTypeMismatch.DEFAULT;
     
     /**
      * Call findAll with the Specification, and assert its members match the expectedMembers
@@ -71,5 +76,17 @@ public abstract class IntegrationTestBase {
      */
     protected void assertFilterEmpty(Specification<Customer> spec) {
     	assertFilterMembers(spec, EMPTY_LIST);
+    }
+    
+    /**
+     * To build Converter with dateFormat & onTypeMismatch just for testing
+     * 
+     * @param dateFormat
+     * @return
+     */
+    protected Converter withDateFormat(String dateFormat) {
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.setDateFormat(new SimpleDateFormat(dateFormat));
+      return new Converter(objectMapper);
     }
 }

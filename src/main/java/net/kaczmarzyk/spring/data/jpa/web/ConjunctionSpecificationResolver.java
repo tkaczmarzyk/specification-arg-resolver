@@ -18,6 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -35,9 +36,14 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 class ConjunctionSpecificationResolver implements HandlerMethodArgumentResolver {
 
-    private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
-    private OrSpecificationResolver orResolver = new OrSpecificationResolver();
+    private SimpleSpecificationResolver specResolver;
+    private OrSpecificationResolver orResolver;
     
+    ConjunctionSpecificationResolver(Converter converter) {
+      super();
+      this.specResolver = new SimpleSpecificationResolver(converter);
+      this.orResolver = new OrSpecificationResolver(converter);
+    }
     
     @Override
     public boolean supportsParameter(MethodParameter param) {

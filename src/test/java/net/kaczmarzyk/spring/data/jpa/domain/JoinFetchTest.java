@@ -17,18 +17,18 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import javax.persistence.criteria.JoinType;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-
 import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
+
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
 
 /**

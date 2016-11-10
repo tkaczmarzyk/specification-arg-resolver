@@ -63,6 +63,18 @@ public class MyConfig extends WebMvcConfigurerAdapter {
 }
 ```
 
+#### Fully controlled converter
+
+`Converter` converts http parameter to object via Jackson. And you can determine your converting logic by passing your custom `Converter` into `SpecificationArgumentResolver`:
+
+```java
+ObjectMapper myMapper = new ObjectMapper();
+myMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+new SpecificationArgumentResolver(new Converter(myMapper));
+```
+
+and then `@Spec` now supports JSR310 conversion, ex: `java.time.LocalDate`, `java.time.LocalDateTime`...
+
 Simple specifications
 ----------------------
 

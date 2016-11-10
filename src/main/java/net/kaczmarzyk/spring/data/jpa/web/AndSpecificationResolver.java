@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -35,8 +36,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 class AndSpecificationResolver implements HandlerMethodArgumentResolver {
 
-    private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
+    private SimpleSpecificationResolver specResolver;
 
+    AndSpecificationResolver(Converter converter) {
+      super();
+      this.specResolver = new SimpleSpecificationResolver(converter);
+    }
     
     @Override
     public boolean supportsParameter(MethodParameter param) {

@@ -15,7 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import java.text.SimpleDateFormat;
+
 import org.springframework.data.jpa.domain.Specification;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 
@@ -40,4 +44,16 @@ public abstract class ResolverTestBase {
     }
 	
 	protected abstract Class<?> controllerClass();
+	
+	/**
+     * To build Converter with dateFormat & onTypeMismatch just for testing
+     * 
+     * @param dateFormat
+     * @return
+     */
+    protected Converter withDateFormat(String dateFormat) {
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.setDateFormat(new SimpleDateFormat(dateFormat));
+      return new Converter(objectMapper);
+    }
 }

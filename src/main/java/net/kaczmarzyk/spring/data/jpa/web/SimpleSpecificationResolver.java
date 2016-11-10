@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
@@ -38,6 +40,13 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
  */
 class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
+    private final Converter converter;
+    
+    SimpleSpecificationResolver(Converter converter) {
+      super();
+      this.converter = converter;
+    }
+  
     @Override
     public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
             WebDataBinderFactory binderFactory) throws Exception {
@@ -74,7 +83,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 	@SuppressWarnings("unchecked")
 	private Specification<Object> newSpecification(Spec def, String[] argsArray) throws InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException {
+			InvocationTargetException, NoSuchMethodException, CloneNotSupportedException {
 
 		Converter converter = resolveConverter(def);
 		
@@ -84,8 +93,13 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 	    		spec = def.spec().getConstructor(String.class, String[].class)
 			            .newInstance(def.path(), argsArray);
 	    	} catch (NoSuchMethodException e) {
-	    		spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
+	    	    try {
+	    	      spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
 			            .newInstance(def.path(), argsArray, converter);
+	    	    } catch (NoSuchMethodException e2) {
+	                spec = def.spec().getConstructor(String.class, String[].class, Converter.class, OnTypeMismatch.class)
+	                        .newInstance(def.path(), argsArray, converter, def.onTypeMismatch());
+	            }
 	    	}
 		} else {
 		    try {
@@ -97,21 +111,28 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 				            .newInstance(def.path(), argsArray, converter);
 		    	} catch (NoSuchMethodException e2) {
 		    		// legacy constructor support, to retain backward-compatibility
-		    		spec = def.spec().getConstructor(String.class, String[].class, String[].class)
+		    	    try {
+		    	      spec = def.spec().getConstructor(String.class, String[].class, String[].class)
 				            .newInstance(def.path(), argsArray, def.config());
+		    	    } catch (NoSuchMethodException e3) {
+		    	        spec = def.spec().getConstructor(String.class, String[].class, Converter.class, OnTypeMismatch.class)
+                          .newInstance(def.path(), argsArray, converter, def.onTypeMismatch());
+		    	    }
 		    	}
 		    }
 		}
 		return spec;
 	}
 
-	private Converter resolveConverter(Spec def) {
-		if (def.config().length == 0) {
-			return Converter.withTypeMismatchBehaviour(def.onTypeMismatch());
-		}
+	private Converter resolveConverter(Spec def) throws CloneNotSupportedException {
+  	    if (def.config().length == 0) {
+  	      return converter;
+  	    }
 		if (def.config().length == 1) {
 			String dateFormat = def.config()[0];
-			return Converter.withDateFormat(dateFormat, def.onTypeMismatch());
+			Converter cloned = converter.clone();
+			cloned.getObjectMapper().setDateFormat(new SimpleDateFormat(dateFormat));
+			return cloned;
 		}
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}

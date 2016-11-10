@@ -24,7 +24,6 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 /**
  * Base class for all Comparable Specification tests, 
@@ -118,7 +117,7 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * @param expectedMembers the Customers we expect to be filtered in
 	 */
 	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String dateFormat, Customer... members) {
-		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)), members);
+		assertFilterMembers(makeUUT(path, value, withDateFormat(dateFormat)), members);
 	}
 
 	/**
@@ -144,7 +143,7 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * @param value Specification value 
 	 */
 	protected void assertFilterIsEmpty(String path, String value, String dateFormat) {
-		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)));
+		assertFilterEmpty(makeUUT(path, value, withDateFormat(dateFormat)));
 	}
 	
     @Test

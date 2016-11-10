@@ -43,7 +43,7 @@ public class DateAfter<T> extends DateSpecification<T> {
             throw new IllegalArgumentException("expected a single http-param, but was: " + args);
         }
         String dateStr = args[0];
-        this.date = converter.convertToDate(dateStr);
+        this.date = converter.convert(dateStr, Date.class);
     }
 
     @Override

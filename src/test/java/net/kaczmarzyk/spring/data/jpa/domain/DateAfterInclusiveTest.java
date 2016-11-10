@@ -26,8 +26,6 @@ import org.junit.Test;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 
 /**
@@ -73,7 +71,7 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
         DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>("registrationDate", new String[] { "13-03-2014" },
-        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+        		withDateFormat("dd-MM-yyyy"));
 
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)

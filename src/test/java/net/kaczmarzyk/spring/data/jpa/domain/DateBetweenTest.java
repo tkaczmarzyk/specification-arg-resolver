@@ -21,13 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.ParseException;
 import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
 
 /**
@@ -66,7 +64,7 @@ public class DateBetweenTest extends IntegrationTestBase {
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
         DateBetween<Customer> between8and13 = new DateBetween<>("registrationDate", new String[] {"08-03-2014", "13-03-2014"},
-        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+        		withDateFormat("dd-MM-yyyy"));
         
         List<Customer> result = customerRepo.findAll(between8and13);
         assertThat(result)

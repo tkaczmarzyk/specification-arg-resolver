@@ -18,15 +18,17 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 /**
@@ -34,7 +36,7 @@ import org.springframework.web.context.request.NativeWebRequest;
  */
 public class AndSpecificationResolverTest extends ResolverTestBase {
 
-    AndSpecificationResolver resolver = new AndSpecificationResolver();
+    AndSpecificationResolver resolver = new AndSpecificationResolver(Converter.DEFAULT);
 
     @Test
     public void resolvesWrapperOfInnerSpecs() throws Exception {

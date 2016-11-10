@@ -53,7 +53,7 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 		Expression<?> rootPath = path(root);
 		Class<?> typeOnPath = rootPath.getJavaType();
 
-		return makePredicate(cb, (Expression<? extends Comparable<?>>) rootPath, 
+		return makePredicate(cb, (Expression<? extends Comparable>) rootPath, 
 				(Comparable) converter.convert(comparedTo, typeOnPath));
 		
 		//  the line below actually works (!), if Y doesn't need to extend Comparable. --tpd

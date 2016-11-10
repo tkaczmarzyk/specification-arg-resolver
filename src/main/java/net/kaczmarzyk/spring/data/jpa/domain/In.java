@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 
 /**
@@ -41,21 +42,23 @@ public class In<T> extends PathSpecification<T> {
 
 	private String[] allowedValues;
 	private Converter converter;
+	private OnTypeMismatch onTypeMismatch;
 
-	public In(String path, String[] httpParamValues, Converter converter) {
+	public In(String path, String[] httpParamValues, Converter converter, OnTypeMismatch onTypeMismatch) {
 		super(path);
 		if (httpParamValues == null || httpParamValues.length < 1) {
 			throw new IllegalArgumentException();
 		}
 		this.allowedValues = httpParamValues;
 		this.converter = converter;
+		this.onTypeMismatch = onTypeMismatch;
 	}
 	
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		Path<?> path = path(root);
 		Class<?> typeOnPath = path.getJavaType();
-		return path.in(converter.convert(Arrays.asList(allowedValues), typeOnPath));
+		return path.in(converter.convert(Arrays.asList(allowedValues), typeOnPath, onTypeMismatch));
 	}
 
 }

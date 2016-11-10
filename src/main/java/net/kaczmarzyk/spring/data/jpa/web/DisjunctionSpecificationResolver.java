@@ -18,6 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -35,9 +36,14 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 class DisjunctionSpecificationResolver implements HandlerMethodArgumentResolver {
 
-    private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
-    private AndSpecificationResolver andResolver = new AndSpecificationResolver();
+    private SimpleSpecificationResolver specResolver;
+    private AndSpecificationResolver andResolver;
     
+    DisjunctionSpecificationResolver(Converter converter) {
+      super();
+      this.specResolver = new SimpleSpecificationResolver(converter);
+      this.andResolver = new AndSpecificationResolver(converter);
+    }
     
     @Override
     public boolean supportsParameter(MethodParameter param) {

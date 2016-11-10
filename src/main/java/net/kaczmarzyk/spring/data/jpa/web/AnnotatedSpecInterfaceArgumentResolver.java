@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
@@ -37,11 +38,20 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentResolver {
 
-	private SimpleSpecificationResolver simpleResolver = new SimpleSpecificationResolver();
-	private OrSpecificationResolver orResolver = new OrSpecificationResolver();
-	private DisjunctionSpecificationResolver disjunctionResolver = new DisjunctionSpecificationResolver();
-	private ConjunctionSpecificationResolver conjunctionResolver = new ConjunctionSpecificationResolver();
-	private AndSpecificationResolver andResolver = new AndSpecificationResolver();
+	private SimpleSpecificationResolver simpleResolver;
+	private OrSpecificationResolver orResolver;
+	private DisjunctionSpecificationResolver disjunctionResolver;
+	private ConjunctionSpecificationResolver conjunctionResolver;
+	private AndSpecificationResolver andResolver;
+	
+    AnnotatedSpecInterfaceArgumentResolver(Converter converter) {
+      super();
+      this.simpleResolver = new SimpleSpecificationResolver(converter);
+      this.orResolver = new OrSpecificationResolver(converter);
+      this.disjunctionResolver = new DisjunctionSpecificationResolver(converter);
+      this.conjunctionResolver = new ConjunctionSpecificationResolver(converter);
+      this.andResolver = new AndSpecificationResolver(converter);
+    }
 	
 	private List<Class<? extends Annotation>> annotationTypes = Arrays.asList(Spec.class, Or.class, And.class, Conjunction.class, Disjunction.class);
 	

@@ -15,18 +15,17 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.ParseException;
 import java.util.List;
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.assertj.core.api.Assertions.assertThat;
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
 /**
  * @author Kamil Sutkowski
@@ -64,7 +63,7 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
         DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>("registrationDate", new String[]{"12-03-2014"},
-        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+        		withDateFormat("dd-MM-yyyy"));
 
         List<Customer> result = customerRepo.findAll(before12th);
         assertThat(result)

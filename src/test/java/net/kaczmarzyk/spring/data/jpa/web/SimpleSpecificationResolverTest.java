@@ -29,12 +29,13 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
 import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
-    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(Converter.DEFAULT);
 
     @Test
     public void returnsNullIfTheWebParameterIsMissing_defaultParameterName() throws Exception {

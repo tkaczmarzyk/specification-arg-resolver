@@ -32,13 +32,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.WithoutTypeConversion;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestBase {
 
-    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(Converter.DEFAULT);
 
 	@Test
     public void usesEmptyResultSpecWrapperWhenSpecified() throws Exception {
