@@ -75,6 +75,38 @@ new SpecificationArgumentResolver(new Converter(myMapper));
 
 and then `@Spec` now supports JSR310 conversion, ex: `java.time.LocalDate`, `java.time.LocalDateTime`...
 
+### Indicate field type
+
+Use `@com.fasterxml.jackson.annotation.JsonSubTypes` to indicate the specify type of field, and it will be used by `Converter` to do the converting. It will help to get the correct java type, especially generic fields in super class.
+
+We somethings declare `id` field in super class as generic type.
+
+```java
+@MappedSuperclass
+public abstract class Generic<ID extends Serializable> {
+  @Id
+  @GeneratedValue
+  private ID id; 
+}
+```
+
+But generic type can not be recognized correctly in runtime, therefore we have to indicate the type.
+
+```java
+@Entity
+public class MyEntity extends Generic<Long>{
+	
+	@JsonSubTypes(@Type(Long.class))
+	public Long getId() {
+		return super.getId();
+	}
+    
+	// more fields
+}
+```
+
+It will try to find `@JsonSubTypes` on getter methods first, and then fields.
+
 Simple specifications
 ----------------------
 
