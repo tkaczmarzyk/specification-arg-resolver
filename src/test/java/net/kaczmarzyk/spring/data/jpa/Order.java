@@ -17,18 +17,19 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 
 @Entity
 @Table(name = "orders")
-public class Order {
+public class Order extends Generic<Long> {
 
-    @Id @GeneratedValue
-    private Long id;
+//    @Id @GeneratedValue
+//    private Long id;
     
     private String itemName;
     
@@ -49,4 +50,14 @@ public class Order {
         this.customer2 = customer;
         customer.getOrders2().add(this);
     }
+    
+    @JsonSubTypes(@Type(Long.class))
+    public Long getId() {
+        return super.getId();
+    }
+
+    public String getItemName() {
+      return itemName;
+    }
+    
 }

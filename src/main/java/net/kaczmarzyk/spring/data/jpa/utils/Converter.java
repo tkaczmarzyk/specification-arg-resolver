@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -82,19 +83,21 @@ public class Converter implements Cloneable {
             return this.getClass().getSimpleName() + ": " + getMessage();
         }
     }
-    
-    private static final ObjectMapper DEFAULT_OBJECT_MAPPER;
-    static {
-      DEFAULT_OBJECT_MAPPER = new ObjectMapper();
-      DEFAULT_OBJECT_MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
-    }
 
     public static final Converter DEFAULT = new Converter();
     
     private ObjectMapper objectMapper;
     
     public Converter() {
-      this(DEFAULT_OBJECT_MAPPER);
+      this(()-> {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        return objectMapper;
+      });
+    }
+    
+    public Converter(Supplier<ObjectMapper> objectMapperSupplier) {
+      this(requireNonNull(objectMapperSupplier, "objectMapperSupplier").get());
     }
     
     public Converter(ObjectMapper objectMapper) {
@@ -106,9 +109,10 @@ public class Converter implements Cloneable {
         if (expectedClass.isEnum()) {
           return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
         }
-
+        
         try {
-          return objectMapper.convertValue(value, expectedClass);
+          T converted = objectMapper.convertValue(value, expectedClass);
+          return converted;
         } catch (IllegalArgumentException e) {
             throw new ValueRejectedException(value, "Conversion fails due to incompatible type", e);
         }
@@ -173,8 +177,8 @@ public class Converter implements Cloneable {
     }
 
     @Override
-    public Converter clone() throws CloneNotSupportedException {
-      return new Converter(new ObjectMapper(objectMapper.getFactory()));
+    public Converter clone() {
+      return new Converter(objectMapper.copy());
     }
     
 }

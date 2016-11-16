@@ -96,7 +96,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
-		assertThat(resolved.converter).isEqualTo(new Converter());
+		assertThat(resolved.converter).isEqualTo(defaultConverter);
 	}
 	
 	@Test

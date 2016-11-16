@@ -83,7 +83,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 	@SuppressWarnings("unchecked")
 	private Specification<Object> newSpecification(Spec def, String[] argsArray) throws InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException, CloneNotSupportedException {
+			InvocationTargetException, NoSuchMethodException {
 
 		Converter converter = resolveConverter(def);
 		
@@ -124,7 +124,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 		return spec;
 	}
 
-	private Converter resolveConverter(Spec def) throws CloneNotSupportedException {
+	private Converter resolveConverter(Spec def) {
   	    if (def.config().length == 0) {
   	      return converter;
   	    }

@@ -15,10 +15,20 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Optional;
+
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.data.jpa.domain.Specification;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 
 /**
@@ -32,19 +42,66 @@ public abstract class PathSpecification<T> implements Specification<T> {
         this.path = path;
     }
     
-    @SuppressWarnings("unchecked")
     protected <F> Path<F> path(Root<T> root) {
-        Path<?> expr = null;
-        for (String field : path.split("\\.")) {
-            if (expr == null) {
-                expr = root.get(field);
-            } else {
-                expr = expr.get(field);
-            }
-        }
-        return (Path<F>) expr;
+        LinkedList<FieldAndPath<F>> paths = paths(root);
+        return paths.getLast().getPath();
     }
 
+    @SuppressWarnings("unchecked")
+    private <F> LinkedList<FieldAndPath<F>> paths(Root<T> root) {
+        LinkedList<FieldAndPath<F>> paths = new LinkedList<>();
+        Path<?> expr = null;
+        for (String field : path.split("\\.")) {
+          FieldAndPath<F> fp;
+          if (expr == null) {
+            fp = new FieldAndPath<>(field, (Path<F>) root);
+          } else {
+            fp = new FieldAndPath<>(field, (Path<F>) expr);
+          }
+          paths.add(fp);
+          expr = fp.getPath();
+        }
+        return paths;
+    }
+    
+    protected Class<?> javaType(Root<T> root) {
+      FieldAndPath<?> path = paths(root).getLast();
+      return path.getIndicatedJavaType().orElse(path.getPath().getJavaType());
+    }
+  
+    private class FieldAndPath<X> {
+
+      private final String field;
+      private final Path<X> original;
+      private final Path<X> path;
+
+      FieldAndPath(String field, Path<X> original) {
+        super();
+        this.field = Objects.requireNonNull(field);
+        this.original = Objects.requireNonNull(original);
+        this.path = original.get(field);
+      }
+
+      Path<X> getPath() {
+        return path;
+      }
+
+      Optional<Class<?>> getIndicatedJavaType() {
+        String methodName = "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
+        Optional<AnnotatedElement> indicated = Optional
+            .ofNullable(MethodUtils.getMatchingAccessibleMethod(original.getJavaType(), methodName));
+
+        if (!indicated.isPresent()) {
+          indicated = Optional.ofNullable(FieldUtils.getField(original.getJavaType(), field, true));
+        }
+
+        return indicated.map(f -> f.getAnnotation(JsonSubTypes.class))
+            .map(JsonSubTypes::value)
+            .map(types -> types[0]) // always get the first type in array
+            .map(Type::value);
+      }
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;

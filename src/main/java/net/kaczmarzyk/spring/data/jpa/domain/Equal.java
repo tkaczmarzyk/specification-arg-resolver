@@ -46,7 +46,7 @@ public class Equal<T> extends PathSpecification<T> {
 	
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		Class<?> typeOnPath = path(root).getJavaType();
+		Class<?> typeOnPath = javaType(root);
 		return cb.equal(path(root), converter.convert(expectedValue, typeOnPath));
 	}
 

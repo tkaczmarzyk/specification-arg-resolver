@@ -52,8 +52,11 @@ public abstract class IntegrationTestBase {
 	@Rule
     public ExpectedException expectedException = ExpectedException.none();
 	
-    @Autowired
+	@Autowired
     protected CustomerRepository customerRepo;
+	
+	@Autowired
+    protected OrderRepository orderRepo;
     
     @PersistenceContext
     protected EntityManager em;

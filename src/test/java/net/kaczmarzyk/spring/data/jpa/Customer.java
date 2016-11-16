@@ -15,7 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -27,11 +26,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 
 /**
@@ -40,11 +39,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * @author Tomasz Kaczmarzyk
  */
 @Entity
-public class Customer {
+public class Customer extends Generic<Long>{
 
-    @Id
-    @GeneratedValue
-    private Long id;
+    //@Id
+   // @GeneratedValue
+   // private Long id;
 
     private Gender gender;
     
@@ -92,8 +91,9 @@ public class Customer {
         this.address.setStreet(street);
     }
 
+    @JsonSubTypes(@Type(Long.class))
     public Long getId() {
-        return id;
+        return super.getId();
     }
 
     public String getFirstName() {

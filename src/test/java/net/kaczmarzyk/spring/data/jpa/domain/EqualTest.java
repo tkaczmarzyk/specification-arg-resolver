@@ -29,6 +29,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.Order;
 
 
 /**
@@ -41,6 +42,7 @@ public class EqualTest extends IntegrationTestBase {
     protected Customer margeSimpson;
     protected Customer moeSzyslak;
     protected Customer joeQuimby;
+    protected Customer mattHo;
 
     @Before
     public void initData() {
@@ -49,6 +51,20 @@ public class EqualTest extends IntegrationTestBase {
         moeSzyslak = customer("Moe", "Szyslak").gender(Gender.MALE).registrationDate(2015, 03, 02).weight(65).build(em);
 
         joeQuimby = customer("Joe", "Quimby").golden().build(em); // Gender nor Weight nor Registration Date not specifed
+        mattHo = customer("Matt", "Ho").orders("pen").build(em); // Gender nor Weight nor Registration Date not specifed
+    }
+   
+    @Test
+    public void filtersByCustomerId() {
+        Customer customer = customerRepo.findOne(new Equal<>("firstName", new String[] { "Matt" }, defaultConverter));
+        assertThat(customer).isNotNull().hasFieldOrProperty("id");
+        assertThat(customer.getOrders()).hasSize(1);
+        Order order = customer.getOrders().iterator().next();
+        assertThat(order).hasFieldOrPropertyWithValue("itemName", "pen");
+        
+        Order found = orderRepo.findOne(new Equal<>("customer.id", new String[] { String.valueOf(customer.getId()) }, defaultConverter));
+        assertThat(found).isNotNull()
+            .isEqualTo(order);
     }
     
     @Test

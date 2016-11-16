@@ -40,7 +40,7 @@ public class EqualIgnoreCase<T> extends Equal<T> {
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
-        if (path(root).getJavaType().equals(String.class)) {
+        if (javaType(root).equals(String.class)) {
             return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase());
         }
 
