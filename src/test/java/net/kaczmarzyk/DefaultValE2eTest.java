@@ -37,7 +37,15 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 public class DefaultValE2eTest extends E2eTestBase {
 
   @Spec(path = "lastName", spec = Equal.class, defaultVal = "Simpson")
-  public static interface DefaultSimpsonSpec extends Specification<Customer> {
+  public static interface DefaultSpec extends Specification<Customer> {
+  }
+
+  @Spec(path = "lastName", spec = Equal.class, defaultVal = "Simpson", required = true)
+  public static interface DefaultAndRequiredSpec extends Specification<Customer> {
+  }
+
+  @Spec(path = "lastName", spec = Equal.class, defaultVal = "Simpson", constVal = "Szyslak")
+  public static interface DefaultAndConstSpec extends Specification<Customer> {
   }
 
   @Controller
@@ -46,9 +54,21 @@ public class DefaultValE2eTest extends E2eTestBase {
     @Autowired
     CustomerRepository customerRepo;
 
-    @RequestMapping("/defaultVal")
+    @RequestMapping("/default")
     @ResponseBody
-    public Object listSimpsons(DefaultSimpsonSpec spec) {
+    public Object listDefault(DefaultSpec spec) {
+      return customerRepo.findAll(spec);
+    }
+
+    @RequestMapping("/default/required")
+    @ResponseBody
+    public Object listDefaultAndRequired(DefaultAndRequiredSpec spec) {
+      return customerRepo.findAll(spec);
+    }
+
+    @RequestMapping("/default/const")
+    @ResponseBody
+    public Object listDefaultAndConst(DefaultAndConstSpec spec) {
       return customerRepo.findAll(spec);
     }
 
@@ -56,26 +76,62 @@ public class DefaultValE2eTest extends E2eTestBase {
 
   @Test
   public void filtersBySingleSpecWithoutParam() throws Exception {
-      mockMvc.perform(get("/defaultVal")
-              .accept(MediaType.APPLICATION_JSON))
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$").isArray())
-          .andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
-          .andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
-          .andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
-          .andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
-          .andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
-          .andExpect(jsonPath("$[5]").doesNotExist());
+    mockMvc.perform(get("/default").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
+        .andExpect(jsonPath("$[5]").doesNotExist());
   }
 
   @Test
   public void filtersBySingleSpecWithSingleDefaultVal() throws Exception {
-      mockMvc.perform(get("/defaultVal")
-              .param("lastName", "Szyslak")
-              .accept(MediaType.APPLICATION_JSON))
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$").isArray())
-          .andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
-          .andExpect(jsonPath("$[1]").doesNotExist());
+    mockMvc.perform(get("/default").param("lastName", "Szyslak").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk()).andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+        .andExpect(jsonPath("$[1]").doesNotExist());
+  }
+
+  @Test
+  public void filtersBySingleSpecWithoutParamButRequired() throws Exception {
+    mockMvc.perform(get("/default/required").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk()).andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
+        .andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
+        .andExpect(jsonPath("$[5]").doesNotExist());
+  }
+
+  @Test
+  public void filtersBySingleSpecWithSingleDefaultValAndRequired() throws Exception {
+    mockMvc
+        .perform(get("/default/required").param("lastName", "Szyslak")
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk()).andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+        .andExpect(jsonPath("$[1]").doesNotExist());
+  }
+
+
+  @Test
+  public void filtersBySingleSpecWithoutParamButConst() throws Exception {
+    mockMvc.perform(get("/default/const").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk()).andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+        .andExpect(jsonPath("$[1]").doesNotExist());
+  }
+
+  @Test
+  public void filtersBySingleSpecWithSingleDefaultValAndConst() throws Exception {
+    mockMvc
+        .perform(
+            get("/default/const").param("lastName", "Szyslak").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk()).andExpect(jsonPath("$").isArray())
+        .andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+        .andExpect(jsonPath("$[1]").doesNotExist());
   }
 }
