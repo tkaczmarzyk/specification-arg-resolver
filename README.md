@@ -63,7 +63,7 @@ public class MyConfig extends WebMvcConfigurerAdapter {
 }
 ```
 
-#### Fully controlled converter
+### Fully controlled converter
 
 `Converter` converts http parameter to object via Jackson. And you can determine your converting logic by passing your custom `Converter` into `SpecificationArgumentResolver`:
 
@@ -252,6 +252,28 @@ If you don't want to bind your Specification to any HTTP parameter, you can use 
 ```
 
 will alwas produce the following: `where deleted = false`. It is often convenient to combine such a static part with dynamic ones using `@And` or `@Or` described below.
+
+Required value of queries
+-----------------------
+
+If you prefer an exception being thrown if the parameter is missing in the request, you can use `required` attribute of `@Spec`. For example:
+
+```java
+@Spec(path="role", spec=Equal.class, required=true) // defaults to false
+```
+
+Alternatively, provide a `constVal ` or `defaultVal`, which implicitly sets this flag to `false`.
+
+Default value of queries
+-----------------------
+
+The default value to use as a fallback when the request parameter is not provided or has an empty value.
+
+```java
+@Spec(path="role", spec=Equal.class, defaultVal="USER")
+```
+
+Supplying `constVal` implicitly sets `defaultVal` to empty.
 
 Combining specs
 ---------------

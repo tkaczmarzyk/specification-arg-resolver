@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static java.util.stream.Collectors.joining;
+
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +62,10 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
         try {
             Collection<String> args = resolveSpecArguments(req, def);
             if (args.isEmpty() && !isZeroArgSpec(def)) {
+                if (def.required()) {
+                    String param = (def.params().length > 0) ? Arrays.stream(def.params()).collect(joining(", ")) : def.path();
+                    throw new IllegalArgumentException(String.format("Required http parameter '%s' is not present", param));
+                }
                 return null;
             } else {
                 String[] argsArray = args.toArray(new String[args.size()]);
@@ -141,7 +147,11 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 		if (specDef.constVal().length != 0) {
 			return Arrays.asList(specDef.constVal());
 		} else {
-			return resolveSpecArgumentsFromHttpParameters(req, specDef);
+		    Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(req, specDef);
+		    if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
+		        Arrays.stream(specDef.defaultVal()).forEach(resolved::add);
+		    }
+		    return resolved;
 		}
 	}
 
