@@ -178,7 +178,7 @@ public class Converter implements Cloneable {
 
     @Override
     public Converter clone() {
-      return new Converter(new ObjectMapper(objectMapper.getFactory()));
+      return new Converter(objectMapper.copy());
     }
     
 }
