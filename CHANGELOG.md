@@ -1,3 +1,8 @@
+v0.9.1
+======
+
+* bumped dependencies to the latest Spring Boot version and JPA 2.1 API
+
 v0.9.0
 ======
 
