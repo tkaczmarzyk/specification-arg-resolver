@@ -40,9 +40,9 @@ public class NotNullE2eTest extends E2eTestBase {
         @Autowired
         CustomerRepository customerRepo;
 
-        @RequestMapping("/simpsons")
+        @RequestMapping("/family")
         @ResponseBody
-        public Object findCharactersTest(
+        public Object findCharacters(
                                         @Spec(path = "nickName", params = "nickName", spec = NotNull.class) Specification<Customer> spec) {
             return customerRepo.findAll(spec);
         }
@@ -50,7 +50,7 @@ public class NotNullE2eTest extends E2eTestBase {
 
     @Test
     public void findsEntitiesWithNickname() throws Exception {
-        mockMvc.perform(get("/simpsons?nickName=true")
+        mockMvc.perform(get("/family?nickName=true")
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -66,7 +66,7 @@ public class NotNullE2eTest extends E2eTestBase {
 
     @Test
     public void findsEntitiesWithNoNickname() throws Exception {
-        mockMvc.perform(get("/simpsons?nickName=false")
+        mockMvc.perform(get("/family?nickName=false")
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -82,7 +82,7 @@ public class NotNullE2eTest extends E2eTestBase {
 
     @Test
     public void findsAllEntities() throws Exception {
-        mockMvc.perform(get("/simpsons")
+        mockMvc.perform(get("/family")
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
