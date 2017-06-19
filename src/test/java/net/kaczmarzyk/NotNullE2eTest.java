@@ -40,17 +40,17 @@ public class NotNullE2eTest extends E2eTestBase {
         @Autowired
         CustomerRepository customerRepo;
 
-        @RequestMapping("/characters")
+        @RequestMapping("/simpsons")
         @ResponseBody
-        public Object findCharacters(
+        public Object findCharactersTest(
                                         @Spec(path = "nickName", params = "nickName", spec = NotNull.class) Specification<Customer> spec) {
             return customerRepo.findAll(spec);
         }
     }
 
     @Test
-    public void findsEntitiesWithNotNullAttributeValue() throws Exception {
-        mockMvc.perform(get("/characters?nickName=true")
+    public void findsEntitiesWithNickname() throws Exception {
+        mockMvc.perform(get("/simpsons?nickName=true")
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -65,8 +65,8 @@ public class NotNullE2eTest extends E2eTestBase {
     }
 
     @Test
-    public void findsEntitiesWithNullAttributeValue() throws Exception {
-        mockMvc.perform(get("/characters?nickName=false")
+    public void findsEntitiesWithNoNickname() throws Exception {
+        mockMvc.perform(get("/simpsons?nickName=false")
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -81,8 +81,8 @@ public class NotNullE2eTest extends E2eTestBase {
     }
 
     @Test
-    public void findsEntitiesWithNoFiltering() throws Exception {
-        mockMvc.perform(get("/characters")
+    public void findsAllEntities() throws Exception {
+        mockMvc.perform(get("/simpsons")
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
