@@ -122,6 +122,21 @@ If you want the query to be static, i.e. not depend on any HTTP param, use `cons
 
 For example `@Spec(path="nickname", spec=Null.class, constVal="true")` will always add `nickname is null` to the query.
 
+### NotNull ###
+
+An inversion of `Null` described above, for better readability in some scenarios.
+
+For example, consider a `deletedDate` field which is null when the entity is not deleted, and vice-versa. Then, you can introduce this mapping:
+
+    @Spec(path="deletedDate", params="isDeleted", spec=NotNull.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customers?isDeleted=true
+    GET http://myhost/customers?isDeleted=false
+
+to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.
