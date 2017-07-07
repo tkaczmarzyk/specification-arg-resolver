@@ -88,7 +88,7 @@ Compares an attribute of an entity with the value of a HTTP parameter (exact mat
 
 Supports multiple data types: numbers, booleans, strings, dates, enums.
 
-Usage: `@Spec(path="gender", spec=Enum.class)`.
+Usage: `@Spec(path="gender", spec=Equal.class)`.
 
 The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
 
