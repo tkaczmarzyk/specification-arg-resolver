@@ -1,3 +1,8 @@
+v0.9.2
+======
+
+* introduced `NotNull` specification
+
 v0.9.1
 ======
 
