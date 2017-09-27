@@ -17,6 +17,9 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -97,10 +100,24 @@ public class Converter {
 			return (T) convertToBoolean(value);
 		} else if (expectedClass.isAssignableFrom(Integer.class) || expectedClass.isAssignableFrom(Long.class)) {
 		    return (T) convertToLong(value);
+		} else if (expectedClass.isAssignableFrom(LocalDateTime.class)){
+			return (T) convertToLocalDateTime(value);
+		}else if (expectedClass.isAssignableFrom(LocalDate.class)){
+			return (T) convertToLocalDate(value);
 		}
 		return (T) value;
 	}
-	
+
+	private LocalDate convertToLocalDate(String value) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+		return LocalDate.parse(value,formatter);
+	}
+
+	private LocalDateTime convertToLocalDateTime(String value) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+		return LocalDateTime.parse(value,formatter);
+	}
+
 	private Long convertToLong(String value) {
         try {
             return Long.valueOf(value);
