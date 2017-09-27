@@ -3,7 +3,7 @@
 
 	<groupId>net.kaczmarzyk</groupId>
 	<artifactId>specification-arg-resolver</artifactId>
-	<version>0.9.3-SNAPSHOT</version>
+	<version>0.9.3</version>
 	<packaging>jar</packaging>
 
 	<name>specification-arg-resolver</name>
@@ -37,6 +37,7 @@
 		<connection>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</connection>
 		<url>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</url>
 		<developerConnection>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</developerConnection>
+    <tag>specification-arg-resolver-0.9.3</tag>
   </scm>
 
 	<profiles>
