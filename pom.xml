@@ -288,10 +288,10 @@
 	</dependencies>
 
     <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>https://nexus.irian.at/content/repositories/releases</url>
-        </repository>
+		<repository>
+			<id>irian-ro-releases</id>
+			<url>https://nexus.irian.at/content/repositories/irian-ro-releases</url>
+		</repository>
     </distributionManagement>
 
 
