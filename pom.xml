@@ -3,7 +3,7 @@
 
 	<groupId>net.kaczmarzyk</groupId>
 	<artifactId>specification-arg-resolver</artifactId>
-	<version>0.9.3-SNAPSHOT</version>
+	<version>0.9.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>specification-arg-resolver</name>
@@ -34,11 +34,11 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:https://github.com/tkaczmarzyk/specification-arg-resolver.git</connection>
-		<url>scm:git:https://github.com/tkaczmarzyk/specification-arg-resolver.git</url>
-		<developerConnection>scm:git:https://github.com/tkaczmarzyk/specification-arg-resolver.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
+		<connection>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</connection>
+		<url>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</url>
+		<developerConnection>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
 	<profiles>
 		<profile>
@@ -164,6 +164,14 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
@@ -279,16 +287,12 @@
 		</dependency>
 	</dependencies>
 
-	<distributionManagement>
+    <distributionManagement>
 		<repository>
-			<id>kaczmarzyk.net</id>
-			<name>kaczmarzyk.net repository</name>
-			<url>ftp://repo.kaczmarzyk.net</url>
+			<id>irian-ro-releases</id>
+			<url>https://nexus.irian.at/content/repositories/irian-ro-releases</url>
 		</repository>
-		<snapshotRepository>
-			<id>kaczmarzyk.net</id>
-			<name>kaczmarzyk.net repository</name>
-			<url>ftp://repo.kaczmarzyk.net</url>
-		</snapshotRepository>
-	</distributionManagement>
+    </distributionManagement>
+
+
 </project>
