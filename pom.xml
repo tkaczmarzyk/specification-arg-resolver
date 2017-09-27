@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.kaczmarzyk</groupId>
@@ -34,9 +36,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:https://github.com/tkaczmarzyk/specification-arg-resolver.git</connection>
-		<url>scm:git:https://github.com/tkaczmarzyk/specification-arg-resolver.git</url>
-		<developerConnection>scm:git:https://github.com/tkaczmarzyk/specification-arg-resolver.git</developerConnection>
+		<connection>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</connection>
+		<url>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</url>
+		<developerConnection>scm:git:https://github.com/CalinoviciPaul/specification-arg-resolver.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
@@ -163,6 +165,14 @@
 						<version>1.9.4</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
 			</plugin>
 		</plugins>
 		<extensions>
@@ -291,4 +301,6 @@
 			<url>ftp://repo.kaczmarzyk.net</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+
 </project>
