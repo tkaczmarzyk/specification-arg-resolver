@@ -20,6 +20,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
 /**
  * Filters with {@code path like %pattern%} where-clause and ignores pattern case
  * 
@@ -28,10 +30,10 @@ import javax.persistence.criteria.Root;
  */
 public class LikeIgnoreCase<T> extends Like<T> {
 
-    public LikeIgnoreCase(String path, String... args) {
-        super(path, args);
+	public LikeIgnoreCase(QueryContext queryCtx, String path, String... args) {
+        super(queryCtx, path, args);
     }
-
+	
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
         return builder.like(builder.upper(this.<String> path(root)), pattern.toUpperCase());

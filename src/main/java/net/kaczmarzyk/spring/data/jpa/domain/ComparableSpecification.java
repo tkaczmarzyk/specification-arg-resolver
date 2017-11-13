@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
  * <p>Base class for Comparable comparisons..</p>
@@ -38,8 +39,8 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 	private String comparedTo;
 	private Converter converter;	
 	
-	public ComparableSpecification(String path, String[] httpParamValues, Converter converter) {
-		super(path);
+	public ComparableSpecification(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+		super(queryContext, path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
 			throw new IllegalArgumentException("expected one http-param, but was " + Arrays.toString(httpParamValues));
 		}

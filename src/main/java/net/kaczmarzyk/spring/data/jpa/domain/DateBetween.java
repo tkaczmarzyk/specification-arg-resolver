@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 
 /**
@@ -36,8 +37,8 @@ public class DateBetween<T> extends DateSpecification<T> {
     private Date after;
     private Date before;
     
-    public DateBetween(String path, String[] args, Converter converter) throws ParseException {
-        super(path, args, converter);
+    public DateBetween(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
+        super(queryContext, path, args, converter);
         if (args == null || args.length != 2) {
             throw new IllegalArgumentException("expected 2 http params (date boundaries), but was: " + args);
         }

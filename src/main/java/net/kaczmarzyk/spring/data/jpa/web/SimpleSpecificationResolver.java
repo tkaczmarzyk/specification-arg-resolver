@@ -30,6 +30,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
@@ -54,47 +55,48 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
                 return null;
             } else {
                 String[] argsArray = args.toArray(new String[args.size()]);
-                Specification<Object> spec = newSpecification(def, argsArray);
+                Specification<Object> spec = newSpecification(def, argsArray, req);
                 return def.onTypeMismatch().wrap(spec);
             }
         } catch (NoSuchMethodException e) {
         	throw new IllegalStateException("Does the specification class expose at least one of the supported constuctors?\n"
         			+ "It can be either:\n"
-        			+ "  2-arg (String path, String[] args)\n"
-        			+ "  3-arg (String path, String[] args, Converter converter)\n"
-        			+ "  4-arg (String path, String[] args, Converter converter, String[] config)", e);
+        			+ "  3-arg (QueryContext queryCtx, String path, String[] args)\n"
+        			+ "  4-arg (QueryContext queryCtx, String path, String[] args, Converter converter)\n"
+        			+ "  5-arg (QueryContext queryCtx, String path, String[] args, Converter converter, String[] config)", e);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private boolean isZeroArgSpec(Spec def) {
+	private boolean isZeroArgSpec(Spec def) {
 		return ZeroArgSpecification.class.isAssignableFrom(def.spec());
 	}
 
 	@SuppressWarnings("unchecked")
-	private Specification<Object> newSpecification(Spec def, String[] argsArray) throws InstantiationException, IllegalAccessException,
+	private Specification<Object> newSpecification(Spec def, String[] argsArray, NativeWebRequest req) throws InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException {
 
+		QueryContext queryCtx = new WebRequestQueryContext(req);
 		Converter converter = resolveConverter(def);
 		
 		Specification<Object> spec;
 		if (def.config().length == 0) {
-	    	try {
-	    		spec = def.spec().getConstructor(String.class, String[].class)
-			            .newInstance(def.path(), argsArray);
-	    	} catch (NoSuchMethodException e) {
-	    		spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
-			            .newInstance(def.path(), argsArray, converter);
+			try {
+	    		spec = def.spec().getConstructor(QueryContext.class, String.class, String[].class)
+			            .newInstance(queryCtx, def.path(), argsArray);
+	    	} catch (NoSuchMethodException e2) {
+	    		spec = def.spec().getConstructor(QueryContext.class, String.class, String[].class, Converter.class)
+			            .newInstance(queryCtx, def.path(), argsArray, converter);
 	    	}
 		} else {
 		    try {
-		    	spec = def.spec().getConstructor(String.class, String[].class, Converter.class, String[].class)
-			            .newInstance(def.path(), argsArray, converter, def.config());
+		    	spec = def.spec().getConstructor(QueryContext.class, String.class, String[].class, Converter.class, String[].class)
+			            .newInstance(queryCtx, def.path(), argsArray, converter, def.config());
 		    } catch (NoSuchMethodException e) {
 		    	try {
-		    		spec = def.spec().getConstructor(String.class, String[].class, Converter.class)
-				            .newInstance(def.path(), argsArray, converter);
+		    		spec = def.spec().getConstructor(QueryContext.class, String.class, String[].class, Converter.class)
+				            .newInstance(queryCtx, def.path(), argsArray, converter);
 		    	} catch (NoSuchMethodException e2) {
 		    		// legacy constructor support, to retain backward-compatibility
 		    		spec = def.spec().getConstructor(String.class, String[].class, String[].class)

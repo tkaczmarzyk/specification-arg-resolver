@@ -21,6 +21,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
  * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
@@ -35,8 +36,8 @@ public class Equal<T> extends PathSpecification<T> {
 	private Converter converter;	
 	
 	
-	public Equal(String path, String[] httpParamValues, Converter converter) {
-		super(path);
+	public Equal(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+		super(queryContext, path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
 			throw new IllegalArgumentException();
 		}

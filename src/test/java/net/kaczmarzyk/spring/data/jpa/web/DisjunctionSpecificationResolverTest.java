@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -92,6 +93,7 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
     public void resolvesWrapperOfAnds() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
         when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
         when(req.getParameterValues("path3")).thenReturn(new String[] { "value3" });
@@ -99,10 +101,10 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
 
-        Specification<Object> and1 = new Conjunction<>(new Like<>("path1", "value1"),
-                new Like<>("path2", "value2"));
-        Specification<Object> and2 = new Conjunction<>(new Like<>("path3", "value3"),
-                new Like<>("path4", "value4"));
+        Specification<Object> and1 = new Conjunction<>(new Like<>(queryCtx, "path1", "value1"),
+                new Like<>(queryCtx, "path2", "value2"));
+        Specification<Object> and2 = new Conjunction<>(new Like<>(queryCtx, "path3", "value3"),
+                new Like<>(queryCtx, "path4", "value4"));
 
         assertThat(result).isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(and1, and2));
     }
@@ -111,6 +113,7 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
     public void resolvesWrapperOfSimpleSpecsAndAnds() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
         when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
         when(req.getParameterValues("path3")).thenReturn(new String[] { "value3" });
@@ -118,11 +121,11 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
 
-        Specification<Object> and = new Conjunction<>(new Like<>("path3", "value3"),
-                new Like<>("path4", "value4"));
+        Specification<Object> and = new Conjunction<>(new Like<>(queryCtx, "path3", "value3"),
+                new Like<>(queryCtx, "path4", "value4"));
 
-        assertThat(result).isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(and, new Like<>("path1", "value1"),
-                new Like<>("path2", "value2")));
+        assertThat(result).isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(and, new Like<>(queryCtx, "path1", "value1"),
+                new Like<>(queryCtx, "path2", "value2")));
     }
 
 	@Override

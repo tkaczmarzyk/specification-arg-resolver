@@ -43,35 +43,35 @@ public class EmptyResultOnTypeMismatchTest extends IntegrationTestBase {
 
 	@Test
 	public void producesEmptyResultOnTypeMismatch_long() {
-		EmptyResultOnTypeMismatch<Customer> idQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>("id", new String[] { "not a long" }, defaultConverter));
+		EmptyResultOnTypeMismatch<Customer> idQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "id", new String[] { "not a long" }, defaultConverter));
 		List<Customer> result = customerRepo.findAll(idQuery);
 		assertThat(result).isEmpty();
 	}
 	
 	@Test
 	public void producesEmptyResultOnTypeMismatch_enum() {
-		EmptyResultOnTypeMismatch<Customer> genderQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>("gender", new String[] { "not an enum" }, defaultConverter));
+		EmptyResultOnTypeMismatch<Customer> genderQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "gender", new String[] { "not an enum" }, defaultConverter));
 		List<Customer> result = customerRepo.findAll(genderQuery);
 		assertThat(result).isEmpty();
 	}
 	
 	@Test
 	public void producesEmptyResultOnTypeMismatch_date() {
-		EmptyResultOnTypeMismatch<Customer> registrationDateQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>("registrationDate", new String[] { "not a date" }, defaultConverter));
+		EmptyResultOnTypeMismatch<Customer> registrationDateQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "registrationDate", new String[] { "not a date" }, defaultConverter));
 		List<Customer> result = customerRepo.findAll(registrationDateQuery);
 		assertThat(result).isEmpty();
 	}
 	
 	@Test
 	public void producesEmptyResultOnTypeMismatch_boolean() {
-		EmptyResultOnTypeMismatch<Customer> goldStatusQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>("gold", new String[] { "not a boolean" }, defaultConverter));
+		EmptyResultOnTypeMismatch<Customer> goldStatusQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "gold", new String[] { "not a boolean" }, defaultConverter));
 		List<Customer> result = customerRepo.findAll(goldStatusQuery);
 		assertThat(result).isEmpty();
 	}
 	
 	@Test
 	public void usesWrappedSpecWhenTypeMatches() {
-		EmptyResultOnTypeMismatch<Customer> homerId = new EmptyResultOnTypeMismatch<>(new Equal<Customer>("id", new String[] { homerSimpson.getId().toString() }, defaultConverter));
+		EmptyResultOnTypeMismatch<Customer> homerId = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "id", new String[] { homerSimpson.getId().toString() }, defaultConverter));
 		List<Customer> result = customerRepo.findAll(homerId);
 		assertThat(result).hasSize(1).contains(homerSimpson);
 	}

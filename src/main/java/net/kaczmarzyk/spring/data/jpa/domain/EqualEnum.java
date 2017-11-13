@@ -27,6 +27,8 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
 
 /**
  * Filters for entities with path equal to any of passed enum constant names,
@@ -42,8 +44,8 @@ public class EqualEnum<T> extends PathSpecification<T> {
 
     protected String[] searchedNames;
 
-    public EqualEnum(String path, String... args) {
-        super(path);
+    public EqualEnum(QueryContext queryContext, String path, String... args) {
+        super(queryContext, path);
         if (args == null || args.length == 0) {
             throw new IllegalArgumentException("Expected at least one argument (the enum constant name to match against)");
         } else {

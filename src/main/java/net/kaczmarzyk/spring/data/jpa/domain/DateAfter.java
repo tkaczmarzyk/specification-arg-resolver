@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
  * <p>Filters with {@code path > date} where-clause.</p>
@@ -37,8 +38,8 @@ public class DateAfter<T> extends DateSpecification<T> {
 
     private Date date;
 
-    public DateAfter(String path, String[] args, Converter converter) throws ParseException {
-        super(path, args, converter);
+    public DateAfter(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
+        super(queryContext, path, args, converter);
         if (args == null || args.length != 1) {
             throw new IllegalArgumentException("expected a single http-param, but was: " + args);
         }

@@ -20,6 +20,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
  * <p>Filters with greater than where-clause (e.g. {@code where firstName > "Homer"}).</p>
@@ -39,8 +40,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
  */
 public class GreaterThan<T> extends ComparableSpecification<T> {
 
-	public GreaterThan(String path, String[] httpParamValues, Converter converter) {
-		super(path, httpParamValues, converter);
+	public GreaterThan(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+		super(queryContext, path, httpParamValues, converter);
 	}
 
 	@Override

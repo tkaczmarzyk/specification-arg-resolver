@@ -29,19 +29,19 @@ public class EqualIgnoreCaseTest extends EqualTest {
 
     @Test
     public void filtersByStringCaseInsensitive() {
-        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>("lastName", new String[] { "SIMpsOn" }, defaultConverter);
+        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "SIMpsOn" }, defaultConverter);
         List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
 
         assertThat(simpsonsFound).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
 
-        EqualIgnoreCase<Customer> lastNameS = new EqualIgnoreCase<>("lastName", new String[] { "s" }, defaultConverter);
+        EqualIgnoreCase<Customer> lastNameS = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "s" }, defaultConverter);
         List<Customer> found = customerRepo.findAll(lastNameS);
 
         assertThat(found).isEmpty();
 
 
-        EqualIgnoreCase<Customer> firstName = new EqualIgnoreCase<>("firstName", new String[] { "Moe" }, defaultConverter);
+        EqualIgnoreCase<Customer> firstName = new EqualIgnoreCase<>(queryCtx, "firstName", new String[] { "Moe" }, defaultConverter);
         List<Customer> moeFound = customerRepo.findAll(firstName);
 
         assertThat(moeFound).hasSize(1).containsOnly(moeSzyslak);

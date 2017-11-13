@@ -29,6 +29,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
 import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
@@ -110,77 +111,84 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingWebParameterTheSameAsPath() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Like<>("thePath", new String[] { "theValue" }));
+        assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", new String[] { "theValue" }));
     }
     
     @Test
     public void buildsTheSpecUsingConstValue() throws Exception {
     	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithConst1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }, defaultConverter));
+        assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, defaultConverter));
     }
     
     @Test
     public void ignoresHttpParamIfConstValueIsSpecified() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithConst1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Equal<>("thePath", new String[] { "constVal1" }, defaultConverter));
+        assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, defaultConverter));
     }
 
     @Test
     public void buildsTheSpecUsingCustomWebParameterName() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Like<>("thePath", new String[] { "theValue" }));
+        assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", new String[] { "theValue" }));
     }
 
     @Test
     public void buildsTheSpecUsingCustomMultiValueWebParameterName() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new EqualEnum<>("thePath", new String[] { "theValue", "theValue2" }));
+        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2" }));
     }
     
     @Test
     public void skipsEmptyWebParameterValues() {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "value1", "" });
 
         Specification<Object> resolved = resolver.buildSpecification(req, param.getParameterAnnotation(Spec.class));
         
-        assertThat(resolved).isEqualTo(new EqualEnum<>("thePath", new String[] { "value1" }));
+        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "value1" }));
     }
 
     @Test
     public void buildsTheSpecUsingCustomMultiValueWebParametersNames() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod4"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
         when(req.getParameterValues("theParameter2")).thenReturn(new String[] { "theValue3", "theValue4" });
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new EqualEnum<>("thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
+        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
     }
     
     public static class TestController {

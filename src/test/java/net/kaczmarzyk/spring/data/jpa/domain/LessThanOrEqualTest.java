@@ -32,7 +32,7 @@ public class LessThanOrEqualTest extends ComparableTestBase {
 
 	@Override
     protected Specification<Customer> makeUUT(String path, String[] value, Converter config) {
-    	return new LessThanOrEqual<Customer>(path, value, config);
+    	return new LessThanOrEqual<Customer>(queryCtx, path, value, config);
     }
     
 	

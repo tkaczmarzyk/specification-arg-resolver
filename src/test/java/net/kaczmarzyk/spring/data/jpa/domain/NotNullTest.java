@@ -42,7 +42,7 @@ public class NotNullTest extends IntegrationTestBase {
 
     @Test
     public void findsCustomersWithNotNullField() {
-        NotNull<Customer> spec = new NotNull<>("nickName", new String[]{"true"}, defaultConverter);
+        NotNull<Customer> spec = new NotNull<>(queryCtx, "nickName", new String[]{"true"}, defaultConverter);
 
         List<Customer> found = customerRepo.findAll(spec);
 
@@ -51,7 +51,7 @@ public class NotNullTest extends IntegrationTestBase {
 
     @Test
     public void findsCustomersWithNullField() {
-        NotNull<Customer> spec = new NotNull<>("nickName", new String[]{"false"}, defaultConverter);
+        NotNull<Customer> spec = new NotNull<>(queryCtx, "nickName", new String[]{"false"}, defaultConverter);
 
         List<Customer> found = customerRepo.findAll(spec);
 

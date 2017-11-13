@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 
 /**
@@ -42,8 +43,8 @@ public class In<T> extends PathSpecification<T> {
 	private String[] allowedValues;
 	private Converter converter;
 
-	public In(String path, String[] httpParamValues, Converter converter) {
-		super(path);
+	public In(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+		super(queryContext, path);
 		if (httpParamValues == null || httpParamValues.length < 1) {
 			throw new IllegalArgumentException();
 		}

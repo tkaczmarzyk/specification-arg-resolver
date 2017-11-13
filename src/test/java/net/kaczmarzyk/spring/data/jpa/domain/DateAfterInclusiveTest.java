@@ -48,21 +48,21 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>("registrationDate", new String[] { "2014-03-13" }, defaultConverter);
+        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
 
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)
                 .hasSize(1)
                 .containsOnly(moeSzyslak);
 
-        DateAfterInclusive<Customer> after12th = new DateAfterInclusive<>("registrationDate", new String[] { "2014-03-12" }, defaultConverter);
+        DateAfterInclusive<Customer> after12th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-12" }, defaultConverter);
 
         result = customerRepo.findAll(after12th);
         assertThat(result)
                 .hasSize(2)
                 .containsOnly(moeSzyslak, margeSimpson);
 
-        DateAfterInclusive<Customer> after10th = new DateAfterInclusive<>("registrationDate", new String[] { "2014-03-10" }, defaultConverter);
+        DateAfterInclusive<Customer> after10th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-10" }, defaultConverter);
 
         result = customerRepo.findAll(after10th);
         assertThat(result)
@@ -72,7 +72,7 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>("registrationDate", new String[] { "13-03-2014" },
+        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "13-03-2014" },
         		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
 
         List<Customer> result = customerRepo.findAll(after13th);
@@ -83,11 +83,11 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateAfterInclusive<>("path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
+        new DateAfterInclusive<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateAfterInclusive<>("path", new String[] {}, defaultConverter);
+        new DateAfterInclusive<>(queryCtx, "path", new String[] {}, defaultConverter);
     }
 }

@@ -43,7 +43,7 @@ public class NullTest extends IntegrationTestBase {
 
 	@Test
 	public void findsCustomersWithNullField() {
-		Null<Customer> spec = new Null<>("nickName", new String[]{"true"}, defaultConverter);
+		Null<Customer> spec = new Null<>(queryCtx, "nickName", new String[]{"true"}, defaultConverter);
 
 		List<Customer> found = customerRepo.findAll(spec);
 
@@ -52,7 +52,7 @@ public class NullTest extends IntegrationTestBase {
 
 	@Test
 	public void findsCustomersWithNotNullField() {
-		Null<Customer> spec = new Null<>("nickName", new String[]{"false"}, defaultConverter);
+		Null<Customer> spec = new Null<>(queryCtx, "nickName", new String[]{"false"}, defaultConverter);
 
 		List<Customer> found = customerRepo.findAll(spec);
 

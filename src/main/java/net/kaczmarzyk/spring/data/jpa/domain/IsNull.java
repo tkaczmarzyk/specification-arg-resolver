@@ -20,6 +20,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
 
 /**
  * <p>Filers with "is null" where clause (e.g. {@code where nickName is null}).</p>
@@ -33,8 +35,8 @@ import javax.persistence.criteria.Root;
 @Deprecated
 public class IsNull<T> extends PathSpecification<T> implements ZeroArgSpecification {
 
-	public IsNull(String path, String[] args) {
-		super(path);
+	public IsNull(QueryContext queryContext, String path, String[] args) {
+		super(queryContext, path);
 	}
 
 	@Override

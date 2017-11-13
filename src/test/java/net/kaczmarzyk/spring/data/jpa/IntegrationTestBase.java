@@ -31,6 +31,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 /**
@@ -55,6 +56,18 @@ public abstract class IntegrationTestBase {
     protected EntityManager em;
     
     protected Converter defaultConverter = Converter.DEFAULT;
+    
+    protected QueryContext queryCtx = new QueryContext() {
+	
+		@Override
+		public void put(String key, Object value) {
+		}
+	
+		@Override
+		public Object get(String key) {
+			return null;
+		}
+	};
     
     /**
      * Call findAll with the Specification, and assert its members match the expectedMembers

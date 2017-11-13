@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
@@ -94,8 +95,8 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Spec(path = "name", spec = Like.class)
 	public static class Clazz extends Like<Object> {
-		public Clazz(String path, String[] args) {
-			super(path, args);
+		public Clazz(QueryContext queryCtx, String path, String[] args) {
+			super(queryCtx, path, args);
 		}
 	}
 	

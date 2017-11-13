@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -40,24 +41,26 @@ public class AndSpecificationResolverTest extends ResolverTestBase {
     public void resolvesWrapperOfInnerSpecs() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
         when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
 
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(result).isEqualTo(new Conjunction<>(new Like<>("path1", "value1"),
-                new Like<>("path2", "value2")));
+        assertThat(result).isEqualTo(new Conjunction<>(new Like<>(queryCtx, "path1", "value1"),
+                new Like<>(queryCtx, "path2", "value2")));
     }
 
     @Test
     public void skipsMissingInnerSpec() throws Exception {
         MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
         Specification<?> result = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(result).isEqualTo(new Conjunction<>(new Like<>("path1", "value1")));
+        assertThat(result).isEqualTo(new Conjunction<>(new Like<>(queryCtx, "path1", "value1")));
     }
 
     @Test

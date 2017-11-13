@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,8 +34,8 @@ import javax.persistence.criteria.Root;
  */
 public class EqualIgnoreCase<T> extends Equal<T> {
 
-    public EqualIgnoreCase(String path, String[] httpParamValues, Converter converter) {
-        super(path, httpParamValues, converter);
+    public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+        super(queryContext, path, httpParamValues, converter);
     }
 
     @Override

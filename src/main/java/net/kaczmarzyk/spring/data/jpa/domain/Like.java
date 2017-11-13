@@ -22,6 +22,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
 /**
  * Filters with {@code path like %pattern%} where-clause.
  * 
@@ -31,8 +33,8 @@ public class Like<T> extends PathSpecification<T> implements WithoutTypeConversi
 
     protected String pattern;
 
-    public Like(String path, String... args) {
-        super(path);
+    public Like(QueryContext queryContext, String path, String... args) {
+        super(queryContext, path);
         if (args == null || args.length != 1) {
             throw new IllegalArgumentException("Expected exactly one argument (the fragment to match against), but got: " + Arrays.toString(args));
         } else {

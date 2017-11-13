@@ -43,7 +43,7 @@ public class IsNullTest extends IntegrationTestBase {
     
     @Test
     public void findsCustomersWithNullField() {
-    	IsNull<Customer> spec = new IsNull<>("nickName", new String[0]);
+    	IsNull<Customer> spec = new IsNull<>(queryCtx, "nickName", new String[0]);
     	
     	List<Customer> found = customerRepo.findAll(spec);
     	

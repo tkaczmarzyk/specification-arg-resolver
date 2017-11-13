@@ -46,13 +46,13 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
     
     @Test
     public void filtersFirstLevelPropertyIgnoringCase() {
-        LikeIgnoreCase<Customer> lastNameSimpson = new LikeIgnoreCase<>("lastName", "sIMPSOn");
+        LikeIgnoreCase<Customer> lastNameSimpson = new LikeIgnoreCase<>(queryCtx, "lastName", "sIMPSOn");
         List<Customer> result = customerRepo.findAll(lastNameSimpson);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
         
-        LikeIgnoreCase<Customer> firstNameWithO = new LikeIgnoreCase<>("firstName", "o");
+        LikeIgnoreCase<Customer> firstNameWithO = new LikeIgnoreCase<>(queryCtx, "firstName", "o");
         result = customerRepo.findAll(firstNameWithO);
         assertThat(result)
             .hasSize(2)
@@ -61,19 +61,19 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
 
     @Test
     public void filtersByNestedPropertyIgnoringCase() {
-        LikeIgnoreCase<Customer> streetWithEvergreen = new LikeIgnoreCase<>("address.street", "EvErGReeN");
+        LikeIgnoreCase<Customer> streetWithEvergreen = new LikeIgnoreCase<>(queryCtx, "address.street", "EvErGReeN");
         List<Customer> result = customerRepo.findAll(streetWithEvergreen);
         assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() {
-        new LikeIgnoreCase<>("path", new String[] {});
+        new LikeIgnoreCase<>(queryCtx, "path", new String[] {});
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() {
-        new LikeIgnoreCase<>("path", new String[] { "a", "b" });
+        new LikeIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" });
     }
 
 }

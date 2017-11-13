@@ -47,8 +47,8 @@ public class ConjunctionTest extends IntegrationTestBase {
     
     @Test
     public void shouldFilterWithBothSpecs() throws ParseException {
-        Like<Customer> streetWithEvergreen = new Like<>("address.street", "Evergreen");
-        DateBefore<Customer> registeredBefore21st = new DateBefore<>("registrationDate", new String[] {"2014-03-21"}, Converter.DEFAULT);
+        Like<Customer> streetWithEvergreen = new Like<>(queryCtx, "address.street", "Evergreen");
+        DateBefore<Customer> registeredBefore21st = new DateBefore<>(queryCtx, "registrationDate", new String[] {"2014-03-21"}, Converter.DEFAULT);
         
         List<Customer> result = customerRepo.findAll(new Conjunction<>(streetWithEvergreen, registeredBefore21st));
         

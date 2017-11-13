@@ -32,7 +32,7 @@ public class GreaterThanTest extends ComparableTestBase {
 	
 	@Override
     protected Specification<Customer> makeUUT(String path, String[] value, Converter converter) {
-    	return new GreaterThan<Customer>(path, value, converter);
+    	return new GreaterThan<Customer>(queryCtx, path, value, converter);
     }
     
     

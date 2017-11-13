@@ -46,14 +46,14 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>("registrationDate", new String[] { "2014-03-12" }, defaultConverter);
+        DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>(queryCtx ,"registrationDate", new String[] { "2014-03-12" }, defaultConverter);
 
         List<Customer> result = customerRepo.findAll(before12th);
         assertThat(result)
                 .hasSize(2)
                 .containsOnly(homerSimpson, margeSimpson);
 
-        DateBeforeInclusive<Customer> before11th = new DateBeforeInclusive<>("registrationDate", new String[] { "2014-03-11" }, defaultConverter);
+        DateBeforeInclusive<Customer> before11th = new DateBeforeInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-11" }, defaultConverter);
 
         result = customerRepo.findAll(before11th);
         assertThat(result)
@@ -63,7 +63,7 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-        DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>("registrationDate", new String[]{"12-03-2014"},
+        DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>(queryCtx, "registrationDate", new String[]{"12-03-2014"},
         		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
 
         List<Customer> result = customerRepo.findAll(before12th);
@@ -74,11 +74,11 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateBeforeInclusive<>("path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        new DateBeforeInclusive<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateBeforeInclusive<>("path", new String[]{}, defaultConverter);
+        new DateBeforeInclusive<>(queryCtx, "path", new String[]{}, defaultConverter);
     }
 }

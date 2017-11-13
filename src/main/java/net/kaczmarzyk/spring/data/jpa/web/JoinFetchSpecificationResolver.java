@@ -15,14 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static net.kaczmarzyk.spring.data.jpa.web.MethodParameterUtil.isAnnotatedWith;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
-import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,6 +28,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 
 
 /**
@@ -49,10 +51,6 @@ class JoinFetchSpecificationResolver implements HandlerMethodArgumentResolver {
         return paramType.isInterface() && Specification.class.isAssignableFrom(paramType) &&
                 (isAnnotatedWith(JoinFetch.class, param) || isAnnotatedWith(Joins.class, param));
     }
-
-	private boolean isAnnotatedWith(Class<? extends Annotation> annotation, MethodParameter param) {
-		return param.hasParameterAnnotation(annotation) || param.getParameterType().isAnnotationPresent(annotation);
-	}
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {

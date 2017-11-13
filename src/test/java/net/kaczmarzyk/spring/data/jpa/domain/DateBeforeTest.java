@@ -48,14 +48,14 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateBefore<Customer> before13th = new DateBefore<>("registrationDate", new String[] { "2014-03-13" }, defaultConverter);
+        DateBefore<Customer> before13th = new DateBefore<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
         
         List<Customer> result = customerRepo.findAll(before13th);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
         
-        DateBefore<Customer> before10th = new DateBefore<>("registrationDate", new String[] {"2014-03-10"}, defaultConverter);
+        DateBefore<Customer> before10th = new DateBefore<>(queryCtx, "registrationDate", new String[] {"2014-03-10"}, defaultConverter);
         
         result = customerRepo.findAll(before10th);
         assertThat(result)
@@ -65,7 +65,7 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-        DateBefore<Customer> before13th = new DateBefore<>("registrationDate", new String[] {"13-03-2014"},
+        DateBefore<Customer> before13th = new DateBefore<>(queryCtx, "registrationDate", new String[] {"13-03-2014"},
         		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
         
         List<Customer> result = customerRepo.findAll(before13th);
@@ -76,11 +76,11 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateBefore<>("path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        new DateBefore<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateBefore<>("path", new String[] {}, defaultConverter);
+        new DateBefore<>(queryCtx, "path", new String[] {}, defaultConverter);
     }
 }

@@ -20,6 +20,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
  * <p>Filters with less than or equal where-clause (e.g. {@code where firstName <= "Homer"}).</p>
@@ -39,8 +40,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
  */
 public class LessThanOrEqual<T> extends ComparableSpecification<T> {
 
-	public LessThanOrEqual(String path, String[] httpParamValues, Converter converter) {
-		super(path, httpParamValues, converter);
+	public LessThanOrEqual(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+		super(queryContext, path, httpParamValues, converter);
 	}
 
 	@Override

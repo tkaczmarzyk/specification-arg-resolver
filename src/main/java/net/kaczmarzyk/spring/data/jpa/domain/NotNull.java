@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -35,8 +36,8 @@ public class NotNull<T> extends PathSpecification<T> {
     protected String expectedValue;
     private Converter converter;
 
-    public NotNull(String path, String[] httpParamValues, Converter converter) {
-        super(path);
+    public NotNull(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+        super(queryContext, path);
         if (httpParamValues == null || httpParamValues.length != 1) {
             throw new IllegalArgumentException();
         }

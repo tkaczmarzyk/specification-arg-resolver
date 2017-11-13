@@ -49,6 +49,10 @@ public class Conjunction<T> implements Specification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         Specifications<T> combinedSpecs = null;
         for (Specification<T> spec : innerSpecs) {
+        	if (spec instanceof Fake) {
+        		spec.toPredicate(root, query, cb);
+        		continue;
+        	}
             if (combinedSpecs == null) {
                 combinedSpecs = Specifications.where(spec);
             } else {

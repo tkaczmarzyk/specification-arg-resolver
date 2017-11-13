@@ -45,13 +45,13 @@ public class LikeTest extends IntegrationTestBase {
     
     @Test
     public void filtersByFirstLevelProperty() {
-        Like<Customer> lastNameSimpson = new Like<>("lastName", "Simpson");
+        Like<Customer> lastNameSimpson = new Like<>(queryCtx, "lastName", "Simpson");
         List<Customer> result = customerRepo.findAll(lastNameSimpson);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
         
-        Like<Customer> firstNameWithO = new Like<>("firstName", "o");
+        Like<Customer> firstNameWithO = new Like<>(queryCtx, "firstName", "o");
         result = customerRepo.findAll(firstNameWithO);
         assertThat(result)
             .hasSize(2)
@@ -60,18 +60,18 @@ public class LikeTest extends IntegrationTestBase {
 
     @Test
     public void filtersByNestedProperty() {
-        Like<Customer> streetWithEvergreen = new Like<>("address.street", "Evergreen");
+        Like<Customer> streetWithEvergreen = new Like<>(queryCtx, "address.street", "Evergreen");
         List<Customer> result = customerRepo.findAll(streetWithEvergreen);
         assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() {
-        new Like<>("path", new String[] {});
+        new Like<>(queryCtx, "path", new String[] {});
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() {
-        new Like<>("path", new String[] {"a", "b"});
+        new Like<>(queryCtx, "path", new String[] {"a", "b"});
     }
 }

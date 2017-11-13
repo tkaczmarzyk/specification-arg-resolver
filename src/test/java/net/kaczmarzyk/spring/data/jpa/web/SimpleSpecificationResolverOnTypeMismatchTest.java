@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import javax.management.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -32,6 +33,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.WithoutTypeConversion;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -44,6 +46,7 @@ public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestB
     public void usesEmptyResultSpecWrapperWhenSpecified() throws Exception {
     	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithOnTypeMismatchConfig"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
@@ -51,7 +54,7 @@ public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestB
         assertThat(resolved)
         	.isInstanceOf(EmptyResultOnTypeMismatch.class);
         
-        assertThat(((EmptyResultOnTypeMismatch<?>) resolved).getWrappedSpec()).isEqualTo(new Equal<>("thePath", new String [] { "theValue" }, defaultConverter));
+        assertThat(((EmptyResultOnTypeMismatch<?>) resolved).getWrappedSpec()).isEqualTo(new Equal<>(queryCtx, "thePath", new String [] { "theValue" }, defaultConverter));
     }
 
 	@Test
@@ -69,7 +72,7 @@ public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestB
 	
 	public static class SpecWithoutDataConversion implements Specification<Object>, WithoutTypeConversion {
 		
-		public SpecWithoutDataConversion(String path, String[] args) {
+		public SpecWithoutDataConversion(QueryContext queryCtx, String path, String[] args) {
 		}
 		
 		@Override

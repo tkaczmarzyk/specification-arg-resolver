@@ -46,8 +46,8 @@ public class DisjunctionTest extends IntegrationTestBase {
     
     @Test
     public void shouldIncludeResultsOfBothSpecs() throws ParseException {
-        Like<Customer> lastNameSimpson = new Like<>("lastName", "Simpson");
-        Like<Customer> lastNameSzyslak = new Like<>("lastName", "Szyslak");
+        Like<Customer> lastNameSimpson = new Like<>(queryCtx, "lastName", "Simpson");
+        Like<Customer> lastNameSzyslak = new Like<>(queryCtx, "lastName", "Szyslak");
         
         List<Customer> result = customerRepo.findAll(new Disjunction<>(lastNameSimpson, lastNameSzyslak));
         

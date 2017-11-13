@@ -32,17 +32,18 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 
 	private List<HandlerMethodArgumentResolver> delegates = Arrays.asList(
 	        new JoinFetchSpecificationResolver(this),
+	        new JoinSpecificationResolver(this),
 	        new SimpleSpecificationResolver(),
 			new AndSpecificationResolver(), new ConjunctionSpecificationResolver(),
 			new OrSpecificationResolver(), new DisjunctionSpecificationResolver(),
 			new AnnotatedSpecInterfaceArgumentResolver());
 
 	Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
-            WebDataBinderFactory bider, HandlerMethodArgumentResolver recursiveCaller) throws Exception {
+            WebDataBinderFactory binder, HandlerMethodArgumentResolver recursiveCaller) throws Exception {
 	    
 	    for (HandlerMethodArgumentResolver delegate : delegates) {
             if (delegate != recursiveCaller && delegate.supportsParameter(param)) {
-                return delegate.resolveArgument(param, mav, req, bider);
+                return delegate.resolveArgument(param, mav, req, binder);
             }
         }
         
@@ -51,9 +52,9 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 	
 	@Override
     public Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
-            WebDataBinderFactory bider) throws Exception {
+            WebDataBinderFactory binder) throws Exception {
         
-        return resolveArgument(param, mav, req, bider, null);
+        return resolveArgument(param, mav, req, binder, null);
     }
 
     @Override
