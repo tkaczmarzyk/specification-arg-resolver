@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 /**
- * Ugly way to share context between different specifications -- e.g. joins (see {@link JoinSpecificationResolver})
+ * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
  *
  * @author Tomasz Kaczmarzyk
  */
