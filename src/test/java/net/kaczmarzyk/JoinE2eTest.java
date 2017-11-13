@@ -61,7 +61,7 @@ public class JoinE2eTest extends E2eTestBase {
 					@Spec(path = "o.itemName", params = "order", spec = LikeIgnoreCase.class)
 				}) Specification<Customer> spec) {
 			
-			return customerRepo.findAll(spec);
+			return customerRepo.findAll(spec, new Sort("id"));
 		}
 		
 		@RequestMapping(value = "/join/customers", params = { "order1", "order2" })
@@ -85,7 +85,7 @@ public class JoinE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/join/customers", params = { "orderIn" })
 		@ResponseBody
 		public Object findByOrderIn(OrderInSpecification spec) {
-			return customerRepo.findAll(spec);
+			return customerRepo.findAll(spec, new Sort("id"));
 		}
 	}
 	
