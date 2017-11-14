@@ -4,7 +4,7 @@ v1.0.0
 * join support! It is now possible to filter by attributes of joined entities. For example:
 
   ```java
-  RequestMapping("/customers")
+  @RequestMapping("/customers")
   @ResponseBody
   public Object findByOrders(
           @Join(path = "orders", alias = "o")
@@ -25,7 +25,7 @@ v1.0.0
 
   // ...
 
-  RequestMapping("/customers")
+  @RequestMapping("/customers")
   @ResponseBody
   public Object findByOrders(
           CustomerByOrdersSpec spec) {
