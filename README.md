@@ -180,9 +180,10 @@ public class Order {
     // other fields omitted for brevity
 
     @ManyToOne
-    private Cutomer customer;
+    private Customer customer;
 
     private String itemName;
+}
 
 ```
 
@@ -192,7 +193,8 @@ If you want to find all customers who ordered pizza, you can do the following:
 @RequestMapping("/customers")
 public Object findByOrderedItem(
         @Join(path= "orders", alias = "o") // alias specified for joined path
-        @Spec(path="o.itemName", params="orderedItem", spec=Like.class) Specification<Customer> customersByOrderedItemSpec) { // alias used in regular spec definition
+        @Spec(path="o.itemName", params="orderedItem", spec=Like.class)
+        Specification<Customer> customersByOrderedItemSpec) { // alias used in regular spec definition
 
     return customerRepo.findAll(customersByOrderedItemSpec);
 }
