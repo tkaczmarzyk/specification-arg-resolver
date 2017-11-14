@@ -1,3 +1,42 @@
+v1.0.0
+======
+
+* join support! It is now possible to filter by attributes of joined entities. For example:
+
+  ```java
+  RequestMapping("/customers")
+  @ResponseBody
+  public Object findByOrders(
+          @Join(path = "orders", alias = "o")
+          @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+          Specification<Customer> spec) {
+
+      return repository.findAll(spec);
+  }  
+  ```
+  
+  Of course you can use `@Join` on annotated custom specification interfaces:
+
+  ```java
+  @Join(path = "orders", alias = "o")
+  @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+  public interface CustomerByOrdersSpec implements Specification<Customer> {
+  }
+
+  // ...
+
+  RequestMapping("/customers")
+  @ResponseBody
+  public Object findByOrders(
+          CustomerByOrdersSpec spec) {
+
+      return repository.findAll(spec);
+  }
+
+  ```
+
+* `@Joins` annotation has been changed to take instances of `@Join` as `value` parameter (was `@JoinFetch`). `@JoinFetch` might be passed to `join` param of `@Joins` 
+
 v0.9.2
 ======
 
