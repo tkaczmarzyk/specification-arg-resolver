@@ -31,7 +31,7 @@ import org.springframework.data.jpa.domain.Specifications;
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class Conjunction<T> implements Specification<T> {
+public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 
     private Collection<Specification<T>> innerSpecs;
 
@@ -45,12 +45,26 @@ public class Conjunction<T> implements Specification<T> {
         this.innerSpecs = innerSpecs;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
+    public void initializeFakes(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+    	for (Specification<T> spec : innerSpecs) {
+    		if (spec instanceof FakeSpecWrapper) {
+        		((FakeSpecWrapper<T>) spec).initializeFakes(root, query, cb);
+        	}
+        	if (spec instanceof Fake) {
+        		spec.toPredicate(root, query, cb);
+        		continue;
+        	}
+    	}
+    }
+    
+	@Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+    	initializeFakes(root, query, cb);
         Specifications<T> combinedSpecs = null;
         for (Specification<T> spec : innerSpecs) {
         	if (spec instanceof Fake) {
-        		spec.toPredicate(root, query, cb);
         		continue;
         	}
             if (combinedSpecs == null) {
@@ -59,7 +73,7 @@ public class Conjunction<T> implements Specification<T> {
                 combinedSpecs = combinedSpecs.and(spec);
             }
         }
-        return combinedSpecs.toPredicate(root, query, cb);
+        return combinedSpecs == null ? null : combinedSpecs.toPredicate(root, query, cb);
     }
 
     @Override

@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private List<HandlerMethodArgumentResolver> delegates = Arrays.asList(
+			new JoinsSpecificationResolver(this),
 	        new JoinFetchSpecificationResolver(this),
 	        new JoinSpecificationResolver(this),
 	        new SimpleSpecificationResolver(),
@@ -39,11 +41,15 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 			new AnnotatedSpecInterfaceArgumentResolver());
 
 	Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
-            WebDataBinderFactory binder, HandlerMethodArgumentResolver recursiveCaller) throws Exception {
+            WebDataBinderFactory binder, List<HandlerMethodArgumentResolver> recursiveCallers) throws Exception {
 	    
 	    for (HandlerMethodArgumentResolver delegate : delegates) {
-            if (delegate != recursiveCaller && delegate.supportsParameter(param)) {
-                return delegate.resolveArgument(param, mav, req, binder);
+            if (!recursiveCallers.contains(delegate) && delegate.supportsParameter(param)) {
+            	if (delegate instanceof RecursiveHandlerMethodArgumentResolver) {
+            		return ((RecursiveHandlerMethodArgumentResolver) delegate).resolveArgument(param, mav, req, binder, recursiveCallers);
+            	} else {
+            		return delegate.resolveArgument(param, mav, req, binder);
+            	}
             }
         }
         
@@ -54,7 +60,7 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
     public Object resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
             WebDataBinderFactory binder) throws Exception {
         
-        return resolveArgument(param, mav, req, binder, null);
+        return resolveArgument(param, mav, req, binder, new ArrayList<HandlerMethodArgumentResolver>());
     }
 
     @Override

@@ -36,6 +36,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -87,6 +88,22 @@ public class JoinE2eTest extends E2eTestBase {
 		public Object findByOrderIn(OrderInSpecification spec) {
 			return customerRepo.findAll(spec, new Sort("id"));
 		}
+		
+		@RequestMapping(value = "/multi-join/customers", params = { "order", "badge" })
+		@ResponseBody
+		public Object findByOrderAndOrders2(
+				
+				@Joins({
+					@Join(on = "orders", alias = "o"),
+					@Join(on = "badges", alias = "b")
+				})
+				@Or({
+					@Spec(path = "o.itemName", params = "order", spec = Like.class),
+					@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
+				}) Specification<Customer> spec) {
+			
+			return customerRepo.findAll(spec, new Sort("id"));
+		}
 	}
 	
 	@Test
@@ -135,6 +152,19 @@ public class JoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$").isArray())
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+	
+	@Test
+	public void filtersByAttributesOfMultipleJoins() throws Exception {
+		mockMvc.perform(get("/multi-join/customers")
+				.param("order", "Pizza")
+				.param("badge", "Troll Face")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 	
 }

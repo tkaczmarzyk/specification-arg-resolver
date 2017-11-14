@@ -83,6 +83,13 @@ public class CustomerBuilder {
         return this;
     }
     
+    public CustomerBuilder badges(String... badgeTypes) {
+		for (String badgeType : badgeTypes) {
+			new Badge(customer, badgeType);
+		}
+		return this;
+	}
+    
     public Customer build(EntityManager em) {
         em.persist(customer);
         return customer;

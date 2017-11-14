@@ -15,22 +15,20 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.annotation.Annotation;
+import java.util.List;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
+/**
+ * @author Tomasz Kaczmarzyk
+ *
+ */
+interface RecursiveHandlerMethodArgumentResolver extends HandlerMethodArgumentResolver {
 
-public class MethodParameterUtil {
-
-	public static boolean isAnnotatedWith(Class<? extends Annotation> annotation, MethodParameter param) {
-		return param.hasParameterAnnotation(annotation) || param.getParameterType().isAnnotationPresent(annotation);
-	}
-	
-	public static <A extends Annotation> A getAnnotation(Class<A> annotationType, MethodParameter parameter) {
-        A annotation = parameter.getParameterAnnotation(annotationType);
-        if (annotation == null) {
-            annotation = parameter.getParameterType().getAnnotation(annotationType);
-        }
-        return annotation;
-    }
+	Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+			NativeWebRequest webRequest, WebDataBinderFactory binderFactory, List<HandlerMethodArgumentResolver> recursiveCallers) throws Exception;
 }

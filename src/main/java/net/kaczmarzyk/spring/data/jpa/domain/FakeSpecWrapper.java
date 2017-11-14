@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.web.annotation;
+package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.TYPE })
-public @interface Joins {
+interface FakeSpecWrapper<T> {
 
-	Join[] value() default {};
-	JoinFetch[] fetch() default {};
+	void initializeFakes(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb);
 }

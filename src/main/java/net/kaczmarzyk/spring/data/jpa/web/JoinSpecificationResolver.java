@@ -15,10 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static net.kaczmarzyk.spring.data.jpa.web.MethodParameterUtil.getAnnotation;
 import static net.kaczmarzyk.spring.data.jpa.web.MethodParameterUtil.isAnnotatedWith;
 
-import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,7 +36,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
  *
  * @author Tomasz Kaczmarzyk
  */
-class JoinSpecificationResolver implements HandlerMethodArgumentResolver {
+class JoinSpecificationResolver implements RecursiveHandlerMethodArgumentResolver {
 
 	private SpecificationArgumentResolver parentResolver;
 	
@@ -46,10 +48,20 @@ class JoinSpecificationResolver implements HandlerMethodArgumentResolver {
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest request, WebDataBinderFactory binder)
 			throws Exception {
 		
+		return resolveArgument(parameter, mavContainer, request, binder, new ArrayList<HandlerMethodArgumentResolver>());
+	}
+	
+	@Override
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+			NativeWebRequest request, WebDataBinderFactory binder,
+			List<HandlerMethodArgumentResolver> recursiveCallers) throws Exception {
+		
+		recursiveCallers.add(this);
+		
 		Specification<Object> joinSpec = resolveJoin(parameter, request);
 		
         @SuppressWarnings("unchecked")
-        Specification<Object> regularSpec = (Specification<Object>) parentResolver.resolveArgument(parameter, mavContainer, request, binder, this);
+        Specification<Object> regularSpec = (Specification<Object>) parentResolver.resolveArgument(parameter, mavContainer, request, binder, recursiveCallers);
         
         Specification<Object> spec = regularSpec == null ? joinSpec : new Conjunction<Object>(Arrays.asList(joinSpec, regularSpec));
 
@@ -62,7 +74,7 @@ class JoinSpecificationResolver implements HandlerMethodArgumentResolver {
 
 	private Specification<Object> resolveJoin(MethodParameter parameter, NativeWebRequest request) {
 		if (isAnnotatedWith(Join.class, parameter)) {
-    		Join fetchDef = getJoinDef(Join.class, parameter);
+    		Join fetchDef = getAnnotation(Join.class, parameter);
     		return newJoin(fetchDef, request);
     	} else {
     		throw new IllegalArgumentException("@Join was expected!");
@@ -73,14 +85,6 @@ class JoinSpecificationResolver implements HandlerMethodArgumentResolver {
 		return new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(new WebRequestQueryContext(request), joinDef.on(), joinDef.alias(), joinDef.type(), joinDef.distinct());
 	}
 
-    private <A extends Annotation> A getJoinDef(Class<A> annotation, MethodParameter parameter) { // TODO duplicated code (JoinFetchSpecificationResolver)
-        A joinDef = parameter.getParameterAnnotation(annotation);
-        if (joinDef == null) {
-            joinDef = parameter.getParameterType().getAnnotation(annotation);
-        }
-        return joinDef;
-    }
-
 	@Override
 	public boolean supportsParameter(MethodParameter param) {
 		Class<?> paramType = param.getParameterType();
@@ -88,5 +92,4 @@ class JoinSpecificationResolver implements HandlerMethodArgumentResolver {
         		&& Specification.class.isAssignableFrom(paramType)
         		&& isAnnotatedWith(Join.class, param);
 	}
-
 }

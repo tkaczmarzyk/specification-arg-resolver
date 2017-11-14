@@ -15,7 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -78,6 +77,9 @@ public class Customer {
     
     @OneToMany(mappedBy = "customer2", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Set<Order> orders2;
+    
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private Set<Badge> badges;
     
     
     public Customer() {
@@ -208,6 +210,13 @@ public class Customer {
 
 	public Boolean getGoldObj() {
 		return goldObj;
+	}
+	
+	public Set<Badge> getBadges() {
+		if (badges == null) {
+			badges = new HashSet<>();
+		}
+		return badges;
 	}
 	
 }
