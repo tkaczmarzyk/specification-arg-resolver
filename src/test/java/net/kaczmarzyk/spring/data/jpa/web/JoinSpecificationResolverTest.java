@@ -45,7 +45,7 @@ public class JoinSpecificationResolverTest extends ResolverTestBase {
     
     public static class TestController {
 
-        public void testMethod1(@Join(on = "orders", alias = "o", type = JoinType.RIGHT, distinct = false) Specification<Object> spec) {
+        public void testMethod1(@Join(path = "orders", alias = "o", type = JoinType.RIGHT, distinct = false) Specification<Object> spec) {
         }
     }
 

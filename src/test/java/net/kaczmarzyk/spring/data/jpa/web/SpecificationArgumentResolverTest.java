@@ -254,16 +254,16 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         
         public void testMethod_joinContainerWithRegularJoin(
                 @Joins({
-                	@Join(on = "join1", alias = "alias1", type = JoinType.INNER, distinct = true),
-                	@Join(on = "join2", alias = "alias2", type = JoinType.LEFT, distinct = false)
+                	@Join(path = "join1", alias = "alias1", type = JoinType.INNER, distinct = true),
+                	@Join(path = "join2", alias = "alias2", type = JoinType.LEFT, distinct = false)
                 })
                 @Spec(path = "path1", spec = Like.class) Specification<Object> spec) {
         }
         
         public void testMethod_joinContainerWithRegularAndFetchJoins(
                 @Joins(value = {
-                	@Join(on = "join1", alias = "alias1", type = JoinType.INNER, distinct = true),
-                	@Join(on = "join2", alias = "alias2", type = JoinType.LEFT, distinct = false)
+                	@Join(path = "join1", alias = "alias1", type = JoinType.INNER, distinct = true),
+                	@Join(path = "join2", alias = "alias2", type = JoinType.LEFT, distinct = false)
                 }, fetch = {
                     	@JoinFetch(paths = { "fetch1" }),
                         @JoinFetch(paths = { "fetch2" }, joinType = JoinType.INNER)

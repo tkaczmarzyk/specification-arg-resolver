@@ -34,7 +34,7 @@ public @interface Join {
 	/**
 	 * Specifies a collection property to join on, e.g. "addresses"
 	 */
-	String on();
+	String path();
 	
 	/**
 	 * Specifies an alias for the joined part, e.g. "a"

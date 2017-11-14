@@ -82,7 +82,7 @@ class JoinSpecificationResolver implements RecursiveHandlerMethodArgumentResolve
 	}
 	
 	private net.kaczmarzyk.spring.data.jpa.domain.Join<Object> newJoin(Join joinDef, NativeWebRequest request) {
-		return new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(new WebRequestQueryContext(request), joinDef.on(), joinDef.alias(), joinDef.type(), joinDef.distinct());
+		return new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(new WebRequestQueryContext(request), joinDef.path(), joinDef.alias(), joinDef.type(), joinDef.distinct());
 	}
 
 	@Override

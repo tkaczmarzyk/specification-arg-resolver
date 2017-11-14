@@ -56,7 +56,7 @@ public class JoinE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findByNameAndOrders(
 				
-				@Join(on = "orders", alias = "o")
+				@Join(path = "orders", alias = "o")
 				@And({
 					@Spec(path = "firstName", spec = Equal.class),
 					@Spec(path = "o.itemName", params = "order", spec = LikeIgnoreCase.class)
@@ -69,7 +69,7 @@ public class JoinE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findByOrder2Options(
 				
-				@Join(on = "orders", alias = "o")
+				@Join(path = "orders", alias = "o")
 				@Or({
 					@Spec(path = "o.itemName", params = "order1", spec = Like.class),
 					@Spec(path = "o.itemName", params = "order2", spec = Equal.class)
@@ -78,7 +78,7 @@ public class JoinE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec, new Sort("id"));
 		}
 		
-		@Join(on = "orders", alias = "o")
+		@Join(path = "orders", alias = "o")
 		@Spec(path = "o.itemName", params = "orderIn", spec = In.class)
 		public static interface OrderInSpecification extends Specification<Customer> {
 		}
@@ -94,8 +94,8 @@ public class JoinE2eTest extends E2eTestBase {
 		public Object findByOrderAndOrders2(
 				
 				@Joins({
-					@Join(on = "orders", alias = "o"),
-					@Join(on = "badges", alias = "b")
+					@Join(path = "orders", alias = "o"),
+					@Join(path = "badges", alias = "b")
 				})
 				@Or({
 					@Spec(path = "o.itemName", params = "order", spec = Like.class),
