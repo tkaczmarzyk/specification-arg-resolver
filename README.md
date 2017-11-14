@@ -158,6 +158,70 @@ It requires 2 HTTP parameters (for lower and upper bound). You should use `param
 
 You can configure the date pattern as with `LessThan` described above.
 
+Join
+----
+
+You can use `@Join` annotation to perform joins and then filter by attributes of joined entities. For example, let's assume the following entities:
+
+```java
+@Entity
+public class Customer {
+
+    // other fields omitted for brevity
+
+    @OneToMany(mappedBy = customer)
+    private Collection<Order> orders;
+
+}
+
+@Entity
+public class Order {
+
+    // other fields omitted for brevity
+
+    @ManyToOne
+    private Cutomer customer;
+
+    private String itemName;
+
+```
+
+If you want to find all customers who ordered pizza, you can do the following:
+
+```java
+@RequestMapping("/customers")
+public Object findByOrderedItem(
+        @Join(path= "orders", alias = "o") // alias specified for joined path
+        @Spec(path="o.itemName", params="orderedItem", spec=Like.class) Specification<Customer> customersByOrderedItemSpec) { // alias used in regular spec definition
+
+    return customerRepo.findAll(customersByOrderedItemSpec);
+}
+
+```
+
+The default join type is `INNER`. You can use `type` attribute of the annotation to specify different value.
+
+Using `@Join` annotation makes the query distinct by default. While it is the best approach for most of the cases, you can override it by using `distinct` attribute of the annotation.
+
+You can specify multiple different joins with container annotaion `@Joins`, for example:
+
+```java
+@RequestMapping("/customers")
+public Object findByOrderedOrFavouriteItem(
+        @Joins({
+            @Join(path = "orders", alias = "o")
+            @Join(path = "favourites", alias = "f")
+        })
+        @Or({
+            @Spec(path="o.itemName", params="item", spec=Like.class),
+            @Spec(path="f.itemName", params="item", spec=Like.class)}) Specification<Customer> customersByItem) {
+
+    return customerRepo.findAll(customersByItem);
+}
+```
+
+You can use join annotations with custom specification interfaces (see below).
+
 Join fetch
 ----------
 
@@ -178,7 +242,7 @@ The default join type is `LEFT`. You can use `joinType` attribute of the annotat
 ```java
 @RequestMapping("/customers")
 public Object findByCityFetchOrdersAndAddresses(
-        @Joins({
+        @Joins(fetch = {
             @JoinFetch(paths = "orders")
             @JoinFetch(paths = "addresses", joinType = JoinType.INNER)
         })
