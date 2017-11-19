@@ -432,6 +432,31 @@ public Object findNotDeletedCustomerByLastName(
 
 to execute queries such as `select c from Customer c where c.deleted = false and c.lastName like %Homer%`.
 
+### Interface inheritance tree
+
+Specifications are resolved from all parent interfaces and combined with `and`. As an example, let's consider the following interfaces:
+
+```java
+@Spec(path = "deleted", constVal = "false", spec = Equal.class)
+public interface NotDeletedSpec extends Specification<Customer> {}
+
+@Spec(path = "firstName", spec = Equal.class)
+public interface FirstNameSpec extends NotDeletedSpec {}
+```
+
+`FirstNameSpec` extends `NotDeletedSpec`, so their specifications will be combined with `and`, i.e. a controller method like this:
+
+```java
+@RequestMapping("/customers")
+@ResponseBody
+public Object findNotDeletedCustomersByFirstName(FirstNameSpec spec) {
+    
+  return repository.findAll(spec);
+}
+```
+
+will accept HTTP requests such as `GET /customers?firstName=Homer` and execute JPA queries such as `where firstName = 'Homer' and deleted = false`.
+
 Handling different field types
 ------------------------------
 
