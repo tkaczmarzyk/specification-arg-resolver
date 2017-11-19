@@ -85,7 +85,7 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		Collection<Class<?>> ifaceTree = TypeUtil.interfaceTree(param.getParameterType());
 		
 		for (Class<?> iface : ifaceTree) {
-			if (iface == Specification.class) {
+			if (!isAnnotated(iface)) {
 				continue;
 			}
 			Object specDef = getAnnotation(iface);
