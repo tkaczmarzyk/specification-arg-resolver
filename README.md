@@ -23,7 +23,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Nested conjunctions and disjunctions](#nested-conjunctions-and-disjunctions)
    * [Annotated specification interfaces](#annotated-specification-interfaces) -- resolving specifications from annotated interfaces
       * [Interface inheritance tree](#interface-inheritance-tree)
-   * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent againt an integer field)
+   * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Download binary releases](#download-binary-releases)
 
 
