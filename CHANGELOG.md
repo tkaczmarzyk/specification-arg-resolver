@@ -1,3 +1,31 @@
+v1.1.0
+======
+
+* added `NotEqual` and `NotEqualIgnoreCase` specs
+* resolving annotations from parent interfaces, for example, consider the following interfaces:
+
+  ```java
+  @Spec(path = "deleted", constVal = "false", spec = Equal.class)
+  public interface NotDeletedSpec extends Specification<Customer> {}
+
+  @Spec(path = "firstName", spec = Equal.class)
+  public interface FirstNameSpec extends NotDeletedSpec {}
+  ```
+
+  `FirstNameSpec` extends `NotDeletedSpec`, so their specifications will be combined with `and`, i.e. a controller method like this:
+
+  ```java
+  @RequestMapping("/customers")
+  @ResponseBody
+  public Object findNotDeletedCustomersByFirstName(FirstNameSpec spec) {
+      
+    return repository.findAll(spec);
+  }
+  ```
+
+  will accept HTTP requests such as `GET /customers?firstName=Homer` and execute JPA queries such as `where firstName = 'Homer' and deleted = false`.
+ 
+
 v1.0.0
 ======
 
