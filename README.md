@@ -339,7 +339,7 @@ public Object findByOrderedOrFavouriteItem(
 }
 ```
 
-You can use join annotations with custom specification interfaces (see below).
+You can use join annotations with custom [annotated specification interfaces]((#annotated-specification-interfaces)).
 
 Join fetch
 ----------
@@ -371,7 +371,7 @@ public Object findByCityFetchOrdersAndAddresses(
 }
 ```
 
-You can use join annotations with custom specification interfaces (see below).
+You can use join annotations with custom [annotated specification interfaces]((#annotated-specification-interfaces)).
 
 
 Advanced HTTP parameter handling
