@@ -8,7 +8,7 @@ A thorough introduction and the original rationale behind this component can be 
 You can also take a look on a working Spring Boot app that uses this library: https://github.com/tkaczmarzyk/specification-arg-resolver-example.
 
 * Table of contents 
-   * [Basic usage](#basic-usage)
+   * [Basic usage](#basic-usage) -- quick start with the lib
       * [Enabling spec annotations in your Spring app](#enabling-spec-annotations-in-your-spring-app)
    * [Simple specifications](#simple-specifications) -- basic specs, such as `Equal`, `Like`, `GreaterThan` etc.
    * [Join](#join) -- filtering by attributes of joined entities
@@ -16,14 +16,14 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Advanced HTTP parameter handling](#advanced-http-parameter-handling)
       * [Handling non-present HTTP parameters](#handling-non-present-http-parameters)
       * [Mapping HTTP parameter name to property path of an entity](#mapping-http-parameter-name-to-property-path-of-an-entity)
-   * [Static parts of queries](#static-parts-of-queries)
+   * [Static parts of queries](#static-parts-of-queries) -- adding static (not bound to HTTP params) predicates such as `deleted = false`
    * [Combining specs](#combining-specs)
       * [@And](#and) -- combining simple specs with `and` keyword
       * [@Or](#or) -- combining simple specs with `or` keyword
       * [Nested conjunctions and disjunctions](#nested-conjunctions-and-disjunctions)
    * [Annotated specification interfaces](#annotated-specification-interfaces) -- resolving specifications from annotated interfaces
       * [Interface inheritance tree](#interface-inheritance-tree)
-   * [Handling different field types](#handling-different-field-types)
+   * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent againt an integer field)
    * [Download binary releases](#download-binary-releases)
 
 
