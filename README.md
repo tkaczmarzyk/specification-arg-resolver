@@ -11,16 +11,16 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Basic usage](#basic-usage) -- quick start with the lib
       * [Enabling spec annotations in your Spring app](#enabling-spec-annotations-in-your-spring-app)
    * [Simple specifications](#simple-specifications) -- basic specs, such as `Equal`, `Like`, `GreaterThan` etc.
+   * [Combining specs](#combining-specs)
+      * [@And](#and) -- combining simple specs with `and` keyword
+      * [@Or](#or) -- combining simple specs with `or` keyword
+      * [Nested conjunctions and disjunctions](#nested-conjunctions-and-disjunctions)
    * [Join](#join) -- filtering by attributes of joined entities
    * [Join fetch](#join-fetch) -- initializing lazy associations
    * [Advanced HTTP parameter handling](#advanced-http-parameter-handling)
       * [Handling non-present HTTP parameters](#handling-non-present-http-parameters)
       * [Mapping HTTP parameter name to property path of an entity](#mapping-http-parameter-name-to-property-path-of-an-entity)
    * [Static parts of queries](#static-parts-of-queries) -- adding static (not bound to HTTP params) predicates such as `deleted = false`
-   * [Combining specs](#combining-specs)
-      * [@And](#and) -- combining simple specs with `and` keyword
-      * [@Or](#or) -- combining simple specs with `or` keyword
-      * [Nested conjunctions and disjunctions](#nested-conjunctions-and-disjunctions)
    * [Annotated specification interfaces](#annotated-specification-interfaces) -- resolving specifications from annotated interfaces
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
@@ -178,6 +178,103 @@ It requires 2 HTTP parameters (for lower and upper bound). You should use `param
 
 You can configure the date pattern as with `LessThan` described above.
 
+Combining specs
+---------------
+
+You can combine the specs described above with `or` & `and`. Remember that by default all of the HTTP params are optional. If you want to make all parts of your query required, you must state that explicitly in `@RequestMapping` annotation (see above).
+
+### @And ###
+
+Usage:
+
+```java
+@RequestMapping("/customers")
+public Object findByName(
+        @And({
+            @Spec(path="registrationDate", params="registeredBefore", spec=DateBefore.class),
+            @Spec(path="lastName", spec=Like.class)}) Specification<Customer> customerSpec) {
+
+    return customerRepo.findAll(customerSpec);
+}
+```
+
+would handle requests like `GET http://myhost/customers?registeredBefore=2015-01-18&lastName=Simpson`
+
+and execute queries like: `select c from Customer c where c.registrationDate < :registeredBefore and c.lastName like '%Simpson%'`.
+
+
+### @Or ###
+
+Usage:
+
+```java
+@RequestMapping("/customers")
+public Object findByName(
+        @Or(
+            @Spec(path="firstName", params="name", spec=Like.class),
+            @Spec(path="lastName", params="name", spec=Like.class)) Specification<Customer> customerNameSpec) {
+
+    return customerRepo.findAll(customerNameSpec);
+}
+```
+
+would handle requests like `GET http://myhost/customers?name=Mo`
+
+and execute queries like: `select c from Customer c where c.firstName like '%Mo%' or c.lastName like '%Mo'`.
+
+### Nested conjunctions and disjunctions ###
+
+You can put multiple `@And` inside `@Disjunction` or multiple `@Or` inside `@Conjunction`. `@Disjunction` joins nested `@And` queries with 'or' operator. `@Conjunction` joins nested `@Or` queries with 'and' operator. For example:
+
+```java
+@RequestMapping("/customers")
+public Object findByFullNameAndAddress(
+        @Conjunction({
+            @Or(@Spec(path="firstName", params="name", spec=Like.class),
+                @Spec(path="lastName", params="name", spec=Like.class)),
+            @Or(@Spec(path="address.street", params="address", spec=Like.class),
+                @Spec(path="address.city", params="address", spec=Like.class))
+        }) Specification<Customer> customerSpec) {
+
+    return customerRepo.findAll(customerSpec);
+}
+```
+
+would handle requests like `GET http://myhost/customers?name=Sim&address=Ever`
+
+and execute queries like `select c from Customer c where (c.firstName like '%Sim%' or c.lastName like '%Sim%') and (c.address.street like '%Ever%' or c.address.city like '%Ever%')`.
+
+You must use `@Conjunction` and `@Disjunction` as top level annotations (instead of regular `@And` and `@Or`) because of limitations of Java annotation syntax (it does not allow cycle in annotation references).
+
+You can join nested `@And` and `@Or` queries with simple `@Spec`, for example:
+
+```java
+@RequestMapping("/customers")
+public Object findByFullNameAndAddressAndNickName(
+        @Conjunction(value = {
+            @Or(@Spec(path="firstName", params="name", spec=Like.class),
+                @Spec(path="lastName", params="name", spec=Like.class)),
+            @Or(@Spec(path="address.street", params="address", spec=Like.class),
+                @Spec(path="address.city", params="address", spec=Like.class))
+        }, and = @Spec(path="nickName", spec=Like.class) Specification<Customer> customerSpec) {
+
+    return customerRepo.findAll(customerSpec);
+}
+
+```
+
+```java
+@RequestMapping("/customers")
+public Object findByLastNameOrGoldenByFirstName(
+        @Disjunction(value = {
+            @And({@Spec(path="golden", spec=Equal.class, constVal="true"),
+                @Spec(path="firstName", params="name", spec=Like.class)})
+        }, or = @Spec(path="lastName", params="name", spec=Like.class) Specification<Customer> customerSpec) {
+
+    return customerRepo.findAll(customerSpec);
+}
+
+```
 Join
 ----
 
@@ -309,103 +406,6 @@ If you don't want to bind your Specification to any HTTP parameter, you can use 
 ```
 
 will alwas produce the following: `where deleted = false`. It is often convenient to combine such a static part with dynamic ones using `@And` or `@Or` described below.
-
-Combining specs
----------------
-
-You can combine the specs described above with `or` & `and`. Remember that by default all of the HTTP params are optional. If you want to make all parts of your query required, you must state that explicitly in `@RequestMapping` annotation (see above).
-
-### @And ###
-
-Usage:
-
-```java
-@RequestMapping("/customers")
-public Object findByName(
-        @And({
-            @Spec(path="registrationDate", params="registeredBefore", spec=DateBefore.class),
-            @Spec(path="lastName", spec=Like.class)}) Specification<Customer> customerSpec) {
-
-    return customerRepo.findAll(customerSpec);
-}
-```
-
-would handle requests like `GET http://myhost/customers?registeredBefore=2015-01-18&lastName=Simpson`
-
-and execute queries like: `select c from Customer c where c.registrationDate < :registeredBefore and c.lastName like '%Simpson%'`.
-
-
-### @Or ###
-
-Usage:
-
-```java
-@RequestMapping("/customers")
-public Object findByName(
-        @Or(
-            @Spec(path="firstName", params="name", spec=Like.class),
-            @Spec(path="lastName", params="name", spec=Like.class)) Specification<Customer> customerNameSpec) {
-
-    return customerRepo.findAll(customerNameSpec);
-}
-```
-
-would handle requests like `GET http://myhost/customers?name=Mo`
-
-and execute queries like: `select c from Customer c where c.firstName like '%Mo%' or c.lastName like '%Mo'`.
-
-### Nested conjunctions and disjunctions ###
-
-You can put multiple `@And` inside `@Disjunction` or multiple `@Or` inside `@Conjunction`. `@Disjunction` joins nested `@And` queries with 'or' operator. `@Conjunction` joins nested `@Or` queries with 'and' operator. For example:
-
-```java
-@RequestMapping("/customers")
-public Object findByFullNameAndAddress(
-        @Conjunction({
-            @Or(@Spec(path="firstName", params="name", spec=Like.class),
-                @Spec(path="lastName", params="name", spec=Like.class)),
-            @Or(@Spec(path="address.street", params="address", spec=Like.class),
-                @Spec(path="address.city", params="address", spec=Like.class))
-        }) Specification<Customer> customerSpec) {
-
-    return customerRepo.findAll(customerSpec);
-}
-```
-
-would handle requests like `GET http://myhost/customers?name=Sim&address=Ever`
-
-and execute queries like `select c from Customer c where (c.firstName like '%Sim%' or c.lastName like '%Sim%') and (c.address.street like '%Ever%' or c.address.city like '%Ever%')`.
-
-You must use `@Conjunction` and `@Disjunction` as top level annotations (instead of regular `@And` and `@Or`) because of limitations of Java annotation syntax (it does not allow cycle in annotation references).
-
-You can join nested `@And` and `@Or` queries with simple `@Spec`, for example:
-
-```java
-@RequestMapping("/customers")
-public Object findByFullNameAndAddressAndNickName(
-        @Conjunction(value = {
-            @Or(@Spec(path="firstName", params="name", spec=Like.class),
-                @Spec(path="lastName", params="name", spec=Like.class)),
-            @Or(@Spec(path="address.street", params="address", spec=Like.class),
-                @Spec(path="address.city", params="address", spec=Like.class))
-        }, and = @Spec(path="nickName", spec=Like.class) Specification<Customer> customerSpec) {
-
-    return customerRepo.findAll(customerSpec);
-}
-
-```
-
-```java
-@RequestMapping("/customers")
-public Object findByLastNameOrGoldenByFirstName(
-        @Disjunction(value = {
-            @And({@Spec(path="golden", spec=Equal.class, constVal="true"),
-                @Spec(path="firstName", params="name", spec=Like.class)})
-        }, or = @Spec(path="lastName", params="name", spec=Like.class) Specification<Customer> customerSpec) {
-
-    return customerRepo.findAll(customerSpec);
-}
-```
 
 Annotated specification interfaces
 ----------------------------------
