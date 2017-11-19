@@ -20,20 +20,29 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.In;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import net.kaczmarzyk.utils.ReflectionUtils;
 
 
 /**
@@ -100,6 +109,33 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 		}
 	}
 	
+	@Spec(path = "deleted", spec = Equal.class)
+	public static interface BaseInterface extends Specification<Customer> {
+	}
+	
+	@Or({
+		@Spec(path = "name", spec = Like.class),
+		@Spec(path = "weight", spec = Equal.class)
+	})
+	public static interface ChildInterface extends BaseInterface {
+	}
+	
+	@Or({
+		@Spec(path = "name2", spec = Like.class),
+		@Spec(path = "weight2", spec = Equal.class)
+	})
+	public static interface Chil2dInterface extends BaseInterface {
+	}
+	
+	@Or({
+		@Spec(path = "gold", spec = Equal.class),
+		@Spec(path = "status", spec = In.class)
+	})
+	public static interface GrandChildInterface extends ChildInterface, Chil2dInterface {
+	}
+	
+	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT);
+	
 	public static class TestController {
 		public void methodWithSimpleSpec(IfaceWithSimpleSpec arg) {}
 		public void methodWithClass(Clazz arg) {}
@@ -110,16 +146,23 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 		public void methodWithConjunction(IfaceWithConjunction arg) {}
 		public void methodWithOr(IfaceWithOr arg) {}
 		public void methodWithDisjunction(IfaceWithDisjunction arg) {}
+		public void methodWithInheritanceTree(GrandChildInterface arg) {}
 	}
 	
 	NativeWebRequest req = mock(NativeWebRequest.class);
+	QueryContext queryCtx = new WebRequestQueryContext(req);
 	
 	@Before
 	public void init() {
+		when(req.getParameterValues("deleted")).thenReturn(new String[] { "false" });
+		when(req.getParameterValues("gold")).thenReturn(new String[] { "true" });
+		when(req.getParameterValues("status")).thenReturn(new String[] { "ACTIVE", "VERY_ACTIVE" });
 		when(req.getParameterValues("name")).thenReturn(new String[] { "Homer" });
+		when(req.getParameterValues("name2")).thenReturn(new String[] { "Max" });
 		when(req.getParameterValues("firstName")).thenReturn(new String[] { "Homer" });
 		when(req.getParameterValues("lastName")).thenReturn(new String[] { "Simpson" });
 		when(req.getParameterValues("weight")).thenReturn(new String[] { "121" });
+		when(req.getParameterValues("weight2")).thenReturn(new String[] { "99" });
 		when(req.getParameterValues("gender")).thenReturn(new String[] { "MALE" });
 	}
 	
@@ -191,6 +234,29 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 		Object resolved = resolver.resolveArgument(param, null, req, null);
 		
 		assertThat(resolved.toString()).startsWith("IfaceWithOr[");
+	}
+	
+	@Test
+	public void createsConjunctionOutOfSpecsFromWholeInheritanceTree() throws Exception {
+		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithInheritanceTree", GrandChildInterface.class), 0);
+        
+		Object resolved = resolver.resolveArgument(param, null, req, null);
+		
+		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction = ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
+		Collection<Specification<Object>> resolvedInnerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
+		assertThat(resolvedInnerSpecs)
+			.hasSize(4)
+			.containsOnly(
+				new EmptyResultOnTypeMismatch<>(new Equal<>(queryCtx, "deleted", new String[] { "false" }, converter)),
+				new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
+						new Like<>(queryCtx, "name", new String[] { "Homer" }),
+						new EmptyResultOnTypeMismatch<>(new Equal<>(queryCtx, "weight", new String[] { "121" }, converter))),
+				new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
+						new Like<>(queryCtx, "name2", new String[] { "Max" }),
+						new EmptyResultOnTypeMismatch<>(new Equal<>(queryCtx, "weight2", new String[] { "99" }, converter))),
+				new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
+						new EmptyResultOnTypeMismatch<>(new Equal<>(queryCtx, "gold", new String[] { "true" }, converter)),
+						new EmptyResultOnTypeMismatch<>(new In<>(queryCtx, "status", new String [] { "ACTIVE", "VERY_ACTIVE" }, converter))));
 	}
 
 	@Override

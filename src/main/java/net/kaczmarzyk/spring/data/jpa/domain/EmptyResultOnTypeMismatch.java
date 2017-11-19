@@ -59,4 +59,34 @@ public class EmptyResultOnTypeMismatch<T> implements Specification<T> {
 	public Specification<T> getWrappedSpec() {
 		return wrappedSpec;
 	}
+
+	@Override
+	public String toString() {
+		return "EmptyResultOnTypeMismatch [wrappedSpec=" + wrappedSpec + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((wrappedSpec == null) ? 0 : wrappedSpec.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EmptyResultOnTypeMismatch other = (EmptyResultOnTypeMismatch) obj;
+		if (wrappedSpec == null) {
+			if (other.wrappedSpec != null)
+				return false;
+		} else if (!wrappedSpec.equals(other.wrappedSpec))
+			return false;
+		return true;
+	}
 }

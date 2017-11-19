@@ -16,9 +16,12 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+import net.kaczmarzyk.spring.data.jpa.utils.TypeUtil;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
@@ -55,14 +58,18 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 			WebDataBinderFactory binderFactory) throws Exception {
 		
-		Specification<Object> ifaceSpec = resolveSpecFromInterfaceAnnotations(webRequest, parameter);
+		List<Specification<Object>> ifaceSpecs = resolveSpecFromInterfaceAnnotations(webRequest, parameter);
 		Specification<Object> paramSpec = resolveSpecFromParameterAnnotations(webRequest, parameter);
 		
-		if (ifaceSpec == null && paramSpec == null) {
+		if (ifaceSpecs.isEmpty() && paramSpec == null) {
 			return null;
 		}
 		
-		Specification<Object> spec = new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(ifaceSpec, paramSpec);
+		if (paramSpec != null) {
+			ifaceSpecs.add(paramSpec);
+		}
+		
+		Specification<Object> spec = new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(ifaceSpecs);
 		
 		return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), spec);
 	}
@@ -72,11 +79,22 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		return specDef != null ? buildSpecification(webRequest, specDef) : null;
 	}
 
-	private Specification<Object> resolveSpecFromInterfaceAnnotations(NativeWebRequest webRequest, MethodParameter param) {
-		Object specDef = getAnnotation(param.getParameterType());
-		return buildSpecification(webRequest, specDef);
+	private List<Specification<Object>> resolveSpecFromInterfaceAnnotations(NativeWebRequest webRequest, MethodParameter param) {
+		List<Specification<Object>> result = new ArrayList<Specification<Object>>();
+		
+		Collection<Class<?>> ifaceTree = TypeUtil.interfaceTree(param.getParameterType());
+		
+		for (Class<?> iface : ifaceTree) {
+			if (iface == Specification.class) {
+				continue;
+			}
+			Object specDef = getAnnotation(iface);
+			result.add(buildSpecification(webRequest, specDef));
+		}
+		
+		return result;
 	}
-
+	
 	private Specification<Object> buildSpecification(NativeWebRequest webRequest, Object specDef) {
 		Specification<Object> spec;
 		

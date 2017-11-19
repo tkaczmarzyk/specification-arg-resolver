@@ -75,7 +75,7 @@ public class Converter {
 	
 	private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
-	public static final Converter DEFAULT = Converter.withDateFormat(DEFAULT_DATE_FORMAT, OnTypeMismatch.DEFAULT);
+	public static final Converter DEFAULT = Converter.withDateFormat(DEFAULT_DATE_FORMAT, OnTypeMismatch.EMPTY_RESULT);
 	
 	private String dateFormat;
 	private OnTypeMismatch onTypeMismatch;
@@ -182,6 +182,11 @@ public class Converter {
 		if (onTypeMismatch != other.onTypeMismatch)
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "Converter [dateFormat=" + dateFormat + ", onTypeMismatch=" + onTypeMismatch + "]";
 	}
 
 	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch) {

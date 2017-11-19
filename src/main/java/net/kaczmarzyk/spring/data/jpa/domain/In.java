@@ -59,4 +59,31 @@ public class In<T> extends PathSpecification<T> {
 		return path.in(converter.convert(Arrays.asList(allowedValues), typeOnPath));
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Arrays.hashCode(allowedValues);
+		result = prime * result + ((converter == null) ? 0 : converter.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		In other = (In) obj;
+		if (!Arrays.equals(allowedValues, other.allowedValues))
+			return false;
+		if (converter == null) {
+			if (other.converter != null)
+				return false;
+		} else if (!converter.equals(other.converter))
+			return false;
+		return true;
+	}
 }

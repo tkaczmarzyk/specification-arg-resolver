@@ -20,14 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,6 +27,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
@@ -55,6 +55,17 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 		@Spec(path = "gender", spec = Equal.class)
 	})
 	public static interface NameGenderSpec extends Specification<Customer> {
+	}
+
+	@Spec(path = "gold", constVal = "true", spec = Equal.class)
+	public static interface GoldenSpec extends Specification<Customer> {
+	}
+
+	@Or({
+		@Spec(params = "name", path = "firstName", spec = Like.class),
+		@Spec(params = "name", path = "lastName", spec = Like.class)
+	})
+	public static interface GoldenAndFullNameSpec extends GoldenSpec {
 	}
 	
 	@Controller
@@ -79,6 +90,12 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/anno-iface/customers", params = "name")
 		@ResponseBody
 		public List<Customer> getCustomersWithCustomOrSpec(FullNameSpec spec) {
+			return customerRepo.findAll(spec);
+		}
+		
+		@RequestMapping(value = "/anno-iface/golden-customers", params = "name")
+		@ResponseBody
+		public List<Customer> getCustomersWithCustomSpecInheritanceTree(GoldenAndFullNameSpec spec) {
 			return customerRepo.findAll(spec);
 		}
 		
@@ -207,5 +224,15 @@ public class AnnotatedSpecInterfaceE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
 			.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
 			.andExpect(jsonPath("$[3]").doesNotExist());
+	}
+	
+	@Test
+	public void filtersByConjunctionOfAnnotatedInterfaceAndItsParentClass() throws Exception {
+		mockMvc.perform(get("/anno-iface/golden-customers")
+				.param("name", "er")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
+			.andExpect(jsonPath("$[1]").doesNotExist()); // Homer is not marked as gold
 	}
 }

@@ -101,4 +101,8 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
         return true;
     }
 
+	@Override
+	public String toString() {
+		return "Conjunction [innerSpecs=" + innerSpecs + "]";
+	}
 }

@@ -29,13 +29,16 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
 import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
     SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION);
 
     @Test
     public void returnsNullIfTheWebParameterIsMissing_defaultParameterName() throws Exception {
@@ -127,7 +130,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, defaultConverter));
+        assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, converter));
     }
     
     @Test
@@ -139,7 +142,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, defaultConverter));
+        assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, converter));
     }
 
     @Test

@@ -71,4 +71,9 @@ public class Like<T> extends PathSpecification<T> implements WithoutTypeConversi
             return false;
         return true;
     }
+
+	@Override
+	public String toString() {
+		return "Like [pattern=" + pattern + "]";
+	}
 }
