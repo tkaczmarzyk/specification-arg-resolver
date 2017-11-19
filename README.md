@@ -24,7 +24,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Annotated specification interfaces](#annotated-specification-interfaces) -- resolving specifications from annotated interfaces
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
-   * [Download binary releases](#download-binary-releases)
+   * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
 
 Basic usage
