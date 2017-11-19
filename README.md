@@ -7,6 +7,35 @@ A thorough introduction and the original rationale behind this component can be 
 
 You can also take a look on a working Spring Boot app that uses this library: https://github.com/tkaczmarzyk/specification-arg-resolver-example.
 
+* Table of contents 
+   * [Basic usage](#basic-usage)
+      * [Enabling spec annotations in your Spring app](#enabling-spec-annotations-in-your-spring-app)
+   * [Simple specifications](#simple-specifications)
+      * [Like](#like)
+      * [LikeIgnoreCase](#likeignorecase)
+      * [Equal](#equal)
+      * [EqualIgnoreCase](#equalignorecase)
+      * [In](#in)
+      * [Null](#null)
+      * [NotNull](#notnull)
+      * [GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual](#greaterthan-greaterthanorequal-lessthan-lessthanorequal)
+      * [DateBetween](#datebetween)
+   * [Join](#join)
+   * [Join fetch](#join-fetch)
+   * [Advanced HTTP parameter handling](#advanced-http-parameter-handling)
+      * [Handling non-present HTTP parameters](#handling-non-present-http-parameters)
+      * [Mapping HTTP parameter name to property path of an entity](#mapping-http-parameter-name-to-property-path-of-an-entity)
+   * [Static parts of queries](#static-parts-of-queries)
+   * [Combining specs](#combining-specs)
+      * [@And](#and)
+      * [@Or](#or)
+      * [Nested conjunctions and disjunctions](#nested-conjunctions-and-disjunctions)
+   * [Annotated specification interfaces](#annotated-specification-interfaces)
+      * [Interface inheritance tree](#interface-inheritance-tree)
+   * [Handling different field types](#handling-different-field-types)
+   * [Download binary releases](#download-binary-releases)
+
+
 Basic usage
 -----------
 
