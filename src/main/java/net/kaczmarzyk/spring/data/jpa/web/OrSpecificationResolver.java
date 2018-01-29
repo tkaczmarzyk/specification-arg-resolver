@@ -61,7 +61,8 @@ class OrSpecificationResolver implements HandlerMethodArgumentResolver {
         for (Spec innerDef : def.value()) {
             Specification<Object> innerSpec = specResolver.buildSpecification(webRequest, innerDef);
             if (innerSpec != null) {
-                innerSpecs.add(specResolver.buildSpecification(webRequest, innerDef));
+//                  innerSpecs.add(specResolver.buildSpecification(webRequest, innerDef));
+                innerSpecs.add(innerSpec);
             }
         }
         

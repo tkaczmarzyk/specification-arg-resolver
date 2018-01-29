@@ -22,7 +22,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,6 +42,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 /**
  * @author Tomasz Kaczmarzyk
  */
+@Slf4j
 class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
     private final Converter converter;
@@ -60,6 +63,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
     Specification<Object> buildSpecification(NativeWebRequest req, Spec def) {
         try {
+			log.debug("Building '{}' specification of '{}'", def.spec().getSimpleName(), def.path());
             Collection<String> args = resolveSpecArguments(req, def);
             if (args.isEmpty() && !isZeroArgSpec(def)) {
                 if (def.required()) {
@@ -145,11 +149,14 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 	private Collection<String> resolveSpecArguments(NativeWebRequest req, Spec specDef) {
 		if (specDef.constVal().length != 0) {
-			return Arrays.asList(specDef.constVal());
+			Collection<String> resolved = Arrays.asList(specDef.constVal());
+			log.debug("Resolved from constant value: {}", resolved);
+			return resolved;
 		} else {
 		    Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(req, specDef);
 		    if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
 		        Arrays.stream(specDef.defaultVal()).forEach(resolved::add);
+				log.debug("No arguments found, applying default value: {}",  resolved);
 		    }
 		    return resolved;
 		}
@@ -157,16 +164,20 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(NativeWebRequest req, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
-		
+		String[] params;
+
 		if (specDef.params().length != 0) {
-		    for (String webParamName : specDef.params()) {
+			params = specDef.params();
+		    for (String webParamName : params) {
 		        String[] httpParamValues = req.getParameterValues(webParamName);
 		        addValuesToArgs(httpParamValues, args);
 		    }
 		} else {
+			params = new String[]{specDef.path()};
 		    String[] httpParamValues = req.getParameterValues(specDef.path());
 		    addValuesToArgs(httpParamValues, args);
 		}
+    	log.debug("Resolved from http parameters {}: {}", params, args);
 		return args;
 	}
 
