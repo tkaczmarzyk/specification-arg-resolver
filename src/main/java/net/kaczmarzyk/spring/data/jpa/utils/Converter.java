@@ -96,11 +96,17 @@ public class Converter {
 		else if (expectedClass.isAssignableFrom(Boolean.class) || expectedClass.isAssignableFrom(boolean.class)) {
 			return (T) convertToBoolean(value);
 		} else if (expectedClass.isAssignableFrom(Integer.class) || expectedClass.isAssignableFrom(Long.class)) {
-		    return (T) convertToLong(value);
+			return (T) convertToLong(value);
+		} else if (expectedClass.isAssignableFrom(UUID.class)) {
+			return (T) convertToUUID(value);
 		}
 		return (T) value;
 	}
-	
+
+	private UUID convertToUUID(String value) {
+		return UUID.fromString(value);
+	}
+
 	private Long convertToLong(String value) {
         try {
             return Long.valueOf(value);
