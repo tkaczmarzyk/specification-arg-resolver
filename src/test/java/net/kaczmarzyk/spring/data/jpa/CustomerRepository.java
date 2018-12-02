@@ -18,9 +18,15 @@ package net.kaczmarzyk.spring.data.jpa;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * @author Tomasz Kaczmarzyk
  */
 public interface CustomerRepository extends PagingAndSortingRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
 
+    List<Customer> findByLastOrderTimeBefore(LocalDateTime localDateTime);
+    List<Customer> findByLastOrderTimeAfter(LocalDateTime localDateTime);
+    List<Customer> findByLastOrderTime(LocalDateTime localDateTime);
 }
