@@ -44,8 +44,8 @@ public abstract class PathSpecification<T> implements Specification<T> {
         Path<?> expr = null;
         for (String field : path.split("\\.")) {
             if (expr == null) {
-            	if (queryContext != null && queryContext.get(field) != null) {
-            		expr = (Path<T>) queryContext.get(field);
+            	if (queryContext != null && queryContext.getEvaluated(field) != null) {
+            		expr = (Path<T>) queryContext.getEvaluated(field);
             	} else {
             		expr = root.get(field);
             	}

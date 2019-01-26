@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -32,11 +33,24 @@ public class Movie {
 	
 	private String name;
 	
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable
 	private List<Person> directors;
 	
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable
 	private List<Person> stars;
+	
+	Movie() {
+	}
+	
+	public Movie(String name, List<Person> stars, List<Person> directors) {
+		this.name = name;
+		this.stars = stars;
+		this.directors = directors;
+	}
+	
+	public String getName() {
+		return name;
+	}
 }

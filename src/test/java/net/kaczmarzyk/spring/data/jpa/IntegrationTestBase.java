@@ -17,6 +17,8 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.function.Supplier;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -59,11 +61,11 @@ public abstract class IntegrationTestBase {
     protected QueryContext queryCtx = new QueryContext() {
 	
 		@Override
-		public void put(String key, Object value) {
+		public void putLazyVal(String key, Supplier<Object> value) {
 		}
 	
 		@Override
-		public Object get(String key) {
+		public Object getEvaluated(String key) {
 			return null;
 		}
 	};

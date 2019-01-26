@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -39,12 +40,19 @@ public class WebRequestQueryContext implements QueryContext {
 	}
 	
 	@Override
-	public Object get(String key) {
-		return contextMap.get(key);
+	public Object getEvaluated(String key) {
+		Object value = contextMap.get(key);
+		if (value instanceof Supplier) {
+			Object evaluated = ((Supplier) value).get();
+			contextMap.put(key, evaluated);
+			return evaluated;
+		} else {
+			return value;
+		}
 	}
 
 	@Override
-	public void put(String key, Object value) {
+	public void putLazyVal(String key, Supplier<Object> value) {
 		contextMap.put(key, value);
 	}
 

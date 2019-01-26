@@ -27,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.utils.TestLogAppender;
 
 
 public abstract class E2eTestBase extends IntegrationTestBase {
@@ -67,6 +68,8 @@ public abstract class E2eTestBase extends IntegrationTestBase {
         nedFlanders = customer("Ned", "Flanders").golden().nickName("Flanders").registrationDate(2014, 03, 25).gender(MALE).street("Evergreen Terrace").orders("Bible").build(em);
         
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        
+        TestLogAppender.clearInterceptedLogs();
     }
     
     

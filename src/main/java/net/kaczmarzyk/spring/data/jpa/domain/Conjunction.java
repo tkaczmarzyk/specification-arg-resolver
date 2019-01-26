@@ -35,7 +35,7 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 	private static final long serialVersionUID = 1L;
 	
 	private Collection<Specification<T>> innerSpecs;
-
+	private boolean fakesInitialized = false;
     
     @SafeVarargs
     public Conjunction(Specification<T>... innerSpecs) {
@@ -49,15 +49,18 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
     @SuppressWarnings("unchecked")
 	@Override
     public void initializeFakes(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-    	for (Specification<T> spec : innerSpecs) {
-    		if (spec instanceof FakeSpecWrapper) {
-        		((FakeSpecWrapper<T>) spec).initializeFakes(root, query, cb);
-        	}
-        	if (spec instanceof Fake) {
-        		spec.toPredicate(root, query, cb);
-        		continue;
-        	}
+    	if (!fakesInitialized) {
+	    	for (Specification<T> spec : innerSpecs) {
+	    		if (spec instanceof FakeSpecWrapper) {
+	        		((FakeSpecWrapper<T>) spec).initializeFakes(root, query, cb);
+	        	}
+	        	if (spec instanceof Fake) {
+	        		spec.toPredicate(root, query, cb);
+	        		continue;
+	        	}
+	    	}
     	}
+    	fakesInitialized = true;
     }
     
 	@Override

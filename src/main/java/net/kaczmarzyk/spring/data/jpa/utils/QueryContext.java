@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import java.util.function.Supplier;
+
 /**
  * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
  *
@@ -22,7 +24,7 @@ package net.kaczmarzyk.spring.data.jpa.utils;
  */
 public interface QueryContext {
 
-	Object get(String key);
+	Object getEvaluated(String key);
 	
-	void put(String key, Object value);
+	void putLazyVal(String key, Supplier<Object> value);
 }

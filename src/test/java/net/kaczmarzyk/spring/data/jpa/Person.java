@@ -25,4 +25,14 @@ public class Person {
 	@Id
 	@GeneratedValue
 	private Long id;
+	
+	private String name;
+	
+	Person() {
+	}
+	
+	public Person(String name) {
+		this.name = name;
+	}
+
 }
