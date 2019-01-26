@@ -31,7 +31,9 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public class Like<T> extends PathSpecification<T> implements WithoutTypeConversion {
 
-    protected String pattern;
+	private static final long serialVersionUID = 1L;
+	
+	protected String pattern;
 
     public Like(QueryContext queryContext, String path, String... args) {
         super(queryContext, path);

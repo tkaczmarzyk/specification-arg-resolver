@@ -30,6 +30,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public class LikeIgnoreCase<T> extends Like<T> {
 
+	private static final long serialVersionUID = 1L;
+
 	public LikeIgnoreCase(QueryContext queryCtx, String path, String... args) {
         super(queryCtx, path, args);
     }

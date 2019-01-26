@@ -35,7 +35,9 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public class JoinFetch<T> implements Specification<T> {
 
-    private List<String> pathsToFetch;
+	private static final long serialVersionUID = 1L;
+	
+	private List<String> pathsToFetch;
     private JoinType joinType;
 
     

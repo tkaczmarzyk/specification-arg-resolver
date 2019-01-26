@@ -34,10 +34,11 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  * @author Kamil Sutkowski
  */
 @Deprecated
-public class DateBeforeInclusive<T>
-        extends DateSpecification<T> {
+public class DateBeforeInclusive<T> extends DateSpecification<T> {
 
-    private Date date;
+	private static final long serialVersionUID = 1L;
+	
+	private Date date;
 
     public DateBeforeInclusive(QueryContext queryContext, String path, String[] args, Converter converter)  throws ParseException {
         super(queryContext, path, args, converter);

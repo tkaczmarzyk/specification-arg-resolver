@@ -34,6 +34,8 @@ import javax.persistence.criteria.Root;
  */
 public class Null<T> extends PathSpecification<T> {
 
+	private static final long serialVersionUID = 1L;
+	
 	protected String expectedValue;
 	private Converter converter;
 

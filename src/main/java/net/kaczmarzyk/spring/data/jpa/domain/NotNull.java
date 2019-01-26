@@ -33,7 +33,9 @@ import javax.persistence.criteria.Root;
  */
 public class NotNull<T> extends PathSpecification<T> {
 
-    protected String expectedValue;
+	private static final long serialVersionUID = 1L;
+	
+	protected String expectedValue;
     private Converter converter;
 
     public NotNull(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {

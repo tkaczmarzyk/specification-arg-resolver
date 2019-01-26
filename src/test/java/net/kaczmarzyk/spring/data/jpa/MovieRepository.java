@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.domain;
+package net.kaczmarzyk.spring.data.jpa;
 
-import java.text.ParseException;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
 
-
-/**
- * @author Tomasz Kaczmarzyk
- */
-abstract class DateSpecification<T> extends PathSpecification<T> {
-
-	private static final long serialVersionUID = 1L;
-	
-	protected Converter converter;
-
-    protected DateSpecification(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
-        super(queryContext, path);
-        this.converter = converter;
-    }
 }

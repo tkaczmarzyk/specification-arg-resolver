@@ -40,6 +40,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public class GreaterThan<T> extends ComparableSpecification<T> {
 
+	private static final long serialVersionUID = 1L;
+
 	public GreaterThan(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
 		super(queryContext, path, httpParamValues, converter);
 	}

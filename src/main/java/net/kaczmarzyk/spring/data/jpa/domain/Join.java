@@ -31,6 +31,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public class Join<T> implements Specification<T>, Fake {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String pathToJoinOn;
 	private String alias;
 	private JoinType joinType;

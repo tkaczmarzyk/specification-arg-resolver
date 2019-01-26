@@ -32,6 +32,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public class Equal<T> extends PathSpecification<T> {
 
+	private static final long serialVersionUID = 1L;
+	
 	protected String expectedValue;
 	private Converter converter;	
 	

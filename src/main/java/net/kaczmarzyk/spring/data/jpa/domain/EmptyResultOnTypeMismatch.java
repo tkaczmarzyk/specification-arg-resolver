@@ -41,6 +41,8 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
  */
 public class EmptyResultOnTypeMismatch<T> implements Specification<T> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Specification<T> wrappedSpec;
 	
 	public EmptyResultOnTypeMismatch(Specification<T> wrappedSpec) {

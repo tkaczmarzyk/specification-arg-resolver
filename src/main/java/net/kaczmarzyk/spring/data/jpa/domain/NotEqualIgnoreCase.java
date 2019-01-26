@@ -34,6 +34,8 @@ import javax.persistence.criteria.Root;
  **/
 public class NotEqualIgnoreCase<T> extends NotEqual<T> {
 
+	private static final long serialVersionUID = 1L;
+
 	public NotEqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
 		super(queryContext, path, httpParamValues, converter);
 	}

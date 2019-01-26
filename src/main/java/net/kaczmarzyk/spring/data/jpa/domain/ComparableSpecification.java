@@ -36,6 +36,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String comparedTo;
 	private Converter converter;	
 	
@@ -54,7 +56,7 @@ public abstract class ComparableSpecification<T> extends PathSpecification<T> {
 		Expression<?> rootPath = path(root);
 		Class<?> typeOnPath = rootPath.getJavaType();
 
-		return makePredicate(cb, (Expression<? extends Comparable<?>>) rootPath, 
+		return makePredicate(cb, (Expression<? extends Comparable>) rootPath, 
 				(Comparable) converter.convert(comparedTo, typeOnPath));
 		
 		//  the line below actually works (!), if Y doesn't need to extend Comparable. --tpd

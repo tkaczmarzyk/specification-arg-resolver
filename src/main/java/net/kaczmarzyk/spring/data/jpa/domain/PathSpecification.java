@@ -28,7 +28,9 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public abstract class PathSpecification<T> implements Specification<T> {
     
-    protected String path;
+	private static final long serialVersionUID = 1L;
+	
+	protected String path;
     private QueryContext queryContext;
     
 

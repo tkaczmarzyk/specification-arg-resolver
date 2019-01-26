@@ -37,7 +37,9 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 @Deprecated
 public class DateBefore<T> extends DateSpecification<T> {
 
-    private Date date;
+	private static final long serialVersionUID = 1L;
+	
+	private Date date;
 
     public DateBefore(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
         super(queryContext, path, args, converter);

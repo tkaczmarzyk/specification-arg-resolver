@@ -40,6 +40,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public class In<T> extends PathSpecification<T> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String[] allowedValues;
 	private Converter converter;
 

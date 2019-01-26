@@ -42,7 +42,9 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 @Deprecated
 public class EqualEnum<T> extends PathSpecification<T> {
 
-    protected String[] searchedNames;
+	private static final long serialVersionUID = 1L;
+	
+	protected String[] searchedNames;
 
     public EqualEnum(QueryContext queryContext, String path, String... args) {
         super(queryContext, path);

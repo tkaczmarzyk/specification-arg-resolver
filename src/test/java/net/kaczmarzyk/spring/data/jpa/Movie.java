@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.domain;
+package net.kaczmarzyk.spring.data.jpa;
 
-import java.text.ParseException;
+import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
+@Entity
+public class Movie {
 
-/**
- * @author Tomasz Kaczmarzyk
- */
-abstract class DateSpecification<T> extends PathSpecification<T> {
-
-	private static final long serialVersionUID = 1L;
+	@Id
+	@GeneratedValue
+	private Long id;
 	
-	protected Converter converter;
-
-    protected DateSpecification(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
-        super(queryContext, path);
-        this.converter = converter;
-    }
+	private String name;
+	
+	@ManyToMany
+	@JoinTable
+	private List<Person> directors;
+	
+	@ManyToMany
+	@JoinTable
+	private List<Person> stars;
 }

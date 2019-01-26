@@ -34,7 +34,9 @@ import javax.persistence.criteria.Root;
  */
 public class EqualIgnoreCase<T> extends Equal<T> {
 
-    public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+	private static final long serialVersionUID = 1L;
+
+	public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
         super(queryContext, path, httpParamValues, converter);
     }
 

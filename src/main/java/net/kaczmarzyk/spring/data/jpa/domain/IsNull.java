@@ -35,6 +35,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 @Deprecated
 public class IsNull<T> extends PathSpecification<T> implements ZeroArgSpecification {
 
+	private static final long serialVersionUID = 1L;
+
 	public IsNull(QueryContext queryContext, String path, String[] args) {
 		super(queryContext, path);
 	}

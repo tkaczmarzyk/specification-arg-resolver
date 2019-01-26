@@ -24,7 +24,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
 
 
 /**
@@ -34,7 +33,9 @@ import org.springframework.data.jpa.domain.Specifications;
  */
 public class Disjunction<T> implements Specification<T> {
 
-    private Collection<Specification<T>> innerSpecs;
+	private static final long serialVersionUID = 1L;
+	
+	private Collection<Specification<T>> innerSpecs;
     
     
     @SafeVarargs
@@ -48,10 +49,10 @@ public class Disjunction<T> implements Specification<T> {
     
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        Specifications<T> combinedSpecs = null;
+        Specification<T> combinedSpecs = null;
         for (Specification<T> spec : innerSpecs) {
             if (combinedSpecs == null) {
-                combinedSpecs = Specifications.where(spec);
+                combinedSpecs = Specification.where(spec);
             } else {
                 combinedSpecs = combinedSpecs.or(spec);
             }

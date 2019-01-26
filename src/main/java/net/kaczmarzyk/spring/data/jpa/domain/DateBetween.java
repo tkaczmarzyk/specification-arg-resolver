@@ -34,7 +34,9 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  */
 public class DateBetween<T> extends DateSpecification<T> {
 
-    private Date after;
+	private static final long serialVersionUID = 1L;
+	
+	private Date after;
     private Date before;
     
     public DateBetween(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
