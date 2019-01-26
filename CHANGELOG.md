@@ -1,7 +1,9 @@
 v2.0.0
 ======
 
-* requires Java 8
+* requires Java 8 + intended for Spring Boot 2.x
+* fixed bug with repeated joins
+* optimized joining: joins will not be performed if no filtering is applied on the join path
 
 v1.1.1
 ======
