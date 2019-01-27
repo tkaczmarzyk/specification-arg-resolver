@@ -35,6 +35,10 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
+
+/**
+ * @author Tomasz Kaczmarzyk
+ */
 public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTestBase {
 
 	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
@@ -83,7 +87,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 	@Test
 	public void resolves3ArgsSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWith3argSpec"), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWith3argSpec"), 0);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
@@ -95,7 +99,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 	@Test
 	public void resolves4ArgsSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWith4argSpec"), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWith4argSpec"), 0);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
@@ -108,7 +112,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 	
 	@Test
 	public void resolvesLegacy3ArgsSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithLegacy3argSpec"), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithLegacy3argSpec"), 0);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
@@ -121,7 +125,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 	@Test
 	public void resolves5ArgsSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWith5argSpec"), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWith5argSpec"), 0);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 

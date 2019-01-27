@@ -6,6 +6,20 @@ v2.0.0
 * optimized joining: joins will not be performed if no filtering is applied on the join path
 * fixed `OnTypeMismatch` behaviour for primitive `int` and `long` types
 * under the hood improvements for better performance
+* path variables are now supported! You can use new `pathVars` property of `@Spec` as follows:
+
+  ```java
+  @RequestMapping("/customers/{customerLastName}")
+  @ResponseBody
+  public Object findNotDeletedCustomersByFirstName(
+                               @Spec(path = "lastName", pathVars = "customerLastName", spec=Equal.class) Specification<Customer> spec) {
+
+    return repository.findAll(spec);
+  }
+  ```
+
+  This will handle request `GET /customers/Simpson` as `select c from Customers c where c.lastName = 'Simpson'`.
+
 
 v1.1.1
 ======

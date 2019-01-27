@@ -21,19 +21,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.core.MethodParameter;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
 import net.kaczmarzyk.spring.data.jpa.utils.TypeUtil;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -58,8 +59,10 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 			WebDataBinderFactory binderFactory) throws Exception {
 		
-		List<Specification<Object>> ifaceSpecs = resolveSpecFromInterfaceAnnotations(webRequest, parameter);
-		Specification<Object> paramSpec = resolveSpecFromParameterAnnotations(webRequest, parameter);
+		WebRequestProcessingContext context = new WebRequestProcessingContext(parameter, webRequest);
+		
+		List<Specification<Object>> ifaceSpecs = resolveSpecFromInterfaceAnnotations(context);
+		Specification<Object> paramSpec = resolveSpecFromParameterAnnotations(context);
 		
 		if (ifaceSpecs.isEmpty() && paramSpec == null) {
 			return null;
@@ -74,40 +77,40 @@ class AnnotatedSpecInterfaceArgumentResolver implements HandlerMethodArgumentRes
 		return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), spec);
 	}
 
-	private Specification<Object> resolveSpecFromParameterAnnotations(NativeWebRequest webRequest, MethodParameter parameter) throws Exception {
-		Object specDef = getAnnotation(parameter.getParameterAnnotations());
-		return specDef != null ? buildSpecification(webRequest, specDef) : null;
+	private Specification<Object> resolveSpecFromParameterAnnotations(WebRequestProcessingContext context) throws Exception {
+		Object specDef = getAnnotation(context.getParameterAnnotations());
+		return specDef != null ? buildSpecification(context, specDef) : null;
 	}
 
-	private List<Specification<Object>> resolveSpecFromInterfaceAnnotations(NativeWebRequest webRequest, MethodParameter param) {
+	private List<Specification<Object>> resolveSpecFromInterfaceAnnotations(WebRequestProcessingContext context) {
 		List<Specification<Object>> result = new ArrayList<Specification<Object>>();
 		
-		Collection<Class<?>> ifaceTree = TypeUtil.interfaceTree(param.getParameterType());
+		Collection<Class<?>> ifaceTree = TypeUtil.interfaceTree(context.getParameterType());
 		
 		for (Class<?> iface : ifaceTree) {
 			if (!isAnnotated(iface)) {
 				continue;
 			}
 			Object specDef = getAnnotation(iface);
-			result.add(buildSpecification(webRequest, specDef));
+			result.add(buildSpecification(context, specDef));
 		}
 		
 		return result;
 	}
 	
-	private Specification<Object> buildSpecification(NativeWebRequest webRequest, Object specDef) {
+	private Specification<Object> buildSpecification(WebRequestProcessingContext context, Object specDef) {
 		Specification<Object> spec;
 		
 		if (specDef instanceof Spec) {
-			spec = simpleResolver.buildSpecification(webRequest, (Spec) specDef);
+			spec = simpleResolver.buildSpecification(context, (Spec) specDef);
 		} else if (specDef instanceof Or) {
-			spec = orResolver.buildSpecification(webRequest, (Or) specDef);
+			spec = orResolver.buildSpecification(context, (Or) specDef);
 		} else if (specDef instanceof Disjunction) {
-			spec = disjunctionResolver.buildSpecification(webRequest, (Disjunction) specDef);
+			spec = disjunctionResolver.buildSpecification(context, (Disjunction) specDef);
 		} else if (specDef instanceof Conjunction) {
-			spec = conjunctionResolver.buildSpecification(webRequest, (Conjunction) specDef);
+			spec = conjunctionResolver.buildSpecification(context, (Conjunction) specDef);
 		} else if (specDef instanceof And) {
-			spec = andResolver.buildSpecification(webRequest, (And) specDef);
+			spec = andResolver.buildSpecification(context, (And) specDef);
 		} else {
 			throw new IllegalStateException();
 		}

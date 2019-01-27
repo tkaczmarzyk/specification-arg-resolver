@@ -44,7 +44,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
     @Test
     public void resolvesJoinFetchForSimpleSpec() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
@@ -64,7 +64,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
 //    @Test
 //    public void resolvesRepeatedFetchJoins() throws Exception {
-//    	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod_repeatedFetch"), 0);
+//    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod_repeatedFetch"), 0);
 //        NativeWebRequest req = mock(NativeWebRequest.class);
 //        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 //
@@ -85,7 +85,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
     @Test
     public void resolvesJoinContainerWithJoinFetch() throws Exception {
-    	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod_joinContainerWithJoinFetch"), 0);
+    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod_joinContainerWithJoinFetch"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
@@ -107,7 +107,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
     @Test
     public void resolvesJoinContainerWithRegularJoin() throws Exception {
-    	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod_joinContainerWithRegularJoin"), 0);
+    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod_joinContainerWithRegularJoin"), 0);
     	FakeWebRequest req = new FakeWebRequest();
         QueryContext queryCtx = new WebRequestQueryContext(req);
         req.setParameterValues("path1", "value1");
@@ -129,7 +129,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
     @Test
     public void resolvesJoinContainerWithRegularAndFetchJoins() throws Exception {
-    	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod_joinContainerWithRegularAndFetchJoins"), 0);
+    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod_joinContainerWithRegularAndFetchJoins"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
@@ -153,7 +153,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
     @Test
     public void resolvesJoinFetchEvenIfOtherSpecificationIsNotPresent() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
@@ -164,7 +164,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
     @Test
     public void resolvesJoinFetchForAnnotatedInterface() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithCustomSpec", CustomSpec.class), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithCustomSpec", CustomSpec.class), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
@@ -176,7 +176,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
 //    @Test
 //    public void resolvesRepeatedJoinFetchForAnnotatedInterface() throws Exception {
-//        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithCustomSpec_repeatedFetch", CustomSpecRepeatedFetch.class), 0);
+//        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithCustomSpec_repeatedFetch", CustomSpecRepeatedFetch.class), 0);
 //        NativeWebRequest req = mock(NativeWebRequest.class);
 //        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 //
@@ -188,7 +188,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     
     @Test
     public void resolvesJoinContainerForAnnotatedInterface() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithCustomSpec_joinContainer", CustomSpecJoinContainer.class), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithCustomSpec_joinContainer", CustomSpecJoinContainer.class), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 

@@ -44,7 +44,7 @@ public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestB
 
 	@Test
     public void usesEmptyResultSpecWrapperWhenSpecified() throws Exception {
-    	MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithOnTypeMismatchConfig"), 0);
+    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithOnTypeMismatchConfig"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
@@ -59,7 +59,7 @@ public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestB
 
 	@Test
 	public void doesNotWrapWithEmptyResultSpecWhenSpecificationDoesntRequireDataConversion() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithSpecWithoutDataConversion"), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithSpecWithoutDataConversion"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 

@@ -46,14 +46,15 @@ class OrSpecificationResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         Or def = param.getParameterAnnotation(Or.class);
+        WebRequestProcessingContext context = new WebRequestProcessingContext(param, webRequest);
         
-        return buildSpecification(webRequest, def);
+        return buildSpecification(context, def);
     }
 
-    Specification<Object> buildSpecification(NativeWebRequest webRequest, Or def) {
+    Specification<Object> buildSpecification(WebRequestProcessingContext context, Or def) {
         List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
         for (Spec innerDef : def.value()) {
-            Specification<Object> innerSpec = specResolver.buildSpecification(webRequest, innerDef);
+            Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
             if (innerSpec != null) {
                 innerSpecs.add(innerSpec);
             }

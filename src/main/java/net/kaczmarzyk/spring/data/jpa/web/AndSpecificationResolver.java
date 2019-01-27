@@ -18,16 +18,16 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 /**
@@ -48,14 +48,15 @@ class AndSpecificationResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
     	And def = param.getParameterAnnotation(And.class);
-        
-        return buildSpecification(webRequest, def);
+    	WebRequestProcessingContext context = new WebRequestProcessingContext(param, webRequest);
+    	
+        return buildSpecification(context, def);
     }
 
-    Specification<Object> buildSpecification(NativeWebRequest webRequest, And def) {
+    Specification<Object> buildSpecification(WebRequestProcessingContext context, And def) {
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
         for (Spec innerDef : def.value()) {
-        	Specification<Object> innerSpec = specResolver.buildSpecification(webRequest, innerDef);
+        	Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
         	if (innerSpec != null) {
         		innerSpecs.add(innerSpec);
         	}

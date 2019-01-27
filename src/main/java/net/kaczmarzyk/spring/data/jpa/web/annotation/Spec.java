@@ -32,6 +32,8 @@ public @interface Spec {
 
     String[] params() default {};
     
+    String[] pathVars() default {};
+    
     String[] config() default {};
     
     String[] constVal() default {};

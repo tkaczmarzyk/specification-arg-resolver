@@ -44,18 +44,19 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory) throws Exception {
 
         Spec def = param.getParameterAnnotation(Spec.class);
-
-        return buildSpecification(req, def);
+        WebRequestProcessingContext context = new WebRequestProcessingContext(param, req);
+        
+        return buildSpecification(context, def);
     }
 
-    Specification<Object> buildSpecification(NativeWebRequest req, Spec def) {
+    Specification<Object> buildSpecification(WebRequestProcessingContext context, Spec def) {
         try {
-            Collection<String> args = resolveSpecArguments(req, def);
+            Collection<String> args = resolveSpecArguments(context, def);
             if (args.isEmpty() && !isZeroArgSpec(def)) {
                 return null;
             } else {
                 String[] argsArray = args.toArray(new String[args.size()]);
-                Specification<Object> spec = newSpecification(def, argsArray, req);
+                Specification<Object> spec = newSpecification(def, argsArray, context);
                 return def.onTypeMismatch().wrap(spec);
             }
         } catch (NoSuchMethodException e) {
@@ -64,6 +65,8 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
         			+ "  3-arg (QueryContext queryCtx, String path, String[] args)\n"
         			+ "  4-arg (QueryContext queryCtx, String path, String[] args, Converter converter)\n"
         			+ "  5-arg (QueryContext queryCtx, String path, String[] args, Converter converter, String[] config)", e);
+        } catch (RuntimeException e) {
+        	throw e;
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -74,10 +77,10 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Specification<Object> newSpecification(Spec def, String[] argsArray, NativeWebRequest req) throws InstantiationException, IllegalAccessException,
+	private Specification<Object> newSpecification(Spec def, String[] argsArray, WebRequestProcessingContext context) throws InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException {
 
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = context.queryContext();
 		Converter converter = resolveConverter(def);
 		
 		Specification<Object> spec;
@@ -118,24 +121,34 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}
 
-	private Collection<String> resolveSpecArguments(NativeWebRequest req, Spec specDef) {
+	private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
 		if (specDef.constVal().length != 0) {
 			return Arrays.asList(specDef.constVal());
+		} else if (specDef.pathVars().length != 0){
+			return resolveSpecArgumentsFromPathVariables(context, specDef);
 		} else {
-			return resolveSpecArgumentsFromHttpParameters(req, specDef);
+			return resolveSpecArgumentsFromHttpParameters(context, specDef);
 		}
 	}
 
-	private Collection<String> resolveSpecArgumentsFromHttpParameters(NativeWebRequest req, Spec specDef) {
+	private Collection<String> resolveSpecArgumentsFromPathVariables(WebRequestProcessingContext context, Spec specDef) {
+		Collection<String> args = new ArrayList<>();
+		for (String pathVar : specDef.pathVars()) {
+			args.add(context.getPathVariableValue(pathVar));
+		}
+		return args;
+	}
+
+	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
 		
 		if (specDef.params().length != 0) {
 		    for (String webParamName : specDef.params()) {
-		        String[] httpParamValues = req.getParameterValues(webParamName);
+		        String[] httpParamValues = context.getParameterValues(webParamName);
 		        addValuesToArgs(httpParamValues, args);
 		    }
 		} else {
-		    String[] httpParamValues = req.getParameterValues(specDef.path());
+		    String[] httpParamValues = context.getParameterValues(specDef.path());
 		    addValuesToArgs(httpParamValues, args);
 		}
 		return args;

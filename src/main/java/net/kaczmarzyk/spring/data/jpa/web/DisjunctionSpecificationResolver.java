@@ -18,16 +18,16 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 /**
@@ -49,20 +49,21 @@ class DisjunctionSpecificationResolver implements HandlerMethodArgumentResolver 
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
     	Disjunction def = param.getParameterAnnotation(Disjunction.class);
+    	WebRequestProcessingContext context = new WebRequestProcessingContext(param, webRequest);
         
-        return buildSpecification(webRequest, def);
+        return buildSpecification(context, def);
     }
 
-	Specification<Object> buildSpecification(NativeWebRequest webRequest, Disjunction def) {
+	Specification<Object> buildSpecification(WebRequestProcessingContext context, Disjunction def) {
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
 		for (And innerAndDef : def.value()) {
-        	Specification<Object> innerAnd = andResolver.buildSpecification(webRequest, innerAndDef);
+        	Specification<Object> innerAnd = andResolver.buildSpecification(context, innerAndDef);
         	if (innerAnd != null) {
         		innerSpecs.add(innerAnd);
         	}
         }
 		for (Spec innerDef : def.or()) {
-        	Specification<Object> innerSpec = specResolver.buildSpecification(webRequest, innerDef);
+        	Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
         	if (innerSpec != null) {
         		innerSpecs.add(innerSpec);
         	}

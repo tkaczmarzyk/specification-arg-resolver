@@ -168,28 +168,28 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Test
 	public void doesNotSupportTypeThatDoesntExtendSpecification() {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithNonSpec", IfaceNotExtendingSpecification.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithNonSpec", IfaceNotExtendingSpecification.class), 0);
         
         assertFalse(resolver.supportsParameter(param));
 	}
 	
 	@Test
 	public void doesNotSupportIfaceWithoutAnnotationsSpecification() {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithSpecWithoutAnnotations", IfaceWithoutAnnotations.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithSpecWithoutAnnotations", IfaceWithoutAnnotations.class), 0);
         
         assertFalse(resolver.supportsParameter(param));
 	}
 	
 	@Test
 	public void doesNotSupportClasses() {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithClass", Clazz.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithClass", Clazz.class), 0);
         
         assertFalse(resolver.supportsParameter(param));
 	}
 	
 	@Test
 	public void supportsIterfaceWithSimpleSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithSimpleSpec", IfaceWithSimpleSpec.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithSimpleSpec", IfaceWithSimpleSpec.class), 0);
         
 		assertTrue(resolver.supportsParameter(param));
 		assertThat(resolver.resolveArgument(param, null, req, null)).isInstanceOf(IfaceWithSimpleSpec.class);
@@ -197,7 +197,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Test
 	public void supportsIterfaceWithAndSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithAnd", IfaceWithAnd.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithAnd", IfaceWithAnd.class), 0);
         
 		assertTrue(resolver.supportsParameter(param));
 		assertThat(resolver.resolveArgument(param, null, req, null)).isInstanceOf(IfaceWithAnd.class);
@@ -205,7 +205,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Test
 	public void supportsInterfaceWithConjunctionSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithConjunction", IfaceWithConjunction.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithConjunction", IfaceWithConjunction.class), 0);
         
 		assertTrue(resolver.supportsParameter(param));
 		assertThat(resolver.resolveArgument(param, null, req, null)).isInstanceOf(IfaceWithConjunction.class);
@@ -213,7 +213,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Test
 	public void supportsInterfaceWithDisjunctionSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithDisjunction", IfaceWithDisjunction.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithDisjunction", IfaceWithDisjunction.class), 0);
         
 		assertTrue(resolver.supportsParameter(param));
 		assertThat(resolver.resolveArgument(param, null, req, null)).isInstanceOf(IfaceWithDisjunction.class);
@@ -221,7 +221,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Test
 	public void supportsIterfaceWithDisjunctionSpec() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithOr", IfaceWithOr.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithOr", IfaceWithOr.class), 0);
         
         assertTrue(resolver.supportsParameter(param));
         assertThat(resolver.resolveArgument(param, null, req, null)).isInstanceOf(IfaceWithOr.class);
@@ -229,7 +229,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Test
 	public void resolvedSpecHasWorkingToStringMethod() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithOr", IfaceWithOr.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithOr", IfaceWithOr.class), 0);
         
 		Object resolved = resolver.resolveArgument(param, null, req, null);
 		
@@ -238,7 +238,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends ResolverTestBase
 	
 	@Test
 	public void createsConjunctionOutOfSpecsFromWholeInheritanceTree() throws Exception {
-		MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("methodWithInheritanceTree", GrandChildInterface.class), 0);
+		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithInheritanceTree", GrandChildInterface.class), 0);
         
 		Object resolved = resolver.resolveArgument(param, null, req, null);
 		

@@ -60,7 +60,7 @@ public class ConjunctionSpecificationResolverTest extends ResolverTestBase {
 	
 	@Test
     public void resolvesWrapperOfOrs() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
@@ -80,7 +80,7 @@ public class ConjunctionSpecificationResolverTest extends ResolverTestBase {
 
     @Test
     public void resolvesWrapperOfSimpleSpecsAndOrs() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });

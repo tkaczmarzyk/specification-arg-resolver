@@ -70,28 +70,28 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
 	
 	@Test
     public void supportsAnnotatedSpecificationParam() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         
         assertThat(resolver.supportsParameter(param)).isTrue();
 	}
 	
 	@Test
     public void doesNotSupportParamWithoutExpectedAnnotation() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithoutExpectedAnnotation"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithoutExpectedAnnotation"), 0);
         
         assertThat(resolver.supportsParameter(param)).isFalse();
 	}
 	
 	@Test
     public void doesNotSupportParamOfUnexpectedType() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethodWithUnexpectedType", Object.class), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithUnexpectedType", Object.class), 0);
         
         assertThat(resolver.supportsParameter(param)).isFalse();
 	}
 	
 	@Test
     public void resolvesWrapperOfAnds() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
@@ -111,7 +111,7 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
 
     @Test
     public void resolvesWrapperOfSimpleSpecsAndAnds() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod2"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });

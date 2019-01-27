@@ -34,7 +34,7 @@ public class JoinSpecificationResolverTest extends ResolverTestBase {
 
     @Test
     public void resolvesJoin() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod1"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);

@@ -15,6 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import java.lang.reflect.Executable;
+
+import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
@@ -27,11 +30,15 @@ public abstract class ResolverTestBase {
 
 	protected Converter defaultConverter = Converter.DEFAULT;
 	
-	protected Object testMethod(String methodName) {
+	protected MethodParameter testMethodParameter(String methodName) {
+        return MethodParameter.forExecutable(testMethod(methodName, Specification.class), 0);
+    }
+	
+	protected Executable testMethod(String methodName) {
         return testMethod(methodName, Specification.class);
     }
 	
-	protected Object testMethod(String methodName, Class<?> specClass) {
+	protected Executable testMethod(String methodName, Class<?> specClass) {
         try {
             return controllerClass().getMethod(methodName, specClass);
         } catch (Exception e) {

@@ -39,7 +39,7 @@ public class OrSpecificationResolverTest extends ResolverTestBase {
 
     @Test
     public void resolvesWrapperOfInnerSpecs() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
@@ -53,7 +53,7 @@ public class OrSpecificationResolverTest extends ResolverTestBase {
 
     @Test
     public void skipsMissingInnerSpec() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
@@ -65,7 +65,7 @@ public class OrSpecificationResolverTest extends ResolverTestBase {
 
     @Test
     public void returnsNullIfNoInnerSpecCanBeResolved() throws Exception {
-        MethodParameter param = MethodParameter.forMethodOrConstructor(testMethod("testMethod"), 0);
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
         Specification<?> result = resolver.resolveArgument(param, null, req, null);

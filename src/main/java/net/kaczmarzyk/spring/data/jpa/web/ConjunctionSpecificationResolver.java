@@ -49,20 +49,21 @@ class ConjunctionSpecificationResolver implements HandlerMethodArgumentResolver 
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         Conjunction def = param.getParameterAnnotation(Conjunction.class);
+        WebRequestProcessingContext context = new WebRequestProcessingContext(param, webRequest);
         
-        return buildSpecification(webRequest, def);
+        return buildSpecification(context, def);
     }
 
-	Specification<Object> buildSpecification(NativeWebRequest webRequest, Conjunction def) {
+	Specification<Object> buildSpecification(WebRequestProcessingContext context, Conjunction def) {
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
         for (Or innerOrDef : def.value()) {
-        	Specification<Object> innerOr = orResolver.buildSpecification(webRequest, innerOrDef);
+        	Specification<Object> innerOr = orResolver.buildSpecification(context, innerOrDef);
         	if (innerOr != null) {
         		innerSpecs.add(innerOr);
         	}
         }
         for (Spec innerDef : def.and()) {
-        	Specification<Object> innerSpec = specResolver.buildSpecification(webRequest, innerDef);
+        	Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
         	if (innerSpec != null) {
         		innerSpecs.add(innerSpec);
         	}
