@@ -40,7 +40,6 @@ import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
@@ -58,6 +57,14 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 		@Autowired
 		CustomerRepository customerRepo;
 
+		@RequestMapping(value = "/poly/customers", params = { "id" })
+		@ResponseBody
+		public Object findById(
+				@Spec(path = "id", params = "id", spec = Equal.class, onTypeMismatch=EMPTY_RESULT) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+		
 		@RequestMapping(value = "/poly/customers", params = { "query" })
 		@ResponseBody
 		public Object findByIdOrFirstName(@Or({
@@ -82,6 +89,16 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 
 			return customerRepo.findAll(spec);
 		}
+	}
+	
+	@Test
+	public void returnsEmptyResultIfStringProvidedInsteadOfNumericalId() throws Exception {
+		mockMvc.perform(get("/poly/customers")
+				.param("id", "test")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0]").doesNotExist());
 	}
 	
 	@Test
