@@ -12,7 +12,7 @@ v2.0.0
   @RequestMapping("/customers/{customerLastName}")
   @ResponseBody
   public Object findNotDeletedCustomersByFirstName(
-                               @Spec(path = "lastName", pathVars = "customerLastName", spec=Equal.class) Specification<Customer> spec) {
+                       @Spec(path = "lastName", pathVars = "customerLastName", spec=Equal.class) Specification<Customer> spec) {
 
     return repository.findAll(spec);
   }
