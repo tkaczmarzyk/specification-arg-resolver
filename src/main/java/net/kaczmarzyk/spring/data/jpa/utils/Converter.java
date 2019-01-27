@@ -93,14 +93,23 @@ public class Converter {
 		else if (expectedClass.isAssignableFrom(Date.class)) {
 			return (T) convertToDate(value);
 		}
-		else if (expectedClass.isAssignableFrom(Boolean.class) || expectedClass.isAssignableFrom(boolean.class)) {
+		else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
 			return (T) convertToBoolean(value);
-		} else if (expectedClass.isAssignableFrom(Integer.class) || expectedClass.isAssignableFrom(Long.class)) {
+		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
 		    return (T) convertToLong(value);
 		}
 		return (T) value;
 	}
 	
+	private boolean isAssignableFromAnyOf(Class<?> expectedClass, Class<?>... candidates) {
+		for (Class<?> candidate : candidates) {
+			if (expectedClass.isAssignableFrom(candidate)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private Long convertToLong(String value) {
         try {
             return Long.valueOf(value);

@@ -49,6 +49,20 @@ public class EmptyResultOnTypeMismatchTest extends IntegrationTestBase {
 	}
 	
 	@Test
+	public void producesEmptyResultOnTypeMismatch_longPrimitive() {
+		EmptyResultOnTypeMismatch<Customer> weightQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "weightLong", new String[] { "not a long" }, defaultConverter));
+		List<Customer> result = customerRepo.findAll(weightQuery);
+		assertThat(result).isEmpty();
+	}
+	
+	@Test
+	public void producesEmptyResultOnTypeMismatch_intPrimitive() {
+		EmptyResultOnTypeMismatch<Customer> weightQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "weightInt", new String[] { "not an int" }, defaultConverter));
+		List<Customer> result = customerRepo.findAll(weightQuery);
+		assertThat(result).isEmpty();
+	}
+	
+	@Test
 	public void producesEmptyResultOnTypeMismatch_enum() {
 		EmptyResultOnTypeMismatch<Customer> genderQuery = new EmptyResultOnTypeMismatch<>(new Equal<Customer>(queryCtx, "gender", new String[] { "not an enum" }, defaultConverter));
 		List<Customer> result = customerRepo.findAll(genderQuery);
