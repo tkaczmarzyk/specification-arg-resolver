@@ -56,8 +56,6 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
 
     }
 
-    /*The test will fail, there is a bug in hibernate-core v5.0.12 regarding the conversion of LocalDateTime to TIMESTAMP for H2 database
-    * See https://stackoverflow.com/questions/44676732/how-to-map-java-time-localdatetime-to-timestamp-in-h2-database-with-hibernate*/
     @Test
     public void findsByDateTimeBeforeWithCustomDateFormat() throws Exception {
         mockMvc.perform(get("/customers")
