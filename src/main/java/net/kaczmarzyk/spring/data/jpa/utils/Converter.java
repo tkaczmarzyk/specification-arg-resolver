@@ -124,7 +124,7 @@ public class Converter {
 	}
 
 	private LocalDateTime convertToLocalDateTime(String value) {
-		if(dateFormat.equals(DEFAULT_DATE_FORMAT)){
+		if(dateFormat.equals(DEFAULT_DATE_FORMAT)){ // FIXME reusing field for different purpose
 			dateFormat = DEFAULT_DATE_TIME_FORMAT;
 		}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);

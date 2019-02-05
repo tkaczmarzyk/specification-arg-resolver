@@ -16,6 +16,7 @@
 package net.kaczmarzyk;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
@@ -41,16 +42,31 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
 
         @RequestMapping(value = "/customers", params = "lastOrderTimeBefore")
         @ResponseBody
-        public Object findCustomersRegisteredBefore(
-                @Spec(path="lastOrderTime", params="lastOrderTimeBefore", config="yyyy-MM-dd\'T\'HH:mm:ss", spec= LessThan.class) Specification<Customer> spec) {
+        public Object findCustomersWIthLastOrderBefore_defaultDateTimePattern(
+                @Spec(path="lastOrderTime", params="lastOrderTimeBefore", spec= LessThan.class) Specification<Customer> spec) {
+
+            return customerRepo.findAll(spec);
+        }
+        
+        @RequestMapping(value = "/customers", params = "lastOrderTimeBefore_customFormat")
+        @ResponseBody
+        public Object findCustomersWIthLastOrderBefore_customDateTimePattern(
+                @Spec(path="lastOrderTime", params="lastOrderTimeBefore_customFormat", config="yyyy/MM/dd', 'HH:mm", spec= LessThan.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
 
         @RequestMapping(value = "/customers", params = "lastOrderTimeAfter")
         @ResponseBody
-        public Object findCustomersRegisteredAfter(
+        public Object findCustomersWIthLastOrderAfter_defaultDateTimePattern(
                 @Spec(path="lastOrderTime", params="lastOrderTimeAfter", spec= GreaterThan.class) Specification<Customer> spec) {
+            return customerRepo.findAll(spec);
+        }
+        
+        @RequestMapping(value = "/customers", params = "lastOrderTimeAfter_customFormat")
+        @ResponseBody
+        public Object findCustomersWIthLastOrderAfter_customDateTimePattern(
+                @Spec(path="lastOrderTime", params="lastOrderTimeAfter_customFormat", config="yyyy/MM/dd', 'HH:mm", spec= GreaterThan.class) Specification<Customer> spec) {
             return customerRepo.findAll(spec);
         }
 
@@ -59,18 +75,46 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
     @Test
     public void findsByDateTimeBeforeWithCustomDateFormat() throws Exception {
         mockMvc.perform(get("/customers")
-                                .param("lastOrderTimeBefore", "2016-09-01T00:00:00")
+                                .param("lastOrderTimeBefore_customFormat", "2017/08/22, 09:17")
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-
+                .andExpect(status().isOk())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
+    }
+    
+    @Test
+    public void findsByDateTimeBeforeWithDefaultDateFormat() throws Exception {
+        mockMvc.perform(get("/customers")
+                                .param("lastOrderTimeBefore", "2016-10-17T18:29:00")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].firstName").value("Homer"))
+                .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
     @Test
-    public void findsByDateTimeAfter() throws Exception {
+    public void findsByDateTimeAfterWithDefaultDateFormat() throws Exception {
         mockMvc.perform(get("/customers")
-                                .param("lastOrderTimeAfter", "2017-08-22T10:00:00")
+                                .param("lastOrderTimeAfter", "2017-11-21T11:12:59")
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
+                .andExpect(jsonPath("$[3]").doesNotExist());
+    }
+    
+    @Test
+    public void findsByDateTimeAfterWithCustomDateFormat() throws Exception {
+        mockMvc.perform(get("/customers")
+                                .param("lastOrderTimeAfter_customFormat", "2017/11/21, 11:13")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
+                .andExpect(jsonPath("$[3]").doesNotExist());
     }
 }

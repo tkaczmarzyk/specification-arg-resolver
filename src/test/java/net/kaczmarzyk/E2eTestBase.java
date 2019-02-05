@@ -72,7 +72,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .gender(MALE)
                 .street("Evergreen Terrace")
                 .birthDate(LocalDate.of(1992, 2, 23))
-                .lastOrderTime(LocalDateTime.of(2017, 11, 21, 11, 13,0))
+                .lastOrderTime(LocalDateTime.of(2017, 11, 21, 11, 13,01))
                 .build(em);
         lisaSimpson = customer("Lisa", "Simpson").registrationDate(2014, 03, 30)
                 .gender(FEMALE)
