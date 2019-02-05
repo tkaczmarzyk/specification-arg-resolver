@@ -24,6 +24,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Annotated specification interfaces](#annotated-specification-interfaces) -- resolving specifications from annotated interfaces
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
+   * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
 
@@ -72,7 +73,7 @@ All you need to do is to wire `SpecificationArgumentResolver` into your applicat
 
 @Configuration
 @EnableJpaRepositories
-public class MyConfig extends WebMvcConfigurerAdapter {
+public class MyConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -503,6 +504,19 @@ This behaviour has changed in version `0.9.0` (exception was the default value i
 (assuming that `firstName` is `String` and `customerId` is a numeric type)
 
 
+Compatibility notes
+-------------------
+
+This project has been maintained since 2015. A lot has changed in Java and Spring during that period and the most recent versions might not be compatible with older JDK and/or Spring. In the table below you can find the summary of version compatibility:
+
+| specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
+|------------------------------------|------------------|-----------------------------------------------------------------------------------------|
+| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.1`                                           |
+| `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
+
+As far as the features supported in each version, please check the [CHANGELOG.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/CHANGELOG.md)
+
+
 Download binary releases
 ------------------------
 
@@ -516,7 +530,7 @@ Specification argument resolver is available in the Maven Central:
 </dependency>
 ```
 
-If a new version is not yet available in the central repository, you can grab it from my private repo:
+If a new version is not yet available in the central repository (or you need a SNAPSHOT version), you can grab it from my private repo:
 
 ```xml
 <repository>
