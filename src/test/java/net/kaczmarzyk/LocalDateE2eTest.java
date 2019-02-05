@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -72,7 +73,22 @@ public class LocalDateE2eTest extends E2eTestBase {
 
             return customerRepo.findAll(spec);
         }
+        
+        @RequestMapping(value = "/customers", params = { "birthDateAfter", "birthDateBefore" })
+        @ResponseBody
+        public Object findByBirhDateBetween(
+                @Spec(path="birthDate", params={ "birthDateAfter", "birthDateBefore"}, spec=Between.class) Specification<Customer> spec) {
 
+            return customerRepo.findAll(spec);
+        }
+        
+        @RequestMapping(value = "/customers", params = { "birthDateAfter_customFormat", "birthDateBefore_customFormat" })
+        @ResponseBody
+        public Object findByBirhDateBetweenWithCustomFormat(
+                @Spec(path="birthDate", params={ "birthDateAfter_customFormat", "birthDateBefore_customFormat"}, config="dd/MM/yyyy", spec=Between.class) Specification<Customer> spec) {
+
+            return customerRepo.findAll(spec);
+        }
     }
     
     @Test
@@ -120,5 +136,31 @@ public class LocalDateE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$[0].firstName").value("Maggie"))
                 .andExpect(jsonPath("$[2]").doesNotExist());
     }
-
+    
+    @Test
+    public void findsByDateBetweenWithDefaultDateFormat() throws Exception {
+        mockMvc.perform(get("/customers")
+        						.param("birthDateAfter", "1970-03-10")
+        		 				.param("birthDateBefore", "1972-07-14")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
+    }
+    
+    @Test
+    public void findsByDateBetweenWithCustomDateFormat() throws Exception {
+        mockMvc.perform(get("/customers")
+        						.param("birthDateAfter_customFormat", "10/03/1970")
+        		 				.param("birthDateBefore_customFormat", "14/07/1972")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
+    }
+    
 }

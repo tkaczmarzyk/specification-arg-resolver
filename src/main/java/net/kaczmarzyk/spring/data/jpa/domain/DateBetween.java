@@ -31,7 +31,10 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  * Filters with {@code path between arg1 and arg2} where-clause.
  * 
  * @author Tomasz Kaczmarzyk
+ * 
+ * @deprecated as of v2.0.0 consider using {@link Between} which supports more types
  */
+@Deprecated
 public class DateBetween<T> extends DateSpecification<T> {
 
 	private static final long serialVersionUID = 1L;
