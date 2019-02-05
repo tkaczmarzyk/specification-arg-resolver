@@ -6,6 +6,8 @@ v2.0.0
 * optimized joining: joins will not be performed if no filtering is applied on the join path
 * fixed `OnTypeMismatch` behaviour for primitive `int` and `long` types
 * under the hood improvements for better performance
+* support for Java 8's `LocalDate` and `LocalDateTime`
+* introduced `Between` specification which supports all `Comparable` types. Therefore `DateBetween` is now deprecated
 * path variables are now supported! You can use new `pathVars` property of `@Spec` as follows:
 
   ```java

@@ -172,13 +172,15 @@ NOTE: comparisons are dependent on the underlying database.
  * Comparisons of booleans may be dependent on the underlying database representation.
  * Comparisons of enums will be of their ordinal or string representations, depending on what you specified to JPA, e.g., `@Enumerated(EnumType.STRING)`, `@Enumerated(EnumType.ORDINAL)` or the default (`@Enumerated(EnumType.ORDINAL)`)
 
-### DateBetween ###
+### Between ###
 
-Filters by checking if a temporal field of an entity is in the provided date range. E.g. `(..) where creation date between :after and :before`.
+Filters by checking if a comparable field of an entity is in the provided range. E.g. `(..) where creation date between :after and :before`.
 
-It requires 2 HTTP parameters (for lower and upper bound). You should use `params` attribute of the `@Spec` annotation, i.e.: `@Spec(path="registrationDate", params={"registeredAfter","registeredBefore"}, spec=DateBetween.class)`. The corresponding HTTP query would be: `GET http://myhost/customers?registeredAfter=2014-01-01&registeredBefore=2014-12-31`.
+It requires 2 HTTP parameters (for lower and upper bound). You should use `params` attribute of the `@Spec` annotation, i.e.: `@Spec(path="registrationDate", params={"registeredAfter","registeredBefore"}, spec=Between.class)`. The corresponding HTTP query would be: `GET http://myhost/customers?registeredAfter=2014-01-01&registeredBefore=2014-12-31`.
 
-You can configure the date pattern as with `LessThan` described above.
+NOTE: comparisons are dependent on the actual type and the underlying database (see the explanation for `GreaterThan` above).
+
+You can configure the date/datetime pattern as with `LessThan` described above.
 
 Combining specs
 ---------------
