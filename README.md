@@ -24,6 +24,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Annotated specification interfaces](#annotated-specification-interfaces) -- resolving specifications from annotated interfaces
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
+   * [Path Variable support](#path-variable-support) -- using uri (resolvable with Spring's `@PathVariable` annotation) fragments in specifications
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -502,6 +503,24 @@ This behaviour has changed in version `0.9.0` (exception was the default value i
 ```
 
 (assuming that `firstName` is `String` and `customerId` is a numeric type)
+
+
+Path variable support
+---------------------
+
+Although in pure RESTful API this feature should not be needed, it sometimes might be useful to use values from path variables. Path variables are uri fragments resolvable with Spring's `@PathVariable` annotation. You can refer to them by using `pathVars` property of `@Spec` as follows:
+
+  ```java
+  @RequestMapping("/customers/{customerLastName}")
+  @ResponseBody
+  public Object findNotDeletedCustomersByFirstName(
+                       @Spec(path = "lastName", pathVars = "customerLastName", spec=Equal.class) Specification<Customer> spec) {
+
+    return repository.findAll(spec);
+  }
+  ```
+
+This will handle request `GET /customers/Simpson` as `select c from Customers c where c.lastName = 'Simpson'`.
 
 
 Compatibility notes
