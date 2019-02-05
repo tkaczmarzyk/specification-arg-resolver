@@ -17,13 +17,10 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import net.kaczmarzyk.spring.data.jpa.Gender;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -31,6 +28,10 @@ import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import net.kaczmarzyk.spring.data.jpa.Gender;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 
 public class ConverterTest {
@@ -125,6 +126,56 @@ public class ConverterTest {
 		List<Gender> result = converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
 		
 		assertThat(result).containsOnly(Gender.MALE, Gender.FEMALE);
+	}
+	
+	@Test
+	public void convertsValueWithoutDecimalPointToFloat() {
+		assertThat(converter.convert("10", Float.class)).isEqualTo(Float.valueOf(10.0f));
+	}
+	
+	@Test
+	public void convertsToFloat() {
+		assertThat(converter.convert("10.8", Float.class)).isEqualTo(Float.valueOf(10.8f));
+	}
+	
+	@Test
+	public void convertsToFloatPrimitive() {
+		assertThat(converter.convert("10.8", float.class)).isEqualTo(10.8f);
+	}
+	
+	@Test
+	public void convertsValueWithoutDecimalPointToFloatPrimitive() {
+		assertThat(converter.convert("10", float.class)).isEqualTo(10.0f);
+	}
+	
+	@Test
+	public void convertsToDouble() {
+		assertThat(converter.convert("10.8", Double.class)).isEqualTo(Double.valueOf(10.8d));
+	}
+	
+	@Test
+	public void convertsToDoublePrimitive() {
+		assertThat(converter.convert("10.8", double.class)).isEqualTo(10.8d);
+	}
+	
+	@Test
+	public void convertsValueWithoutDecimalPointToDouble() {
+		assertThat(converter.convert("10", Double.class)).isEqualTo(Double.valueOf(10d));
+	}
+	
+	@Test
+	public void convertsValueWithoutDecimalPointToDoublePrimitive() {
+		assertThat(converter.convert("10", double.class)).isEqualTo(10d);
+	}
+	
+	@Test
+	public void convertsToBigDecimal() {
+		assertThat(converter.convert("10.99", BigDecimal.class)).isEqualTo(new BigDecimal("10.99"));
+	}
+	
+	@Test
+	public void convertsValueWithoutDecimalPointToBigDecimal() {
+		assertThat(converter.convert("10", BigDecimal.class)).isEqualTo(new BigDecimal("10"));
 	}
 
 	private Matcher<?> valuesRejected(final String... values) {

@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -74,6 +75,7 @@ public class Customer {
     private long weightLong;
     private float weightFloat;
     private Double weightDouble;
+    private BigDecimal weightBigDecimal;
     
     private boolean gold;
     private Boolean goldObj;
@@ -160,7 +162,7 @@ public class Customer {
     /**
      * 
      * @param weight
-     * NOTE: weightFloat has 0.1 added, weightDouble has 0.2 added
+     * NOTE: weightFloat has 0.1 added, weightDouble has 0.2 added, weightBigDecimal has 0.3 added
      */
 	public void setWeight(int weight) {
 		this.weight = weight;
@@ -168,6 +170,7 @@ public class Customer {
 		this.weightLong = weight;
 		this.weightFloat = weight + 0.1f;
 		this.weightDouble = weight + 0.2;
+		this.weightBigDecimal = BigDecimal.valueOf(weight).add(new BigDecimal("0.3"));
 	}
 	
 	public boolean isGold() {

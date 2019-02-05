@@ -21,6 +21,7 @@ v2.0.0
   ```
 
   This will handle request `GET /customers/Simpson` as `select c from Customers c where c.lastName = 'Simpson'`.
+* better conversion support for `float`, `double` and `BigDecimal`
 
 
 v1.1.1

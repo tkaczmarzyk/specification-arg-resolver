@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -101,10 +102,16 @@ public class Converter {
 			return (T) convertToBoolean(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
 		    return (T) convertToLong(value);
+		} else if (isAssignableFromAnyOf(expectedClass, float.class, Float.class)) {
+			return (T) convertToFloat(value);
+		} else if (isAssignableFromAnyOf(expectedClass, double.class, Double.class)) {
+			return (T) convertToDouble(value);
 		} else if (expectedClass.isAssignableFrom(LocalDateTime.class)){
 			return (T) convertToLocalDateTime(value);
-		}else if (expectedClass.isAssignableFrom(LocalDate.class)){
+		} else if (expectedClass.isAssignableFrom(LocalDate.class)) {
 			return (T) convertToLocalDate(value);
+		} else if (expectedClass.isAssignableFrom(BigDecimal.class)) {
+			return (T) convertToBigDecimal(value);
 		}
 		return (T) value;
 	}
@@ -138,7 +145,31 @@ public class Converter {
             throw new ValueRejectedException(value, "number format exception");
         }
     }
+	
+	private Double convertToDouble(String value) {
+        try {
+            return Double.valueOf(value);
+        } catch (NumberFormatException e) {
+            throw new ValueRejectedException(value, "number format exception");
+        }
+    }
+	
+	private Float convertToFloat(String value) {
+        try {
+            return Float.valueOf(value);
+        } catch (NumberFormatException e) {
+            throw new ValueRejectedException(value, "number format exception");
+        }
+    }
 
+	private BigDecimal convertToBigDecimal(String value) {
+		try {
+            return new BigDecimal(value);
+        } catch (NumberFormatException e) {
+            throw new ValueRejectedException(value, "number format exception");
+        }
+	}
+	
     public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
 		if (expectedClass == String.class) {
 			return (List<T>) values;
