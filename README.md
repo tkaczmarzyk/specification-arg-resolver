@@ -528,7 +528,7 @@ This will handle request `GET /customers/Simpson` as `select c from Customers c 
 Compatibility notes
 -------------------
 
-This project has been maintained since 2015. A lot has changed in Java and Spring during that period and the most recent versions might not be compatible with older JDK and/or Spring. In the table below you can find the summary of version compatibility:
+This project has been maintained since 2014. A lot has changed in Java and Spring during that period and the most recent versions might not be compatible with older JDK and/or Spring. In the table below you can find the summary of version compatibility:
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
