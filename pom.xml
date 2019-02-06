@@ -164,7 +164,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-		</plugins>
+        	</plugins>
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>

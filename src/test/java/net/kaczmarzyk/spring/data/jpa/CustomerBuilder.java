@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 import javax.persistence.EntityManager;
@@ -47,6 +49,16 @@ public class CustomerBuilder {
 		customer.setNickName(nickName);
 		return this;
 	}
+
+	public CustomerBuilder birthDate(LocalDate birthDate){
+        customer.setBirthDate(birthDate);
+        return this;
+    }
+
+    public CustomerBuilder lastOrderTime(LocalDateTime lastOrderTime){
+        customer.setLastOrderTime(lastOrderTime);
+        return this;
+    }
     
     public CustomerBuilder registrationDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
