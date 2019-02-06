@@ -17,6 +17,9 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -74,6 +77,7 @@ public class Converter {
 	}
 	
 	private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+	private static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd\'T\'HH:mm:ss";
 
 	public static final Converter DEFAULT = Converter.withDateFormat(DEFAULT_DATE_FORMAT, OnTypeMismatch.EMPTY_RESULT);
 	
@@ -97,6 +101,10 @@ public class Converter {
 			return (T) convertToBoolean(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
 		    return (T) convertToLong(value);
+		} else if (expectedClass.isAssignableFrom(LocalDateTime.class)){
+			return (T) convertToLocalDateTime(value);
+		}else if (expectedClass.isAssignableFrom(LocalDate.class)){
+			return (T) convertToLocalDate(value);
 		}
 		return (T) value;
 	}
@@ -108,6 +116,19 @@ public class Converter {
 			}
 		}
 		return false;
+	}
+
+	private LocalDate convertToLocalDate(String value) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+		return LocalDate.parse(value,formatter);
+	}
+
+	private LocalDateTime convertToLocalDateTime(String value) {
+		if(dateFormat.equals(DEFAULT_DATE_FORMAT)){ // FIXME reusing field for different purpose
+			dateFormat = DEFAULT_DATE_TIME_FORMAT;
+		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+		return LocalDateTime.parse(value,formatter);
 	}
 
 	private Long convertToLong(String value) {

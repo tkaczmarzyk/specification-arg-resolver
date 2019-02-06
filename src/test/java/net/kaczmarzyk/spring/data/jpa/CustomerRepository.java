@@ -22,5 +22,4 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * @author Tomasz Kaczmarzyk
  */
 public interface CustomerRepository extends PagingAndSortingRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
-
 }
