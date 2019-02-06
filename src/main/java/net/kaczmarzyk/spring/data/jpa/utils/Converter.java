@@ -108,7 +108,6 @@ public class Converter {
 		}
 		return (T) value;
 	}
-<<<<<<< HEAD
 	
 	private boolean isAssignableFromAnyOf(Class<?> expectedClass, Class<?>... candidates) {
 		for (Class<?> candidate : candidates) {
@@ -117,7 +116,7 @@ public class Converter {
 			}
 		}
 		return false;
-=======
+	}
 
 	private LocalDate convertToLocalDate(String value) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
@@ -130,7 +129,6 @@ public class Converter {
 		}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
 		return LocalDateTime.parse(value,formatter);
->>>>>>> faaa6324c5e3983f93609e0b934af373aec4c6cc
 	}
 
 	private Long convertToLong(String value) {
