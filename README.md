@@ -85,6 +85,9 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
+<<<<<<< HEAD
+=======
+>>>>>>> 21b870e... Add required, defaulVal in @Spec
 Simple specifications
 ----------------------
 
@@ -181,6 +184,17 @@ It requires 2 HTTP parameters (for lower and upper bound). You should use `param
 NOTE: comparisons are dependent on the actual type and the underlying database (see the explanation for `GreaterThan` above).
 
 You can configure the date/datetime pattern as with `LessThan` described above.
+
+Default value of queries
+-----------------------
+
+The default value to use as a fallback when the request parameter is not provided or has an empty value.
+
+```java
+@Spec(path="role", spec=Equal.class, defaultVal="USER")
+```
+
+Supplying `constVal` implicitly sets `defaultVal` to empty.
 
 Combining specs
 ---------------

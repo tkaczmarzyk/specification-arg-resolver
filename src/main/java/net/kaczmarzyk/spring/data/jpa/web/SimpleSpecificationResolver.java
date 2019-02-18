@@ -127,7 +127,15 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 		} else if (specDef.pathVars().length != 0){
 			return resolveSpecArgumentsFromPathVariables(context, specDef);
 		} else {
+<<<<<<< HEAD
 			return resolveSpecArgumentsFromHttpParameters(context, specDef);
+=======
+		    Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(req, specDef);
+		    if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
+		        Arrays.stream(specDef.defaultVal()).forEach(resolved::add);
+		    }
+		    return resolved;
+>>>>>>> 21b870e... Add required, defaulVal in @Spec
 		}
 	}
 
