@@ -143,6 +143,8 @@ Usage: `@Spec(path="gender", spec=In.class)`.
 
 The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
 
+A negation for this specification is also available: `NotIn`.
+
 ### Null ###
 
 Filters using `is null` or `is not null`, depending on the value of the parameter passed in. A value of `true` will filter for `is null`, and a value of `false` will filter for `is not null`.
