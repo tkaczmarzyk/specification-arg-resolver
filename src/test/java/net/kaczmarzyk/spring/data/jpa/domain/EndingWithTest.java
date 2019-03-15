@@ -26,53 +26,51 @@ import org.junit.Test;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
-
 /**
  * @author Matt S.Y. Ho
  */
 public class EndingWithTest extends IntegrationTestBase {
 
-  Customer homerSimpson;
-  Customer margeSimpson;
-  Customer moeSzyslak;
+	Customer homerSimpson;
+	Customer margeSimpson;
+	Customer moeSzyslak;
 
-  @Before
-  public void initData() {
-    homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
-    margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
-    moeSzyslak = customer("Moe", "Szyslak").street("Unknown").build(em);
-  }
+	@Before
+	public void initData() {
+		homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
+		margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
+		moeSzyslak = customer("Moe", "Szyslak").street("Unknown").build(em);
+	}
 
-  @Test
-  public void filtersByFirstLevelProperty() {
-    EndingWith<Customer> lastNameSimpson = new EndingWith<>("lastName", "Simpson");
-    List<Customer> result = customerRepo.findAll(lastNameSimpson);
-    assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+	@Test
+	public void filtersByFirstLevelProperty() {
+		EndingWith<Customer> lastNameSimpson = new EndingWith<>(queryCtx, "lastName", "Simpson");
+		List<Customer> result = customerRepo.findAll(lastNameSimpson);
+		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-    EndingWith<Customer> firstNameWithO = new EndingWith<>("firstName", "er");
-    result = customerRepo.findAll(firstNameWithO);
-    assertThat(result).hasSize(1).containsOnly(homerSimpson);
-  }
+		EndingWith<Customer> firstNameWithO = new EndingWith<>(queryCtx, "firstName", "er");
+		result = customerRepo.findAll(firstNameWithO);
+		assertThat(result).hasSize(1).containsOnly(homerSimpson);
+	}
 
-  @Test
-  public void filtersByNestedProperty() {
-    EndingWith<Customer> streetWithEvergreen = new EndingWith<>("address.street", "Terrace");
-    List<Customer> result = customerRepo.findAll(streetWithEvergreen);
-    assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+	@Test
+	public void filtersByNestedProperty() {
+		EndingWith<Customer> streetWithEvergreen = new EndingWith<>(queryCtx, "address.street", "Terrace");
+		List<Customer> result = customerRepo.findAll(streetWithEvergreen);
+		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-    EndingWith<Customer> streetWithSpaceEvergreen =
-        new EndingWith<>("address.street", "Evergreen");
-    result = customerRepo.findAll(streetWithSpaceEvergreen);
-    assertThat(result).hasSize(0);
-  }
+		EndingWith<Customer> streetWithSpaceEvergreen = new EndingWith<>(queryCtx, "address.street", "Evergreen");
+		result = customerRepo.findAll(streetWithSpaceEvergreen);
+		assertThat(result).hasSize(0);
+	}
 
-  @Test(expected = IllegalArgumentException.class)
-  public void rejectsMissingArgument() {
-    new EndingWith<>("path", new String[] {});
-  }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArgument() {
+		new EndingWith<>(queryCtx, "path", new String[] {});
+	}
 
-  @Test(expected = IllegalArgumentException.class)
-  public void rejectsInvalidNumberOfArguments() {
-    new EndingWith<>("path", new String[] {"a", "b"});
-  }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsInvalidNumberOfArguments() {
+		new EndingWith<>(queryCtx, "path", new String[] { "a", "b" });
+	}
 }

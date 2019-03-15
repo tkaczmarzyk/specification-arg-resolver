@@ -26,52 +26,51 @@ import org.junit.Test;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
-
 /**
  * @author Matt S.Y. Ho
  */
 public class StartingWithTest extends IntegrationTestBase {
 
-  Customer homerSimpson;
-  Customer margeSimpson;
-  Customer moeSzyslak;
+	Customer homerSimpson;
+	Customer margeSimpson;
+	Customer moeSzyslak;
 
-  @Before
-  public void initData() {
-    homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
-    margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
-    moeSzyslak = customer("Moe", "Szyslak").street("Unknown").build(em);
-  }
+	@Before
+	public void initData() {
+		homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
+		margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
+		moeSzyslak = customer("Moe", "Szyslak").street("Unknown").build(em);
+	}
 
-  @Test
-  public void filtersByFirstLevelProperty() {
-    StartingWith<Customer> lastNameSimpson = new StartingWith<>("lastName", "Simpson");
-    List<Customer> result = customerRepo.findAll(lastNameSimpson);
-    assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+	@Test
+	public void filtersByFirstLevelProperty() {
+		StartingWith<Customer> lastNameSimpson = new StartingWith<>(queryCtx, "lastName", "Simpson");
+		List<Customer> result = customerRepo.findAll(lastNameSimpson);
+		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-    StartingWith<Customer> firstNameWithO = new StartingWith<>("firstName", "Ho");
-    result = customerRepo.findAll(firstNameWithO);
-    assertThat(result).hasSize(1).containsOnly(homerSimpson);
-  }
+		StartingWith<Customer> firstNameWithO = new StartingWith<>(queryCtx, "firstName", "Ho");
+		result = customerRepo.findAll(firstNameWithO);
+		assertThat(result).hasSize(1).containsOnly(homerSimpson);
+	}
 
-  @Test
-  public void filtersByNestedProperty() {
-    StartingWith<Customer> streetWithEvergreen = new StartingWith<>("address.street", "Evergreen");
-    List<Customer> result = customerRepo.findAll(streetWithEvergreen);
-    assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+	@Test
+	public void filtersByNestedProperty() {
+		StartingWith<Customer> streetWithEvergreen = new StartingWith<>(queryCtx, "address.street", "Evergreen");
+		List<Customer> result = customerRepo.findAll(streetWithEvergreen);
+		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-    StartingWith<Customer> streetWithTerrace = new StartingWith<>("address.street", "Terrace");
-    result = customerRepo.findAll(streetWithTerrace);
-    assertThat(result).hasSize(0);
-  }
+		StartingWith<Customer> streetWithTerrace = new StartingWith<>(queryCtx, "address.street", "Terrace");
+		result = customerRepo.findAll(streetWithTerrace);
+		assertThat(result).hasSize(0);
+	}
 
-  @Test(expected = IllegalArgumentException.class)
-  public void rejectsMissingArgument() {
-    new StartingWith<>("path", new String[] {});
-  }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArgument() {
+		new StartingWith<>(queryCtx, "path", new String[] {});
+	}
 
-  @Test(expected = IllegalArgumentException.class)
-  public void rejectsInvalidNumberOfArguments() {
-    new StartingWith<>("path", new String[] {"a", "b"});
-  }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsInvalidNumberOfArguments() {
+		new StartingWith<>(queryCtx, "path", new String[] { "a", "b" });
+	}
 }

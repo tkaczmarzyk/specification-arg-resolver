@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
 /**
  * parameter bound with appended %: {@code "%" + args[0]}
  * 
@@ -24,8 +26,10 @@ package net.kaczmarzyk.spring.data.jpa.domain;
  */
 public class EndingWith<T> extends Like<T> {
 
-  public EndingWith(String path, String... args) {
-    super(path, args);
-    this.pattern = "%" + args[0];
-  }
+	private static final long serialVersionUID = 1L;
+
+	public EndingWith(QueryContext queryContext, String path, String... args) {
+		super(queryContext, path, args);
+		this.pattern = "%" + args[0];
+	}
 }

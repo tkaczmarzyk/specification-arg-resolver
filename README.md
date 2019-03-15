@@ -85,9 +85,6 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
-<<<<<<< HEAD
-=======
->>>>>>> 21b870e... Add required, defaulVal in @Spec
 Simple specifications
 ----------------------
 

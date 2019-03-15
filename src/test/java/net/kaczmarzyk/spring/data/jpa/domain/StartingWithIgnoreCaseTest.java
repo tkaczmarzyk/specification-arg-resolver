@@ -33,47 +33,49 @@ import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
  */
 public class StartingWithIgnoreCaseTest extends IntegrationTestBase {
 
-  Customer homerSimpson;
-  Customer margeSimpson;
-  Customer moeSzyslak;
+	Customer homerSimpson;
+	Customer margeSimpson;
+	Customer moeSzyslak;
 
-  @Before
-  public void initData() {
-    homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
-    margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
-    moeSzyslak = customer("Moe", "Szyslak").street("Unknown").build(em);
-  }
+	@Before
+	public void initData() {
+		homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
+		margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
+		moeSzyslak = customer("Moe", "Szyslak").street("Unknown").build(em);
+	}
 
-  @Test
-  public void filtersByFirstLevelProperty() {
-    StartingWithIgnoreCase<Customer> lastNameSimpson = new StartingWithIgnoreCase<>("lastName", "SIMPSON");
-    List<Customer> result = customerRepo.findAll(lastNameSimpson);
-    assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+	@Test
+	public void filtersByFirstLevelProperty() {
+		StartingWithIgnoreCase<Customer> lastNameSimpson = new StartingWithIgnoreCase<>(queryCtx, "lastName",
+				"SIMPSON");
+		List<Customer> result = customerRepo.findAll(lastNameSimpson);
+		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-    StartingWithIgnoreCase<Customer> firstNameWithO = new StartingWithIgnoreCase<>("firstName", "HO");
-    result = customerRepo.findAll(firstNameWithO);
-    assertThat(result).hasSize(1).containsOnly(homerSimpson);
-  }
+		StartingWithIgnoreCase<Customer> firstNameWithO = new StartingWithIgnoreCase<>(queryCtx, "firstName", "HO");
+		result = customerRepo.findAll(firstNameWithO);
+		assertThat(result).hasSize(1).containsOnly(homerSimpson);
+	}
 
-  @Test
-  public void filtersByNestedProperty() {
-    StartingWithIgnoreCase<Customer> streetWithEvergreen = new StartingWithIgnoreCase<>("address.street", "EVERGREEN");
-    List<Customer> result = customerRepo.findAll(streetWithEvergreen);
-    assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
+	@Test
+	public void filtersByNestedProperty() {
+		StartingWithIgnoreCase<Customer> streetWithEvergreen = new StartingWithIgnoreCase<>(queryCtx, "address.street",
+				"EVERGREEN");
+		List<Customer> result = customerRepo.findAll(streetWithEvergreen);
+		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-    StartingWithIgnoreCase<Customer> streetWithTerrace = new StartingWithIgnoreCase<>("address.street", "TERRACE");
-    result = customerRepo.findAll(streetWithTerrace);
-    assertThat(result).hasSize(0);
-  }
+		StartingWithIgnoreCase<Customer> streetWithTerrace = new StartingWithIgnoreCase<>(queryCtx, "address.street",
+				"TERRACE");
+		result = customerRepo.findAll(streetWithTerrace);
+		assertThat(result).hasSize(0);
+	}
 
-  @Test(expected = IllegalArgumentException.class)
-  public void rejectsMissingArgument() {
-    new StartingWithIgnoreCase<>("path", new String[] {});
-  }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArgument() {
+		new StartingWithIgnoreCase<>(queryCtx, "path", new String[] {});
+	}
 
-  @Test(expected = IllegalArgumentException.class)
-  public void rejectsInvalidNumberOfArguments() {
-    new StartingWithIgnoreCase<>("path", new String[] {"a", "b"});
-  }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsInvalidNumberOfArguments() {
+		new StartingWithIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" });
+	}
 }
-
