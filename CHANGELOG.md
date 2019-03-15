@@ -1,3 +1,20 @@
+v2.1.0
+======
+
+* added possibility to define a default value for filtering, as a fallback when HTTP param is not present. For example this controller method: 
+  ```java
+  @RequestMapping("/users")
+  public Object findByRole(
+                    @Spec(path="role", spec=Equal.class, defaultVal="USER") Specification<User> spec) {
+  
+      return userRepo.findAll(spec);
+  }
+  ```
+  
+  Would handle request such as `GET /users` with the following query: `select u from Users u where u.role = 'USER'`.
+* added new specifications: `StartingWith`, `EndingWith` and their case-insensitive counterparts
+* added new specification negations: `NotIn`, `NotLike`
+
 v2.0.0
 ======
 
