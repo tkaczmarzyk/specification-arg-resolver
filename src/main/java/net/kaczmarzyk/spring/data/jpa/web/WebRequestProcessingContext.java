@@ -25,6 +25,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Provides information about Controller/method and WebRequest being processed.
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
@@ -59,7 +61,7 @@ public class WebRequestProcessingContext {
 	}
 
 	public String getPathVariableValue(String pathVariableName) {
-		String value = PathVariableResolver.forPathPatternAndActualPath(pathPattern(), pathInfo()).resolveValue(pathVariableName);
+		String value = PathVariableResolver.forPathPatternAndActualPath(pathPattern(), actualWebPath()).resolveValue(pathVariableName);
 		if (value != null) {
 			return value;
 		} else {
@@ -106,8 +108,9 @@ public class WebRequestProcessingContext {
 		return null;
 	}
 
-	private String pathInfo() {
-		return ((javax.servlet.http.HttpServletRequest) webRequest.getNativeRequest()).getPathInfo();
+	private String actualWebPath() {
+		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+		return request.getPathInfo() != null ? request.getPathInfo() : request.getRequestURI().substring(request.getContextPath().length());
 	}
 	
 }
