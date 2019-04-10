@@ -1,3 +1,8 @@
+v2.1.1
+======
+
+* fixed path variable resolving in environments where `HttpServletRequest.getPathInfo()` returns `null`
+
 v2.1.0
 ======
 
