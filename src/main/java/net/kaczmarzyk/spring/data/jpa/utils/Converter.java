@@ -21,10 +21,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
@@ -112,6 +109,8 @@ public class Converter {
 			return (T) convertToLocalDate(value);
 		} else if (expectedClass.isAssignableFrom(BigDecimal.class)) {
 			return (T) convertToBigDecimal(value);
+		} else if (expectedClass.isAssignableFrom(UUID.class)) {
+			return (T) convertToUUID(value);
 		}
 		return (T) value;
 	}
@@ -168,6 +167,14 @@ public class Converter {
         } catch (NumberFormatException e) {
             throw new ValueRejectedException(value, "number format exception");
         }
+	}
+
+	private UUID convertToUUID(String value) {
+		try {
+			return UUID.fromString(value);
+		} catch (IllegalArgumentException e) {
+			throw new ValueRejectedException(value, "invalid UUID value");
+		}
 	}
 	
     public <T> List<T> convert(List<String> values, Class<T> expectedClass) {

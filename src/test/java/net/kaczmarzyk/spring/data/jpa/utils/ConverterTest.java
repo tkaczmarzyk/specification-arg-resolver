@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -176,6 +177,11 @@ public class ConverterTest {
 	@Test
 	public void convertsValueWithoutDecimalPointToBigDecimal() {
 		assertThat(converter.convert("10", BigDecimal.class)).isEqualTo(new BigDecimal("10"));
+	}
+
+	@Test
+	public void convertsToUUID() {
+		assertThat(converter.convert("a6a3e226-4b55-40c2-af6a-4312e95a85b4", UUID.class)).isEqualTo(UUID.fromString("a6a3e226-4b55-40c2-af6a-4312e95a85b4"));
 	}
 
 	private Matcher<?> valuesRejected(final String... values) {
