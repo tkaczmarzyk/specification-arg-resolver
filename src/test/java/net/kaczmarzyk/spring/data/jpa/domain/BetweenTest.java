@@ -19,6 +19,8 @@ import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.junit.Before;
@@ -45,21 +47,25 @@ public class BetweenTest extends IntegrationTestBase {
         homerSimpson = customer("Homer", "Simpson")
         		.gender(Gender.MALE)
         		.registrationDate(2014, 03, 07)
+        		.lastBuyTime(OffsetDateTime.of(2014, 03, 07, 01, 01, 01, 0, ZoneOffset.ofHours(2)))
         		.weight(300)
         		.build(em);
         margeSimpson = customer("Marge", "Simpson")
         		.gender(Gender.FEMALE)
         		.registrationDate(2014, 03, 12)
+        		.lastBuyTime(OffsetDateTime.of(2014, 03, 12, 01, 01, 01, 0, ZoneOffset.ofHours(2)))
         		.weight(80)
         		.build(em);
         moeSzyslak = customer("Moe", "Szyslak")
         		.gender(Gender.MALE)
         		.registrationDate(2014, 03, 18)
+        		.lastBuyTime(OffsetDateTime.of(2014, 03, 18, 01, 01, 01, 0, ZoneOffset.ofHours(2)))
         		.weight(90)
         		.build(em);
         benderRodriguez = customer("Bender", "Rodriguez")
         		.gender(Gender.OTHER) // Sorry, Bender, it's just for the test purpose!
         		.registrationDate(3014, 03, 18)
+        		.lastBuyTime(OffsetDateTime.of(3014, 03, 18, 01, 01, 01, 0, ZoneOffset.ofHours(2)))
         		.weight(150)
         		.build(em);
     }
@@ -162,6 +168,25 @@ public class BetweenTest extends IntegrationTestBase {
             .containsOnly(homerSimpson, margeSimpson);
         
         Between<Customer> between11and19 = new Between<>(queryCtx, "registrationDate", new String[] { "2014-03-11", "2014-03-19" }, defaultConverter);
+        
+        result = customerRepo.findAll(between11and19);
+        assertThat(result)
+            .hasSize(2)
+            .containsOnly(margeSimpson, moeSzyslak);
+    }
+    
+    @Test
+    public void filtersByRegistrationOffsetDateTimeWithDefaultDateFormat() throws ParseException {
+        Between<Customer> between6and13 = new Between<>(queryCtx, "lastBuyTime", new String[] { "2014-03-06T17:42:53.444+02:00", "2014-03-13T17:42:53.444+02:00" },
+        		Converter.withDateFormat("yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX", OnTypeMismatch.EMPTY_RESULT));
+        
+        List<Customer> result = customerRepo.findAll(between6and13);
+        assertThat(result)
+            .hasSize(2)
+            .containsOnly(homerSimpson, margeSimpson);
+        
+        Between<Customer> between11and19 = new Between<>(queryCtx, "lastBuyTime", new String[] { "2014-03-11T17:42:53.444+02:00", "2014-03-19T17:42:53.444+02:00" },
+        		Converter.withDateFormat("yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX", OnTypeMismatch.EMPTY_RESULT));
         
         result = customerRepo.findAll(between11and19);
         assertThat(result)

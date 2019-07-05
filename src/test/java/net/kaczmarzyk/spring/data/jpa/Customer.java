@@ -18,6 +18,7 @@ package net.kaczmarzyk.spring.data.jpa;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -68,6 +69,8 @@ public class Customer {
     private LocalDate birthDate;
 
     private LocalDateTime lastOrderTime;
+    
+    private OffsetDateTime lastBuyTime;
 
     private Integer weight;
     
@@ -154,9 +157,17 @@ public class Customer {
     public LocalDateTime getLastOrderTime() {
         return lastOrderTime;
     }
+    
+    public OffsetDateTime getLastBuyTime() {
+        return lastBuyTime;
+    }
 
     public void setLastOrderTime(LocalDateTime lastOrderTime) {
         this.lastOrderTime = lastOrderTime;
+    }
+    
+    public void setLastBuyTime(OffsetDateTime lastBuyTime) {
+        this.lastBuyTime = lastBuyTime;
     }
 
     /**

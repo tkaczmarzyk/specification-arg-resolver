@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,6 +80,7 @@ public class Converter {
 	
 	private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 	private static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd\'T\'HH:mm:ss";
+	private static final String DEFAULT_OFFSET_DATE_TIME_FORMAT = "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX";
 
 	public static final Converter DEFAULT = Converter.withDateFormat(DEFAULT_DATE_FORMAT, OnTypeMismatch.EMPTY_RESULT);
 	
@@ -110,6 +112,8 @@ public class Converter {
 			return (T) convertToLocalDateTime(value);
 		} else if (expectedClass.isAssignableFrom(LocalDate.class)) {
 			return (T) convertToLocalDate(value);
+		}else if (expectedClass.isAssignableFrom(OffsetDateTime.class)){
+			return (T) convertToOffsetDateTime(value);
 		} else if (expectedClass.isAssignableFrom(BigDecimal.class)) {
 			return (T) convertToBigDecimal(value);
 		}
@@ -136,6 +140,12 @@ public class Converter {
 		}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
 		return LocalDateTime.parse(value,formatter);
+	}
+
+	private OffsetDateTime convertToOffsetDateTime(String value) {
+		dateFormat = DEFAULT_OFFSET_DATE_TIME_FORMAT;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+		return OffsetDateTime.parse(value,formatter);
 	}
 
 	private Long convertToLong(String value) {

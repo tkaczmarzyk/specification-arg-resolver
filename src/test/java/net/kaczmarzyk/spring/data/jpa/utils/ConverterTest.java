@@ -16,8 +16,11 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +28,7 @@ import java.util.List;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hibernate.type.OffsetDateTimeType;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -68,6 +72,20 @@ public class ConverterTest {
 			.isWithinMonth(4)
 			.isWithinDayOfMonth(2)
 			.isWithinYear(2015);
+	}
+	
+	
+	@Test
+	public void convertsToOffsetDateTime() {
+		OffsetDateTime converted = converter.convert("2019-06-04T17:42:53.444+02:00", OffsetDateTime.class);
+		
+		assertEquals(converted.getYear(), 2019);
+		assertEquals(converted.getMonth().getValue(), 6);
+		assertEquals(converted.getDayOfMonth(), 4);
+		assertEquals(converted.getHour(), 17);
+		assertEquals(converted.getMinute(), 42);
+		assertEquals(converted.getSecond(), 53);
+		assertEquals(converted.getOffset(), ZoneOffset.ofHours(2));
 	}
 	
 	@Test

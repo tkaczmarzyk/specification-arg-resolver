@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 
 import javax.persistence.EntityManager;
@@ -60,6 +61,11 @@ public class CustomerBuilder {
         return this;
     }
     
+    public CustomerBuilder lastBuyTime(OffsetDateTime lastBuyTime){
+        customer.setLastBuyTime(lastBuyTime);
+        return this;
+    }
+        
     public CustomerBuilder registrationDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
