@@ -38,7 +38,7 @@ public class JoinFetch<T> implements Specification<T> {
 	private static final long serialVersionUID = 1L;
 	
 	private List<String> pathsToFetch;
-    private JoinType joinType;
+    	private JoinType joinType;
 
     
     public JoinFetch(String[] pathsToFetch, JoinType joinType) {
@@ -48,6 +48,7 @@ public class JoinFetch<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+	    query.distinct(true)
         if (!Number.class.isAssignableFrom(query.getResultType())) { // do not join in count queries
             for (String path : pathsToFetch){
                 root.fetch(path, joinType);
