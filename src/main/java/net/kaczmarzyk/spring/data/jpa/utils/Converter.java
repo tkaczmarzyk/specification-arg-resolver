@@ -18,8 +18,10 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -107,6 +109,8 @@ public class Converter {
 			return (T) convertToLocalDateTime(value);
 		} else if (expectedClass.isAssignableFrom(LocalDate.class)) {
 			return (T) convertToLocalDate(value);
+		} else if (expectedClass.isAssignableFrom(Instant.class)) {
+			return (T) convertToInstant(value);
 		} else if (expectedClass.isAssignableFrom(BigDecimal.class)) {
 			return (T) convertToBigDecimal(value);
 		} else if (expectedClass.isAssignableFrom(UUID.class)) {
@@ -135,6 +139,10 @@ public class Converter {
 		}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
 		return LocalDateTime.parse(value,formatter);
+	}
+
+	private Instant convertToInstant(String value) {
+		return convertToLocalDateTime(value).toInstant(ZoneOffset.UTC);
 	}
 
 	private Long convertToLong(String value) {
