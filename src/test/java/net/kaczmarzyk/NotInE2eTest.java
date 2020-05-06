@@ -52,9 +52,9 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-with-param-separator", params = "firstNameNotIn")
+		@RequestMapping(value = "/not-in/customers-ps", params = "firstNameNotIn")
 		@ResponseBody
-		public Object findCustomersByFirstNameUsingSeparatedParams(
+		public Object findCustomersByFirstNameUsingParamSeparator(
 				@Spec(path = "firstName", params = "firstNameNotIn", paramSeparator = "\\!", spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -68,9 +68,9 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-with-param-separator", params = "idNotIn")
+		@RequestMapping(value = "/not-in/customers-ps", params = "idNotIn")
 		@ResponseBody
-		public Object findCustomersByIdUsingSeparatedParams(
+		public Object findCustomersByIdUsingParamSeparator(
 				@Spec(path = "id", params = "idNotIn", paramSeparator = "\\_", spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -84,9 +84,9 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-with-param-separator", params = "registrationDateNotIn")
+		@RequestMapping(value = "/not-in/customers-ps", params = "registrationDateNotIn")
 		@ResponseBody
-		public Object findCustomersByRegistrationDateUsingSeparatedParams(
+		public Object findCustomersByRegistrationDateUsingParamSeparator(
 				@Spec(path = "registrationDate", params = "registrationDateNotIn", paramSeparator = "\\,", spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -101,9 +101,9 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-with-param-separator", params = "genderNotIn")
+		@RequestMapping(value = "/not-in/customers-ps", params = "genderNotIn")
 		@ResponseBody
-		public Object findCustomersByGenderUsingSeparatedParams(
+		public Object findCustomersByGenderUsingParamSeparator(
 				@Spec(path = "gender", params = "genderNotIn", paramSeparator = "\\'", spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -127,7 +127,7 @@ public class NotInE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfNotAllowedStringValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/not-in/customers-with-param-separator?firstNameNotIn=Homer!Marge")
+		mockMvc.perform(get("/not-in/customers-ps?firstNameNotIn=Homer!Marge")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
@@ -164,7 +164,7 @@ public class NotInE2eTest extends E2eTestBase {
 				+ margeSimpson.getId().toString() + "_"
 				+ nedFlanders.getId().toString();
 
-		mockMvc.perform(get("/not-in/customers-with-param-separator"+idNotInParam)
+		mockMvc.perform(get("/not-in/customers-ps"+idNotInParam)
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
@@ -191,7 +191,7 @@ public class NotInE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfNotAllowedDateValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/not-in//customers-with-param-separator?registrationDateNotIn=2014-03-30,2014-03-31")
+		mockMvc.perform(get("/not-in//customers-ps?registrationDateNotIn=2014-03-30,2014-03-31")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
@@ -218,7 +218,7 @@ public class NotInE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfNotAllowedEnumValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/not-in/customers-with-param-separator?genderNotIn=MALE")
+		mockMvc.perform(get("/not-in/customers-ps?genderNotIn=MALE")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())

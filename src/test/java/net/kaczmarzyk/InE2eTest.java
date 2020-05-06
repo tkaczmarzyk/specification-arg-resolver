@@ -49,9 +49,9 @@ public class InE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/customers-with-param-separator", params = "firstNameIn")
+		@RequestMapping(value = "/customers-ps", params = "firstNameIn")
 		@ResponseBody
-		public Object findCustomersByFirstNameUsingSeparatedParams(
+		public Object findCustomersByFirstNameUsingParamSeparator(
 				@Spec(path = "firstName", params = "firstNameIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -65,9 +65,9 @@ public class InE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/customers-with-param-separator", params = "idIn")
+		@RequestMapping(value = "/customers-ps", params = "idIn")
 		@ResponseBody
-		public Object findCustomersByIdUsingSeparatedParams(
+		public Object findCustomersByIdUsingParamSeparator(
 				@Spec(path = "id", params = "idIn", paramSeparator = ";", spec = In.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -81,9 +81,9 @@ public class InE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/customers-with-param-separator", params = "registrationDateIn")
+		@RequestMapping(value = "/customers-ps", params = "registrationDateIn")
 		@ResponseBody
-		public Object findCustomersByRegistrationDateUsingSeparatedParams(
+		public Object findCustomersByRegistrationDateUsingParamSeparator(
 				@Spec(path = "registrationDate", params = "registrationDateIn", paramSeparator = "\\/", spec = In.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
@@ -96,9 +96,9 @@ public class InE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/customers-with-param-separator", params = "genderIn")
+		@RequestMapping(value = "/customers-ps", params = "genderIn")
 		@ResponseBody
-		public Object findCustomersByGenderUsingSeparatedParams(
+		public Object findCustomersByGenderUsingParamSeparator(
 				@Spec(path = "gender", params = "genderIn", paramSeparator = "\\|", spec = In.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -119,7 +119,7 @@ public class InE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfAllowedStringValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/customers-with-param-separator?firstNameIn=Homer,Marge")
+		mockMvc.perform(get("/customers-ps?firstNameIn=Homer,Marge")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
@@ -142,7 +142,7 @@ public class InE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfAllowedLongValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/customers-with-param-separator?idIn=" + homerSimpson.getId().toString() + ";" + moeSzyslak.getId().toString())
+		mockMvc.perform(get("/customers-ps?idIn=" + homerSimpson.getId().toString() + ";" + moeSzyslak.getId().toString())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
@@ -165,7 +165,7 @@ public class InE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfAllowedDateValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/customers-with-param-separator?registrationDateIn=2014-03-30/2014-03-31")
+		mockMvc.perform(get("/customers-ps?registrationDateIn=2014-03-30/2014-03-31")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
@@ -193,7 +193,7 @@ public class InE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfAllowedEnumValuesUsingParamSeparator()  throws Exception {
-		mockMvc.perform(get("/customers-with-param-separator?genderIn=MALE|FEMALE")
+		mockMvc.perform(get("/customers-ps?genderIn=MALE|FEMALE")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
