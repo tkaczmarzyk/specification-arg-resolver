@@ -45,7 +45,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
         Spec def = param.getParameterAnnotation(Spec.class);
         WebRequestProcessingContext context = new WebRequestProcessingContext(param, req);
-        
+
         return buildSpecification(context, def);
     }
 
@@ -82,7 +82,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 		QueryContext queryCtx = context.queryContext();
 		Converter converter = resolveConverter(def);
-		
+
 		Specification<Object> spec;
 		if (def.config().length == 0) {
 			try {
@@ -145,11 +145,19 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
-		
+
 		if (specDef.params().length != 0) {
+			String paramsSeparator = specDef.paramSeparator();
 		    for (String webParamName : specDef.params()) {
 		        String[] httpParamValues = context.getParameterValues(webParamName);
-		        addValuesToArgs(httpParamValues, args);
+			    if(paramsSeparator.isEmpty()) {
+				    addValuesToArgs(httpParamValues, args);
+			    } else {
+			    	for(String paramValue: httpParamValues) {
+			    		String[] separatedParamValues = paramValue.split(paramsSeparator);
+					    addValuesToArgs(separatedParamValues, args);
+				    }
+			    }
 		    }
 		} else {
 		    String[] httpParamValues = context.getParameterValues(specDef.path());
