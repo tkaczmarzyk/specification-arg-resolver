@@ -3,10 +3,10 @@ UNRELEASED
 
 * Added support for passing multiple separated values with one param. Added `paramSeparator` to `@Spec` interface, which allows for specifying regex which is used to the delimitation of param value. For example controler method:
 ```java
-@RequestMapping(value = "/customers", params = "idIn")
+@RequestMapping(value = "/customers", params = "genderIn")
 @ResponseBody
-public Object findCustomersByIdUsingSeparatedParams(
-	@Spec(path = "id", params = "idIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
+public Object findCustomersByGender(
+	@Spec(path = "gender", params = "genderIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
 	return customerRepo.findAll(spec);
 }
 ```
