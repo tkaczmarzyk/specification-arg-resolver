@@ -91,7 +91,7 @@ Simple specifications
 
 Use `@Spec` annotation to automatically resolve a `Specification` argument of your controller method. `@Spec` has `path` property that should be used to specify property path of the attribute of an entity, e.g. `address.city`. By default it's also the name of the expected HTTP parameter, e.g. `GET http://myhost?address.city=Springfield`.
 
-For parameter with multiple values property `paramSeparator` could be used. The `paramSeparator` is a regular expression used to param delimitation. For example if param separator is specified :`\\,`, parameter: `?param=val1,val2,val3` will be processed as multi value param: `["val1","val2","val3"]`, by default (without specified `paramSeparator`) param will be processed as single value : `"val1,val2,val3"`.
+For parameter with multiple values property `paramSeparator` could be specified. The value of `paramSeparator` is a regular expression used to param delimitation. For example if param separator is specified :`\\,`, parameter: `?param=val1,val2,val3` will be processed as multi value param: `["val1","val2","val3"]`, by default (without specified `paramSeparator`) param will be processed as single value : `"val1,val2,val3"`.
 
 Use `spec` attribute of the annotation to specify one of the following strategies for filtering.
 
