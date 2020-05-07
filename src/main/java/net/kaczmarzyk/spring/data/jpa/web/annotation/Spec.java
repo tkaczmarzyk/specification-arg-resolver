@@ -22,6 +22,8 @@ import java.lang.annotation.Target;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import static java.lang.Character.MIN_VALUE;
+
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -34,9 +36,9 @@ public @interface Spec {
     String[] params() default {};
 
     /**
-     * Regular expression used to param delimitation. Param delimitation is skipped when separator is a empty value.
+     * Character used to param delimitation. Param delimitation is skipped when separator has a 0 value.
      */
-    String paramSeparator() default "";
+    char paramSeparator() default 0;
 
     String[] pathVars() default {};
     

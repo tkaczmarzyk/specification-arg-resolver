@@ -91,9 +91,23 @@ Simple specifications
 
 Use `@Spec` annotation to automatically resolve a `Specification` argument of your controller method. `@Spec` has `path` property that should be used to specify property path of the attribute of an entity, e.g. `address.city`. By default it's also the name of the expected HTTP parameter, e.g. `GET http://myhost?address.city=Springfield`.
 
-For parameter with multiple values property `paramSeparator` could be specified. The value of `paramSeparator` is a regular expression used to param delimitation. For example if param separator is specified :`\\,`, parameter: `?param=val1,val2,val3` will be processed as multi value param: `["val1","val2","val3"]`, by default (without specified `paramSeparator`) param will be processed as single value : `"val1,val2,val3"`.
-
 Use `spec` attribute of the annotation to specify one of the following strategies for filtering.
+
+For multi value filters like: `In.class`, `NotIn.class` there are two ways of passing args. The first way is passing the same param multiple times as single value param. For example: 
+
+    GET http://myhost/customers?gender=MALE&gender=FEMALE
+
+The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator.
+For example the following controller method:
+```java
+@RequestMapping(value = "/customers", params = "genderIn")
+@ResponseBody
+public Object findCustomersByGender(
+	@Spec(path = "gender", params = "genderIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec);
+}
+```
+will handle `GET http://myhost/customers?gender=MALE,FEMALE` in exactly the same way as `GET http://myhost/customers?gender=MALE&gender=FEMALE` (as one parameter with two values `["MALE","GENDER"]`. Without specifying `paramSeparator` param `gender=MALE,FEMALE` will be processed as single value: `["MALE,FEMALE"]`.
 
 ### Like ###
 
@@ -143,12 +157,10 @@ HTTP request example:
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=",", spec=In.class)`):
+or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=',', spec=In.class)`):
 
     GET http://myhost/customers?gender=MALE,FEMALE
 
-If param separator is not defined, param delimitation will be skipped.
- 
 The default date format used for temporal fields is `yyyy-MM-dd`. It can be overridden with a configuration parameter (see `LessThan` below).
 
 A negation for this specification is also available: `NotIn`.

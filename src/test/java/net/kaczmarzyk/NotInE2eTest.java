@@ -52,10 +52,10 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-ps", params = "firstNameNotIn")
+		@RequestMapping(value = "/not-in/customers-param-separator", params = "firstNameNotIn")
 		@ResponseBody
 		public Object findCustomersByFirstNameUsingParamSeparator(
-				@Spec(path = "firstName", params = "firstNameNotIn", paramSeparator = "\\!", spec = NotIn.class) Specification<Customer> spec) {
+				@Spec(path = "firstName", params = "firstNameNotIn", paramSeparator = '!', spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}
@@ -68,10 +68,10 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-ps", params = "idNotIn")
+		@RequestMapping(value = "/not-in/customers-param-separator", params = "idNotIn")
 		@ResponseBody
 		public Object findCustomersByIdUsingParamSeparator(
-				@Spec(path = "id", params = "idNotIn", paramSeparator = "\\_", spec = NotIn.class) Specification<Customer> spec) {
+				@Spec(path = "id", params = "idNotIn", paramSeparator = '_', spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}
@@ -84,10 +84,10 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-ps", params = "registrationDateNotIn")
+		@RequestMapping(value = "/not-in/customers-param-separator", params = "registrationDateNotIn")
 		@ResponseBody
 		public Object findCustomersByRegistrationDateUsingParamSeparator(
-				@Spec(path = "registrationDate", params = "registrationDateNotIn", paramSeparator = "\\,", spec = NotIn.class) Specification<Customer> spec) {
+				@Spec(path = "registrationDate", params = "registrationDateNotIn", paramSeparator = ',', spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}
@@ -101,10 +101,10 @@ public class NotInE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/not-in/customers-ps", params = "genderNotIn")
+		@RequestMapping(value = "/not-in/customers-param-separator", params = "genderNotIn")
 		@ResponseBody
 		public Object findCustomersByGenderUsingParamSeparator(
-				@Spec(path = "gender", params = "genderNotIn", paramSeparator = "\\'", spec = NotIn.class) Specification<Customer> spec) {
+				@Spec(path = "gender", params = "genderNotIn", paramSeparator = '\'', spec = NotIn.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}
@@ -115,28 +115,28 @@ public class NotInE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/not-in//customers")
 				.param("firstNameNotIn", "Homer", "Marge")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Bart"))
-				.andExpect(jsonPath("$[1].firstName").value("Lisa"))
-				.andExpect(jsonPath("$[2].firstName").value("Maggie"))
-				.andExpect(jsonPath("$[3].firstName").value("Moe"))
-				.andExpect(jsonPath("$[4].firstName").value("Ned"))
-				.andExpect(jsonPath("$[5]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Bart"))
+			.andExpect(jsonPath("$[1].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[2].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[3].firstName").value("Moe"))
+			.andExpect(jsonPath("$[4].firstName").value("Ned"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
 	}
 
 	@Test
 	public void findsByListOfNotAllowedStringValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/not-in/customers-ps?firstNameNotIn=Homer!Marge")
+		mockMvc.perform(get("/not-in/customers-param-separator?firstNameNotIn=Homer!Marge")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Bart"))
-				.andExpect(jsonPath("$[1].firstName").value("Lisa"))
-				.andExpect(jsonPath("$[2].firstName").value("Maggie"))
-				.andExpect(jsonPath("$[3].firstName").value("Moe"))
-				.andExpect(jsonPath("$[4].firstName").value("Ned"))
-				.andExpect(jsonPath("$[5]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Bart"))
+			.andExpect(jsonPath("$[1].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[2].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[3].firstName").value("Moe"))
+			.andExpect(jsonPath("$[4].firstName").value("Ned"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
 	}
 
 	@Test
@@ -148,12 +148,12 @@ public class NotInE2eTest extends E2eTestBase {
 						margeSimpson.getId().toString(),
 						nedFlanders.getId().toString())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Bart"))
-				.andExpect(jsonPath("$[1].firstName").value("Lisa"))
-				.andExpect(jsonPath("$[2].firstName").value("Maggie"))
-				.andExpect(jsonPath("$[3]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Bart"))
+			.andExpect(jsonPath("$[1].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[2].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 
 	@Test
@@ -164,14 +164,14 @@ public class NotInE2eTest extends E2eTestBase {
 				+ margeSimpson.getId().toString() + "_"
 				+ nedFlanders.getId().toString();
 
-		mockMvc.perform(get("/not-in/customers-ps"+idNotInParam)
+		mockMvc.perform(get("/not-in/customers-param-separator" + idNotInParam)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Bart"))
-				.andExpect(jsonPath("$[1].firstName").value("Lisa"))
-				.andExpect(jsonPath("$[2].firstName").value("Maggie"))
-				.andExpect(jsonPath("$[3]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Bart"))
+			.andExpect(jsonPath("$[1].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[2].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 
 	@Test
@@ -179,28 +179,28 @@ public class NotInE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/not-in//customers")
 				.param("registrationDateNotIn", "2014-03-30", "2014-03-31")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Marge"))
-				.andExpect(jsonPath("$[2].firstName").value("Bart"))
-				.andExpect(jsonPath("$[3].firstName").value("Moe"))
-				.andExpect(jsonPath("$[4].firstName").value("Ned"))
-				.andExpect(jsonPath("$[5]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3].firstName").value("Moe"))
+			.andExpect(jsonPath("$[4].firstName").value("Ned"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
 	}
 
 	@Test
 	public void findsByListOfNotAllowedDateValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/not-in//customers-ps?registrationDateNotIn=2014-03-30,2014-03-31")
+		mockMvc.perform(get("/not-in//customers-param-separator?registrationDateNotIn=2014-03-30,2014-03-31")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Marge"))
-				.andExpect(jsonPath("$[2].firstName").value("Bart"))
-				.andExpect(jsonPath("$[3].firstName").value("Moe"))
-				.andExpect(jsonPath("$[4].firstName").value("Ned"))
-				.andExpect(jsonPath("$[5]").doesNotExist());
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3].firstName").value("Moe"))
+			.andExpect(jsonPath("$[4].firstName").value("Ned"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
 	}
 
 	@Test
@@ -208,24 +208,24 @@ public class NotInE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/not-in/customers")
 				.param("genderNotIn", "MALE")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Lisa')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Maggie')]").exists())
-				.andExpect(jsonPath("$[4]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+			.andExpect(jsonPath("$.[?(@.firstName=='Lisa')]").exists())
+			.andExpect(jsonPath("$.[?(@.firstName=='Maggie')]").exists())
+			.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 
 	@Test
 	public void findsByListOfNotAllowedEnumValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/not-in/customers-ps?genderNotIn=MALE")
+		mockMvc.perform(get("/not-in/customers-param-separator?genderNotIn=MALE")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Lisa')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Maggie')]").exists())
-				.andExpect(jsonPath("$[4]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+			.andExpect(jsonPath("$.[?(@.firstName=='Lisa')]").exists())
+			.andExpect(jsonPath("$.[?(@.firstName=='Maggie')]").exists())
+			.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 
 	@Test
@@ -233,14 +233,14 @@ public class NotInE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/not-in//customers")
 				.param("idNotIn", homerSimpson.getId().toString(), "abc")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Marge"))
-				.andExpect(jsonPath("$[1].firstName").value("Bart"))
-				.andExpect(jsonPath("$[2].firstName").value("Lisa"))
-				.andExpect(jsonPath("$[3].firstName").value("Maggie"))
-				.andExpect(jsonPath("$[4].firstName").value("Moe"))
-				.andExpect(jsonPath("$[5].firstName").value("Ned"))
-				.andExpect(jsonPath("$[6]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Marge"))
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[2].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[3].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[4].firstName").value("Moe"))
+			.andExpect(jsonPath("$[5].firstName").value("Ned"))
+			.andExpect(jsonPath("$[6]").doesNotExist());
 	}
 }

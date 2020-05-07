@@ -1,12 +1,12 @@
 /**
  * Copyright 2014-2019 the original author or authors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
@@ -36,8 +37,14 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 /**
  * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
 class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
+
+	@Override
+	public boolean supportsParameter(MethodParameter param) {
+		return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Spec.class);
+	}
 
     @Override
     public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
@@ -146,39 +153,66 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
 
+		DelimitationPattern pattern = DelimitationPattern.of(specDef.paramSeparator());
+
 		if (specDef.params().length != 0) {
-			String paramsSeparator = specDef.paramSeparator();
-		    for (String webParamName : specDef.params()) {
-		        String[] httpParamValues = context.getParameterValues(webParamName);
-			    if(paramsSeparator.isEmpty()) {
-				    addValuesToArgs(httpParamValues, args);
-			    } else {
-			    	for(String paramValue: httpParamValues) {
-			    		String[] separatedParamValues = paramValue.split(paramsSeparator);
-					    addValuesToArgs(separatedParamValues, args);
-				    }
-			    }
-		    }
+			for (String webParamName : specDef.params()) {
+				String[] httpParamValues = context.getParameterValues(webParamName);
+				addSeparatedValuesToArgs(httpParamValues, pattern, args);
+			}
 		} else {
-		    String[] httpParamValues = context.getParameterValues(specDef.path());
-		    addValuesToArgs(httpParamValues, args);
+			String[] httpParamValues = context.getParameterValues(specDef.path());
+			addSeparatedValuesToArgs(httpParamValues, pattern, args);
 		}
+
 		return args;
 	}
 
-    private void addValuesToArgs(String[] paramValues, Collection<String> args) {
-        if (paramValues != null) {
-            for (String paramValue : paramValues) {
-                if (!StringUtils.isEmpty(paramValue)) {
-                    args.add(paramValue);
-                }
-            }
-        }
-    }
+	private void addSeparatedValuesToArgs(String[] httpParamValues, DelimitationPattern delimitationPattern, Collection<String> args) {
+		if (delimitationPattern.isEmpty()) {
+			addValuesToArgs(httpParamValues, args);
+		} else {
+			for (String paramValue : httpParamValues) {
+				String[] separatedParamValues = paramValue.split(delimitationPattern.get());
+				addValuesToArgs(separatedParamValues, args);
+			}
+		}
+	}
 
-    @Override
-    public boolean supportsParameter(MethodParameter param) {
-        return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Spec.class);
-    }
+	private void addValuesToArgs(String[] paramValues, Collection<String> args) {
+		if (paramValues != null) {
+			for (String paramValue : paramValues) {
+				if (!StringUtils.isEmpty(paramValue)) {
+					args.add(paramValue);
+				}
+			}
+		}
+	}
 
+	private static class DelimitationPattern {
+
+		public static final DelimitationPattern EMPTY = new DelimitationPattern("");
+
+		private final String pattern;
+
+		private DelimitationPattern(String pattern) {
+			this.pattern = pattern;
+		}
+
+		public static DelimitationPattern of(char paramSeparator) {
+			if (paramSeparator == Character.MIN_VALUE) {
+				return DelimitationPattern.EMPTY;
+			}
+
+			return new DelimitationPattern(Pattern.quote(String.valueOf(paramSeparator)));
+		}
+
+		public String get() {
+			return pattern;
+		}
+
+		public boolean isEmpty() {
+			return pattern.isEmpty();
+		}
+	}
 }

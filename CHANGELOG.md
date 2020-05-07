@@ -1,7 +1,8 @@
 UNRELEASED
 ======
 
-* Added support for passing multiple separated values with one param. Added `paramSeparator` to `@Spec` interface, which allows for specifying regex which is used to the delimitation of param value. For example controler method:
+* Added support for passing multiple values as a single HTTP parameter. The new `paramSeparator` attribute of `@Spec` can be used to define the separator (e.g. comma). For example the following controller method:
+
 ```java
 @RequestMapping(value = "/customers", params = "genderIn")
 @ResponseBody
@@ -10,7 +11,7 @@ public Object findCustomersByGender(
 	return customerRepo.findAll(spec);
 }
 ```
-handle request `GET http://myhost/customers?gender=MALE,FEMALE` in the same way what request `GET http://myhost/customers?gender=MALE?gender=FEMALE`
+will handle `GET http://myhost/customers?gender=MALE,FEMALE` in exactly the same way as `GET http://myhost/customers?gender=MALE&gender=FEMALE`
 
 v2.1.1
 ======
