@@ -192,7 +192,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void buildsTheSpecUsingWebParameterTheSameAsPathWithMultiValuesWithoutParamSeparator() throws Exception {
+    public void buildsTheSpecUsingMultiValueWebParameterTheSameAsPathWithoutParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod5"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
@@ -205,7 +205,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void buildsTheSpecUsingWebParameterTheSameAsPathWithMultiValuesWithParamSeparator() throws Exception {
+    public void buildsTheSpecUsingMultiValueWebParameterTheSameAsPathAndParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod6"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
@@ -218,7 +218,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void buildsTheSpecUsingMultiValueWebParametersWithoutParamSeparator() throws Exception {
+    public void buildsTheSpecUsingMultiValueWebParameterWithoutParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod7"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
@@ -231,7 +231,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void buildsTheSpecUsingMultiValueWebParametersAndParamSeparator() throws Exception {
+    public void buildsTheSpecUsingMultiValueWebParameterAndParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod8"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
