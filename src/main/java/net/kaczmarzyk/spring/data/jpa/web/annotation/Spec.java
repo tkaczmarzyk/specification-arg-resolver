@@ -22,8 +22,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import static java.lang.Character.MIN_VALUE;
-
 
 /**
  * @author Tomasz Kaczmarzyk
