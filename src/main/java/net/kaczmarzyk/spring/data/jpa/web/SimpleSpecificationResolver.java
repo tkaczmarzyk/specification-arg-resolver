@@ -153,30 +153,20 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
 
-		DelimitationPattern pattern = DelimitationPattern.of(specDef.paramSeparator());
+		DelimitationStrategy delimitationStrategy = DelimitationStrategy.of(specDef.paramSeparator());
 
 		if (specDef.params().length != 0) {
 			for (String webParamName : specDef.params()) {
-				String[] httpParamValues = context.getParameterValues(webParamName);
-				addSeparatedValuesToArgs(httpParamValues, pattern, args);
+				String[] httpParamValues = delimitationStrategy.extractSingularValues(context.getParameterValues(webParamName));
+				addValuesToArgs(httpParamValues, args);
 			}
 		} else {
-			String[] httpParamValues = context.getParameterValues(specDef.path());
-			addSeparatedValuesToArgs(httpParamValues, pattern, args);
+			String[] httpParamValues = delimitationStrategy.extractSingularValues(context.getParameterValues(specDef.path()));
+			addValuesToArgs(httpParamValues, args);
+
 		}
 
 		return args;
-	}
-
-	private void addSeparatedValuesToArgs(String[] httpParamValues, DelimitationPattern delimitationPattern, Collection<String> args) {
-		if (delimitationPattern.isEmpty()) {
-			addValuesToArgs(httpParamValues, args);
-		} else {
-			for (String paramValue : httpParamValues) {
-				String[] separatedParamValues = paramValue.split(delimitationPattern.get());
-				addValuesToArgs(separatedParamValues, args);
-			}
-		}
 	}
 
 	private void addValuesToArgs(String[] paramValues, Collection<String> args) {
@@ -189,23 +179,39 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 		}
 	}
 
-	private static class DelimitationPattern {
+	private static class DelimitationStrategy {
 
-		public static final DelimitationPattern EMPTY = new DelimitationPattern("");
+		public static final DelimitationStrategy NONE = new DelimitationStrategy("");
 
 		private final String pattern;
 
-		private DelimitationPattern(String pattern) {
+		private DelimitationStrategy(String pattern) {
 			this.pattern = pattern;
 		}
 
-		public static DelimitationPattern of(char paramSeparator) {
+		public static DelimitationStrategy of(char paramSeparator) {
 			// 0 is a blank value of param separator
 			if (paramSeparator == 0) {
-				return DelimitationPattern.EMPTY;
+				return DelimitationStrategy.NONE;
 			}
 
-			return new DelimitationPattern(Pattern.quote(String.valueOf(paramSeparator)));
+			return new DelimitationStrategy(Pattern.quote(String.valueOf(paramSeparator)));
+		}
+
+		public String[] extractSingularValues(String[] args) {
+			if(isEmpty()) {
+				return args;
+			}
+
+			ArrayList<String> listOfSingularValues = new ArrayList<>();
+
+			for(String arg: args) {
+				listOfSingularValues.addAll(Arrays.asList(arg.split(get())));
+			}
+
+			String[] singularValues = new String[listOfSingularValues.size()];
+
+			return listOfSingularValues.toArray(singularValues);
 		}
 
 		public String get() {

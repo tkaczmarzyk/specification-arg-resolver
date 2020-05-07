@@ -91,9 +91,9 @@ Simple specifications
 
 Use `@Spec` annotation to automatically resolve a `Specification` argument of your controller method. `@Spec` has `path` property that should be used to specify property path of the attribute of an entity, e.g. `address.city`. By default it's also the name of the expected HTTP parameter, e.g. `GET http://myhost?address.city=Springfield`.
 
-Use `spec` attribute of the annotation to specify one of the following strategies for filtering.
+Use `spec` attribute of the annotation to specify one of the filtering strategies listed in the subsections below (e.g. Like, Equal, In)
 
-For multi value filters like: `In.class`, `NotIn.class` there are two ways of passing args. The first way is passing the same param multiple times as single value param. For example: 
+For multi value filters like: `In.class`, `NotIn.class` there are two ways of passing multiple arguments. The first way is passing the same HTTP parameter multiple times as follows: 
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 

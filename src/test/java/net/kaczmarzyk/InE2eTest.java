@@ -57,7 +57,7 @@ public class InE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/customers-missing-parameter-name")
+		@RequestMapping(value = "/customers-with-missing-parameter-name")
 		@ResponseBody
 		public Object findCustomersByFirstNameUsingWebParameterNameTheSameAsPath(
 				@Spec(path = "firstName", spec = In.class) Specification<Customer> spec) {
@@ -100,7 +100,7 @@ public class InE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/customers-param-separator", params = "registrationDateIn")
 		@ResponseBody
 		public Object findCustomersByRegistrationDateUsingParamSeparator(
-				@Spec(path = "registrationDate", params = "registrationDateIn", paramSeparator = '/', spec = In.class) Specification<Customer> spec) {
+				@Spec(path = "registrationDate", params = "registrationDateIn", paramSeparator = '.', spec = In.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
 
@@ -166,11 +166,11 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
-			.andExpect(jsonPath("$[2]").doesNotExist());
+			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
 	@Test
-	public void findsByListOfAllowedStringValuesUsingWebParameterNameTheSameAsPathNameAndParamSeparator() throws Exception {
+	public void findsByListOfAllowedStringValuesUsingParamSeparatorAndWebParameterNameTheSameAsPathName() throws Exception {
 		mockMvc.perform(get("/customers-param-separator-missing-parameter-name?firstName=Homer&firstName=Moe,Bart&firstName=Lisa,Maggie")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
@@ -197,7 +197,8 @@ public class InE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfAllowedLongValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/customers-param-separator?idIn=" + homerSimpson.getId().toString() + ";" + moeSzyslak.getId().toString())
+		mockMvc.perform(get("/customers-param-separator")
+				.param("idIn",homerSimpson.getId().toString() + ";" + moeSzyslak.getId().toString())
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
@@ -220,7 +221,7 @@ public class InE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByListOfAllowedDateValuesUsingParamSeparator() throws Exception {
-		mockMvc.perform(get("/customers-param-separator?registrationDateIn=2014-03-30/2014-03-31")
+		mockMvc.perform(get("/customers-param-separator?registrationDateIn=2014-03-30.2014-03-31")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
