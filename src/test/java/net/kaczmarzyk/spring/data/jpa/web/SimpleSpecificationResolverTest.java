@@ -20,15 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import net.kaczmarzyk.spring.data.jpa.domain.*;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.EqualEnum;
-import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
@@ -193,7 +190,59 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
     }
-    
+
+    @Test
+    public void buildsTheSpecUsingMultiValueWebParameterTheSameAsPathWithoutParamSeparator() throws Exception {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod5"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
+
+        when(req.getParameterValues("thePath")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
+
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+
+        assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"}, converter));
+    }
+
+    @Test
+    public void buildsTheSpecUsingMultiValueWebParameterTheSameAsPathAndParamSeparator() throws Exception {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod6"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
+
+        when(req.getParameterValues("thePath")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
+
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+
+        assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2", "val3", "val4", "val5", "val6", "val7" }, converter));
+    }
+
+    @Test
+    public void buildsTheSpecUsingMultiValueWebParameterWithoutParamSeparator() throws Exception {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod7"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
+
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+
+        assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2,val3,val4", "val5,val6", "val7" }, converter));
+    }
+
+    @Test
+    public void buildsTheSpecUsingMultiValueWebParameterAndParamSeparator() throws Exception {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod8"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
+
+        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+
+        assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2", "val3", "val4", "val5", "val6", "val7" }, converter));
+    }
+
     public static class TestController {
 
         public void testMethod1(@Spec(path = "thePath", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
@@ -208,7 +257,24 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         public void testMethod4(
                 @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = EqualEnum.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
-        
+
+        public void testMethod5(
+                @Spec(path = "thePath", spec = In.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethod6(
+                @Spec(path = "thePath", paramSeparator = ',', spec = In.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethod7(
+                @Spec(path = "thePath", params = "theParameter", spec = In.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethod8(
+                @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = In.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
         

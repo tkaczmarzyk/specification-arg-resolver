@@ -32,7 +32,12 @@ import org.springframework.data.jpa.domain.Specification;
 public @interface Spec {
 
     String[] params() default {};
-    
+
+    /**
+     * Character used to param delimitation. Param delimitation is skipped when separator has a 0 value.
+     */
+    char paramSeparator() default 0;
+
     String[] pathVars() default {};
     
     String[] config() default {};

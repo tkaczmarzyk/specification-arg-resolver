@@ -37,43 +37,90 @@ public class InE2eTest extends E2eTestBase {
 
 	@Controller
 	public static class InSpecController {
-		
+
 		@Autowired
 		CustomerRepository customerRepo;
-		
+
 		@RequestMapping(value = "/customers", params = "firstNameIn")
 		@ResponseBody
 		public Object findCustomersByFirstName(
-				@Spec(path="firstName", params = "firstNameIn", spec=In.class) Specification<Customer> spec) {
-			
+				@Spec(path = "firstName", params = "firstNameIn", spec = In.class) Specification<Customer> spec) {
+
 			return customerRepo.findAll(spec);
 		}
-		
+
+		@RequestMapping(value = "/customers-param-separator", params = "firstNameIn")
+		@ResponseBody
+		public Object findCustomersByFirstNameUsingParamSeparator(
+				@Spec(path = "firstName", params = "firstNameIn", paramSeparator = ',', spec = In.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers-with-missing-parameter-name")
+		@ResponseBody
+		public Object findCustomersByFirstNameUsingWebParameterNameTheSameAsPath(
+				@Spec(path = "firstName", spec = In.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers-param-separator-missing-parameter-name")
+		@ResponseBody
+		public Object findCustomersByFirstNameUsingWebParameterNameTheSameAsPathAndParamSeparator(
+				@Spec(path = "firstName", paramSeparator = ',', spec = In.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
 		@RequestMapping(value = "/customers", params = "idIn")
 		@ResponseBody
 		public Object findCustomersById(
-				@Spec(path="id", params ="idIn", spec=In.class) Specification<Customer> spec) {
-			
+				@Spec(path = "id", params = "idIn", spec = In.class) Specification<Customer> spec) {
+
 			return customerRepo.findAll(spec);
 		}
-		
+
+		@RequestMapping(value = "/customers-param-separator", params = "idIn")
+		@ResponseBody
+		public Object findCustomersByIdUsingParamSeparator(
+				@Spec(path = "id", params = "idIn", paramSeparator = ';', spec = In.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
 		@RequestMapping(value = "/customers", params = "registrationDateIn")
 		@ResponseBody
 		public Object findCustomersByRegistrationDate(
-				@Spec(path="registrationDate", params = "registrationDateIn", spec=In.class) Specification<Customer> spec) {
-			
+				@Spec(path = "registrationDate", params = "registrationDateIn", spec = In.class) Specification<Customer> spec) {
+
 			return customerRepo.findAll(spec);
 		}
-		
+
+		@RequestMapping(value = "/customers-param-separator", params = "registrationDateIn")
+		@ResponseBody
+		public Object findCustomersByRegistrationDateUsingParamSeparator(
+				@Spec(path = "registrationDate", params = "registrationDateIn", paramSeparator = '.', spec = In.class) Specification<Customer> spec) {
+			return customerRepo.findAll(spec);
+		}
+
 		@RequestMapping(value = "/customers", params = "genderIn")
 		@ResponseBody
 		public Object findCustomersByGender(
-				@Spec(path="gender", params="genderIn", spec=In.class) Specification<Customer> spec) {
-			
+				@Spec(path = "gender", params = "genderIn", spec = In.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers-param-separator", params = "genderIn")
+		@ResponseBody
+		public Object findCustomersByGenderUsingParamSeparator(
+				@Spec(path = "gender", params = "genderIn", paramSeparator = '|', spec = In.class) Specification<Customer> spec) {
+
 			return customerRepo.findAll(spec);
 		}
 	}
-	
+
 	@Test
 	public void findsByListOfAllowedStringValues() throws Exception {
 		mockMvc.perform(get("/customers")
@@ -84,6 +131,56 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1].firstName").value("Marge"))
 			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void findsByListOfAllowedStringValuesUsingParamSeparator() throws Exception {
+		mockMvc.perform(get("/customers-param-separator?firstNameIn=Homer&firstNameIn=Moe,Bart&firstNameIn=Lisa,Maggie")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[2].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[3].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[4].firstName").value("Moe"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
+	}
+
+	@Test
+	public void findsByListOfAllowedStringValuesUsingWebParameterNameTheSameAsPathName() throws Exception {
+		mockMvc.perform(get("/customers-with-missing-parameter-name")
+				.param("firstName", "Homer", "Marge")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void findsByListOfAllowedStringValuesUsingWebParameterNameTheSameAsPathNameWithoutUsingParamSeparator() throws Exception {
+		mockMvc.perform(get("/customers-with-missing-parameter-name?firstName=Homer&firstName=Moe,Bart&firstName=Lisa,Maggie")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByListOfAllowedStringValuesUsingParamSeparatorAndWebParameterNameTheSameAsPathName() throws Exception {
+		mockMvc.perform(get("/customers-param-separator-missing-parameter-name?firstName=Homer&firstName=Moe,Bart&firstName=Lisa,Maggie")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[2].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[3].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[4].firstName").value("Moe"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
 	}
 
 	@Test
@@ -99,9 +196,32 @@ public class InE2eTest extends E2eTestBase {
 	}
 
 	@Test
+	public void findsByListOfAllowedLongValuesUsingParamSeparator() throws Exception {
+		mockMvc.perform(get("/customers-param-separator")
+				.param("idIn",homerSimpson.getId().toString() + ";" + moeSzyslak.getId().toString())
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
 	public void findsByListOfAllowedDateValues() throws Exception {
 		mockMvc.perform(get("/customers")
 				.param("registrationDateIn", "2014-03-30", "2014-03-31")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[1].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void findsByListOfAllowedDateValuesUsingParamSeparator() throws Exception {
+		mockMvc.perform(get("/customers-param-separator?registrationDateIn=2014-03-30.2014-03-31")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
@@ -126,15 +246,32 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[6].firstName").value("Ned"))
 			.andExpect(jsonPath("$[7]").doesNotExist());
 	}
-	
+
+	@Test
+	public void findsByListOfAllowedEnumValuesUsingParamSeparator()  throws Exception {
+		mockMvc.perform(get("/customers-param-separator?genderIn=MALE|FEMALE")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[4].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[5].firstName").value("Moe"))
+			.andExpect(jsonPath("$[6].firstName").value("Ned"))
+			.andExpect(jsonPath("$[7]").doesNotExist());
+	}
+
 	@Test
 	public void ignoresUnparseableIntsWhenFilteringOnIntProperty() throws Exception {
-	    mockMvc.perform(get("/customers")
-                .param("idIn", homerSimpson.getId().toString(), "abc")
-                .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$[0].firstName").value("Homer"))
-            .andExpect(jsonPath("$[1]").doesNotExist());
+		mockMvc.perform(get("/customers")
+				.param("idIn", homerSimpson.getId().toString(), "abc")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
+
 }

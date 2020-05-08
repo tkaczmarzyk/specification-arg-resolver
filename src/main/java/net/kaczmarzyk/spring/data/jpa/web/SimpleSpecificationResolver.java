@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
@@ -36,8 +37,14 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 /**
  * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
 class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
+
+	@Override
+	public boolean supportsParameter(MethodParameter param) {
+		return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Spec.class);
+	}
 
     @Override
     public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
@@ -45,7 +52,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
         Spec def = param.getParameterAnnotation(Spec.class);
         WebRequestProcessingContext context = new WebRequestProcessingContext(param, req);
-        
+
         return buildSpecification(context, def);
     }
 
@@ -82,7 +89,7 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 		QueryContext queryCtx = context.queryContext();
 		Converter converter = resolveConverter(def);
-		
+
 		Specification<Object> spec;
 		if (def.config().length == 0) {
 			try {
@@ -145,32 +152,74 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
-		
+
+		DelimitationStrategy delimitationStrategy = DelimitationStrategy.of(specDef.paramSeparator());
+
 		if (specDef.params().length != 0) {
-		    for (String webParamName : specDef.params()) {
-		        String[] httpParamValues = context.getParameterValues(webParamName);
-		        addValuesToArgs(httpParamValues, args);
-		    }
+			for (String webParamName : specDef.params()) {
+				String[] httpParamValues = delimitationStrategy.extractSingularValues(context.getParameterValues(webParamName));
+				addValuesToArgs(httpParamValues, args);
+			}
 		} else {
-		    String[] httpParamValues = context.getParameterValues(specDef.path());
-		    addValuesToArgs(httpParamValues, args);
+			String[] httpParamValues = delimitationStrategy.extractSingularValues(context.getParameterValues(specDef.path()));
+			addValuesToArgs(httpParamValues, args);
+
 		}
+
 		return args;
 	}
 
-    private void addValuesToArgs(String[] paramValues, Collection<String> args) {
-        if (paramValues != null) {
-            for (String paramValue : paramValues) {
-                if (!StringUtils.isEmpty(paramValue)) {
-                    args.add(paramValue);
-                }
-            }
-        }
-    }
+	private void addValuesToArgs(String[] paramValues, Collection<String> args) {
+		if (paramValues != null) {
+			for (String paramValue : paramValues) {
+				if (!StringUtils.isEmpty(paramValue)) {
+					args.add(paramValue);
+				}
+			}
+		}
+	}
 
-    @Override
-    public boolean supportsParameter(MethodParameter param) {
-        return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Spec.class);
-    }
+	private static class DelimitationStrategy {
 
+		public static final DelimitationStrategy NONE = new DelimitationStrategy("");
+
+		private final String pattern;
+
+		private DelimitationStrategy(String pattern) {
+			this.pattern = pattern;
+		}
+
+		public static DelimitationStrategy of(char paramSeparator) {
+			// 0 is a blank value of param separator
+			if (paramSeparator == 0) {
+				return DelimitationStrategy.NONE;
+			}
+
+			return new DelimitationStrategy(Pattern.quote(String.valueOf(paramSeparator)));
+		}
+
+		public String[] extractSingularValues(String[] args) {
+			if(isEmpty()) {
+				return args;
+			}
+
+			ArrayList<String> listOfSingularValues = new ArrayList<>();
+
+			for(String arg: args) {
+				listOfSingularValues.addAll(Arrays.asList(arg.split(get())));
+			}
+
+			String[] singularValues = new String[listOfSingularValues.size()];
+
+			return listOfSingularValues.toArray(singularValues);
+		}
+
+		public String get() {
+			return pattern;
+		}
+
+		public boolean isEmpty() {
+			return pattern.isEmpty();
+		}
+	}
 }
