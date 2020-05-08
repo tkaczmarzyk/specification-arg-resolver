@@ -1,4 +1,4 @@
-UNRELEASED
+v2.2.0
 ======
 
 * Added support for passing multiple values as a single HTTP parameter. The new `paramSeparator` attribute of `@Spec` can be used to define the separator (e.g. comma). For example the following controller method:
