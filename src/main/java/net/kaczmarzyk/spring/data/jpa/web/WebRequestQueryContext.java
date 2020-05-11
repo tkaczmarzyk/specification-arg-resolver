@@ -16,11 +16,15 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.util.HashMap;
-import java.util.function.Supplier;
+import java.util.Map;
+import java.util.function.Function;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
+import javax.persistence.criteria.Root;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -30,6 +34,7 @@ public class WebRequestQueryContext implements QueryContext {
 	private static final String ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY";
 	
 	private HashMap<String, Object> contextMap;
+	private Map<Pair<String, Root>, Object> rootCache = new HashMap<>();
 
 	public WebRequestQueryContext(NativeWebRequest request) {
 		this.contextMap = (HashMap<String, Object>) request.getAttribute(ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
@@ -40,19 +45,23 @@ public class WebRequestQueryContext implements QueryContext {
 	}
 	
 	@Override
-	public Object getEvaluated(String key) {
+	public Object getEvaluated(String key, Root<?> root) {
 		Object value = contextMap.get(key);
-		if (value instanceof Supplier) {
-			Object evaluated = ((Supplier) value).get();
-			contextMap.put(key, evaluated);
-			return evaluated;
+		if (value instanceof Function) {
+			Pair<String, Root> rootKey = Pair.of(key, root);
+
+			if (!rootCache.containsKey(rootKey)) {
+				Object evaluated = ((Function) value).apply(root);
+				rootCache.put(rootKey, evaluated);
+			}
+			return rootCache.get(rootKey);
 		} else {
 			return value;
 		}
 	}
 
 	@Override
-	public void putLazyVal(String key, Supplier<Object> value) {
+	public void putLazyVal(String key, Function<Root<?>, Object> value) {
 		contextMap.put(key, value);
 	}
 

@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import javax.persistence.criteria.Root;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -24,7 +26,7 @@ import java.util.function.Supplier;
  */
 public interface QueryContext {
 
-	Object getEvaluated(String key);
+	Object getEvaluated(String key, Root<?> root);
 	
-	void putLazyVal(String key, Supplier<Object> value);
+	void putLazyVal(String key, Function<Root<?>, Object> value);
 }

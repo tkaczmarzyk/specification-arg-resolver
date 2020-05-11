@@ -51,7 +51,7 @@ public class Join<T> implements Specification<T>, Fake {
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		query.distinct(distinctQuery);
-		queryContext.putLazyVal(alias, () -> root.join(pathToJoinOn, joinType));
+		queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
 		return null;
 	}
 
