@@ -48,7 +48,7 @@ public class JoinFetch<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-	    query.distinct(true);
+        query.distinct(true);
         if (!Number.class.isAssignableFrom(query.getResultType())) { // do not join in count queries
             for (String path : pathsToFetch){
                 root.fetch(path, joinType);
