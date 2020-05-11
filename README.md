@@ -394,6 +394,7 @@ public Object findByCityFetchOrdersAndAddresses(
 }
 ```
 
+As with `@Join`, the use of `@JoinFetch` makes the query distinct by default.
 The default join type is `LEFT`. You can use `joinType` attribute of the annotation to specify different value. You can specify multiple different joins with container annotation `@Joins`, for example:
 
 ```java
