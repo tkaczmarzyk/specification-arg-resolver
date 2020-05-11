@@ -1,3 +1,8 @@
+v2.2.1 - not released yet
+======
+
+* Made `@JoinFetch` query distinct by default to keep the behavior in line with `@Join`.
+
 v2.2.0
 ======
 
