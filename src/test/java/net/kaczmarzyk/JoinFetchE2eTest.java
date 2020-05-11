@@ -82,13 +82,13 @@ public class JoinFetchE2eTest extends E2eTestBase {
 				.param("size", "1")
 				.param("sort", "id")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content").isArray())
-				.andExpect(jsonPath("$.content", hasSize(1)))
-				.andExpect(jsonPath("$.content[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$.totalPages").value(5))
-				.andExpect(jsonPath("$.totalElements").value(5))
-				.andExpect(jsonPath("$.size").value(1));
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content").isArray())
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$.totalPages").value(5))
+			.andExpect(jsonPath("$.totalElements").value(5))
+			.andExpect(jsonPath("$.size").value(1));
 	}
 
 }
