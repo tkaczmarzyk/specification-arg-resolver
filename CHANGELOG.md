@@ -1,4 +1,4 @@
-v2.2.1 - not released yet
+v2.2.1
 ======
 
 * `WebRequestQueryContext` has been improved to use an actual root query instance during path evaluation, rather than the one being cached before. **This should fix problems with count queries**
