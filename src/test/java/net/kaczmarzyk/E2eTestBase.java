@@ -15,22 +15,21 @@
  */
 package net.kaczmarzyk;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static net.kaczmarzyk.spring.data.jpa.Gender.FEMALE;
-import static net.kaczmarzyk.spring.data.jpa.Gender.MALE;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.utils.TestLogAppender;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.utils.TestLogAppender;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static net.kaczmarzyk.spring.data.jpa.Gender.FEMALE;
+import static net.kaczmarzyk.spring.data.jpa.Gender.MALE;
 
 
 public abstract class E2eTestBase extends IntegrationTestBase {
