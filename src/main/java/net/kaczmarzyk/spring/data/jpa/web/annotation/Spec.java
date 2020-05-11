@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,12 @@ import org.springframework.data.jpa.domain.Specification;
 public @interface Spec {
 
     String[] params() default {};
-    
+
+    /**
+     * Character used to param delimitation. Param delimitation is skipped when separator has a 0 value.
+     */
+    char paramSeparator() default 0;
+
     String[] pathVars() default {};
     
     String[] config() default {};
