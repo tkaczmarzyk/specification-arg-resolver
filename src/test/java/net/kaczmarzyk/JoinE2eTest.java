@@ -15,12 +15,14 @@
  */
 package net.kaczmarzyk;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -62,7 +64,7 @@ public class JoinE2eTest extends E2eTestBase {
 					@Spec(path = "o.itemName", params = "order", spec = LikeIgnoreCase.class)
 				}) Specification<Customer> spec) {
 			
-			return customerRepo.findAll(spec, new Sort("id"));
+			return customerRepo.findAll(spec, Sort.by("id"));
 		}
 		
 		@RequestMapping(value = "/join/customers", params = { "order1", "order2" })
@@ -75,18 +77,18 @@ public class JoinE2eTest extends E2eTestBase {
 					@Spec(path = "o.itemName", params = "order2", spec = Equal.class)
 				}) Specification<Customer> spec) {
 			
-			return customerRepo.findAll(spec, new Sort("id"));
+			return customerRepo.findAll(spec, Sort.by("id"));
 		}
 		
 		@Join(path = "orders", alias = "o")
 		@Spec(path = "o.itemName", params = "orderIn", spec = In.class)
-		public static interface OrderInSpecification extends Specification<Customer> {
+		public interface OrderInSpecification extends Specification<Customer> {
 		}
 		
 		@RequestMapping(value = "/join/customers", params = { "orderIn" })
 		@ResponseBody
 		public Object findByOrderIn(OrderInSpecification spec) {
-			return customerRepo.findAll(spec, new Sort("id"));
+			return customerRepo.findAll(spec, Sort.by("id"));
 		}
 		
 		@RequestMapping(value = "/multi-join/customers", params = { "order", "badge" })
@@ -102,7 +104,21 @@ public class JoinE2eTest extends E2eTestBase {
 					@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
 				}) Specification<Customer> spec) {
 			
-			return customerRepo.findAll(spec, new Sort("id"));
+			return customerRepo.findAll(spec, Sort.by("id"));
+		}
+
+		@RequestMapping(value = "/join-pageable/customers")
+		@ResponseBody
+		public Object findByNameAndOrdersWithPagination(
+
+				@Join(path = "orders", alias = "o")
+				@And({
+						@Spec(path = "firstName", spec = Equal.class),
+						@Spec(path = "o.itemName", params = "order", spec = LikeIgnoreCase.class)
+				}) Specification<Customer> spec,
+				Pageable pageable) {
+
+			return customerRepo.findAll(spec, pageable);
 		}
 	}
 	
@@ -165,6 +181,23 @@ public class JoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1].firstName").value("Moe"))
 			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void findsByOrdersWithPagination() throws Exception {
+		mockMvc.perform(get("/join-pageable/customers")
+				.param("order", "Duff Beer")
+				.param("page", "0")
+				.param("size", "1")
+				.param("sort", "id")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content").isArray())
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$.totalPages").value(2))
+			.andExpect(jsonPath("$.totalElements").value(2))
+			.andExpect(jsonPath("$.size").value(1));
 	}
 	
 }
