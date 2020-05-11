@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class JoinFetch<T> implements Specification<T> {
 	private static final long serialVersionUID = 1L;
 	
 	private List<String> pathsToFetch;
-    private JoinType joinType;
+    	private JoinType joinType;
 
     
     public JoinFetch(String[] pathsToFetch, JoinType joinType) {
@@ -48,6 +48,7 @@ public class JoinFetch<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        query.distinct(true);
         if (!Number.class.isAssignableFrom(query.getResultType())) { // do not join in count queries
             for (String path : pathsToFetch){
                 root.fetch(path, joinType);

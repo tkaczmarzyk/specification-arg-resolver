@@ -91,7 +91,23 @@ Simple specifications
 
 Use `@Spec` annotation to automatically resolve a `Specification` argument of your controller method. `@Spec` has `path` property that should be used to specify property path of the attribute of an entity, e.g. `address.city`. By default it's also the name of the expected HTTP parameter, e.g. `GET http://myhost?address.city=Springfield`.
 
-Use `spec` attribute of the annotation to specify one of the following strategies for filtering.
+Use `spec` attribute of the annotation to specify one of the filtering strategies listed in the subsections below (e.g. Like, Equal, In)
+
+For multi value filters like: `In.class`, `NotIn.class` there are two ways of passing multiple arguments. The first way is passing the same HTTP parameter multiple times as follows: 
+
+    GET http://myhost/customers?gender=MALE&gender=FEMALE
+
+The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator.
+For example the following controller method:
+```java
+@RequestMapping(value = "/customers", params = "genderIn")
+@ResponseBody
+public Object findCustomersByGender(
+	@Spec(path = "gender", params = "genderIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec);
+}
+```
+will handle `GET http://myhost/customers?gender=MALE,FEMALE` in exactly the same way as `GET http://myhost/customers?gender=MALE&gender=FEMALE` (as one parameter with two values `["MALE","GENDER"]`). Without specifying `paramSeparator` param `gender=MALE,FEMALE` will be processed as single value: `["MALE,FEMALE"]`.
 
 ### Like ###
 
@@ -133,15 +149,19 @@ A negation for this specification is also available: `NotEqualIgnoreCase`.
 
 Compares an attribute of an entity with multiple values of a HTTP parameter. E.g. `(..) where gender in (MALE, FEMALE)`.
 
-HTTP request example:
-
-    GET http://myhost/customers?gender=MALE&gender=FEMALE
-
 Supports multiple data types: numbers, booleans, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=In.class)`.
 
-The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
+HTTP request example:
+
+    GET http://myhost/customers?gender=MALE&gender=FEMALE
+
+or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=',', spec=In.class)`):
+
+    GET http://myhost/customers?gender=MALE,FEMALE
+
+The default date format used for temporal fields is `yyyy-MM-dd`. It can be overridden with a configuration parameter (see `LessThan` below).
 
 A negation for this specification is also available: `NotIn`.
 
@@ -374,6 +394,7 @@ public Object findByCityFetchOrdersAndAddresses(
 }
 ```
 
+As with `@Join`, the use of `@JoinFetch` makes the query distinct by default.
 The default join type is `LEFT`. You can use `joinType` attribute of the annotation to specify different value. You can specify multiple different joins with container annotation `@Joins`, for example:
 
 ```java
@@ -582,7 +603,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.1.1</version>
+    <version>2.2.0</version>
 </dependency>
 ```
 
