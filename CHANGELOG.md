@@ -1,7 +1,7 @@
 v2.2.1 - not released yet
 ======
 
-* `WebRequestQueryContext` has been improved to use an actual root query instance during path evaluation, rather than the one being cached before.
+* `WebRequestQueryContext` has been improved to use an actual root query instance during path evaluation, rather than the one being cached before. **This should fix problems with count queries**
 * Made `@JoinFetch` query distinct by default to keep the behavior in line with `@Join`.
 
 v2.2.0
