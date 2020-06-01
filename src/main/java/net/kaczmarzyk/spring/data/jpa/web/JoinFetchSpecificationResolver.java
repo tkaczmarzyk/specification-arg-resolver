@@ -15,78 +15,25 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static net.kaczmarzyk.spring.data.jpa.web.MethodParameterUtil.getAnnotation;
-import static net.kaczmarzyk.spring.data.jpa.web.MethodParameterUtil.isAnnotatedWith;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
-
-import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.lang.annotation.Annotation;
+
 
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-class JoinFetchSpecificationResolver implements RecursiveHandlerMethodArgumentResolver {
+class JoinFetchSpecificationResolver implements SpecificationResolver<JoinFetch> {
 
-    private SpecificationArgumentResolver parentResolver;
-    
-    public JoinFetchSpecificationResolver(SpecificationArgumentResolver parent) {
-        this.parentResolver = parent;
-    }
-    
-    @Override
-    public boolean supportsParameter(MethodParameter param) {
-        Class<?> paramType = param.getParameterType();
-        return paramType.isInterface() && Specification.class.isAssignableFrom(paramType)
-        		&& isAnnotatedWith(JoinFetch.class, param);
-    }
-
-    @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return resolveArgument(parameter, mavContainer, webRequest, binderFactory, new ArrayList<HandlerMethodArgumentResolver>());
-    }
-    
-    @Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory,
-			List<HandlerMethodArgumentResolver> recursiveCallers) throws Exception {
-    	
-    	recursiveCallers.add(this);
-    	
-    	Specification<Object> fetchSpec = resolveFetchSpec(parameter);
-        @SuppressWarnings("unchecked")
-        Specification<Object> regularSpec = (Specification<Object>) parentResolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory, recursiveCallers);
-        
-        Specification<Object> spec = regularSpec == null ? fetchSpec : new Conjunction<Object>(Arrays.asList(fetchSpec, regularSpec));
-
-        if (Specification.class == parameter.getParameterType()) {
-            return spec;
-        } else {
-            return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), spec);
-        }
+	@Override
+	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
+		return JoinFetch.class;
 	}
 
-    private Specification<Object> resolveFetchSpec(MethodParameter parameter) {
-    	if (isAnnotatedWith(JoinFetch.class, parameter)) {
-    		JoinFetch fetchDef = getAnnotation(JoinFetch.class, parameter);
-    		return newJoinFetch(fetchDef);
-    	} else {
-    		throw new IllegalArgumentException("@JoinFetch expected!");
-    	}
-    }
-
-	private net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object> newJoinFetch(JoinFetch fetchDef) {
+	@Override
+	public Specification<Object> buildSpecification(WebRequestProcessingContext context, JoinFetch fetchDef) {
 		return new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(fetchDef.paths(), fetchDef.joinType());
 	}
-
 }

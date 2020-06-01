@@ -33,7 +33,6 @@ import javax.persistence.criteria.JoinType;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.TYPE })
-//@Repeatable(Joins.class)
 public @interface JoinFetch {
 
     String[] paths();

@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import javax.management.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -46,15 +45,16 @@ public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestB
     public void usesEmptyResultSpecWrapperWhenSpecified() throws Exception {
     	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithOnTypeMismatchConfig"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
-        
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
         assertThat(resolved)
         	.isInstanceOf(EmptyResultOnTypeMismatch.class);
-        
-        assertThat(((EmptyResultOnTypeMismatch<?>) resolved).getWrappedSpec()).isEqualTo(new Equal<>(queryCtx, "thePath", new String [] { "theValue" }, defaultConverter));
+
+        assertThat(((EmptyResultOnTypeMismatch<?>) resolved).getWrappedSpec()).isEqualTo(new Equal<>(ctx.queryContext(), "thePath", new String [] { "theValue" }, defaultConverter));
     }
 
 	@Test
@@ -63,28 +63,30 @@ public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestB
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
-        
-        assertThat(resolved)
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+		assertThat(resolved)
         	.isNotInstanceOf(EmptyResultOnTypeMismatch.class)
         	.isInstanceOf(SpecWithoutDataConversion.class);
 	}
-	
+
 	public static class SpecWithoutDataConversion implements Specification<Object>, WithoutTypeConversion {
-		
+
 		public SpecWithoutDataConversion(QueryContext queryCtx, String path, String[] args) {
 		}
-		
+
 		@Override
 		public Predicate toPredicate(Root<Object> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 			return null;
 		}
 	}
-	
+
     public static class TestController {
 
     	public void testMethodWithSpecWithoutDataConversion(@Spec(path = "thePath", spec = SpecWithoutDataConversion.class, onTypeMismatch = OnTypeMismatch.EMPTY_RESULT) Specification<Object> spec) {};
-    	
+
         public void testMethodWithOnTypeMismatchConfig(@Spec(path = "thePath", spec = Equal.class, onTypeMismatch=OnTypeMismatch.EMPTY_RESULT) Specification<Object> spec) {}
     }
 

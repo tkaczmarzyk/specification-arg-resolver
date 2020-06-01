@@ -35,6 +35,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
     SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+
 	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION);
 
     @Test
@@ -42,17 +43,21 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isNull();
     }
-    
+
     @Test
     public void resolvesZeroArgSpecificatinEvenWithoutAnyWebParameters() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithZeroArgSpec"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isInstanceOf(IsNull.class);
     }
@@ -62,7 +67,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isNull();
     }
@@ -73,7 +80,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isNull();
     }
@@ -84,7 +93,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isNull();
     }
@@ -114,22 +125,26 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", new String[] { "theValue" }));
     }
-    
+
     @Test
     public void buildsTheSpecUsingConstValue() throws Exception {
     	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithConst1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new WebRequestQueryContext(req);
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, converter));
     }
-    
+
     @Test
     public void ignoresHttpParamIfConstValueIsSpecified() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithConst1"), 0);
@@ -137,7 +152,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "constVal1" }, converter));
     }
@@ -149,7 +166,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", new String[] { "theValue" }));
     }
@@ -161,11 +180,13 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2" }));
     }
-    
+
     @Test
     public void skipsEmptyWebParameterValues() {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod3"), 0);
@@ -174,7 +195,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "value1", "" });
 
         Specification<Object> resolved = resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class));
-        
+
         assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "value1" }));
     }
 
@@ -186,7 +207,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
         when(req.getParameterValues("theParameter2")).thenReturn(new String[] { "theValue3", "theValue4" });
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
     }
@@ -199,7 +222,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         when(req.getParameterValues("thePath")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"}, converter));
     }
@@ -212,7 +237,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         when(req.getParameterValues("thePath")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2", "val3", "val4", "val5", "val6", "val7" }, converter));
     }
@@ -225,7 +252,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2,val3,val4", "val5,val6", "val7" }, converter));
     }
@@ -238,7 +267,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2", "val3", "val4", "val5", "val6", "val7" }, converter));
     }
@@ -277,7 +308,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
-        
+
         public void testMethodWithZeroArgSpec(@Spec(path = "thePath", spec = IsNull.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {}
     }
 

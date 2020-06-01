@@ -243,8 +243,9 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[3].firstName").value("Lisa"))
 			.andExpect(jsonPath("$[4].firstName").value("Maggie"))
 			.andExpect(jsonPath("$[5].firstName").value("Moe"))
-			.andExpect(jsonPath("$[6].firstName").value("Ned"))
-			.andExpect(jsonPath("$[7]").doesNotExist());
+			.andExpect(jsonPath("$[6].firstName").value("Minnie"))
+			.andExpect(jsonPath("$[7].firstName").value("Ned"))
+			.andExpect(jsonPath("$[8]").doesNotExist());
 	}
 
 	@Test
@@ -259,8 +260,9 @@ public class InE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[3].firstName").value("Lisa"))
 			.andExpect(jsonPath("$[4].firstName").value("Maggie"))
 			.andExpect(jsonPath("$[5].firstName").value("Moe"))
-			.andExpect(jsonPath("$[6].firstName").value("Ned"))
-			.andExpect(jsonPath("$[7]").doesNotExist());
+			.andExpect(jsonPath("$[6].firstName").value("Minnie"))
+			.andExpect(jsonPath("$[7].firstName").value("Ned"))
+			.andExpect(jsonPath("$[8]").doesNotExist());
 	}
 
 	@Test

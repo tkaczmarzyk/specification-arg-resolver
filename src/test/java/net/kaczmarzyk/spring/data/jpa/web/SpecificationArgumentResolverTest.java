@@ -51,11 +51,11 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved)
-            .isInstanceOf(Conjunction.class);
-        
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolved, "innerSpecs");
-        
+        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
+                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
+
         assertThat(innerSpecs)
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
@@ -92,10 +92,10 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved)
-            .isInstanceOf(Conjunction.class);
-        
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolved, "innerSpecs");
+        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
+                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
         
         assertThat(innerSpecs)
             .hasSize(2)
@@ -114,10 +114,11 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved)
-            .isInstanceOf(Conjunction.class);
-        
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolved, "innerSpecs");
+        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
+                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+
+        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
         
         assertThat(innerSpecs)
             .hasSize(2)
@@ -136,10 +137,10 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(resolved)
-            .isInstanceOf(Conjunction.class);
-        
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolved, "innerSpecs");
+        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
+                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
         
         assertThat(innerSpecs)
             .hasSize(2)

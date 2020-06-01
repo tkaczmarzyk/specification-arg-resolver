@@ -55,11 +55,16 @@ public class CustomerBuilder {
         return this;
     }
 
+	public CustomerBuilder occupation(String occupation) {
+		customer.setOccupation(occupation);
+		return this;
+	}
+
     public CustomerBuilder lastOrderTime(LocalDateTime lastOrderTime){
         customer.setLastOrderTime(lastOrderTime);
         return this;
     }
-    
+
     public CustomerBuilder registrationDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
@@ -77,12 +82,12 @@ public class CustomerBuilder {
 		customer.setWeight(weight);
 		return this;
 	}
-    
+
     public CustomerBuilder golden() {
     	customer.setGold(true);
 		return this;
 	}
-    
+
     public CustomerBuilder notGolden() {
     	customer.setGold(false);
 		return this;
@@ -94,14 +99,14 @@ public class CustomerBuilder {
         }
         return this;
     }
-    
+
     public CustomerBuilder badges(String... badgeTypes) {
 		for (String badgeType : badgeTypes) {
 			new Badge(customer, badgeType);
 		}
 		return this;
 	}
-    
+
     public Customer build(EntityManager em) {
         em.persist(customer);
         return customer;

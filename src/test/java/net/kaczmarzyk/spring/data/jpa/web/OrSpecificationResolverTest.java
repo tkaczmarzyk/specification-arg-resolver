@@ -41,26 +41,28 @@ public class OrSpecificationResolverTest extends ResolverTestBase {
     public void resolvesWrapperOfInnerSpecs() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
         when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
 
-        Specification<?> result = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        assertThat(result).isEqualTo(new Disjunction<>(new Like<>(queryCtx, "path1", "value1"),
-                new Like<>(queryCtx, "path2", "value2")));
+	    Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(Or.class));
+
+        assertThat(result).isEqualTo(new Disjunction<>(new Like<>(ctx.queryContext(), "path1", "value1"),
+                new Like<>(ctx.queryContext(), "path2", "value2")));
     }
 
     @Test
     public void skipsMissingInnerSpec() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
-        Specification<?> result = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        assertThat(result).isEqualTo(new Disjunction<>(new Like<>(queryCtx, "path1", "value1")));
+	    Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(Or.class));
+
+        assertThat(result).isEqualTo(new Disjunction<>(new Like<>(ctx.queryContext(), "path1", "value1")));
     }
 
     @Test
@@ -68,7 +70,9 @@ public class OrSpecificationResolverTest extends ResolverTestBase {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
-        Specification<?> result = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(Or.class));
 
         assertThat(result).isNull();
     }

@@ -15,61 +15,46 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
-import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-class ConjunctionSpecificationResolver implements HandlerMethodArgumentResolver {
+class ConjunctionSpecificationResolver implements SpecificationResolver<Conjunction> {
 
-    private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
-    private OrSpecificationResolver orResolver = new OrSpecificationResolver();
-    
-    
-    @Override
-    public boolean supportsParameter(MethodParameter param) {
-        return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Conjunction.class);
-    }
+	private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
+	private OrSpecificationResolver orResolver = new OrSpecificationResolver();
 
-    @Override
-    public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
-        Conjunction def = param.getParameterAnnotation(Conjunction.class);
-        WebRequestProcessingContext context = new WebRequestProcessingContext(param, webRequest);
-        
-        return buildSpecification(context, def);
-    }
-
-	Specification<Object> buildSpecification(WebRequestProcessingContext context, Conjunction def) {
-		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
-        for (Or innerOrDef : def.value()) {
-        	Specification<Object> innerOr = orResolver.buildSpecification(context, innerOrDef);
-        	if (innerOr != null) {
-        		innerSpecs.add(innerOr);
-        	}
-        }
-        for (Spec innerDef : def.and()) {
-        	Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
-        	if (innerSpec != null) {
-        		innerSpecs.add(innerSpec);
-        	}
-        }
-        
-        return innerSpecs.isEmpty() ? null : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(innerSpecs);
+	@Override
+	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
+		return Conjunction.class;
 	}
+
+	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Conjunction def) {
+		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
+		for (Or innerOrDef : def.value()) {
+			Specification<Object> innerOr = orResolver.buildSpecification(context, innerOrDef);
+			if (innerOr != null) {
+				innerSpecs.add(innerOr);
+			}
+		}
+		for (Spec innerDef : def.and()) {
+			Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
+			if (innerSpec != null) {
+				innerSpecs.add(innerSpec);
+			}
+		}
+
+		return innerSpecs.isEmpty() ? null : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(innerSpecs);
+	}
+
 
 }

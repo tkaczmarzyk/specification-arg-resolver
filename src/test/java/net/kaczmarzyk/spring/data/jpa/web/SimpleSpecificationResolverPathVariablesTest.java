@@ -42,62 +42,67 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
     	 MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariable");
          MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
 
-         resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
     }
 
     @Test
     public void buildsTheSpecUsingPathVariableFromControllerClass() throws Exception {
         MethodParameter param = testMethodParameter("testMethodUsingPathVariableFromClass");
         MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
-        QueryContext queryCtx = new WebRequestQueryContext(req);
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", new String[] { "theCustomerIdValue" }));
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        assertThat(resolved).isEqualTo(new Like<>(ctx.queryContext(), "thePath", new String[] { "theCustomerIdValue" }));
     }
-    
+
     @Test
     public void buildsTheSpecUsingPathVariableFromControllerMethod() throws Exception {
         MethodParameter param = testMethodParameter("testMethodUsingPathVariableFromMethod");
         MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
-        QueryContext queryCtx = new WebRequestQueryContext(req);
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", new String[] { "theOrderIdValue" }));
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        assertThat(resolved).isEqualTo(new Like<>(ctx.queryContext(), "thePath", new String[] { "theOrderIdValue" }));
     }
-    
+
     @Test
     public void buildsTheSpecUsingMultiplePathVariables() throws Exception {
         MethodParameter param = testMethodParameter("testMethodUsingMultiplePathVariables");
         MockWebRequest req = new MockWebRequest("/customers/2019-01-25/orders/2019-01-27");
-        QueryContext queryCtx = new WebRequestQueryContext(req);
 
-        Specification<?> resolved = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        assertThat(resolved).isEqualTo(new DateBetween<>(queryCtx, "thePath", new String[] { "2019-01-25", "2019-01-27" }, Converter.DEFAULT));
+	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        assertThat(resolved).isEqualTo(new DateBetween<>(ctx.queryContext(), "thePath", new String[] { "2019-01-25", "2019-01-27" }, Converter.DEFAULT));
     }
-    
+
     @RequestMapping(path = "/customers/{customerId}")
     public static class TestController {
 
     	@RequestMapping(path = "/orders/{orderId}")
         public void testMethodUsingPathVariableFromClass(@Spec(path = "thePath", pathVars="customerId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
-    	
+
     	@RequestMapping(path = "/orders/{orderId}")
         public void testMethodUsingPathVariableFromMethod(@Spec(path = "thePath", pathVars="orderId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
-    	
+
     	@RequestMapping(path = "/orders/{orderId}")
         public void testMethodUsingMultiplePathVariables(
         			@Spec(path = "thePath", pathVars={"customerId", "orderId"}, spec = DateBetween.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
-    	
+
     	@RequestMapping(path = "/orders/{orderId}")
     	public void testMethodUsingNotExistingPathVariable(
     			@Spec(path = "thePath", pathVars="invoiceId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
-    		
+
     	}
     }
 

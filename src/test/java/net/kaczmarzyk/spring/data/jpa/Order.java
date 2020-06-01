@@ -41,7 +41,11 @@ public class Order {
     
     Order() {
     }
-    
+
+    public Long getId() {
+        return id;
+    }
+
     public Order(Customer customer, String itemName) {
         this.itemName = itemName;
         this.customer = customer;

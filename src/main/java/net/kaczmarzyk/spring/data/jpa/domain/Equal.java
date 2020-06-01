@@ -86,6 +86,6 @@ public class Equal<T> extends PathSpecification<T> {
 
 	@Override
 	public String toString() {
-		return "Equal [expectedValue=" + expectedValue + ", converter=" + converter + "]";
+		return "Equal [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + "]";
 	}
 }

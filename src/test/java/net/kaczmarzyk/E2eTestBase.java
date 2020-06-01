@@ -40,6 +40,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
     protected Customer lisaSimpson;
     protected Customer maggieSimpson;
 
+    protected Customer minnieSzyslak;
     protected Customer moeSzyslak;
     protected Customer nedFlanders;
 
@@ -55,14 +56,17 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .registrationDate(2014, 3, 15)
                 .gender(MALE)
                 .street("Evergreen Terrace")
-                .orders("Duff Beer", "Donuts", "Pizza")
-                .badges("Beef Eater", "Hard Drinker")
+                .orders("Duff Beer", "Donuts", "Pizza", "Tomacco")
+                .badges("Beef Eater", "Hard Drinker", "Tomacco Eater")
                 .birthDate(LocalDate.of(1970, 03, 21))
                 .lastOrderTime(LocalDateTime.of(2016, 8, 21, 14, 51,0))
                 .build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 20)
                 .gender(FEMALE)
                 .street("Evergreen Terrace")
+                .badges("Tomacco Eater")
+                .weight(50)
+                .occupation("Housewife")
                 .birthDate(LocalDate.of(1972, 7, 13))
                 .lastOrderTime(LocalDateTime.of(2017, 12, 20, 11, 13,0))
                 .build(em);
@@ -70,18 +74,22 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .registrationDate(2014, 03, 25)
                 .gender(MALE)
                 .street("Evergreen Terrace")
+                .orders("Tomacco")
+                .badges("Tomacco Eater")
                 .birthDate(LocalDate.of(1992, 2, 23))
                 .lastOrderTime(LocalDateTime.of(2017, 11, 21, 11, 13,01))
                 .build(em);
         lisaSimpson = customer("Lisa", "Simpson").registrationDate(2014, 03, 30)
                 .gender(FEMALE)
                 .street("Evergreen Terrace")
+                .weight(30)
                 .birthDate(LocalDate.of(1994, 11, 7))
                 .lastOrderTime(LocalDateTime.of(2017, 8, 22, 9, 18,0))
                 .build(em);
         maggieSimpson = customer("Maggie", "Simpson").registrationDate(2014, 03, 31)
                 .gender(FEMALE)
                 .street("Evergreen Terrace")
+                .weight(10)
                 .birthDate(LocalDate.of(1998, 10, 7))
                 .build(em);
         moeSzyslak = customer("Moe", "Szyslak")
@@ -92,6 +100,11 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .badges("Suicide Attempt", "Depression", "Troll Face")
                 .birthDate(LocalDate.of(1966, 4, 1))
                 .lastOrderTime(LocalDateTime.of(2017, 12, 13, 10, 29,0))
+                .build(em);
+        minnieSzyslak = customer("Minnie", "Szyslak")
+                .registrationDate(2020, 05, 27)
+                .gender(FEMALE)
+                .nickName("minnie")
                 .build(em);
         nedFlanders = customer("Ned", "Flanders").golden()
                 .nickName("Flanders")
@@ -104,7 +117,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .build(em);
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-        
+
         TestLogAppender.clearInterceptedLogs();
     }
 

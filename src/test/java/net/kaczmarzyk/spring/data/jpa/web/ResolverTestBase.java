@@ -16,7 +16,9 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.lang.reflect.Executable;
+import java.util.Collection;
 
+import net.kaczmarzyk.utils.ReflectionUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -45,6 +47,12 @@ public abstract class ResolverTestBase {
             throw new RuntimeException(e);
         }
     }
-	
+
+    protected MethodParameter methodParameter(String methodName, Class<?> specClass) {
+		return MethodParameter.forExecutable(
+				testMethod(methodName, specClass), 0
+		);
+    }
+
 	protected abstract Class<?> controllerClass();
 }

@@ -66,11 +66,11 @@ public class JoinE2eTest extends E2eTestBase {
 			
 			return customerRepo.findAll(spec, Sort.by("id"));
 		}
-		
+
 		@RequestMapping(value = "/join/customers", params = { "order1", "order2" })
 		@ResponseBody
 		public Object findByOrder2Options(
-				
+
 				@Join(path = "orders", alias = "o")
 				@Or({
 					@Spec(path = "o.itemName", params = "order1", spec = Like.class),
@@ -199,5 +199,5 @@ public class JoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$.totalElements").value(2))
 			.andExpect(jsonPath("$.size").value(1));
 	}
-	
+
 }
