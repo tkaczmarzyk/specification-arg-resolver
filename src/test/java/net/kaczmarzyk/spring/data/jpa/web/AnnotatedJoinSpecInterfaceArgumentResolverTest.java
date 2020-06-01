@@ -82,8 +82,8 @@ public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpe
 		assertThat(innerSpecs(resolved))
 				.hasSize(2)
 				.containsExactly(
-						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "orders", "o", LEFT, true),
-						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123"))
+						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123")),
+						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "orders", "o", LEFT, true)
 				);
 	}
 
