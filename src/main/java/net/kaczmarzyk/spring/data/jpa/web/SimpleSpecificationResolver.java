@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 
@@ -211,5 +212,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		public boolean isEmpty() {
 			return pattern.isEmpty();
 		}
+	}
+
+	public int hashCode() {
+		return Objects.hash(this.getClass().getName());
 	}
 }

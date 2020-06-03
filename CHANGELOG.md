@@ -1,3 +1,17 @@
+v2.2.2 - UNRELEASED
+======
+
+* Fixed support for custom interfaces with complex inheritance tree.
+    
+    Example filter which didn't work without this fix:
+    ```java
+    @Join(path= "orders", alias = "o")
+    @Spec(path="o.id", params="orderId", spec=Equal.class)
+    public interface CommonFilter<T> extends Specification<T> { }
+  
+    public interface CustomerFilter extends CommonFilter<Customer> { }
+    ```
+
 v2.2.1
 ======
 

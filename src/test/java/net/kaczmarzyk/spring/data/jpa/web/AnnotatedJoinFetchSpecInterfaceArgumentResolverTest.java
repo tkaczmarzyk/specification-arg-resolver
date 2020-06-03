@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -21,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test cases:
  * TC-1. interface with @JoinFetch spec
- * TC-2. interface extended by two interfaces with @JoinFetch spec
+ * TC-2. interface extending two interfaces with @JoinFetch spec
  */
 public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -43,7 +58,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 	private interface BadgeFilter extends Specification<Customer> {
 	}
 
-	// TC-2. interface extended by two interfaces with @JoinFetch spec
+	// TC-2. interface extending two interfaces with @JoinFetch spec
 	private interface SpecExtendedByTwoOtherJoinFetchFilters extends LastNameGenderFilterExtendedByOrderedItemNameFilter, BadgeFilter {
 	}
 
@@ -57,7 +72,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 		public void annotatedInterface(OrderedItemNameFilter spec) {
 		}
 
-		// TC-2. interface extended by two interfaces with @JoinFetch spec
+		// TC-2. interface extending two interfaces with @JoinFetch spec
 		public void getCustomersBySpecExtendedByTwoOtherJoinFetchFiltersExtendedByParamSimpleSpec(
 				@Spec(params = "nickName", path = "nickName", spec = Like.class) SpecExtendedByTwoOtherJoinFetchFilters spec) {
 		}
@@ -79,14 +94,14 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 
 		assertThat(innerSpecs(resolved))
 				.hasSize(2)
-				.containsExactly(
+				.containsExactlyInAnyOrder(
 						new JoinFetch<>(new String[]{ "orders" }, LEFT),
 						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123"))
 				);
 	}
 
-	@Test // TC-2. interface extended by two interfaces with @JoinFetch spec
-	public void createsSpecFromEmptyFilterExtendedByTwoInterfacesWithJoinFetchFilterAndSimpleSpecParam() throws Exception {
+	@Test // TC-2. interface extending two interfaces with @JoinFetch spec
+	public void createsSpecFromEmptyFilterExtendingTwoInterfacesWithJoinFetchFilterAndSimpleSpecParam() throws Exception {
 		MethodParameter param = methodParameter(
 				"getCustomersBySpecExtendedByTwoOtherJoinFetchFiltersExtendedByParamSimpleSpec",
 				SpecExtendedByTwoOtherJoinFetchFilters.class

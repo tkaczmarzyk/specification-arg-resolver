@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -24,7 +39,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test cases:
  * TC-1. interface with @Joins spec
- * TC-2. interface extended by two interfaces with @Joins spec
+ * TC-2. interface extending two interfaces with @Joins spec
  */
 public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -51,7 +66,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 	private interface BadgeFilter extends Specification<Customer> {
 	}
 
-	// TC-2. interface extended by two interfaces with @Joins spec
+	// TC-2. interface extending two interfaces with @Joins spec
 	private interface SpecExtendedByTwoOtherInterfacesWithJoinsFilter extends LastNameGenderFilterExtendedByOrderedItemNameFilter, BadgeFilter {
 	}
 
@@ -65,7 +80,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 		public void annotatedInterface(OrderedItemNameFilter spec) {
 		}
 
-		// TC-2. interface extended by two interfaces with @Joins spec
+		// TC-2. interface extending two interfaces with @Joins spec
 		public void getCustomersBySpecExtendedByTwoOtherInterfacesWithJoinsFilterExtendedByParamSimpleSpec(
 				@Spec(params = "nickName", path = "nickName", spec = Like.class) SpecExtendedByTwoOtherInterfacesWithJoinsFilter spec) {
 		}
@@ -87,17 +102,17 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 
 		assertThat(innerSpecs(resolved))
 				.hasSize(2)
-				.containsExactly(
-						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123")),
+				.containsExactlyInAnyOrder(
 						new Conjunction<>(
 								new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "orders", "o", INNER, true),
 								new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "orders2", "o2", LEFT, true)
-						)
+						),
+						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123"))
 				);
 	}
 
-	@Test // TC-2. interface extended by two interfaces with @Joins spec
-	public void createsSpecFromEmptyFilterExtendedByTwoInterfacesWithJoinsFilterAndSimpleSpecParam() throws Exception {
+	@Test // TC-2. interface extending two interfaces with @Joins spec
+	public void createsSpecFromEmptyFilterExtendingTwoInterfacesWithJoinsFilterAndSimpleSpecParam() throws Exception {
 		MethodParameter param = methodParameter(
 				"getCustomersBySpecExtendedByTwoOtherInterfacesWithJoinsFilterExtendedByParamSimpleSpec",
 				SpecExtendedByTwoOtherInterfacesWithJoinsFilter.class
@@ -126,7 +141,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 				.hasSize(6)
 				.containsOnly(
 						new Conjunction<>(new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "badges", "b", JoinType.INNER, true)),
-						new EmptyResultOnTypeMismatch<>(equal(ctx,"b.badgeType", "Beef Eater")),
+						new EmptyResultOnTypeMismatch<>(equal(ctx, "b.badgeType", "Beef Eater")),
 						new Conjunction<>(
 								new EmptyResultOnTypeMismatch<>(in(ctx, "gender", "MALE")),
 								new EmptyResultOnTypeMismatch<>(in(ctx, "lastName", "Simpson"))

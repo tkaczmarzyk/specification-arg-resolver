@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -18,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test cases:
  * TC-1. interface with @Disjunction spec
- * TC-2. interface extended by two interfaces with @Disjunction spec
+ * TC-2. interface extending two interfaces with @Disjunction spec
  */
 public class AnnotatedDisjunctionSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -34,7 +49,7 @@ public class AnnotatedDisjunctionSpecInterfaceArgumentResolverTest extends Annot
 	private interface GenderAndLastNameOrRegistrationDateFilter extends Specification<Customer> {
 	}
 
-	// TC-2. interface extended by two interfaces with @Disjunction spec
+	// TC-2. interface extending two interfaces with @Disjunction spec
 	@net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction(value = @And({
 			@Spec(params = "firstName", path = "firstName", spec = Equal.class)
 	}))
@@ -55,7 +70,7 @@ public class AnnotatedDisjunctionSpecInterfaceArgumentResolverTest extends Annot
 		public void annotatedInterface(GenderAndLastNameOrRegistrationDateFilter spec) {
 		}
 
-		// TC-2. interface extended by two interfaces with @Disjunction spec
+		// TC-2. interface extending two interfaces with @Disjunction spec
 		public void getCustomersBySpecExtendedByTwoOtherDisjunctionFiltersExtendedByParamSimpleSpec(
 				@Spec(params = "nickName", path = "nickName", spec = Like.class) SpecExtendedByTwoOtherDisjunctionFilters spec) {
 		}
@@ -88,8 +103,8 @@ public class AnnotatedDisjunctionSpecInterfaceArgumentResolverTest extends Annot
 				);
 	}
 
-	@Test // TC-2. interface extended by two interfaces with @Disjunction spec
-	public void createsSpecFromEmptyFilterExtendedByTwoInterfacesWithDisjunctionFilterAndSimpleSpecParam() throws Exception {
+	@Test // TC-2. interface extending two interfaces with @Disjunction spec
+	public void createsSpecFromEmptyFilterExtendingTwoInterfacesWithDisjunctionFilterAndSimpleSpecParam() throws Exception {
 		MethodParameter param = methodParameter(
 				"getCustomersBySpecExtendedByTwoOtherDisjunctionFiltersExtendedByParamSimpleSpec",
 				SpecExtendedByTwoOtherDisjunctionFilters.class

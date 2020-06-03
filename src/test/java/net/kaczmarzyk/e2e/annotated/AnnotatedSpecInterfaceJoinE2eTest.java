@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.e2e.annotated;
 
 import net.kaczmarzyk.E2eTestBase;
@@ -22,10 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test cases:
  * TC-1. interface with @Join spec
- * TC-2. interface with @Join spec extended by param spec
- * TC-3. interface without any spec extended by param @Join spec
- * TC-4. interface without any spec extended by interface with @Join spec
- * TC-5. interface with @Join spec extended by other interface with @Join spec
+ * TC-2. interface with @Join spec extending param spec
+ * TC-3. interface without any spec extending param @Join spec
+ * TC-4. interface without any spec extending interface with @Join spec
+ * TC-5. interface with @Join spec extending other interface with @Join spec
  */
 public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 
@@ -35,14 +50,14 @@ public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 	private interface BadgeFilter extends Specification<Customer> {
 	}
 
-	// TC-3. interface without any spec extended by param @Join spec
+	// TC-3. interface without any spec extending param @Join spec
 	private static interface EmptyFilter extends Specification<Customer> {
 	}
 
-	// TC-4. interface without any spec extended by interface with @Join spec
-	private static interface EmptyFilterExtendedByInterfaceWithJoinSpec extends BadgeFilter {}
+	// TC-4. interface without any spec extending interface with @Join spec
+	private static interface EmptyFilterExtendingInterfaceWithJoinSpec extends BadgeFilter {}
 
-	// TC-5. interface with @Join spec extended by other interface with @Join spec
+	// TC-5. interface with @Join spec extending other interface with @Join spec
 	@Join(path = "orders", alias = "o")
 	@Spec(path = "o.itemName", params = "itemName", spec = Equal.class)
 	private static interface ItemNameBadgeTypeFilter extends BadgeFilter {
@@ -61,7 +76,7 @@ public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-2. interface with @Join spec extended by param spec
+		// TC-2. interface with @Join spec extending param spec
 		@RequestMapping(value = "/anno-iface-join/customersByBadgeTypeAndItemName")
 		@ResponseBody
 		public List<Customer> getCustomersWithCustomAndFilterExtendedByJoinFilter(
@@ -70,23 +85,23 @@ public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-3. interface without any spec extended by param @Join spec
-		@RequestMapping(value = "/anno-iface-join/customersByEmptyFilterExtendedByParamSpec")
+		// TC-3. interface without any spec extending param @Join spec
+		@RequestMapping(value = "/anno-iface-join/customersByEmptyFilterExtendingParamSpec")
 		@ResponseBody
-		public List<Customer> getCustomersByEmptyFilterExtendedByParamSpec(
+		public List<Customer> getcustomersByEmptyFilterExtendingParamSpec(
 				@Join(path = "badges", alias = "b")
 				@Spec(path = "b.badgeType", params = "badgeType", spec = Equal.class) EmptyFilter spec) {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-4. interface without any spec extended by interface with @Join spec
-		@RequestMapping(value = "/anno-iface-join/customersByEmptyFilterExtendedByInterfaceWithJoinSpec")
+		// TC-4. interface without any spec extending interface with @Join spec
+		@RequestMapping(value = "/anno-iface-join/customersByEmptyFilterExtendingInterfaceWithJoinSpec")
 		@ResponseBody
-		public List<Customer> getCustomersByEmptyFilterExtendedByInterfaceWithJoinSpec(EmptyFilterExtendedByInterfaceWithJoinSpec spec) {
+		public List<Customer> getCustomersByEmptyFilterExtendingInterfaceWithJoinSpec(EmptyFilterExtendingInterfaceWithJoinSpec spec) {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-5. interface with @Join spec extended by other interface with @Join spec
+		// TC-5. interface with @Join spec extending other interface with @Join spec
 		@RequestMapping(value = "/anno-iface-join/customersByItemNameBadgeTypeFilter")
 		@ResponseBody
 		public List<Customer> getCustomersByItemNameBadgeTypeFilter(ItemNameBadgeTypeFilter spec) {
@@ -105,8 +120,8 @@ public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
-	@Test // TC-2. interface with @Join spec extended by param spec
-	public void filtersAccordingToInterfaceWithJoinSpecExtendedBySpecParam() throws Exception {
+	@Test // TC-2. interface with @Join spec extending param spec
+	public void filtersAccordingToInterfaceWithJoinSpecExtendingSpecParam() throws Exception {
 		mockMvc.perform(get("/anno-iface-join/customersByBadgeTypeAndItemName")
 				.param("badgeType", "Tomacco Eater")
 				.param("itemName", "Tomacco")
@@ -117,8 +132,8 @@ public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
-	@Test // TC-3. interface without any spec extended by param @Join spec
-	public void filtersAccordingToEmptyFilterExtendedBySpecParam() throws Exception {
+	@Test // TC-3. interface without any spec extending param @Join spec
+	public void filtersAccordingToEmptyFilterExtendingSpecParam() throws Exception {
 		mockMvc.perform(get("/anno-iface-join/customersByBadgeType")
 				.param("badgeType", "Beef Eater")
 				.accept(MediaType.APPLICATION_JSON))
@@ -127,9 +142,9 @@ public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
-	@Test // TC-4. interface without any spec extended by interface with @Join spec
-	public void filtersAccordingToEmptyFilterExtendedByInterfaceWithJoinSpec() throws Exception {
-		mockMvc.perform(get("/anno-iface-join/customersByEmptyFilterExtendedByInterfaceWithJoinSpec")
+	@Test // TC-4. interface without any spec extending interface with @Join spec
+	public void filtersAccordingToEmptyFilterExtendingInterfaceWithJoinSpec() throws Exception {
+		mockMvc.perform(get("/anno-iface-join/customersByEmptyFilterExtendingInterfaceWithJoinSpec")
 				.param("badgeType", "Beef Eater")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isArray())
@@ -137,7 +152,7 @@ public class AnnotatedSpecInterfaceJoinE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
-	@Test // TC-5. interface with @Join spec extended by other interface with @Join spec
+	@Test // TC-5. interface with @Join spec extending other interface with @Join spec
 	public void filtersAccordingToItemNameBadgeTypeFilter() throws Exception {
 		mockMvc.perform(get("/anno-iface-join/customersByItemNameBadgeTypeFilter")
 				.param("badgeType", "Tomacco Eater")

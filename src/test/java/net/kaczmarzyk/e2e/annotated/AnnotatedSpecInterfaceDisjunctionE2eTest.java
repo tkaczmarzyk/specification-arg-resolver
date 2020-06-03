@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.e2e.annotated;
 
 import net.kaczmarzyk.E2eTestBase;
@@ -24,9 +39,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test cases:
  * TC-1. interface with @Disjunction spec
- * TC-2. interface without any spec extended by param spec
- * TC-3. interface without any spec extended by interface with @Disjunction spec
- * TC-4. interface with @Disjunction spec extended by other interface with @Disjunction spec
+ * TC-2. interface without any spec extending param spec
+ * TC-3. interface without any spec extending interface with @Disjunction spec
+ * TC-4. interface with @Disjunction spec extending interface with @Disjunction spec
  */
 public class AnnotatedSpecInterfaceDisjunctionE2eTest extends E2eTestBase {
 
@@ -40,15 +55,15 @@ public class AnnotatedSpecInterfaceDisjunctionE2eTest extends E2eTestBase {
 	private static interface LastNameAndGenderOrFirstNameFilter extends Specification<Customer> {
 	}
 
-	// TC-2. interface without any spec extended by param spec
+	// TC-2. interface without any spec extending param spec
 	private static interface EmptyFilter extends Specification<Customer> {
 	}
 
-	// TC-3. interface without any spec extended by interface with @Disjunction spec
-	private static interface EmptyFilterExtendedByInterfaceWithDisjunctionSpec extends LastNameAndGenderOrFirstNameFilter {
+	// TC-3. interface without any spec extending interface with @Disjunction spec
+	private static interface EmptyFilterExtendingInterfaceWithDisjunctionSpec extends LastNameAndGenderOrFirstNameFilter {
 	}
 
-	// TC-4. interface with @Disjunction spec extended by other interface with @Disjunction spec
+	// TC-4. interface with @Disjunction spec extending interface with @Disjunction spec
 	@Disjunction(value = @And({
 			@Spec(params = "firstName2", path = "firstName", spec = Like.class)
 	}), or = @Spec(params = "firstName3", path = "firstName", spec = Like.class))
@@ -68,7 +83,7 @@ public class AnnotatedSpecInterfaceDisjunctionE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-2. interface without any spec extended by param spec
+		// TC-2. interface without any spec extending param spec
 		@RequestMapping(value = "/anno-iface-disjunction/customersByEmptyFilterExtendedByDisjunctionSpecParam")
 		@ResponseBody
 		public List<Customer> getCustomersByEmptyFilterExtendedByDisjunctionSpecParam(
@@ -81,15 +96,15 @@ public class AnnotatedSpecInterfaceDisjunctionE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-3. interface without any spec extended by interface with @Disjunction spec
-		@RequestMapping(value = "/anno-iface-disjunction/customersByEmptyFilterExtendedByInterfaceWithDisjunctionSpec")
+		// TC-3. interface without any spec extending interface with @Disjunction spec
+		@RequestMapping(value = "/anno-iface-disjunction/customersByEmptyFilterExtendingInterfaceWithDisjunctionSpec")
 		@ResponseBody
 		public List<Customer> getCustomersByEmptyFilterExtendedByDisjunctionSpecParam(
-				EmptyFilterExtendedByInterfaceWithDisjunctionSpec spec) {
+				EmptyFilterExtendingInterfaceWithDisjunctionSpec spec) {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-4. interface with @Disjunction spec extended by other interface with @Disjunction spec
+		// TC-4. interface with @Disjunction spec extending interface with @Disjunction spec
 		@RequestMapping(value = "/anno-iface-disjunction/customersByDisjunctionFilterExtendedByOtherDisjunctionFilter")
 		@ResponseBody
 		public List<Customer> getCustomersByDisjunctionFilterExtendedByOtherDisjunctionFilter(
@@ -113,7 +128,7 @@ public class AnnotatedSpecInterfaceDisjunctionE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 
-	@Test // TC-2. interface without any spec extended by param spec
+	@Test // TC-2. interface without any spec extending param spec
 	public void filtersAccordingToEmptyFilterExtendedByDisjunctionSpecParam() throws Exception {
 		mockMvc.perform(get("/anno-iface-disjunction/customersByEmptyFilterExtendedByDisjunctionSpecParam")
 				.param("firstName", "Ned")
@@ -127,9 +142,9 @@ public class AnnotatedSpecInterfaceDisjunctionE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 
-	@Test // TC-3. interface without any spec extended by interface with @Disjunction spec
-	public void filtersAccordingToEmptyFilterExtendedByInterfaceWithDisjunctionSpec() throws Exception {
-		mockMvc.perform(get("/anno-iface-disjunction/customersByEmptyFilterExtendedByInterfaceWithDisjunctionSpec")
+	@Test // TC-3. interface without any spec extending interface with @Disjunction spec
+	public void filtersAccordingToEmptyFilterExtendingInterfaceWithDisjunctionSpec() throws Exception {
+		mockMvc.perform(get("/anno-iface-disjunction/customersByEmptyFilterExtendingInterfaceWithDisjunctionSpec")
 				.param("firstName", "Ned")
 				.param("lastName", "Simpson")
 				.param("gender", "MALE")
@@ -141,7 +156,7 @@ public class AnnotatedSpecInterfaceDisjunctionE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 
-	@Test // TC-4. interface with @Disjunction spec extended by other interface with @Disjunction spec
+	@Test // TC-4. interface with @Disjunction spec extending interface with @Disjunction spec
 	public void filtersAccordingToDisjunctionFilterExtendedByOtherDisjunctionFilter() throws Exception {
 		mockMvc.perform(get("/anno-iface-disjunction/customersByDisjunctionFilterExtendedByOtherDisjunctionFilter")
 				.param("firstName", "Ned")

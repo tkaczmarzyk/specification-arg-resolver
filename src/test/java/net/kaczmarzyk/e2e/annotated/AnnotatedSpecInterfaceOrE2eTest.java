@@ -1,5 +1,20 @@
 package net.kaczmarzyk.e2e.annotated;
 
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import net.kaczmarzyk.E2eTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
@@ -23,10 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test cases:
  *  TC-1. interface with @Or spec
- *  TC-2. interface with @Or spec extended by param spec
- *  TC-3. interface without any spec extended by param spec
- *  TC-4. interface without any spec extended by interface with @Or annotation
- *  TC-5. interface with @Or spec extended by other interface with @Or spec
+ *  TC-2. interface with @Or spec extending param spec
+ *  TC-3. interface without any spec extending param spec
+ *  TC-4. interface without any spec extending interface with @Or annotation
+ *  TC-5. interface with @Or spec extending other interface with @Or spec
  */
 public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 
@@ -37,14 +52,14 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 	private static interface GenderOrFirstNameSpec extends Specification<Customer> {
 	}
 
-	// TC-3. interface without any spec extended by param spec
+	// TC-3. interface without any spec extending param spec
 	private static interface EmptyFilter extends Specification<Customer> {}
 
-	// TC-4. interface without any spec extended by interface with @Or annotation
-	private static interface EmptyFilterExtendedByInterfaceWithOrSpec extends GenderOrFirstNameSpec {
+	// TC-4. interface without any spec extending interface with @Or annotation
+	private static interface EmptyFilterExtendingInterfaceWithOrSpec extends GenderOrFirstNameSpec {
 	}
 	
-	// TC-5. interface with @Or spec extended by other interface with @Or spec
+	// TC-5. interface with @Or spec extending other interface with @Or spec
 	private static interface LastNameOrNickNameAndGenderOrFirstNameSpec extends GenderOrFirstNameSpec {
 		
 	}
@@ -62,7 +77,7 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-2. interface with @Or spec extended by param spec
+		// TC-2. interface with @Or spec extending param spec
 		@RequestMapping(value = "/anno-iface-or/customersByGenderOrFirstNameAndLastName")
 		@ResponseBody
 		public List<Customer> getCustomersByGenderOrFirstNameSpecExtendedBySpecParam(
@@ -72,7 +87,7 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-3. interface without any spec extended by param spec
+		// TC-3. interface without any spec extending param spec
 		@RequestMapping(value = "/anno-iface-or/customersByParamSpec")
 		@ResponseBody
 		public List<Customer> getCustomersByGenderOrFirstNameParamSpec(
@@ -83,15 +98,15 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-4. interface without any spec extended by interface with @Or annotation
+		// TC-4. interface without any spec extending interface with @Or annotation
 		@RequestMapping(value = "/anno-iface-or/customersByEmptySpecInterfaceExtendedByInterfaceWithOrSpec")
 		@ResponseBody
 		public List<Customer> customersByEmptySpecInterfaceExtendedByInterfaceWithOrSpec(
-				EmptyFilterExtendedByInterfaceWithOrSpec spec) {
+				EmptyFilterExtendingInterfaceWithOrSpec spec) {
 			return customerRepo.findAll(spec);
 		}
 
-		// TC-5. interface without any spec extended by interface with @Or annotation
+		// TC-5. interface with @Or spec extending other interface with @Or spec
 		@RequestMapping(value = "/anno-iface-or/customersByLastNameOrNickNameAndGenderOrFirstName")
 		@ResponseBody
 		public List<Customer> customersByEmptySpecInterfaceExtendedByInterfaceWithOrSpec(
@@ -116,7 +131,7 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[5]").doesNotExist());
 	}
 
-	@Test // TC-2. interface with @Or spec extended by param spec
+	@Test // TC-2. interface with @Or spec extending param spec
 	public void filtersAccordingToInterfaceWithOrSpecExtendedBySpecParam() throws Exception {
 		mockMvc.perform(get("/anno-iface-or/customersByGenderOrFirstNameAndLastName")
 				.param("firstName", "Homer")
@@ -131,8 +146,8 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 
-	@Test // TC-3. interface without any spec extended by param spec
-	public void filtersAccordingToEmptyFilterExtendedBySpecParam() throws Exception {
+	@Test // TC-3. interface without any spec extending param spec
+	public void filtersAccordingToEmptyFilterExtendingSpecParam() throws Exception {
 		mockMvc.perform(get("/anno-iface-or/customersByParamSpec")
 				.param("firstName", "Homer")
 				.param("gender", "FEMALE")
@@ -147,7 +162,7 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 	}
 
 	@Test // TC-4. interface without any spec extended by param spec
-	public void filtersAccordingToInterfaceWithoutAnySpecExtendedByInterfaceWithOrSpec() throws Exception {
+	public void filtersAccordingToInterfaceWithoutAnySpecExtendingInterfaceWithOrSpec() throws Exception {
 		mockMvc.perform(get("/anno-iface-or/customersByEmptySpecInterfaceExtendedByInterfaceWithOrSpec")
 				.param("firstName", "Homer")
 				.param("gender", "FEMALE")
@@ -162,7 +177,7 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 	}
 
 	@Test // TC-5. interface without any spec extended by interface with @Or annotation
-	public void filtersAccordingToInterfaceWithOrSpecExtendedByInterfaceWithOrSpec() throws Exception {
+	public void filtersAccordingToInterfaceWithOrSpecExtendingInterfaceWithOrSpec() throws Exception {
 		mockMvc.perform(get("/anno-iface-or/customersByEmptySpecInterfaceExtendedByInterfaceWithOrSpec")
 				.param("firstName", "Ned")
 				.param("gender", "FEMALE")

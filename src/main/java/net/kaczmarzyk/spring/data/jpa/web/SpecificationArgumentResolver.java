@@ -15,11 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import net.kaczmarzyk.spring.data.jpa.utils.TypeUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,6 +22,11 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.lang.annotation.Annotation;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
@@ -38,7 +38,7 @@ import static java.util.function.Function.identity;
  */
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
-	private Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
+	private static Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
 	public SpecificationArgumentResolver() {
 		resolversBySupportedType = Arrays.asList(
@@ -57,9 +57,7 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 	public boolean supportsParameter(MethodParameter parameter) {
 		Class<?> paramType = parameter.getParameterType();
 
-		return paramType.isInterface()
-				&& Specification.class.isAssignableFrom(paramType)
-				&& (isAnnotated(parameter) || isAnnotatedRecursively(paramType));
+		return paramType.isInterface() && Specification.class.isAssignableFrom(paramType) && isAnnotated(parameter);
 	}
 
 	@Override
@@ -70,7 +68,9 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 
 		List<Specification<Object>> specs = resolveSpec(context);
 
-		if (specs == null) return null;
+		if (specs.isEmpty()) {
+			return null;
+		}
 
 		if (specs.size() == 1) {
 			Specification<Object> firstSpecification = specs.iterator().next();
@@ -93,15 +93,11 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 		resolveSpecFromInterfaceAnnotations(context, specAccumulator);
 		resolveSpecFromParameterAnnotations(context, specAccumulator);
 
-		if (specAccumulator.isEmpty()) {
-			return null;
-		}
-
 		return specAccumulator;
 	}
 
 	private void resolveSpecFromParameterAnnotations(WebRequestProcessingContext context,
-	                                                                        List<Specification<Object>> accum) {
+	                                                 List<Specification<Object>> accum) {
 		forEachSupportedSpecificationDefinition(
 				context.getParameterAnnotations(),
 				specDefinition -> {
@@ -114,20 +110,18 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 	}
 
 	private void resolveSpecFromInterfaceAnnotations(WebRequestProcessingContext context,
-	                                                                        List<Specification<Object>> accum) {
+	                                                 List<Specification<Object>> accumulator) {
 		Collection<Class<?>> ifaceTree = TypeUtil.interfaceTree(context.getParameterType());
 
 		for (Class<?> iface : ifaceTree) {
-			if (!isAnnotated(iface)) {
-				continue;
-			}
-			for (Annotation a : getAnnotations(iface)) {
-				Annotation specDef = a;
-				Specification<Object> specification = buildSpecification(context, specDef);
-				if (nonNull(specification)) {
-					accum.add(specification);
-				}
-			}
+			forEachSupportedInterfaceSpecificationDefinition(iface,
+					(specDefinition) -> {
+						Specification<Object> specification = buildSpecification(context, specDefinition);
+						if (nonNull(specification)) {
+							accumulator.add(specification);
+						}
+					}
+			);
 		}
 	}
 
@@ -135,17 +129,16 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 		SpecificationResolver resolver = resolversBySupportedType.get(specDef.annotationType());
 
 		if (resolver == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+					"Definition is not supported. " +
+							"Specification resolver is not able to build specification from definition of type :" + specDef.annotationType()
+			);
 		}
 
 		return resolver.buildSpecification(context, specDef);
 	}
 
-	private final boolean isAnnotated(Class<?> target) {
-		return !getAnnotations(target).isEmpty();
-	}
-
-	private final boolean isAnnotated(MethodParameter methodParameter) {
+	private boolean isAnnotated(MethodParameter methodParameter) {
 		for (Annotation annotation : methodParameter.getParameterAnnotations()) {
 			for (Class<? extends Annotation> annotationType : resolversBySupportedType.keySet()) {
 				if (annotationType.equals(annotation.annotationType())) {
@@ -153,6 +146,7 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 				}
 			}
 		}
+
 		return isAnnotatedRecursively(methodParameter.getParameterType());
 	}
 
@@ -174,28 +168,25 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 		return false;
 	}
 
-	private void forEachSupportedSpecificationDefinition(Annotation[] parameterAnnotations, Consumer<Annotation> consumer) {
+	private void forEachSupportedSpecificationDefinition(Annotation[] parameterAnnotations, Consumer<Annotation> specificationBuilder) {
 		for (Annotation annotation : parameterAnnotations) {
 			for (Class<? extends Annotation> annotationType : resolversBySupportedType.keySet()) {
 				if (annotationType.isAssignableFrom(annotation.getClass())) {
-					consumer.accept(annotation);
+					specificationBuilder.accept(annotation);
 				}
 			}
 		}
 	}
 
-	private Set<Annotation> getAnnotations(Class<?> target) {
-		Set<Annotation> annotations = new HashSet<>();
-
+	private void forEachSupportedInterfaceSpecificationDefinition(Class<?> target, Consumer<Annotation> specificationBuilder) {
 		for (Class<? extends Annotation> annotationType : resolversBySupportedType.keySet()) {
 			if (target.getAnnotations().length != 0) {
 				Annotation potentialAnnotation = target.getAnnotation(annotationType);
 				if (potentialAnnotation != null) {
-					annotations.add(potentialAnnotation);
+					specificationBuilder.accept(potentialAnnotation);
 				}
 			}
 		}
-
-		return annotations;
 	}
+
 }

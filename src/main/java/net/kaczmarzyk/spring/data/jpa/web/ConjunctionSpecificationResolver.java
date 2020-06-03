@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -56,5 +57,8 @@ class ConjunctionSpecificationResolver implements SpecificationResolver<Conjunct
 		return innerSpecs.isEmpty() ? null : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(innerSpecs);
 	}
 
+	public int hashCode() {
+		return Objects.hash(this.getClass().getName());
+	}
 
 }

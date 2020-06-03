@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -23,7 +38,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test cases:
  * TC-1. interface with @Join spec
- * TC-2. interface extended by two interfaces with @Join spec
+ * TC-2. interface extending two interfaces with @Join spec
  */
 public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -45,7 +60,7 @@ public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpe
 	private interface BadgeFilter extends Specification<Customer> {
 	}
 
-	// TC-2. interface extended by two interfaces with @Join spec
+	// TC-2. interface extending two interfaces with @Join spec
 	private interface SpecExtendedByTwoOtherJoinSpecsFilter extends LastNameGenderFilterExtendedByOrderedItemNameFilter, BadgeFilter {
 	}
 
@@ -59,7 +74,7 @@ public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpe
 		public void annotatedInterface(OrderedItemNameFilter spec) {
 		}
 
-		// TC-2. interface extended by two interfaces with @Join spec
+		// TC-2. interface extending two interfaces with @Join spec
 		public void getCustomersBySpecExtendedByTwoOtherJoinSpecsFilterExtendedByParamSimpleSpec(
 				@Spec(params = "nickName", path = "nickName", spec = Like.class) SpecExtendedByTwoOtherJoinSpecsFilter spec) {
 		}
@@ -81,14 +96,14 @@ public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpe
 
 		assertThat(innerSpecs(resolved))
 				.hasSize(2)
-				.containsExactly(
-						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123")),
-						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "orders", "o", LEFT, true)
+				.containsExactlyInAnyOrder(
+						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "orders", "o", LEFT, true),
+						new EmptyResultOnTypeMismatch<>(new Equal<>(ctx.queryContext(), "o.itemName", new String[]{"Item-123"}, converter))
 				);
 	}
 
-	@Test // TC-2. interface extended by two interfaces with @Join spec
-	public void createsSpecFromEmptyFilterExtendedByTwoInterfacesWithJoinFilterAndSimpleSpecParam() throws Exception {
+	@Test // TC-2. interface extending two interfaces with @Join spec
+	public void createsSpecFromEmptyFilterExtendingTwoInterfacesWithJoinFilterAndSimpleSpecParam() throws Exception {
 		MethodParameter param = methodParameter(
 				"getCustomersBySpecExtendedByTwoOtherJoinSpecsFilterExtendedByParamSimpleSpec",
 				SpecExtendedByTwoOtherJoinSpecsFilter.class

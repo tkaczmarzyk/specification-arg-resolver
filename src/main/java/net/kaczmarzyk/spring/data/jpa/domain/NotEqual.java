@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Objects;
 
 /**
  * <p>Filters with not equal where-clause (e.g. {@code where firstName <> "Homer"}).</p>
@@ -52,4 +53,26 @@ public class NotEqual<T> extends PathSpecification<T> {
 		return cb.notEqual(path(root), converter.convert(expectedValue, typeOnPath));
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		NotEqual<?> notEqual = (NotEqual<?>) o;
+		return Objects.equals(expectedValue, notEqual.expectedValue) &&
+				Objects.equals(converter, notEqual.converter);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), expectedValue, converter);
+	}
+
+	@Override
+	public String toString() {
+		return "NotEqual[" +
+				"expectedValue='" + expectedValue + '\'' +
+				", converter=" + converter +
+				']';
+	}
 }

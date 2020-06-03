@@ -121,7 +121,7 @@ public class JoinE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec, pageable);
 		}
 	}
-	
+
 	@Test
 	public void findsByOrdersAndName() throws Exception {
 		mockMvc.perform(get("/join/customers")
