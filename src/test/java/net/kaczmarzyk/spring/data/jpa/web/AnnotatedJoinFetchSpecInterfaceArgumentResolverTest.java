@@ -37,6 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Test cases:
  * TC-1. interface with @JoinFetch spec
  * TC-2. interface extending two interfaces with @JoinFetch spec
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -121,10 +123,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 		assertThat(resolved)
 				.isInstanceOf(SpecExtendedByTwoOtherJoinFetchFilters.class);
 
-		Conjunction<Object> resolvedConjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
-
-		Collection<Specification<Object>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
+		Collection<Specification<Object>> innerSpecs = innerSpecs(resolved);
 
 		Assertions.assertThat(innerSpecs)
 				.hasSize(6)

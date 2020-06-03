@@ -54,5 +54,19 @@ public abstract class ResolverTestBase {
 		);
     }
 
+	protected Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
+		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
+				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+		return ReflectionUtils.get(resolvedConjunction, "innerSpecs");
+	}
+
+	protected Collection<Specification<Object>> innerSpecsFromDisjunction(Specification<?> resolvedSpec) {
+		net.kaczmarzyk.spring.data.jpa.domain.Disjunction<Object> resolvedDisjunction =
+				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+		return ReflectionUtils.get(resolvedDisjunction, "innerSpecs");
+	}
+
 	protected abstract Class<?> controllerClass();
 }

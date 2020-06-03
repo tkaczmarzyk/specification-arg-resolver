@@ -39,6 +39,8 @@ import static org.mockito.Mockito.mock;
  * Test cases:
  * TC-1. interface with @Join spec
  * TC-2. interface extending two interfaces with @Join spec
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 

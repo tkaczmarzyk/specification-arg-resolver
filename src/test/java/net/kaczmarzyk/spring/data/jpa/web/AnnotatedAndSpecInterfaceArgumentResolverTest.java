@@ -36,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Test cases:
  * TC-1. interface with @And spec
  * TC-2. interface extending two interfaces with @And spec
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedAndSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 

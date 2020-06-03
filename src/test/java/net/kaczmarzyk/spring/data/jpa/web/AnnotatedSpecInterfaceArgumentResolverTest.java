@@ -20,9 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 import org.junit.Before;
@@ -44,7 +42,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.ReflectionUtils;
 
 
 /**
@@ -139,35 +136,16 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT);
 
 	public static class TestController {
-		public void methodWithSimpleSpec(IfaceWithSimpleSpec arg) {
-		}
-
-		public void methodWithClass(Clazz arg) {
-		}
-
-		public void methodWithOverannotatedSpec(OverAnnotatedInterface arg) {
-		}
-
-		public void methodWithSpecWithoutAnnotations(IfaceWithoutAnnotations arg) {
-		}
-
-		public void methodWithNonSpec(IfaceNotExtendingSpecification arg) {
-		}
-
-		public void methodWithAnd(IfaceWithAnd arg) {
-		}
-
-		public void methodWithConjunction(IfaceWithConjunction arg) {
-		}
-
-		public void methodWithOr(IfaceWithOr arg) {
-		}
-
-		public void methodWithDisjunction(IfaceWithDisjunction arg) {
-		}
-
-		public void methodWithInheritanceTree(GrandChildInterface arg) {
-		}
+		public void methodWithSimpleSpec(IfaceWithSimpleSpec arg) {}
+		public void methodWithClass(Clazz arg) {}
+		public void methodWithOverannotatedSpec(OverAnnotatedInterface arg) {}
+		public void methodWithSpecWithoutAnnotations(IfaceWithoutAnnotations arg) {}
+		public void methodWithNonSpec(IfaceNotExtendingSpecification arg) {}
+		public void methodWithAnd(IfaceWithAnd arg) {}
+		public void methodWithConjunction(IfaceWithConjunction arg) {}
+		public void methodWithOr(IfaceWithOr arg) {}
+		public void methodWithDisjunction(IfaceWithDisjunction arg) {}
+		public void methodWithInheritanceTree(GrandChildInterface arg) {}
 	}
 
 	NativeWebRequest req = mock(NativeWebRequest.class);

@@ -34,6 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Test cases:
  * TC-1. interface with @Disjunction spec
  * TC-2. interface extending two interfaces with @Disjunction spec
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedDisjunctionSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -92,7 +94,7 @@ public class AnnotatedDisjunctionSpecInterfaceArgumentResolverTest extends Annot
 		assertThat(resolved)
 				.isInstanceOf(GenderAndLastNameOrRegistrationDateFilter.class);
 
-		assertThat(extractInnerSpecsFromDisjunction(resolved))
+		assertThat(innerSpecsFromDisjunction(resolved))
 				.hasSize(2)
 				.containsExactly(
 						new Conjunction<>(

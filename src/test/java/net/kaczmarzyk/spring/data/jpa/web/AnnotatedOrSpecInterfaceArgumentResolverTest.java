@@ -19,7 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.ReflectionUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
@@ -32,12 +31,13 @@ import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.n
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Test cases:
  * TC-1. interface with @Or spec
  * TC-2. interface extending two interfaces with @Or spec
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedOrSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -91,7 +91,7 @@ public class AnnotatedOrSpecInterfaceArgumentResolverTest extends AnnotatedSpecI
 		assertThat(resolved)
 				.isInstanceOf(GenderAndLastNameFilter.class);
 
-		assertThat(extractInnerSpecsFromDisjunction(resolved))
+		assertThat(innerSpecsFromDisjunction(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new EmptyResultOnTypeMismatch<>(equal(ctx, "gender", "MALE")),

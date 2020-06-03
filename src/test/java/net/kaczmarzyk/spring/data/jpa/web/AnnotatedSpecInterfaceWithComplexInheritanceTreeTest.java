@@ -21,7 +21,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,33 +33,35 @@ import static javax.persistence.criteria.JoinType.*;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-/*
-  TC-1 Inheritance tree:
 
-		+--------------+                        +--------------+
-		| @Disjunction |                        |    @Joins    |
-		+-----^--------+                        +------^-------+
-		      |                                        |
-		+-----+--------+                        +------+-------+
-		|              |                        |              |
-		+-----^--------+                        +------^-------+
-		      |                                        |
-		+-----+--------+    +--------------+    +------+-------+
-		|   @Spec      <----+   @Spec 2    |    |              |
-		+-----^--------+    +------^-------+    +------^-------+
-		      |                    |                   |
-		      |                    |                   |
-		+-----+--------+    +------+-------+   +-------+------+
-		| @Conjunction |    |     @Or      |   | @JoinFetch   |
-		+-------------^+    +------^-------+   +-------^------+
-		              |            |                   |
-		              |            |                   |
-		              |            |                   |
-		              |            |                   |
-		              +-----+------+-------+-----------+
-		                    |    @Join     |
-		                    +--------------+
-
+/**
+ *  Inheritance tree of test case:
+ *
+ *  +--------------+                        +--------------+
+ *  | @Disjunction |                        |    @Joins    |
+ *  +-----^--------+                        +------^-------+
+ *        |                                        |
+ *  +-----+--------+                        +------+-------+
+ *  |              |                        |              |
+ *  +-----^--------+                        +------^-------+
+ *        |                                        |
+ *  +-----+--------+    +--------------+    +------+-------+
+ *  |   @Spec      <----+   @Spec 2    |    |              |
+ *  +-----^--------+    +------^-------+    +------^-------+
+ *        |                    |                   |
+ *        |                    |                   |
+ *  +-----+--------+    +------+-------+   +-------+------+
+ *  | @Conjunction |    |     @Or      |   | @JoinFetch   |
+ *  +-------------^+    +------^-------+   +-------^------+
+ *                |            |                   |
+ *                |            |                   |
+ *                |            |                   |
+ *                |            |                   |
+ *                +-----+------+-------+-----------+
+ *                      |    @Join     |
+ *                      +--------------+
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends AnnotatedSpecInterfaceTestBase {
 

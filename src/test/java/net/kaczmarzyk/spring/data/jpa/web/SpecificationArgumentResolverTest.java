@@ -51,12 +51,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
-
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
-
-        assertThat(innerSpecs)
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT));
@@ -92,12 +87,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
-
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
-        
-        assertThat(innerSpecs)
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -114,13 +104,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
-
-
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
-        
-        assertThat(innerSpecs)
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -137,12 +121,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-                ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
-
-        Collection<Specification<?>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
-        
-        assertThat(innerSpecs)
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(

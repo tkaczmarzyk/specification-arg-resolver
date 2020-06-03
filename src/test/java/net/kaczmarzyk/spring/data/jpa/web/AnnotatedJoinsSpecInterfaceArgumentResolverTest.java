@@ -40,6 +40,8 @@ import static org.mockito.Mockito.when;
  * Test cases:
  * TC-1. interface with @Joins spec
  * TC-2. interface extending two interfaces with @Joins spec
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
@@ -132,12 +134,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 		assertThat(resolved)
 				.isInstanceOf(SpecExtendedByTwoOtherInterfacesWithJoinsFilter.class);
 
-		Conjunction<Object> resolvedConjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolved, "CGLIB$CALLBACK_0"), "val$targetSpec");
-
-		Collection<Specification<Object>> innerSpecs = ReflectionUtils.get(resolvedConjunction, "innerSpecs");
-
-		Assertions.assertThat(innerSpecs)
+		Assertions.assertThat(innerSpecs(resolved))
 				.hasSize(6)
 				.containsOnly(
 						new Conjunction<>(new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "badges", "b", JoinType.INNER, true)),

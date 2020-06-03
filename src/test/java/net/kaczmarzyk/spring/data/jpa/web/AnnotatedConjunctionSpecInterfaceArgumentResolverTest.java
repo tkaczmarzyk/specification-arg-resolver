@@ -35,6 +35,8 @@ import static org.mockito.Mockito.mock;
  * Test cases:
  * TC-1. interface with @Conjunction spec
  * TC-2. interface extending two interfaces with @Conjunction spec
+ *
+ * @author Jakub Radlica
  */
 public class AnnotatedConjunctionSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
