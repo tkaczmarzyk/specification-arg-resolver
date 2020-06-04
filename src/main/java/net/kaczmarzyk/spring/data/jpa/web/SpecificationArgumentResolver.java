@@ -80,10 +80,10 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 		if (specs.size() == 1) {
 			Specification<Object> firstSpecification = specs.iterator().next();
 
-			if (!firstSpecification.getClass().equals(parameter.getParameterType())) {
-				return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), firstSpecification);
-			} else {
+			if (Specification.class == parameter.getParameterType()) {
 				return firstSpecification;
+			} else {
+				return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), firstSpecification);
 			}
 		}
 
