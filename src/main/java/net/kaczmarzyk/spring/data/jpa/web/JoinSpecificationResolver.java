@@ -19,7 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.annotation.Annotation;
-import java.util.Objects;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -36,7 +35,4 @@ class JoinSpecificationResolver implements SpecificationResolver<Join> {
 		return new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(context.queryContext(), joinDef.path(), joinDef.alias(), joinDef.type(), joinDef.distinct());
 	}
 
-	public int hashCode() {
-		return Objects.hash(this.getClass().getName());
-	}
 }

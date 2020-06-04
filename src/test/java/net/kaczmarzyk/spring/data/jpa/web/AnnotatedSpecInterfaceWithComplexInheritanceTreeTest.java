@@ -185,6 +185,9 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
+		assertThat(resolved)
+				.isInstanceOf(JoinFilter.class);
+
 		Collection<Specification<Object>> resolvedInnerSpecs = innerSpecs(resolved);
 		assertThat(resolvedInnerSpecs)
 				.hasSize(8)

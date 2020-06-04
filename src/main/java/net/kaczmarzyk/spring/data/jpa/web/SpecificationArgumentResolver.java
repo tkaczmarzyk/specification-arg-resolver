@@ -26,10 +26,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 
 /**
@@ -50,7 +50,12 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 				new JoinSpecificationResolver(),
 				new JoinsSpecificationResolver(),
 				new JoinFetchSpecificationResolver()).stream()
-				.collect(Collectors.toMap(SpecificationResolver::getSupportedSpecificationDefinition, identity()));
+				.collect(toMap(
+								SpecificationResolver::getSupportedSpecificationDefinition,
+								identity(),
+								(u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); },
+								LinkedHashMap::new
+						));
 	}
 
 	@Override

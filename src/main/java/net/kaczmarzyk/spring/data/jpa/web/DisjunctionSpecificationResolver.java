@@ -23,7 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 /**
@@ -55,10 +54,6 @@ class DisjunctionSpecificationResolver implements SpecificationResolver<Disjunct
 		}
 
 		return innerSpecs.isEmpty() ? null : new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(innerSpecs);
-	}
-
-	public int hashCode() {
-		return Objects.hash(this.getClass().getName());
 	}
 
 }

@@ -19,9 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.annotation.Annotation;
-import java.util.Objects;
-
-import static java.util.Objects.hash;
 
 
 /**
@@ -39,8 +36,4 @@ class JoinFetchSpecificationResolver implements SpecificationResolver<JoinFetch>
 		return new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(fetchDef.paths(), fetchDef.joinType());
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.getClass().getName());
-	}
 }

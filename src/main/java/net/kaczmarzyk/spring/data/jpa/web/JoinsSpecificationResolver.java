@@ -24,7 +24,6 @@ import org.springframework.data.jpa.domain.Specification;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 
 /**
@@ -53,9 +52,5 @@ class JoinsSpecificationResolver implements SpecificationResolver<Joins> {
 		}
 
 		return new Conjunction<>(joins);
-	}
-
-	public int hashCode() {
-		return Objects.hash(this.getClass().getName());
 	}
 }

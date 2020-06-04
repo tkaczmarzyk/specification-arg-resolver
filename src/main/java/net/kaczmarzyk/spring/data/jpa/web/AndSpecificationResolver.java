@@ -23,7 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -50,7 +49,4 @@ class AndSpecificationResolver implements SpecificationResolver<And> {
 		return innerSpecs.isEmpty() ? null : new Conjunction<>(innerSpecs);
 	}
 
-	public int hashCode() {
-		return Objects.hash(this.getClass().getName());
-	}
 }
