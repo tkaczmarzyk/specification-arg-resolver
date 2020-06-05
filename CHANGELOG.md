@@ -1,3 +1,19 @@
+v2.3.0
+======
+
+* Added support for path variables with regexp. All patterns supported by [spring AntPathMatcher](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/AntPathMatcher.html) are supported.
+  
+  For example:
+  ```java
+  @RequestMapping(value = "/pathVar/customers/{customerId:[0-9]+}")
+  @ResponseBody
+  public Object findById(
+          @Spec(path = "id", pathVars = "customerId", spec = Equal.class) Specification<Customer> spec) {
+  	
+  	return customerRepo.findAll(spec);
+  }
+  ```
+
 v2.2.2
 ======
 

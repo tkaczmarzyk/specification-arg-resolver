@@ -19,46 +19,56 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
+import java.util.Map;
+
 public class PathVariableResolverTest {
 
 	@Test
 	public void extractsPathVariable() {
-		PathVariableResolver resolver = PathVariableResolver
-				.forPathPatternAndActualPath("/customers/{customerId}", "/customers/77");
+		Map<String, String> resolvedVariables = PathVariableResolver
+				.resolvePathVariables("/customers/{customerId}", "/customers/77");
 
-		assertThat(resolver.resolveValue("customerId")).isEqualTo("77");
+		assertThat(resolvedVariables.get("customerId")).isEqualTo("77");
+	}
+
+	@Test
+	public void extractPathVariableWithRegex() {
+		Map<String, String> resolvedVariables = PathVariableResolver
+				.resolvePathVariables("/customers/{customerId:[0-9]+}", "/customers/77");
+
+		assertThat(resolvedVariables.get("customerId")).isEqualTo("77");
 	}
 
 	@Test
 	public void extractsPathVariable_untilSlash() {
-		PathVariableResolver resolver = PathVariableResolver
-				.forPathPatternAndActualPath("/customers/{customerId}/orders", "/customers/77/orders");
+		Map<String, String> resolvedVariables = PathVariableResolver
+				.resolvePathVariables("/customers/{customerId}/orders", "/customers/77/orders");
 
-		assertThat(resolver.resolveValue("customerId")).isEqualTo("77");
+		assertThat(resolvedVariables.get("customerId")).isEqualTo("77");
 	}
 
 	@Test
 	public void extractsPathVariableAmongMultiplePathVariables() {
-		PathVariableResolver resolver = PathVariableResolver
-				.forPathPatternAndActualPath("/customers/{customerId}/orders/{orderId}", "/customers/77/orders/66");
+		Map<String, String> resolvedVariables = PathVariableResolver
+				.resolvePathVariables("/customers/{customerId}/orders/{orderId:[0-9]+}", "/customers/77/orders/66");
 
-		assertThat(resolver.resolveValue("customerId")).isEqualTo("77");
-		assertThat(resolver.resolveValue("orderId")).isEqualTo("66");
+		assertThat(resolvedVariables.get("customerId")).isEqualTo("77");
+		assertThat(resolvedVariables.get("orderId")).isEqualTo("66");
 	}
 
 	@Test
 	public void returnsNullWhenPathVariableIsNotDefined() {
-		PathVariableResolver resolver = PathVariableResolver
-				.forPathPatternAndActualPath("/customers/{customerId}/orders/{orderId}", "/customers/77/orders/66");
+		Map<String, String> resolvedVariables = PathVariableResolver
+				.resolvePathVariables("/customers/{customerId}/orders/{orderId}", "/customers/77/orders/66");
 
-		assertThat(resolver.resolveValue("someUndefinedVar")).isNull();
+		assertThat(resolvedVariables.get("someUndefinedVar")).isNull();
 	}
 
 	@Test
 	public void returnsNullWhenPathVariableIsNotPresentOnActualPath() {
-		PathVariableResolver resolver = PathVariableResolver
-				.forPathPatternAndActualPath("/customers/{customerId}/orders/{orderId}", "/customers/77/orders");
+		Map<String, String> resolvedVariables = PathVariableResolver
+				.resolvePathVariables("/customers/{customerId}/orders/{orderId}", "/customers/77/orders");
 
-		assertThat(resolver.resolveValue("orderId")).isNull();
+		assertThat(resolvedVariables.get("orderId")).isNull();
 	}
 }
