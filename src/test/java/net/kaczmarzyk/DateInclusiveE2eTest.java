@@ -118,6 +118,7 @@ public class DateInclusiveE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Lisa"))
                 .andExpect(jsonPath("$[1].firstName").value("Maggie"))
-                .andExpect(jsonPath("$[2]").doesNotExist());
+                .andExpect(jsonPath("$[2].firstName").value("Minnie"))
+                .andExpect(jsonPath("$[3]").doesNotExist());
     }
 }

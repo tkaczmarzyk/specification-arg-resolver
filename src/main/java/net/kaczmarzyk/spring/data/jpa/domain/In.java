@@ -88,4 +88,9 @@ public class In<T> extends PathSpecification<T> {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "In [allowedValues=" + Arrays.toString(allowedValues) + ", converter=" + converter + "]";
+	}
 }

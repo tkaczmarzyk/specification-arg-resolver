@@ -15,25 +15,18 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.annotation.Annotation;
 
+public interface SpecificationResolver<T extends Annotation> {
 
-/**
- * @author Tomasz Kaczmarzyk
- */
-class JoinFetchSpecificationResolver implements SpecificationResolver<JoinFetch> {
-
-	@Override
-	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
-		return JoinFetch.class;
+	default <K extends Annotation> boolean supports(K specDefinition) {
+		return getSupportedSpecificationDefinition().equals(specDefinition.annotationType());
 	}
 
-	@Override
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, JoinFetch fetchDef) {
-		return new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(fetchDef.paths(), fetchDef.joinType());
-	}
+	Class<? extends Annotation> getSupportedSpecificationDefinition();
+
+	Specification<Object> buildSpecification(WebRequestProcessingContext context, T def);
 
 }

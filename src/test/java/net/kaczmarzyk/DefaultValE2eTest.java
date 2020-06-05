@@ -78,6 +78,7 @@ public class DefaultValE2eTest extends E2eTestBase {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
           .andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
-          .andExpect(jsonPath("$[1]").doesNotExist());
+          .andExpect(jsonPath("$[?(@.firstName=='Minnie')]").exists())
+          .andExpect(jsonPath("$[2]").doesNotExist());
   }
 }

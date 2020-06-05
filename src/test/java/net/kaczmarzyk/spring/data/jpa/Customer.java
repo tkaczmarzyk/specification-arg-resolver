@@ -23,15 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -67,10 +59,12 @@ public class Customer {
 
     private LocalDate birthDate;
 
+    private String occupation;
+
     private LocalDateTime lastOrderTime;
 
     private Integer weight;
-    
+
     private int weightInt;
     private long weightLong;
     private float weightFloat;
@@ -151,7 +145,15 @@ public class Customer {
         this.birthDate = birthDate;
     }
 
-    public LocalDateTime getLastOrderTime() {
+	public String getOccupation() {
+		return occupation;
+	}
+
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
+
+	public LocalDateTime getLastOrderTime() {
         return lastOrderTime;
     }
 

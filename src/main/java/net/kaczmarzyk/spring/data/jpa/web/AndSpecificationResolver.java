@@ -15,54 +15,38 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
-
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-class AndSpecificationResolver implements HandlerMethodArgumentResolver {
+class AndSpecificationResolver implements SpecificationResolver<And> {
 
-    private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
+	private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
 
-    
-    @Override
-    public boolean supportsParameter(MethodParameter param) {
-        return param.getParameterType() == Specification.class && param.hasParameterAnnotation(And.class);
-    }
+	@Override
+	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
+		return And.class;
+	}
 
-    @Override
-    public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
-    	And def = param.getParameterAnnotation(And.class);
-    	WebRequestProcessingContext context = new WebRequestProcessingContext(param, webRequest);
-    	
-        return buildSpecification(context, def);
-    }
-
-    Specification<Object> buildSpecification(WebRequestProcessingContext context, And def) {
+	@Override
+	public Specification<Object> buildSpecification(WebRequestProcessingContext context, And def) {
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
-        for (Spec innerDef : def.value()) {
-        	Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
-        	if (innerSpec != null) {
-        		innerSpecs.add(innerSpec);
-        	}
-        }
-        
-        return innerSpecs.isEmpty() ? null : new Conjunction<>(innerSpecs);
+		for (Spec innerDef : def.value()) {
+			Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
+			if (innerSpec != null) {
+				innerSpecs.add(innerSpec);
+			}
+		}
+
+		return innerSpecs.isEmpty() ? null : new Conjunction<>(innerSpecs);
 	}
 
 }

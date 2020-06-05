@@ -15,101 +15,42 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static net.kaczmarzyk.spring.data.jpa.web.MethodParameterUtil.isAnnotatedWith;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import static net.kaczmarzyk.spring.data.jpa.web.MethodParameterUtil.*;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
-
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-class JoinsSpecificationResolver implements RecursiveHandlerMethodArgumentResolver {
+class JoinsSpecificationResolver implements SpecificationResolver<Joins> {
 
-	private SpecificationArgumentResolver parent;
+	private JoinFetchSpecificationResolver joinFetchSpecificationResolver = new JoinFetchSpecificationResolver();
+	private JoinSpecificationResolver joinSpecificationResolver = new JoinSpecificationResolver();
 
-	public JoinsSpecificationResolver(SpecificationArgumentResolver parent) {
-		this.parent = parent;
-	}
-	
 	@Override
-	public boolean supportsParameter(MethodParameter param) {
-		Class<?> paramType = param.getParameterType();
-        return paramType.isInterface() && Specification.class.isAssignableFrom(paramType)
-        		&& isAnnotatedWith(Joins.class, param);
+	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
+		return Joins.class;
 	}
 
 	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		return resolveArgument(parameter, mavContainer, webRequest, binderFactory, new ArrayList<HandlerMethodArgumentResolver>());
-	}
-
-	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory,
-			List<HandlerMethodArgumentResolver> recursiveCallers) throws Exception {
-		
-		recursiveCallers.add(this);
-    	
-    	Specification<Object> joins = resolveJoins(parameter, webRequest);
-        @SuppressWarnings("unchecked")
-        Specification<Object> regularSpec = (Specification<Object>) parent.resolveArgument(parameter, mavContainer, webRequest, binderFactory, recursiveCallers);
-        
-        Specification<Object> spec = regularSpec == null ? joins : new Conjunction<Object>(Arrays.asList(joins, regularSpec));
-
-        if (Specification.class == parameter.getParameterType()) {
-            return spec;
-        } else {
-            return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), spec);
-        }
-	}
-
-	private Specification<Object> resolveJoins(MethodParameter parameter, NativeWebRequest webRequest) {
+	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Joins joinsDef) {
 		Collection<Specification<Object>> joins = new ArrayList<>();
-		joins.addAll(resolveJoinFetches(parameter));
-		joins.addAll(resolveRegularJoins(parameter, webRequest));
+
+		for (JoinFetch fetchDef : joinsDef.fetch()) {
+			joins.add(joinFetchSpecificationResolver.buildSpecification(context, fetchDef));
+		}
+
+		for (Join joinDef : joinsDef.value()) {
+			joins.add(joinSpecificationResolver.buildSpecification(context, joinDef));
+		}
+
 		return new Conjunction<>(joins);
 	}
-
-	private Collection<? extends Specification<Object>> resolveRegularJoins(MethodParameter parameter, NativeWebRequest webRequest) {
-		Joins joinsDef = getAnnotation(Joins.class, parameter);
-		Collection<Specification<Object>> joins = new ArrayList<>();
-		for (Join joinDef : joinsDef.value()) {
-			joins.add(newJoin(joinDef, webRequest));
-		}
-		return joins;
-	}
-
-	private net.kaczmarzyk.spring.data.jpa.domain.Join<Object> newJoin(Join joinDef, NativeWebRequest request) {
-		return new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(new WebRequestQueryContext(request), joinDef.path(), joinDef.alias(), joinDef.type(), joinDef.distinct());
-	}
-
-	private Collection<? extends Specification<Object>> resolveJoinFetches(MethodParameter parameter) {
-		Joins joinsDef = getAnnotation(Joins.class, parameter);
-		Collection<Specification<Object>> joins = new ArrayList<>();
-		for (JoinFetch fetchDef : joinsDef.fetch()) {
-			joins.add(newJoinFetch(fetchDef));
-		}
-		return joins;
-	}
-
-	private net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object> newJoinFetch(JoinFetch fetchDef) {
-		return new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(fetchDef.paths(), fetchDef.joinType());
-	}
-
 }

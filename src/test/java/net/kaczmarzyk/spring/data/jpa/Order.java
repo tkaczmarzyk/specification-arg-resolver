@@ -29,19 +29,19 @@ public class Order {
 
     @Id @GeneratedValue
     private Long id;
-    
+
     private String itemName;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer2;
-    
-    
+
+
     Order() {
     }
-    
+
     public Order(Customer customer, String itemName) {
         this.itemName = itemName;
         this.customer = customer;

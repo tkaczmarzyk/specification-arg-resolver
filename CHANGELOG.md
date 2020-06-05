@@ -1,3 +1,17 @@
+v2.2.2 - UNRELEASED
+======
+
+* Fixed support for custom interfaces with complex inheritance tree. In previous versions, annotations: @Join, @JoinFetch, @Joins were supported only for the lowest interface in the inheritance tree. 
+
+    Following example didn't work before fix:
+     ```java
+      @Join(path= "orders", alias = "o")
+      @Spec(path="o.id", params="orderId", spec=Equal.class)
+      public interface CommonFilter<T> extends Specification<T> { }
+      
+      public interface CustomerFilter extends CommonFilter<Customer> { }
+     ```
+
 v2.2.1
 ======
 

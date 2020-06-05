@@ -116,6 +116,7 @@ public class EqualE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[0].firstName").value("Marge"))
 			.andExpect(jsonPath("$[1].firstName").value("Lisa"))
 			.andExpect(jsonPath("$[2].firstName").value("Maggie"))
-			.andExpect(jsonPath("$[3]").doesNotExist());
+			.andExpect(jsonPath("$[3].firstName").value("Minnie"))
+			.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 }

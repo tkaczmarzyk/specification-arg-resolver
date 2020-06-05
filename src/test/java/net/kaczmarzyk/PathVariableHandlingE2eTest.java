@@ -30,9 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 /**
@@ -53,13 +51,13 @@ public class PathVariableHandlingE2eTest extends E2eTestBase {
 
 			return customerRepo.findAll(spec);
 		}
-		
+
 		@RequestMapping(value = "/pathVar/customers/{customerLastName}", params = "gender")
 		@ResponseBody
 		public Object findCustomerOrdersByLastNameAndGender(
 				@And({
-					@Spec(path = "lastName", pathVars = "customerLastName", spec = Equal.class),
-					@Spec(path = "gender", params = "gender", spec = Equal.class)
+						@Spec(path = "lastName", pathVars = "customerLastName", spec = Equal.class),
+						@Spec(path = "gender", params = "gender", spec = Equal.class)
 				}) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
@@ -69,30 +67,30 @@ public class PathVariableHandlingE2eTest extends E2eTestBase {
 	@Test
 	public void findsByIdProvidedInPathVariable() throws Exception {
 		mockMvc.perform(get("/pathVar/customers/" + homerSimpson.getId())
-					.accept(MediaType.APPLICATION_JSON))
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[0].firstName").value("Homer"))
 				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
-	
+
 	@Test
 	public void findsByIdProviedInPathVariableAndByRegularSpec() throws Exception {
 		mockMvc.perform(get("/pathVar/customers/Simpson?gender=FEMALE")
 				.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
-			.andExpect(jsonPath("$[3]").doesNotExist());
-		
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
+				.andExpect(jsonPath("$[3]").doesNotExist());
+
 		mockMvc.perform(get("/pathVar/customers/Simpson?gender=MALE")
 				.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
-			.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
-			.andExpect(jsonPath("$[2]").doesNotExist());
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
+				.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 }

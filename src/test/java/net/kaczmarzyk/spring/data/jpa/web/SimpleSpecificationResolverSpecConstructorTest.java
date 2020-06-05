@@ -63,7 +63,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 			this.converter = converter;
 		}
 	}
-	
+
 	public static class SpecWithLegacy3ArgConstructor extends DummySpec {
 		String path;
 		String[] args;
@@ -91,7 +91,9 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
-		SpecWith3ArgConstructor resolved = (SpecWith3ArgConstructor) resolver.resolveArgument(param, null, req, null);
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		SpecWith3ArgConstructor resolved = (SpecWith3ArgConstructor) resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
@@ -103,20 +105,24 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
-		SpecWith4ArgConstructor resolved = (SpecWith4ArgConstructor) resolver.resolveArgument(param, null, req, null);
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		SpecWith4ArgConstructor resolved = (SpecWith4ArgConstructor) resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
 		assertThat(resolved.converter).isEqualTo(Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION));
 	}
-	
+
 	@Test
 	public void resolvesLegacy3ArgsSpec() throws Exception {
 		MethodParameter param = MethodParameter.forExecutable(testMethod("methodWithLegacy3argSpec"), 0);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
-		SpecWithLegacy3ArgConstructor resolved = (SpecWithLegacy3ArgConstructor) resolver.resolveArgument(param, null, req, null);
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		SpecWithLegacy3ArgConstructor resolved = (SpecWithLegacy3ArgConstructor) resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
@@ -129,7 +135,9 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
-		SpecWith5ArgConstructor resolved = (SpecWith5ArgConstructor) resolver.resolveArgument(param, null, req, null);
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		SpecWith5ArgConstructor resolved = (SpecWith5ArgConstructor) resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
@@ -158,7 +166,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 		public void methodWith4argSpec(
 				@Spec(path = "thePath", params = "theParameter", spec = SpecWith4ArgConstructor.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
 		}
-		
+
 		public void methodWithLegacy3argSpec(
 				@Spec(path = "thePath", params = "theParameter", spec = SpecWithLegacy3ArgConstructor.class, config = "yyyyMMdd", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
 		}

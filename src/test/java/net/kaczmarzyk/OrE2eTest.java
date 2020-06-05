@@ -62,6 +62,8 @@ public class OrE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
-				.andExpect(jsonPath("$[3]").doesNotExist());
+				.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Minnie')]").exists())
+				.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 }

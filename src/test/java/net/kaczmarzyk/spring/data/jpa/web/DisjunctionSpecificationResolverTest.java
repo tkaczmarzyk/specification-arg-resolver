@@ -38,18 +38,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
 
 	DisjunctionSpecificationResolver resolver = new DisjunctionSpecificationResolver();
-	
+
 	public static class TestController {
 
 		public void testMethodWithoutExpectedAnnotation(
 				@Or({ @Spec(path = "path1", spec = Like.class), @Spec(path = "path2", spec = Like.class) }) Specification<Object> spec) {}
-		
+
 		public void testMethodWithUnexpectedType(
 				@Disjunction({
                 	@And({ @Spec(path = "path1", spec = Like.class), @Spec(path = "path2", spec = Like.class) }),
                 	@And({ @Spec(path = "path3", spec = Like.class), @Spec(path = "path4", spec = Like.class) })
                 }) Object nonSpec) {}
-		
+
         public void testMethod(
                 @Disjunction({
                 	@And({ @Spec(path = "path1", spec = Like.class), @Spec(path = "path2", spec = Like.class) }),
@@ -67,44 +67,24 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
         						@Spec(path = "path2", spec = Like.class) }) Specification<Object> spec) {
         }
     }
-	
-	@Test
-    public void supportsAnnotatedSpecificationParam() throws Exception {
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
-        
-        assertThat(resolver.supportsParameter(param)).isTrue();
-	}
-	
-	@Test
-    public void doesNotSupportParamWithoutExpectedAnnotation() throws Exception {
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithoutExpectedAnnotation"), 0);
-        
-        assertThat(resolver.supportsParameter(param)).isFalse();
-	}
-	
-	@Test
-    public void doesNotSupportParamOfUnexpectedType() throws Exception {
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithUnexpectedType", Object.class), 0);
-        
-        assertThat(resolver.supportsParameter(param)).isFalse();
-	}
-	
+
 	@Test
     public void resolvesWrapperOfAnds() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
         when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
         when(req.getParameterValues("path3")).thenReturn(new String[] { "value3" });
         when(req.getParameterValues("path4")).thenReturn(new String[] { "value4" });
 
-        Specification<?> result = resolver.resolveArgument(param, null, req, null);
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        Specification<Object> and1 = new Conjunction<>(new Like<>(queryCtx, "path1", "value1"),
-                new Like<>(queryCtx, "path2", "value2"));
-        Specification<Object> and2 = new Conjunction<>(new Like<>(queryCtx, "path3", "value3"),
-                new Like<>(queryCtx, "path4", "value4"));
+		Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction.class));
+
+        Specification<Object> and1 = new Conjunction<>(new Like<>(ctx.queryContext(), "path1", "value1"),
+                new Like<>(ctx.queryContext(), "path2", "value2"));
+        Specification<Object> and2 = new Conjunction<>(new Like<>(ctx.queryContext(), "path3", "value3"),
+                new Like<>(ctx.queryContext(), "path4", "value4"));
 
         assertThat(result).isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(and1, and2));
     }
@@ -119,7 +99,9 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
         when(req.getParameterValues("path3")).thenReturn(new String[] { "value3" });
         when(req.getParameterValues("path4")).thenReturn(new String[] { "value4" });
 
-        Specification<?> result = resolver.resolveArgument(param, null, req, null);
+	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+	    Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction.class));
 
         Specification<Object> and = new Conjunction<>(new Like<>(queryCtx, "path3", "value3"),
                 new Like<>(queryCtx, "path4", "value4"));

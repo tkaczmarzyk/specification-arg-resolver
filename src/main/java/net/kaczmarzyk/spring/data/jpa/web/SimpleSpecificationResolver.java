@@ -15,48 +15,33 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
-
-import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 
 /**
  * @author Tomasz Kaczmarzyk
  * @author Jakub Radlica
  */
-class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
+class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
 	@Override
-	public boolean supportsParameter(MethodParameter param) {
-		return param.getParameterType() == Specification.class && param.hasParameterAnnotation(Spec.class);
+	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
+		return Spec.class;
 	}
 
-    @Override
-    public Specification<?> resolveArgument(MethodParameter param, ModelAndViewContainer mav, NativeWebRequest req,
-            WebDataBinderFactory binderFactory) throws Exception {
-
-        Spec def = param.getParameterAnnotation(Spec.class);
-        WebRequestProcessingContext context = new WebRequestProcessingContext(param, req);
-
-        return buildSpecification(context, def);
-    }
-
-    Specification<Object> buildSpecification(WebRequestProcessingContext context, Spec def) {
+	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Spec def) {
         try {
             Collection<String> args = resolveSpecArguments(context, def);
             if (args.isEmpty() && !isZeroArgSpec(def)) {
@@ -222,4 +207,5 @@ class SimpleSpecificationResolver implements HandlerMethodArgumentResolver {
 			return pattern.isEmpty();
 		}
 	}
+
 }

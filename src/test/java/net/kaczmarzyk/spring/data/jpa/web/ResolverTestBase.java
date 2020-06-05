@@ -16,7 +16,9 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import java.lang.reflect.Executable;
+import java.util.Collection;
 
+import net.kaczmarzyk.utils.ReflectionUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -45,6 +47,26 @@ public abstract class ResolverTestBase {
             throw new RuntimeException(e);
         }
     }
-	
+
+    protected MethodParameter methodParameter(String methodName, Class<?> specClass) {
+		return MethodParameter.forExecutable(
+				testMethod(methodName, specClass), 0
+		);
+    }
+
+	protected Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
+		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
+				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+		return ReflectionUtils.get(resolvedConjunction, "innerSpecs");
+	}
+
+	protected Collection<Specification<Object>> innerSpecsFromDisjunction(Specification<?> resolvedSpec) {
+		net.kaczmarzyk.spring.data.jpa.domain.Disjunction<Object> resolvedDisjunction =
+				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "val$targetSpec");
+
+		return ReflectionUtils.get(resolvedDisjunction, "innerSpecs");
+	}
+
 	protected abstract Class<?> controllerClass();
 }
