@@ -28,9 +28,9 @@ import static java.util.Collections.emptyMap;
  */
 public class PathVariableResolver {
 
-	private final static PathMatcher pathMatcher = new AntPathMatcher();
-
 	public static Map<String, String> resolvePathVariables(String pathPattern, String actualPath) {
+		PathMatcher pathMatcher = new AntPathMatcher();
+		
 		if (pathMatcher.match(pathPattern, actualPath)) {
 			return pathMatcher.extractUriTemplateVariables(pathPattern, actualPath);
 		} else {
