@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
 @RunWith(Parameterized.class)
 public class WebRequestProcessingContextWithRequestMappingAtClassLevelPathVariableResolverTest {
