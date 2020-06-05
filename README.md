@@ -580,6 +580,19 @@ Although in pure RESTful API this feature should not be needed, it sometimes mig
 
 This will handle request `GET /customers/Simpson` as `select c from Customers c where c.lastName = 'Simpson'`.
 
+Basic regular expressions are supported for path variable matching. All patterns supported by [spring AntPathMatcher](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/AntPathMatcher.html) are supported. For example:
+
+```java
+@RequestMapping(value = "/pathVar/customers/{customerId:[0-9]+}")
+@ResponseBody
+public Object findById(
+  @Spec(path = "id", pathVars = "customerId", spec = Equal.class) Specification<Customer> spec) {
+
+  return customerRepo.findAll(spec);
+}
+```
+
+
 
 Compatibility notes
 -------------------
