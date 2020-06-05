@@ -72,7 +72,7 @@ public class PathVariableHandlingE2eTest extends E2eTestBase {
 		}
 
 		@Controller
-		@RequestMapping(value = "/{pathName:[a-z]+}/pathVar2")
+		@RequestMapping(value = "/{pathName:[a-zA-Z]+}/pathVar2")
 		public static class TestControllerWithClassRequestMapping {
 
 			@Autowired
@@ -129,11 +129,18 @@ public class PathVariableHandlingE2eTest extends E2eTestBase {
 
 	@Test
 	public void findsByIdProvidedInPathVariableWithRegexpWithRequestMappingAtClassLevel() throws Exception {
-		mockMvc.perform(get("/asd/pathVar2/customers/" + homerSimpson.getId()+"/regexp")
+		mockMvc.perform(get("/rootPath/pathVar2/customers/" + homerSimpson.getId()+"/regexp")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[0].firstName").value("Homer"))
 				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void returnsHttp404WhenSentRequestContainsPathVarInInvalidFormat() throws Exception {
+		mockMvc.perform(get("/rootPath/pathVar2/customers/invalidCustomerIdFormat/regexp")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
 	}
 }
