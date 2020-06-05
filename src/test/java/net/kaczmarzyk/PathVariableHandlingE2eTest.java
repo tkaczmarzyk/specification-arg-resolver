@@ -52,6 +52,14 @@ public class PathVariableHandlingE2eTest extends E2eTestBase {
 			return customerRepo.findAll(spec);
 		}
 
+		@RequestMapping(value = "/pathVar/customers/{customerId:[0-9]+}/regexp")
+		@ResponseBody
+		public Object findByIdWithRegex(
+				@Spec(path = "id", pathVars = "customerId", spec = Equal.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
 		@RequestMapping(value = "/pathVar/customers/{customerLastName}", params = "gender")
 		@ResponseBody
 		public Object findCustomerOrdersByLastNameAndGender(
@@ -62,11 +70,36 @@ public class PathVariableHandlingE2eTest extends E2eTestBase {
 
 			return customerRepo.findAll(spec);
 		}
+
+		@Controller
+		@RequestMapping(value = "/{pathName:[a-zA-Z]+}/pathVar2")
+		public static class TestControllerWithClassRequestMapping {
+
+			@Autowired
+			CustomerRepository customerRepo;
+
+			@RequestMapping(value = "/customers/{customerId:[0-9]+}/regexp")
+			@ResponseBody
+			public Object findById(
+					@Spec(path = "id", pathVars = "customerId", spec = Equal.class) Specification<Customer> spec) {
+				return customerRepo.findAll(spec);
+			}
+		}
 	}
 
 	@Test
 	public void findsByIdProvidedInPathVariable() throws Exception {
 		mockMvc.perform(get("/pathVar/customers/" + homerSimpson.getId())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0].firstName").value("Homer"))
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByIdProvidedInPathVariableWithRegex() throws Exception {
+		mockMvc.perform(get("/pathVar/customers/" + homerSimpson.getId()+"/regexp")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
@@ -92,5 +125,22 @@ public class PathVariableHandlingE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
 				.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void findsByIdProvidedInPathVariableWithRegexpWithRequestMappingAtClassLevel() throws Exception {
+		mockMvc.perform(get("/rootPath/pathVar2/customers/" + homerSimpson.getId()+"/regexp")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0].firstName").value("Homer"))
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void returnsHttp404WhenSentRequestContainsPathVarInInvalidFormat() throws Exception {
+		mockMvc.perform(get("/rootPath/pathVar2/customers/invalidCustomerIdFormat/regexp")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
 	}
 }

@@ -15,37 +15,26 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
+
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
 
 /**
  * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
 public class PathVariableResolver {
 
-	private String pathPattern;
-	private String actualPath;
-	
-	private PathVariableResolver(String pathPattern, String actualPath) {
-		this.pathPattern = pathPattern;
-		this.actualPath = actualPath;
-	}
-
-	public String resolveValue(String pathVariableName) {
-		String variablePlaceholder = "{" + pathVariableName + "}";
-		if (pathPattern.contains(variablePlaceholder)) {
-			String regex = pathPattern.replace(variablePlaceholder, "(.+)");
-			regex = regex.replaceAll("\\{.+\\}", ".+");
-			Pattern pattern = Pattern.compile(regex);
-			Matcher matcher = pattern.matcher(actualPath);
-			if (matcher.matches()) {
-				return matcher.group(1);
-			}
+	public static Map<String, String> resolvePathVariables(String pathPattern, String actualPath) {
+		PathMatcher pathMatcher = new AntPathMatcher();
+		
+		if (pathMatcher.match(pathPattern, actualPath)) {
+			return pathMatcher.extractUriTemplateVariables(pathPattern, actualPath);
+		} else {
+			return emptyMap();
 		}
-		return null;
-	}
-
-	public static PathVariableResolver forPathPatternAndActualPath(String pathPattern, String actualPath) {
-		return new PathVariableResolver(pathPattern, actualPath);
 	}
 }
