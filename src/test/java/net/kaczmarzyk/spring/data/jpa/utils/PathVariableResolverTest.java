@@ -73,7 +73,7 @@ public class PathVariableResolverTest {
 	}
 	
 	@Test
-	public void returnNullWhenActualPathDoesNotMatchWithPathPattern() {
+	public void returnsNullWhenActualPathDoesNotMatchWithPathPattern() {
 		Map<String, String> resolvedVariables = PathVariableResolver
 				.resolvePathVariables("/customers/{customerId:[0-9]+}", "/customers/invalidCustomerIdFormat");
 		
