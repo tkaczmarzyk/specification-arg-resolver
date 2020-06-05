@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jakub Radlica
  */
 @RunWith(Parameterized.class)
-public class WebRequestProcessingContextWithRequestMappingAtClassLevelPathVariableResolverTest {
+public class WebRequestProcessingContextPathVariableResolverTest {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -54,7 +54,7 @@ public class WebRequestProcessingContextWithRequestMappingAtClassLevelPathVariab
 
 	private Class<?> testController;
 
-	public WebRequestProcessingContextWithRequestMappingAtClassLevelPathVariableResolverTest(Class<?> testController) {
+	public WebRequestProcessingContextPathVariableResolverTest(Class<?> testController) {
 		this.testController = testController;
 	}
 
