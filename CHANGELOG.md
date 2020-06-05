@@ -1,4 +1,4 @@
-v2.2.2 - UNRELEASED
+v2.2.2
 ======
 
 * Fixed support for custom interfaces with complex inheritance tree. In previous versions, annotations: @Join, @JoinFetch, @Joins were supported only for the lowest interface in the inheritance tree. 
