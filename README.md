@@ -86,6 +86,40 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
+If you need to use additional converters you should declare `SpecificationArgumentResolver` with `ConversionService` containing required converters. 
+For example: 
+
+```java
+@Configuration
+@EnableJpaRepositories
+public class MyConfig implements WebMvcConfigurer {
+ 
+    @Autowired
+    ConversionService conversionService;
+    
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new SpecificationArgumentResolver(conversionService));
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToAddressConverter());
+    }
+    
+    public static class StringToAddressConverter implements Converter<String, Address> {
+        @Override
+        public Address convert(String rawAddress) {
+            Address address = new Address();
+            address.setStreet(rawAddress);
+            return address;
+        }
+    }
+
+    ...
+}
+```
+
 Simple specifications
 ----------------------
 

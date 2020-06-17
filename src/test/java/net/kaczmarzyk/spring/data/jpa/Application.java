@@ -17,10 +17,14 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -35,9 +39,26 @@ import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
 @EnableAutoConfiguration
 public class Application implements WebMvcConfigurer {
 
+    @Autowired
+    ConversionService conversionService;
+    
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        SpecificationArgumentResolver specificationArgumentResolver = new SpecificationArgumentResolver();
+        SpecificationArgumentResolver specificationArgumentResolver = new SpecificationArgumentResolver(conversionService);
         argumentResolvers.add(specificationArgumentResolver);
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToAddressConverter());
+    }
+    
+    public static class StringToAddressConverter implements Converter<String, Address> {
+        @Override
+        public Address convert(String rawAddress) {
+            Address address = new Address();
+            address.setStreet(rawAddress);
+            return address;
+        }
     }
 }

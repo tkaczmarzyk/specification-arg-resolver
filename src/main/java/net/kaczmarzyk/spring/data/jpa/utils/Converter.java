@@ -99,6 +99,26 @@ public class Converter {
 		this.conversionService = conversionService;
 	}
 	
+	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
+		if (expectedClass == String.class) {
+			return (List<T>) values;
+		}
+		List<String> rejected = null;
+		List<T> result = new ArrayList<>();
+		for (String value : values) {
+			try {
+				result.add(convert(value, expectedClass));
+			} catch (ValueRejectedException e) {
+				if (rejected == null) {
+					rejected = new ArrayList<>();
+				}
+				rejected.add(e.getRejectedValue());
+			}
+		}
+		onTypeMismatch.handleRejectedValues(rejected);
+		return result;
+	}
+	
 	public <T> T convert(String value, Class<T> expectedClass) {
 		if (expectedClass.isEnum()) {
 			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
@@ -244,26 +264,6 @@ public class Converter {
 			}
 		}
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
-	}
-	
-	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
-		if (expectedClass == String.class) {
-			return (List<T>) values;
-		}
-		List<String> rejected = null;
-		List<T> result = new ArrayList<>();
-		for (String value : values) {
-			try {
-				result.add(convert(value, expectedClass));
-			} catch (ValueRejectedException e) {
-				if (rejected == null) {
-					rejected = new ArrayList<>();
-				}
-				rejected.add(e.getRejectedValue());
-			}
-		}
-		onTypeMismatch.handleRejectedValues(rejected);
-		return result;
 	}
 	
 	@Override
