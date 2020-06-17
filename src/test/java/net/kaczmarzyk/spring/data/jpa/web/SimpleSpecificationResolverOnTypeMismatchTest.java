@@ -31,6 +31,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestBase {
 
-	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(DEFAULT_CONVERSION_SERVICE);
 
 	@Test
 	public void usesEmptyResultSpecWrapperWhenSpecified() throws Exception {

@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -64,7 +65,7 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
         DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>(queryCtx, "registrationDate", new String[]{"12-03-2014"},
-        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
 
         List<Customer> result = customerRepo.findAll(before12th);
         assertThat(result)

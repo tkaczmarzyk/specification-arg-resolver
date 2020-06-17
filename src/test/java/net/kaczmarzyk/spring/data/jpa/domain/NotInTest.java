@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -137,14 +138,14 @@ public class NotInTest extends IntegrationTestBase {
     @Test
     public void filterByDateWithCustomDateFormat() {
     	NotIn<Customer> notRegistered1stMarch = new NotIn<>(queryCtx, "registrationDate", new String[] { "01-03-2015" },
-    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
     	
     	List<Customer> found = customerRepo.findAll(notRegistered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(moeSzyslak, joeQuimby);
     	
     	NotIn<Customer> notRegistered1stNor2ndMarch = new NotIn<>(queryCtx, "registrationDate", new String[] { "01-03-2015", "02-03-2015" },
-    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
     	
     	found = customerRepo.findAll(notRegistered1stNor2ndMarch);
     	

@@ -37,6 +37,7 @@ public class Application implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new SpecificationArgumentResolver());
+        SpecificationArgumentResolver specificationArgumentResolver = new SpecificationArgumentResolver();
+        argumentResolvers.add(specificationArgumentResolver);
     }
 }

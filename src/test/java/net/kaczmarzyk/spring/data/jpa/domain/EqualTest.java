@@ -15,22 +15,21 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.Gender;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.Gender;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import java.util.List;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -161,7 +160,7 @@ public class EqualTest extends IntegrationTestBase {
     @Test
     public void filterByDateWithCustomDateFormat() {
     	Equal<Customer> registered1stMarch = new Equal<>(queryCtx, "registrationDate", new String[] { "01-03-2015" },
-    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);

@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Function;
@@ -24,10 +25,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Root;
 
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -57,8 +61,10 @@ public abstract class IntegrationTestBase {
     
     @PersistenceContext
     protected EntityManager em;
+	
+	public static final ConversionService DEFAULT_CONVERSION_SERVICE = new DefaultConversionService();
     
-    protected Converter defaultConverter = Converter.DEFAULT;
+    protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
     
     protected QueryContext queryCtx = new QueryContext() {
 	

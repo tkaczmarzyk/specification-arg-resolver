@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.utils;
+package net.kaczmarzyk.spring.data.jpa.utils.converter;
 
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
+import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.*;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValueRejectedException;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -39,8 +44,8 @@ public class ConverterTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	
-	Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT);
-	
+	private static Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
 	
 	@Test
 	public void convertsToDate() {
@@ -114,14 +119,14 @@ public class ConverterTest {
 		expected.expect(ValuesRejectedException.class);
 		expected.expect(valuesRejected("ROBOT", "ALIEN"));
 		
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION);
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, DEFAULT_CONVERSION_SERVICE);
 		
 		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
 	}
 	
 	@Test
 	public void ignoresRejectedEnumValues() {
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT);
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
 		
 		List<Gender> result = converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
 		
@@ -177,7 +182,25 @@ public class ConverterTest {
 	public void convertsValueWithoutDecimalPointToBigDecimal() {
 		assertThat(converter.convert("10", BigDecimal.class)).isEqualTo(new BigDecimal("10"));
 	}
-
+	
+	@Test
+	public void convertsToUUID() {
+		UUID converted = converter.convert("2cdf7f82-2e32-4219-be0c-a5457e79c7b1", UUID.class);
+		
+		assertThat(converted)
+				.isEqualTo(UUID.fromString("2cdf7f82-2e32-4219-be0c-a5457e79c7b1"));
+	}
+	
+	@Test
+	public void throwsValueRejectedExceptionForUnparsableUUID() {
+		assertThrows(
+				ValueRejectedException.class,
+				() -> converter.convert("2cdf7f82-2e32-4219-be0c-a5457e79c7b@", UUID.class),
+				"unparseable uuid"
+				
+		);
+	}
+	
 	private Matcher<?> valuesRejected(final String... values) {
 		return new BaseMatcher<ValuesRejectedException>() {
 

@@ -16,12 +16,11 @@
 package net.kaczmarzyk.spring.data.jpa;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -73,6 +72,11 @@ public class Customer {
     
     private boolean gold;
     private Boolean goldObj;
+    
+    private Instant dateOfNextSpecialOfferInstant;
+    private OffsetDateTime dateOfNextSpecialOffer;
+    
+    private UUID refCode;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Set<Order> orders;
@@ -182,6 +186,23 @@ public class Customer {
 	public void setGold(boolean gold) {
 		this.gold = gold;
 		this.goldObj = gold;
+	}
+	
+	public OffsetDateTime getDateOfNextSpecialOffer() {
+		return dateOfNextSpecialOffer;
+	}
+	
+	public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
+		this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
+		this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
+	}
+	
+	public UUID getRefCode() {
+		return refCode;
+	}
+	
+	public void setRefCode(UUID refCode) {
+		this.refCode = refCode;
 	}
 	
 	public void setNickName(String nickName) {

@@ -30,9 +30,14 @@ import java.util.List;
  */
 class ConjunctionSpecificationResolver implements SpecificationResolver<Conjunction> {
 
-	private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
-	private OrSpecificationResolver orResolver = new OrSpecificationResolver();
-
+	private SimpleSpecificationResolver specResolver;
+	private OrSpecificationResolver orResolver;
+	
+	public ConjunctionSpecificationResolver(SimpleSpecificationResolver simpleSpecificationResolver) {
+		this.specResolver = simpleSpecificationResolver;
+		this.orResolver = new OrSpecificationResolver(simpleSpecificationResolver);
+	}
+	
 	@Override
 	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
 		return Conjunction.class;

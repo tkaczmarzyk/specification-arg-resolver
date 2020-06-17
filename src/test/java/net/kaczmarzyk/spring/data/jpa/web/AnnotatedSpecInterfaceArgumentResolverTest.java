@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -133,7 +134,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 	public static interface GrandChildInterface extends ChildInterface, Chil2dInterface {
 	}
 
-	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT);
+	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
 
 	public static class TestController {
 		public void methodWithSimpleSpec(IfaceWithSimpleSpec arg) {}

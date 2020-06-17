@@ -15,27 +15,27 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 
 /**
  * @author Tomasz Kaczmarzyk
  */
 public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBase {
 
-    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(DEFAULT_CONVERSION_SERVICE);
 
     @Test(expected = InvalidPathVariableRequestedException.class)
     public void throwsExceptionIfPathVariableNotPresent() throws Exception {
@@ -80,7 +80,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isEqualTo(new DateBetween<>(ctx.queryContext(), "thePath", new String[] { "2019-01-25", "2019-01-27" }, Converter.DEFAULT));
+        assertThat(resolved).isEqualTo(new DateBetween<>(ctx.queryContext(), "thePath", new String[] { "2019-01-25", "2019-01-27" }, defaultConverter));
     }
 
     @RequestMapping(path = "/customers/{customerId}")

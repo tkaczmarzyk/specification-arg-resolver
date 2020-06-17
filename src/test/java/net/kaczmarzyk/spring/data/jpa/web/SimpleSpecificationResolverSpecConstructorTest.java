@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -27,6 +28,7 @@ import javax.persistence.criteria.Root;
 
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -41,7 +43,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
  */
 public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTestBase {
 
-	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
+	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(DEFAULT_CONVERSION_SERVICE);
 
 	public static class SpecWith3ArgConstructor extends DummySpec {
 		QueryContext queryCtx;
@@ -111,7 +113,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
-		assertThat(resolved.converter).isEqualTo(Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION));
+		assertThat(resolved.converter).isEqualTo(Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, DEFAULT_CONVERSION_SERVICE));
 	}
 
 	@Test
@@ -141,7 +143,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
-		assertThat(resolved.converter).isEqualTo(Converter.withDateFormat("yyyyMMdd", OnTypeMismatch.EXCEPTION));
+		assertThat(resolved.converter).isEqualTo(Converter.withDateFormat("yyyyMMdd", OnTypeMismatch.EXCEPTION, DEFAULT_CONVERSION_SERVICE));
 		assertThat(resolved.config).isEqualTo(new String[] { "yyyyMMdd" });
 	}
 

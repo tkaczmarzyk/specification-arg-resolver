@@ -29,7 +29,11 @@ import java.util.List;
  */
 class OrSpecificationResolver implements SpecificationResolver<Or> {
 
-    private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
+    private SimpleSpecificationResolver specResolver;
+    
+    public OrSpecificationResolver(SimpleSpecificationResolver simpleSpecificationResolver) {
+        this.specResolver = simpleSpecificationResolver;
+    }
     
     @Override
     public Class<? extends Annotation> getSupportedSpecificationDefinition() {

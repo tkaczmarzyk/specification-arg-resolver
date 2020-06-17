@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -118,7 +119,7 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * @param expectedMembers the Customers we expect to be filtered in
 	 */
 	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String dateFormat, Customer... members) {
-		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)), members);
+		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE)), members);
 	}
 
 	/**
@@ -144,7 +145,7 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * @param value Specification value 
 	 */
 	protected void assertFilterIsEmpty(String path, String value, String dateFormat) {
-		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)));
+		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT,  DEFAULT_CONVERSION_SERVICE)));
 	}
 	
     @Test

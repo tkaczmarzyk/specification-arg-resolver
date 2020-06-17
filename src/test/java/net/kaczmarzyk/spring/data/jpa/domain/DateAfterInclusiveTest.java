@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.ParseException;
@@ -73,7 +74,7 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
         DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "13-03-2014" },
-        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
 
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)

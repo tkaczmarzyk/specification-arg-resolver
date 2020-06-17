@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.ParseException;
@@ -172,7 +173,7 @@ public class BetweenTest extends IntegrationTestBase {
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
     	Between<Customer> between8and13 = new Between<>(queryCtx, "registrationDate", new String[] {"08-03-2014", "13-03-2014"},
-        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT));
+        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
         
         List<Customer> result = customerRepo.findAll(between8and13);
         assertThat(result)

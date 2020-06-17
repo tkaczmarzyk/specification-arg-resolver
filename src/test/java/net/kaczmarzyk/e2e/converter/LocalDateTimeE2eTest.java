@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk;
+package net.kaczmarzyk.e2e.converter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import net.kaczmarzyk.E2eTestBase;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -92,7 +93,6 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
         mockMvc.perform(get("/customers")
                                 .param("lastOrderTimeBefore_customFormat", "2017/08/22, 09:17")
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
                 .andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
