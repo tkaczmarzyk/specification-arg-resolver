@@ -134,6 +134,17 @@ public class ConverterFallbackMechanismTest {
 		verify(conversionService).canConvert(String.class, CustomType.class);
 		verify(conversionService, times(1)).convert("rawValue", CustomType.class);
 	}
+
+	@Test
+	public void shouldThrowClassCastExceptionForUnsupportedTypeWhenConversionServiceIsNotPresent() {
+		Converter converter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+
+		ThrowableAssertions.assertThrows(
+				ClassCastException.class,
+				() -> { CustomType type = converter.convert("rawValue", CustomType.class); },
+				"java.lang.String cannot be cast to net.kaczmarzyk.spring.data.jpa.utils.ConverterFallbackMechanismTest$CustomType"
+		);
+	}
 	
 	private class CustomType {
 		public final String value;

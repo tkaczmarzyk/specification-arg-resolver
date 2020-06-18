@@ -29,10 +29,11 @@ public class ConversionServiceE2eTest extends IntegrationTestBaseWithConfiguredC
 		
 		@RequestMapping(params = "address")
 		@ResponseBody
-		public Object findCustomersWithDateOfNextSpecialOfferBefore_defaultInstantFormat(
+		public Object findCustomersByAddressUsingCustomConverter(
 				@Spec(path = "address", params = "address", spec = Equal.class) Specification<Customer> spec) {
 			return customerRepository.findAll(spec);
 		}
+
 	}
 	
 	@Before
@@ -56,5 +57,5 @@ public class ConversionServiceE2eTest extends IntegrationTestBaseWithConfiguredC
 				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
 				.andExpect(jsonPath("$[2]").doesNotExist());
 	}
-	
+
 }
