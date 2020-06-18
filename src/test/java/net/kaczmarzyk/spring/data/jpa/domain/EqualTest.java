@@ -160,7 +160,7 @@ public class EqualTest extends IntegrationTestBase {
     @Test
     public void filterByDateWithCustomDateFormat() {
     	Equal<Customer> registered1stMarch = new Equal<>(queryCtx, "registrationDate", new String[] { "01-03-2015" },
-    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);

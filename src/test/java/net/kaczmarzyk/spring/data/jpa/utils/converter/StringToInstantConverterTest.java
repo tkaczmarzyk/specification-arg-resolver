@@ -6,14 +6,13 @@ import org.junit.Test;
 
 import java.time.Instant;
 
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringToInstantConverterTest {
 	
-	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
 	
 	@Test
 	public void convertsToInstantUsingDefaultFormat() {
@@ -34,7 +33,7 @@ public class StringToInstantConverterTest {
 	
 	@Test
 	public void convertsToInstantUsingCustomFormat() {
-		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd\'T\' HH:mm:ss.SSS XXX", EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd\'T\' HH:mm:ss.SSS XXX", EMPTY_RESULT, null);
 		Instant instant = converterWithCustomFormat.convert("2020-06-16T 15:08:53.282 +05:00", Instant.class);
 		
 		assertThat(instant)
@@ -43,7 +42,7 @@ public class StringToInstantConverterTest {
 	
 	@Test
 	public void throwsValueRejectedExceptionForUnparseableInstantAndCustomFormat() {
-		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-invalid-format-HH:mm:ss", EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-invalid-format-HH:mm:ss", EMPTY_RESULT, null);
 		
 		assertThrows(
 				ValueRejectedException.class,

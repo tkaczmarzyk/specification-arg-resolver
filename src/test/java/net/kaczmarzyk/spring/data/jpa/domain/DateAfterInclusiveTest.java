@@ -15,20 +15,18 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.text.ParseException;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.text.ParseException;
+import java.util.List;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -74,7 +72,7 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
         DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "13-03-2014" },
-        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
+        		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)

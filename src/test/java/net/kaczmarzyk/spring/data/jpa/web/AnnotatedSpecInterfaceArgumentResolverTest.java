@@ -15,20 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
-import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
-import java.util.Collection;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
@@ -37,12 +23,20 @@ import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.core.MethodParameter;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.Collection;
+
+import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 
 /**
@@ -134,7 +128,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 	public static interface GrandChildInterface extends ChildInterface, Chil2dInterface {
 	}
 
-	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 
 	public static class TestController {
 		public void methodWithSimpleSpec(IfaceWithSimpleSpec arg) {}

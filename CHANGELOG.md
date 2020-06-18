@@ -2,38 +2,39 @@ v2.4.0 - UNRELEASED
 ======
 * Added conversion support for `UUID`, `OffsetDatetime`, `Instant`
 
-* An added fallback mechanism to `Converter` which uses converters registered in ConversionService. 
-The `Converter` in case of missing converter for a given type tries to find a required converter in `ConversionService` , if `ConversionService` does not support required conversion ClassCassException will be thrown. If the required converter is not present in `Converter` and `ConversionService` it could be defined and used as follows:
-```java
-@Configuration
-@EnableJpaRepositories
-public class MyConfig implements WebMvcConfigurer {
- 
-    @Autowired
-    ConversionService conversionService;
-    
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new SpecificationArgumentResolver(conversionService));
-    }
+* Added a fallback mechanism to `Converter` which uses converters registered in ConversionService. 
+The `Converter` in case of missing converter for a given type tries to find a required converter in [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService` , if `ConversionService` does not support required conversion IllegalArgumentException will be thrown. If the required converter is not present in `Converter` and `ConversionService` it could be defined and used as follows:
 
-    @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new StringToAddressConverter());
-    }
-    
-    public static class StringToAddressConverter implements Converter<String, Address> {
-        @Override
-        public Address convert(String rawAddress) {
-            Address address = new Address();
-            address.setStreet(rawAddress);
-            return address;
-        }
-    }
-
-    ...
-}
-```
+  ```java
+  @Configuration
+  @EnableJpaRepositories
+  public class MyConfig implements WebMvcConfigurer {
+   
+      @Autowired
+      ConversionService conversionService;
+      
+      @Override
+      public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+          argumentResolvers.add(new SpecificationArgumentResolver(conversionService));
+      }
+  
+      @Override
+      public void addFormatters(FormatterRegistry registry) {
+          registry.addConverter(new StringToAddressConverter());
+      }
+      
+      public static class StringToAddressConverter implements Converter<String, Address> {
+          @Override
+          public Address convert(String rawAddress) {
+              Address address = new Address();
+              address.setStreet(rawAddress);
+              return address;
+          }
+      }
+  
+      ...
+  }
+  ```
 
 v2.3.0
 ======

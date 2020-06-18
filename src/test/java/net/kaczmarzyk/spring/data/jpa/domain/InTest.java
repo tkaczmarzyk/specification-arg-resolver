@@ -148,14 +148,14 @@ public class InTest extends IntegrationTestBase {
     @Test
     public void filterByDateWithCustomDateFormat() {
     	In<Customer> registered1stMarch = new In<>(queryCtx, "registrationDate", new String[] { "01-03-2015" },
-    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
     	
     	List<Customer> found = customerRepo.findAll(registered1stMarch);
     	
     	assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     	
     	In<Customer> registered1stOr2ndMarch = new In<>(queryCtx, "registrationDate", new String[] { "01-03-2015", "02-03-2015" },
-    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE));
+    			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
     	
     	found = customerRepo.findAll(registered1stOr2ndMarch);
     	

@@ -15,17 +15,15 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
-
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 
 /**
  * Base class for all Comparable Specification tests, 
@@ -118,8 +116,8 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * @param dateFormat date-time format
 	 * @param expectedMembers the Customers we expect to be filtered in
 	 */
-	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String dateFormat, Customer... members) {
-		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE)), members);
+	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String dateFormat, Customer... expectedMembers) {
+		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT, null)), expectedMembers);
 	}
 
 	/**
@@ -141,11 +139,11 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 * This function is redundant, as assertFilterMembers(path, value) works just as well. 
 	 * But we retain it as the name suggests the expected outcome.
 	 * @param path Specification path
-	 * @param converter the converter
-	 * @param value Specification value 
+	 * @param value Specification value
+	 * @param dateFormat the custom date format which should be used by converter
 	 */
 	protected void assertFilterIsEmpty(String path, String value, String dateFormat) {
-		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT,  DEFAULT_CONVERSION_SERVICE)));
+		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT,  null)));
 	}
 	
     @Test

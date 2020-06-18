@@ -27,7 +27,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.Gender.*;
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
+
 
 /**
  * @author Mateusz Fedkowicz
@@ -141,7 +141,7 @@ public class NotEqualTest extends IntegrationTestBase {
 
 	@Test
 	public void filterByDateWithCustomDateFormat() {
-		Converter customConverter = Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+		Converter customConverter = Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null);
 		NotEqual<Customer> notRegisteredOn1stMarch = notEqualSpec("registrationDate", "01-03-2015", customConverter);
 		assertFilterMembers(notRegisteredOn1stMarch, joeQuimby);
 	}

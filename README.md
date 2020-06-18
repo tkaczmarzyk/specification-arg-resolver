@@ -26,6 +26,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
+   * [Conversions](#conversions) -- information about supported converters and possibility of defining custom converter
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -86,39 +87,7 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
-If you need to use additional converters you should declare `SpecificationArgumentResolver` with `ConversionService` containing required converters. 
-For example: 
-
-```java
-@Configuration
-@EnableJpaRepositories
-public class MyConfig implements WebMvcConfigurer {
- 
-    @Autowired
-    ConversionService conversionService;
-    
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new SpecificationArgumentResolver(conversionService));
-    }
-
-    @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new StringToAddressConverter());
-    }
-    
-    public static class StringToAddressConverter implements Converter<String, Address> {
-        @Override
-        public Address convert(String rawAddress) {
-            Address address = new Address();
-            address.setStreet(rawAddress);
-            return address;
-        }
-    }
-
-    ...
-}
-```
+If you need to use additional converters please see [conversions section](#conversions)
 
 Simple specifications
 ----------------------
@@ -626,7 +595,42 @@ public Object findById(
 }
 ```
 
+Conversions
+-------------------
+Specification argument resolver uses `net.kaczmarzyk.`
+If you need to use additional converters please see [conversions section](#conversions) you should declare `SpecificationArgumentResolver` with `ConversionService` containing required converters. 
+For example: 
 
+```java
+@Configuration
+@EnableJpaRepositories
+public class MyConfig implements WebMvcConfigurer {
+ 
+    @Autowired
+    ConversionService conversionService;
+    
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new SpecificationArgumentResolver(conversionService));
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToAddressConverter());
+    }
+    
+    public static class StringToAddressConverter implements Converter<String, Address> {
+        @Override
+        public Address convert(String rawAddress) {
+            Address address = new Address();
+            address.setStreet(rawAddress);
+            return address;
+        }
+    }
+
+    ...
+}
+```
 
 Compatibility notes
 -------------------

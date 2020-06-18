@@ -29,6 +29,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+import static java.util.Objects.nonNull;
+
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -122,8 +124,7 @@ public class Converter {
 	public <T> T convert(String value, Class<T> expectedClass) {
 		if (expectedClass.isEnum()) {
 			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
-		}
-		if (expectedClass.isAssignableFrom(Date.class)) {
+		} else if (expectedClass.isAssignableFrom(Date.class)) {
 			return (T) convertToDate(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
 			return (T) convertToBoolean(value);
@@ -145,8 +146,7 @@ public class Converter {
 			return (T) convertToOffsetDateTime(value);
 		} else if (expectedClass.isAssignableFrom(Instant.class)) {
 			return (T) convertToInstant(value);
-		}
-		if (conversionService.canConvert(String.class, expectedClass)) {
+		} else if (nonNull(conversionService) && conversionService.canConvert(String.class, expectedClass)) {
 			return conversionService.convert(value, expectedClass);
 		}
 		

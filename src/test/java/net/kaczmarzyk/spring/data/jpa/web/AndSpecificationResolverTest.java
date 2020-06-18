@@ -24,7 +24,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.when;
  */
 public class AndSpecificationResolverTest extends ResolverTestBase {
 
-	AndSpecificationResolver resolver = new AndSpecificationResolver(new SimpleSpecificationResolver(DEFAULT_CONVERSION_SERVICE));
+	AndSpecificationResolver resolver = new AndSpecificationResolver(new SimpleSpecificationResolver(null));
 
 	@Test
 	public void resolvesWrapperOfInnerSpecs() {

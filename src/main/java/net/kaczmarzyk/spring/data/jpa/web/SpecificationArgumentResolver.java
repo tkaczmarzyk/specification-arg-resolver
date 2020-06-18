@@ -18,7 +18,6 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import net.kaczmarzyk.spring.data.jpa.utils.TypeUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -40,11 +39,10 @@ import static java.util.stream.Collectors.toMap;
  */
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
-	private static final ConversionService DEFAULT_CONVERSION_SERVICE = new DefaultConversionService();
 	private static Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
 	public SpecificationArgumentResolver() {
-		 this(DEFAULT_CONVERSION_SERVICE);
+		 this(null);
 	}
 	
 	public SpecificationArgumentResolver(ConversionService conversionService) {

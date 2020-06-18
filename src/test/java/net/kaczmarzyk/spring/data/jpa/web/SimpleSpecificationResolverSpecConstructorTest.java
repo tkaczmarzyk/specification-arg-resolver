@@ -15,27 +15,25 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.junit.Test;
+import org.springframework.core.MethodParameter;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.junit.Test;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.context.request.NativeWebRequest;
-
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -43,7 +41,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
  */
 public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTestBase {
 
-	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(DEFAULT_CONVERSION_SERVICE);
+	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null);
 
 	public static class SpecWith3ArgConstructor extends DummySpec {
 		QueryContext queryCtx;
@@ -113,7 +111,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
-		assertThat(resolved.converter).isEqualTo(Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, DEFAULT_CONVERSION_SERVICE));
+		assertThat(resolved.converter).isEqualTo(Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null));
 	}
 
 	@Test
@@ -143,7 +141,7 @@ public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTest
 
 		assertThat(resolved.path).isEqualTo("thePath");
 		assertThat(resolved.args).isEqualTo(new String[] { "theValue" });
-		assertThat(resolved.converter).isEqualTo(Converter.withDateFormat("yyyyMMdd", OnTypeMismatch.EXCEPTION, DEFAULT_CONVERSION_SERVICE));
+		assertThat(resolved.converter).isEqualTo(Converter.withDateFormat("yyyyMMdd", OnTypeMismatch.EXCEPTION, null));
 		assertThat(resolved.config).isEqualTo(new String[] { "yyyyMMdd" });
 	}
 

@@ -7,13 +7,12 @@ import org.junit.Test;
 import java.time.OffsetDateTime;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringToOffsetDateTimeConverterTest {
 	
-	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
 	
 	@Test
 	public void convertsToOffsetDateTimeUsingDefaultFormat() {
@@ -34,7 +33,7 @@ public class StringToOffsetDateTimeConverterTest {
 	
 	@Test
 	public void convertsToOffsetDateTimeUsingCustomFormat() {
-		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSXXXMM-dd\'T\'", EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSXXXMM-dd\'T\'", EMPTY_RESULT, null);
 		OffsetDateTime offsetDateTime = converterWithCustomFormat.convert("2020-15:08:53.282+02:0006-16T", OffsetDateTime.class);
 		
 		assertThat(offsetDateTime)
@@ -43,7 +42,7 @@ public class StringToOffsetDateTimeConverterTest {
 	
 	@Test
 	public void throwsValueRejectedExceptionForUnparseableOffsetDateTimeAndCustomFormat() {
-		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-invalid-format-HH:mm:ss", EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-invalid-format-HH:mm:ss", EMPTY_RESULT, null);
 		
 		assertThrows(
 				ValueRejectedException.class,

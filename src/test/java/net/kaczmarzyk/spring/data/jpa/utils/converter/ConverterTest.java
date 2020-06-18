@@ -15,18 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils.converter;
 
-import static net.kaczmarzyk.spring.data.jpa.IntegrationTestBase.DEFAULT_CONVERSION_SERVICE;
-import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
-
+import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValueRejectedException;
-import org.assertj.core.api.Assertions;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -34,9 +27,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import net.kaczmarzyk.spring.data.jpa.Gender;
-import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class ConverterTest {
@@ -44,8 +42,8 @@ public class ConverterTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	
-	private static Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
-	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+	private static Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
+	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 	
 	@Test
 	public void convertsToDate() {
@@ -119,14 +117,14 @@ public class ConverterTest {
 		expected.expect(ValuesRejectedException.class);
 		expected.expect(valuesRejected("ROBOT", "ALIEN"));
 		
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, DEFAULT_CONVERSION_SERVICE);
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null);
 		
 		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
 	}
 	
 	@Test
 	public void ignoresRejectedEnumValues() {
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, DEFAULT_CONVERSION_SERVICE);
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 		
 		List<Gender> result = converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
 		
