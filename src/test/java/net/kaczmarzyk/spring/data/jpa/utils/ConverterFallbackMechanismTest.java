@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import net.kaczmarzyk.spring.data.jpa.Gender;
@@ -8,6 +23,8 @@ import org.springframework.core.convert.ConversionService;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Objects;
@@ -42,6 +59,20 @@ public class ConverterFallbackMechanismTest {
 	}
 	
 	@Test
+	public void shouldNotUseFallbackMechanismForLocalDateType() {
+		converter.convert("2020-06-19", LocalDate.class);
+		
+		verifyZeroInteractions(conversionService);
+	}
+	
+	@Test
+	public void shouldNotUseFallbackMechanismForLocalDateTimeType() {
+		converter.convert("2020-06-19T16:50:49", LocalDateTime.class);
+		
+		verifyZeroInteractions(conversionService);
+	}
+	
+	@Test
 	public void shouldNotUseFallbackMechanismForBooleanType() {
 		converter.convert("true", Boolean.class);
 		converter.convert("false", Boolean.class);
@@ -53,6 +84,34 @@ public class ConverterFallbackMechanismTest {
 	public void shouldNotUseFallbackMechanismForBooleanPrimitiveType() {
 		converter.convert("true", boolean.class);
 		converter.convert("false", boolean.class);
+		
+		verifyZeroInteractions(conversionService);
+	}
+	
+	@Test
+	public void shouldNotUseFallbackMechanismForIntegerType() {
+		converter.convert("1", Integer.class);
+		
+		verifyZeroInteractions(conversionService);
+	}
+	
+	@Test
+	public void shouldNotUseFallbackMechanismForIntegerPrimitiveType() {
+		converter.convert("1", int.class);
+		
+		verifyZeroInteractions(conversionService);
+	}
+	
+	@Test
+	public void shouldNotUseFallbackMechanismForLongType() {
+		converter.convert("1", Long.class);
+		
+		verifyZeroInteractions(conversionService);
+	}
+	
+	@Test
+	public void shouldNotUseFallbackMechanismForLongPrimitveType() {
+		converter.convert("1", long.class);
 		
 		verifyZeroInteractions(conversionService);
 	}

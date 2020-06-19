@@ -597,9 +597,84 @@ public Object findById(
 
 Conversions
 -------------------
-Specification argument resolver uses `net.kaczmarzyk.`
-If you need to use additional converters please see [conversions section](#conversions) you should declare `SpecificationArgumentResolver` with `ConversionService` containing required converters. 
-For example: 
+
+Specification argument resolvers uses conversion mechanism to convert request string params to field types for which specifications are defined.
+
+Let's consider the following code:
+  ```java
+	@Controller
+	public class SampleController {
+		
+		@Autowired
+		CustomerRepository customerRepository;
+		
+		@RequestMapping("/find")
+		public List<Customer> findByRegistrationDate(
+				@And({
+					@Spec(path = "name", params = "name", spec = Equal.class),
+					@Spec(path = "registrationDate", params = "registrationDate", spec = GreaterThanOrEqual.class)
+				}) Specification<Customer> spec) {
+			return customerRepository.findAll(spec);
+		}
+	}
+	
+	@Entity
+	public class Customer {
+		String name;
+		Date registrationDate;
+	}
+  ``` 
+When the following request will be sent to the endpoint presented above
+  ```
+  GET /find?name=John&registrationDate=2020-06-19
+  ```
+
+a specification for fields `name` and `registrationDate` will be built.
+
+  * The type of the `name` field is a `String` type, received parameter value is always a `String` type so there is no need of conversion.  
+  * The type of the `registartionDate` field is `java.util.Date` type,  the parameter is a `String` type. In this case `net.kaczmarzyk.spring.data.jpa.utils.Converter` converts string value to `java.util.Date` using one of supported conversion.
+  
+
+##### Supported conversions  
+Specification Argument Resolver contains converters for most common types. List of supported conversions:
+
+  * `String -> Enum`
+  * `String -> boolean`
+  * `String -> Boolean`
+  * `String -> integer`
+  * `String -> Integer`
+  * `String -> long`
+  * `String -> Long`
+  * `String -> float`
+  * `String -> Float`
+  * `String -> double`
+  * `String -> Double`
+  * `String -> BigDecimal`
+  * `String -> Date` (default format: `yyyy-MM-dd`)
+  * `String -> LocalDate` (default format: `yyyy-MM-dd`)
+  * `String -> LocalDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss`)
+  * `String -> OffsetDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
+  * `String -> Instant` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
+  * `String -> UUID` 
+
+To use custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
+For example:
+```
+ @Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")
+```
+
+
+In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
+
+##### Custom converters
+The converter includes a fallback mechanism based on [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService`, which is invoked when required conversion is not supported by any default converter. If the `ConversionService` supports required conversion it will be performed, if not `ClassCastException` will be thrown. 
+
+To add specification argument resolver support for custom conversion:
+1) Add required converter to [ConversionService](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html)
+2) Configure fallback mechanism by passing [ConversionService](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) to SpecificationArgumentResolver constructor.
+
+
+For example:
 
 ```java
 @Configuration
@@ -618,7 +693,7 @@ public class MyConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new StringToAddressConverter());
     }
-    
+ 
     public static class StringToAddressConverter implements Converter<String, Address> {
         @Override
         public Address convert(String rawAddress) {
