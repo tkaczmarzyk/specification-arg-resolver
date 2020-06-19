@@ -3,7 +3,7 @@ v2.4.0 - UNRELEASED
 * Added conversion support for `UUID`, `OffsetDatetime`, `Instant`
 
 * Added a fallback mechanism to `Converter` which uses converters registered in ConversionService. 
-The `Converter` in case of missing converter for a given type tries to find a required converter in [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService` , if `ConversionService` does not support required conversion IllegalArgumentException will be thrown. If the required converter is not present in `Converter` and `ConversionService` it could be defined and used as follows:
+The `Converter` in case of missing converter for a given type tries to find a required converter in [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService` , if `ConversionService` does not support required conversion `IllegalArgumentException` will be thrown. If the required converter is not present in `Converter` and `ConversionService` it could be defined and used as follows:
 
   ```java
   @Configuration
