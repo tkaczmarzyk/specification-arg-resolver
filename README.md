@@ -598,7 +598,7 @@ public Object findById(
 Conversions
 -------------------
 
-Specification argument resolvers uses conversion mechanism to convert request string params to field types for which specifications are defined.
+Specification argument resolvers uses conversion mechanism to convert request string params to types of fields for which specifications have been defined.
 
 Let's consider the following code:
   ```java
@@ -632,11 +632,11 @@ When the following request will be sent to the endpoint presented above
 a specification for fields `name` and `registrationDate` will be built.
 
   * The type of the `name` field is a `String` type, received parameter value is always a `String` type so there is no need of conversion.  
-  * The type of the `registartionDate` field is `java.util.Date` type,  the parameter is a `String` type. In this case `net.kaczmarzyk.spring.data.jpa.utils.Converter` converts string value to `java.util.Date` using one of supported conversion.
-  
-
+  * The type of the `registartionDate` field is `java.util.Date` type,  the parameter is a `String` type so `String` type will be converter into `Date` using one of available converter.
 ##### Supported conversions  
-Specification Argument Resolver contains converters for most common types. List of supported conversions:
+Specification Argument Resolver contains converters for most common types. 
+
+List of supported conversions:
 
   * `String -> Enum`
   * `String -> boolean`
