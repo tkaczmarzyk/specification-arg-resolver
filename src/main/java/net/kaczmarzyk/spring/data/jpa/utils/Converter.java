@@ -309,12 +309,12 @@ public class Converter {
 		return "Converter [dateFormat=" + dateFormat + ", onTypeMismatch=" + onTypeMismatch + "]";
 	}
 	
-	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService fallbackConversionService) {
-		return new Converter(dateFormat, onTypeMismatch, fallbackConversionService);
+	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
+		return new Converter(dateFormat, onTypeMismatch, conversionService);
 	}
 	
-	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch, ConversionService fallbackConversionService) {
-		return new Converter(null, onTypeMismatch, fallbackConversionService);
+	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
+		return new Converter(null, onTypeMismatch, conversionService);
 	}
 	
 }

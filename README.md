@@ -629,12 +629,13 @@ When the following request will be sent to the endpoint presented above
   GET /find?name=John&registrationDate=2020-06-19
   ```
 
-a specification for fields `name` and `registrationDate` will be built.
+a `Specification<Customer>` based on fields `name` and `registrationDate` will be built.
 
   * The type of the `name` field is a `String` type, received parameter value is always a `String` type so there is no need of conversion.  
-  * The type of the `registartionDate` field is `java.util.Date` type,  the parameter is a `String` type so `String` type will be converter into `Date` using one of available converter.
+  * The type of the `registartionDate` field is `java.util.Date` type,  the parameter is a `String` type so `String` type will be converted into `Date` using one of available converter.
+
 ##### Supported conversions  
-Specification Argument Resolver contains converters for most common types. 
+Specification Argument Resolver contains converters for most common java types. 
 
 List of supported conversions:
 
@@ -657,7 +658,7 @@ List of supported conversions:
   * `String -> Instant` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
   * `String -> UUID` 
 
-To use custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
+To use a custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
 For example:
 ```
  @Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")
