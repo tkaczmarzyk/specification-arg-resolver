@@ -87,7 +87,7 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
-If you need to use additional converters please see [conversions section](#conversions)
+If you need to use additional converters please see [how to configure specification argument resolver with custom converters](#conversions)
 
 Simple specifications
 ----------------------
