@@ -20,7 +20,7 @@ import org.assertj.core.api.Assertions;
 
 public class ThrowableAssertions {
 	
-	public static <T extends Throwable> void assertThrows(Class<T> expectedType, ThrowableRunnable throwableRun, String expectedMessage) {
+	public static <T extends Throwable> Throwable assertThrows(Class<T> expectedType, ThrowableRunnable throwableRun) {
 		try {
 			throwableRun.run();
 			throw new ThrowableNotFoundException();
@@ -29,8 +29,14 @@ public class ThrowableAssertions {
 				throw new AssertionFailedError("Expected " + expectedType + " to be thrown, but nothing was thrown.");
 			}
 			Assertions.assertThat(throwable).isInstanceOf(expectedType);
-			Assertions.assertThat(throwable).hasMessage(expectedMessage);
+			return throwable;
 		}
+	}
+	
+	public static <T extends Throwable> void assertThrows(Class<T> expectedType, ThrowableRunnable throwableRun, String expectedMessage) {
+		Throwable throwable = assertThrows(expectedType, throwableRun);
+		
+		Assertions.assertThat(throwable).hasMessage(expectedMessage);
 	}
 	
 	public interface ThrowableRunnable {

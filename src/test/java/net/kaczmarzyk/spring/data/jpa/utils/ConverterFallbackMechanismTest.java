@@ -200,8 +200,7 @@ public class ConverterFallbackMechanismTest {
 
 		ThrowableAssertions.assertThrows(
 				ClassCastException.class,
-				() -> { CustomType type = converter.convert("rawValue", CustomType.class); },
-				"java.lang.String cannot be cast to net.kaczmarzyk.spring.data.jpa.utils.ConverterFallbackMechanismTest$CustomType"
+				() -> { CustomType type = converter.convert("rawValue", CustomType.class); }
 		);
 	}
 	
