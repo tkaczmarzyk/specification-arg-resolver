@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
  */
 public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
 
-	DisjunctionSpecificationResolver resolver = new DisjunctionSpecificationResolver(new SimpleSpecificationResolver(null));
+	DisjunctionSpecificationResolver resolver = new DisjunctionSpecificationResolver(new SimpleSpecificationResolver());
 
 	public static class TestController {
 

@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 public class SimpleSpecificationResolverOnTypeMismatchTest extends ResolverTestBase {
 
-	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null);
+	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
 	@Test
 	public void usesEmptyResultSpecWrapperWhenSpecified() throws Exception {

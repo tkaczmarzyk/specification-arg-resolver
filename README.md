@@ -26,7 +26,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
-   * [Conversions](#conversions) -- information about supported converters and possibility of defining custom converter
+   * [Conversions](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as LocalDateTime, etc.) and the support of defining custom converters
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -87,7 +87,7 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
-If you need to use additional converters please see [how to configure specification argument resolver with custom converters](#conversions)
+The library converts HTTP parameters (strings) into most popular Java types such as dates, numbers, and enums. In case of a need for some additional conversion, please see how to configure specification argument resolver with If you need to use additional converters please see [custom converters section](#type-conversions-for-http-parameters).
 
 Simple specifications
 ----------------------
@@ -595,7 +595,7 @@ public Object findById(
 }
 ```
 
-Conversions
+Type conversions for HTTP parameters
 -------------------
 
 Specification argument resolvers uses conversion mechanism to convert request string params to types of fields for which specifications have been defined.
@@ -632,7 +632,7 @@ When the following request will be sent to the endpoint presented above
 a `Specification<Customer>` based on fields `name` and `registrationDate` will be built.
 
   * The type of the `name` field is a `String` type, received parameter value is always a `String` type so there is no need of conversion.  
-  * The type of the `registartionDate` field is `java.util.Date` type,  the parameter is a `String` type so `String` type will be converted into `Date` using one of available converter.
+  * The type of the `registartionDate` field is `java.util.Date` type, so the `String` will be converted into `Date` using one of available converter.
 
 ##### Supported conversions  
 Specification Argument Resolver contains converters for most common java types. 
@@ -668,7 +668,7 @@ For example:
 In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
 
 ##### Custom converters
-The converter includes a fallback mechanism based on [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService`, which is invoked when required conversion is not supported by any default converter. If the `ConversionService` supports required conversion it will be performed, if not `ClassCastException` will be thrown. 
+The converter includes a fallback mechanism based on [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService`, which is invoked when required conversion is not supported by any default converter. If the `ConversionService` supports required conversion it will be performed, otherwise `ClassCastException` will be thrown. 
 
 To add specification argument resolver support for custom conversion:
 1) Add required converter to [ConversionService](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html)

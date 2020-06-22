@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBase {
 
-    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null);
+    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
     @Test(expected = InvalidPathVariableRequestedException.class)
     public void throwsExceptionIfPathVariableNotPresent() throws Exception {

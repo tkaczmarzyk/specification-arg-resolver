@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
  */
 public class OrSpecificationResolverTest extends ResolverTestBase {
 
-    OrSpecificationResolver resolver = new OrSpecificationResolver(new SimpleSpecificationResolver(null));
+    OrSpecificationResolver resolver = new OrSpecificationResolver(new SimpleSpecificationResolver());
 
     @Test
     public void resolvesWrapperOfInnerSpecs() throws Exception {

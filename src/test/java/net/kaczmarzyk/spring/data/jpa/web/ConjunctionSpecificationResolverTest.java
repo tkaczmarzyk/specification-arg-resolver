@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
  */
 public class ConjunctionSpecificationResolverTest extends ResolverTestBase {
 
-	ConjunctionSpecificationResolver resolver = new ConjunctionSpecificationResolver(new SimpleSpecificationResolver(null));
+	ConjunctionSpecificationResolver resolver = new ConjunctionSpecificationResolver(new SimpleSpecificationResolver());
 
 	public static class TestController {
 

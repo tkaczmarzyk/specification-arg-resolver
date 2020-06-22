@@ -43,6 +43,10 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		this.conversionService = conversionService;
 	}
 	
+	public SimpleSpecificationResolver() {
+		this.conversionService = null;
+	}
+	
 	@Override
 	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
 		return Spec.class;

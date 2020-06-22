@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
  */
 public class SimpleSpecificationResolverSpecConstructorTest extends ResolverTestBase {
 
-	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null);
+	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
 	public static class SpecWith3ArgConstructor extends DummySpec {
 		QueryContext queryCtx;

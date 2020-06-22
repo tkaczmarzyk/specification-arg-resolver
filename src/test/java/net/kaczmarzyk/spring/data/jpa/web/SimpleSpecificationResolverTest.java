@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
-    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null);
+    SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
 	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null);
 

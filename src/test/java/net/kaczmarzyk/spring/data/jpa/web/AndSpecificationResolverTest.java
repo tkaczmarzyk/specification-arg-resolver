@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
  */
 public class AndSpecificationResolverTest extends ResolverTestBase {
 
-	AndSpecificationResolver resolver = new AndSpecificationResolver(new SimpleSpecificationResolver(null));
+	AndSpecificationResolver resolver = new AndSpecificationResolver(new SimpleSpecificationResolver());
 
 	@Test
 	public void resolvesWrapperOfInnerSpecs() {
