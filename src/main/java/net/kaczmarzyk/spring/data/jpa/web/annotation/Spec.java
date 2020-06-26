@@ -15,12 +15,14 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
+import org.springframework.data.jpa.domain.Specification;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.data.jpa.domain.Specification;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.Spec.StringValueType.RAW;
 
 
 /**
@@ -42,14 +44,32 @@ public @interface Spec {
     
     String[] config() default {};
     
+    /**
+     * The constant value designed for specification without related HTTP param. Const value can be a raw string or SpEL expression.
+     * For SpEL expression value {@link #defaultValType()} should be set to {@code SpEL}
+     * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
+     */
     String[] constVal() default {};
     
     /**
+     * RAW - if default val should be handled as plain text value (default)
+     * SpEL - if default val should be handled as SpEL expression
+     */
+    StringValueType constValType() default RAW;
+    
+    /**
      * The default value to use as a fallback when the request parameter is
-     * not provided or has an empty value.
+     * not provided or has an empty value. Default value can be a raw string or SpEL expression.
+     * For SpEL expression value {@link #defaultValType()} should be set to {@code SpEL}
      * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
      */
     String[] defaultVal() default {};
+    
+    /**
+     * RAW - if default val should be handled as plain text value (default)
+     * SpEL - if default val should be handled as SpEL expression
+     */
+    StringValueType defaultValType() default RAW;
     
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
     
@@ -57,4 +77,10 @@ public @interface Spec {
     
     @SuppressWarnings("rawtypes")
     Class<? extends Specification> spec();
+    
+    
+    enum StringValueType {
+        RAW,
+        SpEL
+    }
 }
