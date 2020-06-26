@@ -20,15 +20,20 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.config.EmbeddedValueResolver;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.expression.ParseException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
+
+import static java.util.Arrays.asList;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.Spec.StringValueType.SpEL;
 
 
 /**
@@ -36,15 +41,18 @@ import java.util.regex.Pattern;
  * @author Jakub Radlica
  */
 class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
-
-	private final ConversionService conversionService;
 	
-	public SimpleSpecificationResolver(ConversionService conversionService) {
+	private final ConversionService conversionService;
+	private final EmbeddedValueResolver embeddedValueResolver;
+	
+	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext) {
 		this.conversionService = conversionService;
+		this.embeddedValueResolver = applicationContext != null ? new EmbeddedValueResolver(applicationContext.getBeanFactory()) : null;
 	}
 	
 	public SimpleSpecificationResolver() {
 		this.conversionService = null;
+		this.embeddedValueResolver = null;
 	}
 	
 	@Override
@@ -126,15 +134,45 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	
 	private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
 		if (specDef.constVal().length != 0) {
-			return Arrays.asList(specDef.constVal());
+			return resolveConstVal(specDef);
 		} else if (specDef.pathVars().length != 0) {
 			return resolveSpecArgumentsFromPathVariables(context, specDef);
 		} else {
-			Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(context, specDef);
-			if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
-				Arrays.stream(specDef.defaultVal()).forEach(resolved::add);
+			return resolveDefaultVal(context, specDef);
+		}
+	}
+	
+	private Collection<String> resolveConstVal(Spec specDef) {
+		if (specDef.constValType().equals(SpEL)) {
+			ArrayList<String> evaluatedArgs = new ArrayList<>(specDef.constVal().length);
+			for (String rawConstVal : specDef.constVal()) {
+				evaluatedArgs.add(evaluatedSpELValue(rawConstVal));
 			}
-			return resolved;
+			return evaluatedArgs;
+		} else {
+			return asList(specDef.constVal());
+		}
+	}
+	
+	private Collection<String> resolveDefaultVal(WebRequestProcessingContext context, Spec specDef) {
+		Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(context, specDef);
+		if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
+			if (specDef.defaultValType().equals(SpEL)) {
+				for (String rawDefaultVal : specDef.defaultVal()) {
+					resolved.add(evaluatedSpELValue(rawDefaultVal));
+				}
+			} else {
+				resolved.addAll(asList(specDef.defaultVal()));
+			}
+		}
+		return resolved;
+	}
+	
+	private String evaluatedSpELValue(String rawConstVal) {
+		try {
+			return embeddedValueResolver.resolveStringValue(rawConstVal);
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("SpEL expression is not supported: '" + rawConstVal + "'");
 		}
 	}
 	
@@ -207,7 +245,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			ArrayList<String> listOfSingularValues = new ArrayList<>();
 			
 			for (String arg : args) {
-				listOfSingularValues.addAll(Arrays.asList(arg.split(get())));
+				listOfSingularValues.addAll(asList(arg.split(get())));
 			}
 			
 			String[] singularValues = new String[listOfSingularValues.size()];

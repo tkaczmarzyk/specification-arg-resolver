@@ -36,20 +36,20 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
  */
 @Configuration
 @ComponentScan(basePackages = "net.kaczmarzyk", excludeFilters = {
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithConfiguredConversionService.class }),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithSARConfiguredWithApplicationContext.class })
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = Application.class),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithConfiguredConversionService.class),
 })
 @EnableJpaRepositories
 @EnableAutoConfiguration
 @EnableMBeanExport(registration = IGNORE_EXISTING)
-public class Application implements WebMvcConfigurer {
+public class ApplicationWithSARConfiguredWithApplicationContext implements WebMvcConfigurer {
 	
 	@Autowired
 	AbstractApplicationContext applicationContext;
-
+	
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
 	}
-	
+
 }
