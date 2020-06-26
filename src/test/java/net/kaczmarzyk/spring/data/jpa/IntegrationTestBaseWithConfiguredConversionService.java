@@ -16,40 +16,33 @@
 package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.Root;
-import java.util.function.Function;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
 
 /**
  * @author Tomasz Kaczmarzyk
  * @author TP Diffenbach
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { Application.class })
+@ContextConfiguration(classes = { ApplicationWithConfiguredConversionService.class })
 @WebAppConfiguration
 @Transactional
-public abstract class IntegrationTestBase {
+public abstract class IntegrationTestBaseWithConfiguredConversionService {
 
-	private static final Customer[] EMPTY_LIST = {};
-
-	@Rule
-    public ExpectedException expectedException = ExpectedException.none();
-	
     @Autowired
     protected CustomerRepository customerRepo;
     
@@ -57,33 +50,18 @@ public abstract class IntegrationTestBase {
     protected EntityManager em;
 	
     protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
-    
-    protected QueryContext queryCtx = new QueryContext() {
 	
-		@Override
-		public void putLazyVal(String key, Function<Root<?>, Object> value) {
-		}
+	@Autowired
+	WebApplicationContext wac;
 	
-		@Override
-		public Object getEvaluated(String key, Root<?> root) {
-			return null;
-		}
-	};
-    
-    /**
-     * Call findAll with the Specification, and assert its members match the expectedMembers
-     * @param spec the Specification 
-     * @param expectedMembers the expected members after the Specification has filtered.
-     */
-    protected void assertFilterMembers(Specification<Customer> spec, Customer... expectedMembers) {
-    	assertThat(customerRepo.findAll(spec)).hasSize(expectedMembers.length).containsOnly(expectedMembers);
-    }
-    
-    /**
-     * Call findAll with the Specification, and assert its returns the empty list.
-     * @param spec Specification
-     */
-    protected void assertFilterEmpty(Specification<Customer> spec) {
-    	assertFilterMembers(spec, EMPTY_LIST);
-    }
+	protected MockMvc mockMvc;
+	
+	@Autowired
+	List<HandlerMethodArgumentResolver> argumentResolvers;
+	
+	@Before
+	public void setupMockMvc() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	}
+ 
 }

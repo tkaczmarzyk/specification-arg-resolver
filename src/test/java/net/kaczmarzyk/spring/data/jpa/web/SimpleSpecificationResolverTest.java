@@ -15,28 +15,27 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import net.kaczmarzyk.spring.data.jpa.domain.*;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
     SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
-	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION);
+	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null);
 
     @Test
     public void returnsNullIfTheWebParameterIsMissing_defaultParameterName() throws Exception {

@@ -15,14 +15,16 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.reflect.Executable;
-import java.util.Collection;
-
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.utils.ReflectionUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
-import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import java.lang.reflect.Executable;
+import java.util.Collection;
+
+
 
 
 /**
@@ -30,7 +32,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
  */
 public abstract class ResolverTestBase {
 
-	protected Converter defaultConverter = Converter.DEFAULT;
+	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 	
 	protected MethodParameter testMethodParameter(String methodName) {
         return MethodParameter.forExecutable(testMethod(methodName, Specification.class), 0);

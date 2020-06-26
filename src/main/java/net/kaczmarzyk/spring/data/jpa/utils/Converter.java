@@ -15,18 +15,21 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import org.springframework.core.convert.ConversionService;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
-import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import static java.util.Objects.nonNull;
 
 
 /**
@@ -34,11 +37,11 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
  */
 @SuppressWarnings("unchecked")
 public class Converter {
-
+	
 	public static class ValuesRejectedException extends IllegalArgumentException {
 		
 		private static final long serialVersionUID = 1L;
-
+		
 		private Collection<String> rejectedValues;
 		
 		public ValuesRejectedException(Collection<String> rejectedValues, String message) {
@@ -77,100 +80,28 @@ public class Converter {
 		}
 	}
 	
-	private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-	private static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd\'T\'HH:mm:ss";
-
-	public static final Converter DEFAULT = Converter.withDateFormat(DEFAULT_DATE_FORMAT, OnTypeMismatch.EMPTY_RESULT);
+	private static Map<Class<?>, String> DEFAULT_DATE_FORMATS = new HashMap<>();
+	
+	static {
+		DEFAULT_DATE_FORMATS.put(Date.class, "yyyy-MM-dd");
+		DEFAULT_DATE_FORMATS.put(LocalDate.class, "yyyy-MM-dd");
+		DEFAULT_DATE_FORMATS.put(LocalDateTime.class, "yyyy-MM-dd\'T\'HH:mm:ss");
+		DEFAULT_DATE_FORMATS.put(OffsetDateTime.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
+		DEFAULT_DATE_FORMATS.put(Instant.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
+	}
 	
 	private String dateFormat;
 	private OnTypeMismatch onTypeMismatch;
 	
+	private ConversionService conversionService;
 	
-	private Converter(String dateFormat, OnTypeMismatch onTypeMismatch) {
+	private Converter(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
 		this.dateFormat = dateFormat;
 		this.onTypeMismatch = onTypeMismatch;
+		this.conversionService = conversionService;
 	}
 	
-	public <T> T convert(String value, Class<T> expectedClass) {
-		if (expectedClass.isEnum()) {
-			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
-		}
-		else if (expectedClass.isAssignableFrom(Date.class)) {
-			return (T) convertToDate(value);
-		}
-		else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
-			return (T) convertToBoolean(value);
-		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
-		    return (T) convertToLong(value);
-		} else if (isAssignableFromAnyOf(expectedClass, float.class, Float.class)) {
-			return (T) convertToFloat(value);
-		} else if (isAssignableFromAnyOf(expectedClass, double.class, Double.class)) {
-			return (T) convertToDouble(value);
-		} else if (expectedClass.isAssignableFrom(LocalDateTime.class)){
-			return (T) convertToLocalDateTime(value);
-		} else if (expectedClass.isAssignableFrom(LocalDate.class)) {
-			return (T) convertToLocalDate(value);
-		} else if (expectedClass.isAssignableFrom(BigDecimal.class)) {
-			return (T) convertToBigDecimal(value);
-		}
-		return (T) value;
-	}
-	
-	private boolean isAssignableFromAnyOf(Class<?> expectedClass, Class<?>... candidates) {
-		for (Class<?> candidate : candidates) {
-			if (expectedClass.isAssignableFrom(candidate)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private LocalDate convertToLocalDate(String value) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
-		return LocalDate.parse(value,formatter);
-	}
-
-	private LocalDateTime convertToLocalDateTime(String value) {
-		if(dateFormat.equals(DEFAULT_DATE_FORMAT)){ // FIXME reusing field for different purpose
-			dateFormat = DEFAULT_DATE_TIME_FORMAT;
-		}
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
-		return LocalDateTime.parse(value,formatter);
-	}
-
-	private Long convertToLong(String value) {
-        try {
-            return Long.valueOf(value);
-        } catch (NumberFormatException e) {
-            throw new ValueRejectedException(value, "number format exception");
-        }
-    }
-	
-	private Double convertToDouble(String value) {
-        try {
-            return Double.valueOf(value);
-        } catch (NumberFormatException e) {
-            throw new ValueRejectedException(value, "number format exception");
-        }
-    }
-	
-	private Float convertToFloat(String value) {
-        try {
-            return Float.valueOf(value);
-        } catch (NumberFormatException e) {
-            throw new ValueRejectedException(value, "number format exception");
-        }
-    }
-
-	private BigDecimal convertToBigDecimal(String value) {
-		try {
-            return new BigDecimal(value);
-        } catch (NumberFormatException e) {
-            throw new ValueRejectedException(value, "number format exception");
-        }
-	}
-	
-    public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
+	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
 		if (expectedClass == String.class) {
 			return (List<T>) values;
 		}
@@ -189,7 +120,100 @@ public class Converter {
 		onTypeMismatch.handleRejectedValues(rejected);
 		return result;
 	}
-
+	
+	public <T> T convert(String value, Class<T> expectedClass) {
+		if (expectedClass.isEnum()) {
+			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
+		} else if (expectedClass.isAssignableFrom(Date.class)) {
+			return (T) convertToDate(value);
+		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
+			return (T) convertToBoolean(value);
+		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
+			return (T) convertToLong(value);
+		} else if (isAssignableFromAnyOf(expectedClass, float.class, Float.class)) {
+			return (T) convertToFloat(value);
+		} else if (isAssignableFromAnyOf(expectedClass, double.class, Double.class)) {
+			return (T) convertToDouble(value);
+		} else if (expectedClass.isAssignableFrom(LocalDateTime.class)) {
+			return (T) convertToLocalDateTime(value);
+		} else if (expectedClass.isAssignableFrom(LocalDate.class)) {
+			return (T) convertToLocalDate(value);
+		} else if (expectedClass.isAssignableFrom(BigDecimal.class)) {
+			return (T) convertToBigDecimal(value);
+		} else if (expectedClass.isAssignableFrom(UUID.class)) {
+			return (T) convertToUUID(value);
+		} else if (expectedClass.isAssignableFrom(OffsetDateTime.class)) {
+			return (T) convertToOffsetDateTime(value);
+		} else if (expectedClass.isAssignableFrom(Instant.class)) {
+			return (T) convertToInstant(value);
+		} else if (nonNull(conversionService) && conversionService.canConvert(String.class, expectedClass)) {
+			return conversionService.convert(value, expectedClass);
+		}
+		
+		return (T) value;
+	}
+	
+	private boolean isAssignableFromAnyOf(Class<?> expectedClass, Class<?>... candidates) {
+		for (Class<?> candidate : candidates) {
+			if (expectedClass.isAssignableFrom(candidate)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private LocalDate convertToLocalDate(String value) {
+		String dateFormat = getDateFormat(LocalDate.class);
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+			return LocalDate.parse(value, formatter);
+		} catch (DateTimeParseException | IllegalArgumentException e) {
+			throw new ValueRejectedException(value, "LocalDate format exception, expected format: " + dateFormat);
+		}
+	}
+	
+	private LocalDateTime convertToLocalDateTime(String value) {
+		String dateFormat = getDateFormat(LocalDateTime.class);
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+			return LocalDateTime.parse(value, formatter);
+		} catch (DateTimeParseException | IllegalArgumentException e) {
+			throw new ValueRejectedException(value, "LocalDateTime format exception, expected format:" + dateFormat);
+		}
+	}
+	
+	private Long convertToLong(String value) {
+		try {
+			return Long.valueOf(value);
+		} catch (NumberFormatException e) {
+			throw new ValueRejectedException(value, "number format exception");
+		}
+	}
+	
+	private Double convertToDouble(String value) {
+		try {
+			return Double.valueOf(value);
+		} catch (NumberFormatException e) {
+			throw new ValueRejectedException(value, "number format exception");
+		}
+	}
+	
+	private Float convertToFloat(String value) {
+		try {
+			return Float.valueOf(value);
+		} catch (NumberFormatException e) {
+			throw new ValueRejectedException(value, "number format exception");
+		}
+	}
+	
+	private BigDecimal convertToBigDecimal(String value) {
+		try {
+			return new BigDecimal(value);
+		} catch (NumberFormatException e) {
+			throw new ValueRejectedException(value, "number format exception");
+		}
+	}
+	
 	private Boolean convertToBoolean(String value) {
 		if ("true".equals(value)) {
 			return true;
@@ -201,13 +225,48 @@ public class Converter {
 	}
 	
 	public Date convertToDate(String value) {
+		String dateFormat = getDateFormat(Date.class);
 		try {
 			return new SimpleDateFormat(dateFormat).parse(value);
 		} catch (ParseException e) {
-			throw new ValueRejectedException(value, "invalid date, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
 		}
 	}
-
+	
+	public String getDateFormat(Class<?> clazz) {
+		if (dateFormat == null) {
+			return DEFAULT_DATE_FORMATS.get(clazz);
+		}
+		
+		return dateFormat;
+	}
+	
+	public UUID convertToUUID(String value) {
+		try {
+			return UUID.fromString(value);
+		} catch (IllegalArgumentException e) {
+			throw new ValueRejectedException(value, "unparseable uuid");
+		}
+	}
+	
+	public OffsetDateTime convertToOffsetDateTime(String value) {
+		String dateFormat = getDateFormat(OffsetDateTime.class);
+		try {
+			return OffsetDateTime.parse(value, DateTimeFormatter.ofPattern(dateFormat));
+		} catch (DateTimeParseException | IllegalArgumentException e) {
+			throw new ValueRejectedException(value, "OffsetDateTime format exception, expected format: " + dateFormat);
+		}
+	}
+	
+	public Instant convertToInstant(String value) {
+		String dateFormat = getDateFormat(Instant.class);
+		try {
+			return Instant.from(DateTimeFormatter.ofPattern(dateFormat).parse(value));
+		} catch (DateTimeParseException | IllegalArgumentException e) {
+			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat);
+		}
+	}
+	
 	private <T> T convertToEnum(String value, Class<? extends Enum<?>> enumClass) {
 		for (Enum<?> enumVal : enumClass.getEnumConstants()) {
 			if (enumVal.name().equals(value)) {
@@ -216,7 +275,7 @@ public class Converter {
 		}
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -225,7 +284,7 @@ public class Converter {
 		result = prime * result + ((onTypeMismatch == null) ? 0 : onTypeMismatch.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -249,12 +308,13 @@ public class Converter {
 	public String toString() {
 		return "Converter [dateFormat=" + dateFormat + ", onTypeMismatch=" + onTypeMismatch + "]";
 	}
-
-	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch) {
-		return new Converter(dateFormat != null ? dateFormat : DEFAULT_DATE_FORMAT, onTypeMismatch);
+	
+	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
+		return new Converter(dateFormat, onTypeMismatch, conversionService);
 	}
-
-	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch) {
-		return new Converter(DEFAULT_DATE_FORMAT, onTypeMismatch);
+	
+	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
+		return new Converter(null, onTypeMismatch, conversionService);
 	}
+	
 }

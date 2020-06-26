@@ -20,9 +20,11 @@ import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
+
+
 public abstract class AnnotatedSpecInterfaceTestBase extends ResolverTestBase {
 
-	protected Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT);
+	protected Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 	protected SpecificationArgumentResolver specificationArgumentResolver = new SpecificationArgumentResolver();
 
 	public Equal<Object> equal(WebRequestProcessingContext ctx, String path, String value) {

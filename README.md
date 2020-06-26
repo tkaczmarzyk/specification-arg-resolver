@@ -26,6 +26,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
+   * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -85,6 +86,8 @@ public class MyConfig implements WebMvcConfigurer {
     ...
 }
 ```
+
+The library converts HTTP parameters (strings) into most popular Java types such as dates, numbers, and enums. In case of a need for some additional conversion, please see how to configure specification argument resolver with If you need to use additional converters please see [custom converters section](#type-conversions-for-http-parameters).
 
 Simple specifications
 ----------------------
@@ -592,7 +595,118 @@ public Object findById(
 }
 ```
 
+Type conversions for HTTP parameters
+-------------------
 
+Specification argument resolvers uses conversion mechanism to convert request string params to types of fields for which specifications have been defined.
+
+Let's consider the following code:
+  ```java
+	@Controller
+	public class SampleController {
+		
+		@Autowired
+		CustomerRepository customerRepository;
+		
+		@RequestMapping("/find")
+		public List<Customer> findByRegistrationDate(
+				@And({
+					@Spec(path = "name", params = "name", spec = Equal.class),
+					@Spec(path = "registrationDate", params = "registrationDate", spec = GreaterThanOrEqual.class)
+				}) Specification<Customer> spec) {
+			return customerRepository.findAll(spec);
+		}
+	}
+	
+	@Entity
+	public class Customer {
+		String name;
+		Date registrationDate;
+	}
+  ``` 
+When the following request will be sent to the endpoint presented above
+  ```
+  GET /find?name=John&registrationDate=2020-06-19
+  ```
+
+a `Specification<Customer>` based on fields `name` and `registrationDate` will be built.
+
+  * The type of the `name` field is a `String` type, received parameter value is always a `String` type so there is no need of conversion.  
+  * The type of the `registartionDate` field is `java.util.Date` type, so the `String` will be converted into `Date` using one of available converter.
+
+##### Supported conversions  
+Specification Argument Resolver contains converters for most common java types. 
+
+List of supported conversions:
+
+  * `String -> Enum`
+  * `String -> boolean`
+  * `String -> Boolean`
+  * `String -> integer`
+  * `String -> Integer`
+  * `String -> long`
+  * `String -> Long`
+  * `String -> float`
+  * `String -> Float`
+  * `String -> double`
+  * `String -> Double`
+  * `String -> BigDecimal`
+  * `String -> Date` (default format: `yyyy-MM-dd`)
+  * `String -> LocalDate` (default format: `yyyy-MM-dd`)
+  * `String -> LocalDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss`)
+  * `String -> OffsetDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
+  * `String -> Instant` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
+  * `String -> UUID` 
+
+To use a custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
+For example:
+```
+ @Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")
+```
+
+
+In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
+
+##### Custom converters
+The converter includes a fallback mechanism based on [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService`, which is invoked when required conversion is not supported by any default converter. If the `ConversionService` supports required conversion it will be performed, otherwise a `ClassCastException` will be thrown. 
+
+To add specification argument resolver support for custom conversion:
+1) Add required converter to [ConversionService](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html)
+2) Configure fallback mechanism by passing [ConversionService](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) to SpecificationArgumentResolver constructor.
+
+
+For example:
+
+```java
+@Configuration
+@EnableJpaRepositories
+public class MyConfig implements WebMvcConfigurer {
+ 
+    @Autowired
+    ConversionService conversionService;
+    
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new SpecificationArgumentResolver(conversionService));
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToAddressConverter());
+    }
+ 
+    public static class StringToAddressConverter implements Converter<String, Address> {
+        @Override
+        public Address convert(String rawAddress) {
+            Address address = new Address();
+            address.setStreet(rawAddress);
+            return address;
+        }
+    }
+
+    ...
+}
+```
 
 Compatibility notes
 -------------------

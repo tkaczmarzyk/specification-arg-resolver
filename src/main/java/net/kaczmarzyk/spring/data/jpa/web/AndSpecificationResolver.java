@@ -29,8 +29,12 @@ import java.util.List;
  */
 class AndSpecificationResolver implements SpecificationResolver<And> {
 
-	private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
-
+	private SimpleSpecificationResolver specResolver;
+	
+	public AndSpecificationResolver(SimpleSpecificationResolver simpleSpecificationResolver) {
+		this.specResolver = simpleSpecificationResolver;
+	}
+	
 	@Override
 	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
 		return And.class;

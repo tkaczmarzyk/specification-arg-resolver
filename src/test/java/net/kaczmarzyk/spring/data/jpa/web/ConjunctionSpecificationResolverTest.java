@@ -15,20 +15,20 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
 import net.kaczmarzyk.spring.data.jpa.domain.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -36,7 +36,7 @@ import org.springframework.web.context.request.NativeWebRequest;
  */
 public class ConjunctionSpecificationResolverTest extends ResolverTestBase {
 
-	ConjunctionSpecificationResolver resolver = new ConjunctionSpecificationResolver();
+	ConjunctionSpecificationResolver resolver = new ConjunctionSpecificationResolver(new SimpleSpecificationResolver());
 
 	public static class TestController {
 

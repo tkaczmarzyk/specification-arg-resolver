@@ -17,7 +17,6 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.when;
  */
 public class AndSpecificationResolverTest extends ResolverTestBase {
 
-	AndSpecificationResolver resolver = new AndSpecificationResolver();
+	AndSpecificationResolver resolver = new AndSpecificationResolver(new SimpleSpecificationResolver());
 
 	@Test
 	public void resolvesWrapperOfInnerSpecs() {

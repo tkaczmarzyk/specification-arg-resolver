@@ -30,9 +30,14 @@ import java.util.List;
  */
 class DisjunctionSpecificationResolver implements SpecificationResolver<Disjunction> {
 
-	private SimpleSpecificationResolver specResolver = new SimpleSpecificationResolver();
-	private AndSpecificationResolver andResolver = new AndSpecificationResolver();
-
+	private SimpleSpecificationResolver specResolver;
+	private AndSpecificationResolver andResolver;
+	
+	public DisjunctionSpecificationResolver(SimpleSpecificationResolver simpleSpecificationResolver) {
+		this.specResolver = simpleSpecificationResolver;
+		this.andResolver = new AndSpecificationResolver(simpleSpecificationResolver);
+	}
+	
 	@Override
 	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
 		return Disjunction.class;

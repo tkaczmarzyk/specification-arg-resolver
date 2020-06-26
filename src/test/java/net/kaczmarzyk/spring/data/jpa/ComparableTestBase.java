@@ -27,13 +27,13 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 /**
- * Base class for all Comparable Specification tests, 
+ * Base class for all Comparable Specification tests,
  * providing data and methods to make and test ComparableSpecifications.
- * 
+ *
  * @author TP Diffenbach
  */
 public abstract class ComparableTestBase extends IntegrationTestBase {
-
+	
 	protected static final String HEAVIER_THAN_MOE_DOUBLE = "65.21";
 	protected static final String HEAVIER_THAN_MARGE = "56";
 	
@@ -41,7 +41,7 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	protected Customer margeSimpson;
 	protected Customer moeSzyslak;
 	protected Customer joeQuimby;
-
+	
 	@Before
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
@@ -49,24 +49,24 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 		moeSzyslak = customer("Moe", "Szyslak").gender(Gender.MALE).registrationDate(2015, 03, 02).weight(65).notGolden().build(em);
 		joeQuimby = customer("Joe", "Quimby").golden().build(em); // Gender nor Weight nor Registration Date not specifed
 	}
-
+	
 	/**
 	 * Template Method Pattern to get an instance of the class under test.
-	 * 
+	 *
 	 * @param path the Specification's path
-	 * @param value the value to compare against the database values 
+	 * @param value the value to compare against the database values
 	 * @param converter the converter
-	 * @return a Specification created with the passed-in parameters, 
+	 * @return a Specification created with the passed-in parameters,
 	 * 	e.g: return new Spec(path, value, config);
 	 */
 	protected abstract Specification<Customer> makeUUT(String path, String[] value, Converter converter);
-
+	
 	/**
-	 * Convenience function to create an instance of the class under test, 
+	 * Convenience function to create an instance of the class under test,
 	 * 	converting String into String[].
-	 * 
+	 *
 	 * @param path the Specification's path
-	 * @param value the value to compare against the database values 
+	 * @param value the value to compare against the database values
 	 * @param converter the converter
 	 * @return a Specification, by calling subclass's makeUUT.
 	 */
@@ -75,35 +75,35 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	}
 	
 	/**
-	 * Convenience function to create an instance of the class under test, 
+	 * Convenience function to create an instance of the class under test,
 	 * 	with default Converter.
-	 * 
+	 *
 	 * @param path the Specification's path
-	 * @param value the value to compare against the database values 
+	 * @param value the value to compare against the database values
 	 * @return a Specification, by calling subclass's makeUUT, with an empty config.
 	 */
 	protected Specification<Customer> makeUUT(String path, String value) {
 		return makeUUT(path, value, defaultConverter);
 	}
-
+	
 	/**
 	 * Create the Specification under test, filter with it, and assert the returned Customers
 	 * are only those expected.
 	 * @param path Specification path
-	 * @param value Specification value 
+	 * @param value Specification value
 	 * @param expectedMembers the Customers we expect to be filtered in
 	 */
 	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, Customer... expectedMembers) {
 		assertFilterMembers(makeUUT(path, value), expectedMembers);
 	}
-
+	
 	/**
 	 * Create the Specification under test, filter with it, and assert it returns no Customers.
-	 * 
-	 * This function is redundant, as assertFilterMembers(path, value) works just as well. 
+	 *
+	 * This function is redundant, as assertFilterMembers(path, value) works just as well.
 	 * But we retain it as the name suggests the expected outcome.
 	 * @param path Specification path
-	 * @param value Specification value 
+	 * @param value Specification value
 	 */
 	protected void assertFilterIsEmpty(String path, String value) {
 		assertFilterEmpty(makeUUT(path, value));
@@ -111,24 +111,24 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	
 	/**
 	 * Create the Specification under test, filter with it, and assert the returned Customers.
-	 * are only those expected 
+	 * are only those expected
 	 * @param path Specification path
-	 * @param value Specification value 
+	 * @param value Specification value
 	 * @param dateFormat date-time format
 	 * @param expectedMembers the Customers we expect to be filtered in
 	 */
-	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String dateFormat, Customer... members) {
-		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)), members);
+	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, String dateFormat, Customer... expectedMembers) {
+		assertFilterMembers(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT, null)), expectedMembers);
 	}
-
+	
 	/**
 	 * Create the Specification under test, filter with it, and assert it returns no Customers.
-	 * 
-	 * This function is redundant, as assertFilterMembers(path, value) works just as well. 
+	 *
+	 * This function is redundant, as assertFilterMembers(path, value) works just as well.
 	 * But we retain it as the name suggests the expected outcome.
 	 * @param path Specification path
 	 * @param converter the converter
-	 * @param value Specification value 
+	 * @param value Specification value
 	 */
 	protected void assertFilterIsEmpty(String path, String value, Converter converter) {
 		assertFilterEmpty(makeUUT(path, value, converter));
@@ -136,34 +136,34 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	
 	/**
 	 * Create the Specification under test, filter with it, and assert it returns no Customers.
-	 * 
-	 * This function is redundant, as assertFilterMembers(path, value) works just as well. 
+	 *
+	 * This function is redundant, as assertFilterMembers(path, value) works just as well.
 	 * But we retain it as the name suggests the expected outcome.
 	 * @param path Specification path
-	 * @param converter the converter
-	 * @param value Specification value 
+	 * @param dateFormat custom date format value
+	 * @param value Specification value
 	 */
 	protected void assertFilterIsEmpty(String path, String value, String dateFormat) {
-		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT)));
+		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT, null)));
 	}
 	
-    @Test
-    public void rejectsNotExistingEnumConstantName() {
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("could not find value ROBOT for enum class Gender");
-        customerRepo.findAll(makeUUT("gender", "ROBOT"));
-    }
-
-    @Test
-    public void rejectsNonIntegerArguments() {
-    	expectedException.expect(InvalidDataAccessApiUsageException.class);
-    	assertFilterIsEmpty("weight", "1.1");
-    }
-    
-    @Test
-    public void rejectsNonNumericArguments() {
-    	expectedException.expect(InvalidDataAccessApiUsageException.class);
-    	assertFilterIsEmpty("weightDouble", "one");
-    }
+	@Test
+	public void rejectsNotExistingEnumConstantName() {
+		expectedException.expect(InvalidDataAccessApiUsageException.class);
+		expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
+		expectedException.expectMessage("could not find value ROBOT for enum class Gender");
+		customerRepo.findAll(makeUUT("gender", "ROBOT"));
+	}
+	
+	@Test
+	public void rejectsNonIntegerArguments() {
+		expectedException.expect(InvalidDataAccessApiUsageException.class);
+		assertFilterIsEmpty("weight", "1.1");
+	}
+	
+	@Test
+	public void rejectsNonNumericArguments() {
+		expectedException.expect(InvalidDataAccessApiUsageException.class);
+		assertFilterIsEmpty("weightDouble", "one");
+	}
 }
