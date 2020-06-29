@@ -43,6 +43,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
+	@Spec(path = "lastName", params = "lastName", spec = Equal.class, defaultVal = "Flanders")
+	public static interface LastNameSpecWithRawString extends Specification<Customer> {
+	}
+	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
@@ -85,6 +89,12 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 		@Autowired
 		CustomerRepository customerRepo;
 		
+		@RequestMapping("/defaultValRawString")
+		@ResponseBody
+		public Object listsCustomersUsingRawStringDefaultValue(LastNameSpecWithRawString spec) {
+			return customerRepo.findAll(spec);
+		}
+		
 		@RequestMapping("/defaultValInSpEL")
 		@ResponseBody
 		public Object listsCustomersUsingDefaultValueInSpEL(LastNameSpecWithDefaultValueInSpEL spec) {
@@ -123,6 +133,16 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 		customer("Minnie", "Szyslak").build(em);
 		customer("Ned", "Flanders").build(em);
 		customer("Bart Jr.", "Simpsonx").birthDate(LocalDate.of(3000, 6, 22)).build(em);
+	}
+	
+	@Test
+	public void filtersBySingleSpecWithoutParamUsingRawStringDefaultValue() throws Exception {
+		mockMvc.perform(get("/defaultValRawString")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 	
 	@Test

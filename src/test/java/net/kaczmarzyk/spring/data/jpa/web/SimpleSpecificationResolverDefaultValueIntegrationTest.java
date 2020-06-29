@@ -6,6 +6,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -27,10 +28,29 @@ public class SimpleSpecificationResolverDefaultValueIntegrationTest extends Inte
 	@Autowired
 	AbstractApplicationContext abstractApplicationContext;
 	
+	SimpleSpecificationResolver resolver;
+	
+	@Before
+	public void initializeResolver() {
+		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
+	}
+	
+	@Test
+	public void returnsSpecificationWithDefaultValue() {
+		MethodParameter param = methodParameter("testMethodWithDefaultValue", Specification.class);
+		
+		NativeWebRequest req = mock(NativeWebRequest.class);
+		
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+		
+		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+		
+		assertThat(resolved)
+				.isEqualTo(equalWithPathAndExpectedValue(ctx, "thePath", "defaultValue"));
+	}
+	
 	@Test
 	public void returnsSpecificationWithDefaultValueInSpEL() {
-		SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
-		
 		MethodParameter param = methodParameter("testMethodWithDefaultValueInSpEL", Specification.class);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		
@@ -43,9 +63,7 @@ public class SimpleSpecificationResolverDefaultValueIntegrationTest extends Inte
 	}
 	
 	@Test
-	public void throwsIllegalArgumentExceptionWhenTryingToResolveDefaultValueInInvalidSpELSyntax() {
-		SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
-		
+	public void throwsIllegalArgumentExceptionWhenTryingToResolveDefaultValueWithInvalidSpELSyntax() {
 		MethodParameter param = methodParameter("testMethodWithDefaultValueInInvalidSpELSyntax", Specification.class);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		
@@ -71,6 +89,9 @@ public class SimpleSpecificationResolverDefaultValueIntegrationTest extends Inte
 	
 	 private static class TestController {
 		
+		 public void testMethodWithDefaultValue(@Spec(path = "thePath", params = "path", spec = Equal.class, defaultVal = "defaultValue") Specification<Object> spec) {
+		 }
+		 
 		public void testMethodWithDefaultValueInSpEL(
 				@Spec(path = "thePath", spec = Equal.class, defaultVal = "#{'${SpEL-support.defaultVal.value}'.concat('ue')}") Specification<Object> spec) {
 		}

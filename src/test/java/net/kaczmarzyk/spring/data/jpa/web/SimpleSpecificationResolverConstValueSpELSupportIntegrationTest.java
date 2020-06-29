@@ -6,6 +6,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -20,18 +21,35 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Jakub Radlica
  */
-public class SimpleSpecificationResolverConstValueIntegrationTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
+public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
 	private Converter defaultConverter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
 	
 	@Autowired
 	AbstractApplicationContext abstractApplicationContext;
 	
+	SimpleSpecificationResolver resolver;
+	
+	@Before
+	public void initializeResolver() {
+		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
+	}
+	
+	@Test
+	public void returnsSpecificationWithConstValue() {
+		MethodParameter param = methodParameter("testMethodWithConstValue", Specification.class);
+		NativeWebRequest req = mock(NativeWebRequest.class);
+		
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+		
+		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+		
+		assertThat(resolved)
+				.isEqualTo(equalWithPathAndExpectedValue(ctx, "thePath", "constValue"));
+	}
 	
 	@Test
 	public void returnsSpecificationWithConstValueInSpEL() {
-		SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
-		
 		MethodParameter param = methodParameter("testMethodWithConstValueInSpEL", Specification.class);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		
@@ -45,8 +63,6 @@ public class SimpleSpecificationResolverConstValueIntegrationTest extends Integr
 	
 	@Test
 	public void throwsIllegalArgumentExceptionWhenTryingToResolveConstValueWithInvalidSpELSyntax() {
-		SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
-		
 		MethodParameter param = methodParameter("testMethodWithConstValueInInvalidSpELSyntax", Specification.class);
 		NativeWebRequest req = mock(NativeWebRequest.class);
 		
@@ -71,6 +87,9 @@ public class SimpleSpecificationResolverConstValueIntegrationTest extends Integr
 	}
 	
 	 private static class TestController {
+		
+		 public void testMethodWithConstValue(@Spec(path = "thePath", spec = Equal.class, constVal = "constValue") Specification<Object> spec) {
+		 }
 		
 		public void testMethodWithConstValueInSpEL(
 				@Spec(path = "thePath", spec = Equal.class, constVal = "#{'${SpEL-support.constVal.value}'.concat('ue')}") Specification<Object> spec) {
