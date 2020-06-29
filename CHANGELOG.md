@@ -3,7 +3,6 @@ v2.6.0 UNRELEASED
 * Added support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) and [property placeholders](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html) in `@Spec` attributes: `constVal`, `defaultVal`. 
   To enable SpEL support in particular `@Spec` attribute:
   * Configure `SpecificationArgumentResolver` by passing `AbstractApplicationContext` in constructor
-  * Set attribute `constValType`/`defaultValType` value to `SpEL`
   
   Configuration example:
   ```java

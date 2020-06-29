@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -18,18 +33,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.time.LocalDate;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.Spec.StringValueType.SpEL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @author Jakub Radlica
+ */
 public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			constVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}",
-			constValType = SpEL
+			constVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}"
 	)
 	public interface LastNameSpecWithConstValueInSpEL extends Specification<Customer> {
 	}
@@ -37,8 +53,7 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 	@Spec(
 			path = "birthDate",
 			spec = GreaterThanOrEqual.class,
-			constVal = "#{T(java.time.LocalDate).now()}",
-			constValType = SpEL
+			constVal = "#{T(java.time.LocalDate).now()}"
 	)
 	public interface CustomersBornInTheFuture extends Specification<Customer> {
 	}
@@ -46,8 +61,7 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			constVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}",
-			constValType = SpEL
+			constVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}"
 	)
 	public interface LastNameSpecWithConstValueInSpELWithPropertyPlaceholder extends Specification<Customer> {
 	}
@@ -55,8 +69,7 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			constVal = "${SpEL-support.lastName.value}",
-			constValType = SpEL
+			constVal = "${SpEL-support.lastName.value}"
 	)
 	public interface LastNameSpecWithConstValueWithPropertyPlaceholder extends Specification<Customer> {
 	}
