@@ -15,19 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Collection;
-
-import javax.persistence.criteria.JoinType;
-
-import org.junit.Test;
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.context.request.NativeWebRequest;
-
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
@@ -35,7 +22,16 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.ReflectionUtils;
+import org.junit.Test;
+import org.springframework.core.MethodParameter;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.context.request.NativeWebRequest;
+
+import javax.persistence.criteria.JoinType;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class SpecificationArgumentResolverTest extends ResolverTestBase {
@@ -54,7 +50,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
-            .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT));
+            .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
     }
     
 //    @Test
@@ -91,8 +87,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1" }, JoinType.LEFT),
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch2" }, JoinType.INNER)));
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1" }, JoinType.LEFT, true),
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch2" }, JoinType.INNER, true)));
     }
     
     @Test
@@ -125,8 +121,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1" }, JoinType.LEFT),
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch2" }, JoinType.INNER),
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1" }, JoinType.LEFT, true),
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch2" }, JoinType.INNER, true),
             		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join1", "alias1", JoinType.INNER, true),
             		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join2", "alias2", JoinType.LEFT, false)));
     }
@@ -139,7 +135,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
         assertThat(resolved)
-            .isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT));
+            .isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
     }
     
     @Test

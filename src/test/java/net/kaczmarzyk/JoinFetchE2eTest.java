@@ -18,7 +18,6 @@ package net.kaczmarzyk;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
@@ -50,6 +49,15 @@ public class JoinFetchE2eTest extends E2eTestBase {
 
 			return customerRepository.findAll(spec);
 		}
+		
+		@RequestMapping("/join-fetch/customers/distinct-false")
+		public Object findByFirstNameAndJoinFetchDistinctSetToFalse(
+				
+				@JoinFetch(paths = "badges", distinct = false)
+				@Spec(path = "firstName", spec = Equal.class) Specification<Customer> spec) {
+			
+			return customerRepository.findAll(spec);
+		}
 
 		@RequestMapping("/join-fetch-pageable/customers")
 		public Object findByLastNameWithPagination(
@@ -72,6 +80,19 @@ public class JoinFetchE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$").isArray())
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+	
+	@Test
+	public void createsNotDistinctQueryIfDistinctPropertyIsSetToFalse() throws Exception {
+		mockMvc.perform(get("/join-fetch/customers/distinct-false")
+				.param("firstName", "Homer")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0].firstName").value("Homer"))
+				.andExpect(jsonPath("$[1].firstName").value("Homer"))
+				.andExpect(jsonPath("$[2].firstName").value("Homer"))
+				.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 
 	@Test

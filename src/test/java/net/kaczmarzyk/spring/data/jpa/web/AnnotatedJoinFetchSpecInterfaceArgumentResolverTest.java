@@ -19,7 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.ReflectionUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
@@ -97,7 +96,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 		assertThat(innerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
-						new JoinFetch<>(new String[]{ "orders" }, LEFT),
+						new JoinFetch<>(new String[]{ "orders" }, LEFT, true),
 						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123"))
 				);
 	}
@@ -128,8 +127,8 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 		Assertions.assertThat(innerSpecs)
 				.hasSize(6)
 				.containsOnly(
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "orders" }, LEFT),
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "badges" }, INNER),
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "orders" }, LEFT,true),
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "badges" }, INNER, true),
 						new EmptyResultOnTypeMismatch<>(new Equal<>(ctx.queryContext(), "b.badgeType", new String[]{ "Beef Eater" }, converter)),
 						new Conjunction<>(
 								new EmptyResultOnTypeMismatch<>(new In<>(ctx.queryContext(), "gender", new String[]{ "MALE" }, converter)),

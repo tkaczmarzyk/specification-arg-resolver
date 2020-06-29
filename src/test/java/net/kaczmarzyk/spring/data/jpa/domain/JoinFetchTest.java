@@ -15,20 +15,18 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import javax.persistence.criteria.JoinType;
-
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-
 import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.persistence.criteria.JoinType;
+import java.util.List;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -57,7 +55,7 @@ public class JoinFetchTest extends IntegrationTestBase {
     
     @Test
     public void fetchesLazyCollection() {
-        JoinFetch<Customer> spec = new JoinFetch<Customer>(new String[] { "orders" }, JoinType.LEFT);
+        JoinFetch<Customer> spec = new JoinFetch<Customer>(new String[] { "orders" }, JoinType.LEFT, true);
         
         List<Customer> customers = customerRepo.findAll(spec);
         
@@ -70,8 +68,8 @@ public class JoinFetchTest extends IntegrationTestBase {
     
     @Test
     public void performsTwoFetches() {
-    	JoinFetch<Customer> spec1 = new JoinFetch<Customer>(new String[] { "orders" }, JoinType.LEFT);
-    	JoinFetch<Customer> spec2 = new JoinFetch<Customer>(new String[] { "orders2" }, JoinType.INNER);
+    	JoinFetch<Customer> spec1 = new JoinFetch<Customer>(new String[] { "orders" }, JoinType.LEFT, true);
+    	JoinFetch<Customer> spec2 = new JoinFetch<Customer>(new String[] { "orders2" }, JoinType.INNER, true);
         
     	Conjunction<Customer> spec = new Conjunction<Customer>(spec1, spec2);
     	
@@ -83,6 +81,30 @@ public class JoinFetchTest extends IntegrationTestBase {
         	assertTrue(Hibernate.isInitialized(customer.getOrders()));
         	assertTrue(Hibernate.isInitialized(customer.getOrders2()));
         }
+    }
+    
+    @Test
+    public void performsNotDistinctFetchWhenDistinctParamIsSetToFalse() {
+        JoinFetch<Customer> spec = new JoinFetch<Customer>(new String[] { "orders" }, JoinType.LEFT, false);
+    
+        List<Customer> customers = customerRepo.findAll(spec);
+        
+        assertThat(customers)
+                .hasSize(5)
+                .extracting(Customer::getFirstName)
+                .containsExactly("Homer", "Homer", "Marge", "Bart", "Bart");
+    }
+    
+    @Test
+    public void performsDistinctFetchWhenDistinctParamIsSetToTrue() {
+        JoinFetch<Customer> spec = new JoinFetch<Customer>(new String[] { "orders" }, JoinType.LEFT, true);
+    
+        List<Customer> customers = customerRepo.findAll(spec);
+    
+        assertThat(customers)
+                .hasSize(3)
+                .extracting(Customer::getFirstName)
+                .containsExactlyInAnyOrder("Bart", "Homer", "Marge");
     }
 
 }
