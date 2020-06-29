@@ -146,7 +146,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		if (embeddedValueResolver != null) {
 			ArrayList<String> evaluatedArgs = new ArrayList<>(specDef.constVal().length);
 			for (String rawConstVal : specDef.constVal()) {
-				evaluatedArgs.add(evaluatedSpELValue(rawConstVal));
+				evaluatedArgs.add(evaluateRawSpELValue(rawConstVal));
 			}
 			return evaluatedArgs;
 		} else {
@@ -159,7 +159,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
 			if (embeddedValueResolver != null) {
 				for (String rawDefaultVal : specDef.defaultVal()) {
-					resolved.add(evaluatedSpELValue(rawDefaultVal));
+					resolved.add(evaluateRawSpELValue(rawDefaultVal));
 				}
 			} else {
 				resolved.addAll(asList(specDef.defaultVal()));
@@ -168,11 +168,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		return resolved;
 	}
 	
-	private String evaluatedSpELValue(String rawSpELValue) {
-		if(embeddedValueResolver == null) {
-			throw new IllegalStateException("SpEL expression resolver could not be configured! " +
-					"Please configure SpecificationArgumentResolver by passing AbstractApplicationContext in constructor.");
-		}
+	private String evaluateRawSpELValue(String rawSpELValue) {
 		try {
 			return embeddedValueResolver.resolveStringValue(rawSpELValue);
 		} catch (BeansException|ParseException e) {
