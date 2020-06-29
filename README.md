@@ -447,9 +447,9 @@ will always produce the following: `where deleted = false`. It is often convenie
 
 Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `constVal` could be enabled in following way:
 
-Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+1. Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
   
-   Example:
+Configuration example:
    ```java
    @Autowired
    AbstractApplicationContext applicationContext;
@@ -461,23 +461,23 @@ Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext
    ```
   
 
-   Code example #1:
+Usage example #1:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody
    public Object findCustomersBornInTheFuture(
-           @Spec(path = "birthDate", constVal = "#{T(java.time.LocalDate).now()}", constValType = SpEL, spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
+           @Spec(path = "birthDate", constVal = "#{T(java.time.LocalDate).now()}", spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
    	
    	return customerRepo.findAll(spec);
    }
    ```
 
-   Code example #2:
+Usage example #2:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody
    public Object findCustomersWithTheLastNameSimpson(
-           @Spec(path = "lastName", constVal = "${search.default-params.lastName}", constValType = SpEL, spec = Equal.class) Specification<Customer> spec) {
+           @Spec(path = "lastName", constVal = "${search.default-params.lastName}", spec = Equal.class) Specification<Customer> spec) {
    	
    	return customerRepo.findAll(spec);
    }
@@ -488,7 +488,7 @@ Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext
    search.default-params.lastName=Simpson
    ```
    
-SpEL expression should be able to be evaluated to `java.lang.String`
+Defined in `constVal` SpEL expression should be able to be evaluated to `java.lang.String`.
 
 Default value of queries
 ------------------------
@@ -511,9 +511,9 @@ Supplying `constVal` implicitly sets `defaultVal` to empty.
 
 Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `defaultVal` could be enabled in following way:
 
-1) Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+1. Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
   
-   Example:
+Configuration example:
    ```java
    @Autowired
    AbstractApplicationContext applicationContext;
@@ -524,23 +524,23 @@ Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-frame
    }
    ```
 
-   Code example #1:
+Usage example #1:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody
    public Object findCustomersBornInTheFuture(
-           @Spec(path = "birthDate", params = "birthDate", defaultVal = "#{T(java.time.LocalDate).now()}", constValType = SpEL, spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
+           @Spec(path = "birthDate", params = "birthDate", defaultVal = "#{T(java.time.LocalDate).now()}", spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
    	
    	return customerRepo.findAll(spec);
    }
    ```
 
-   Code example #2:
+Usage example #2:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody
    public Object findCustomersWithTheLastNameSimpson(
-           @Spec(path = "lastName", params = "lastName", defaultVal = "${default-params.lastName}", defaultValType = SpEL, spec = Equal.class) Specification<Customer> spec) {
+           @Spec(path = "lastName", params = "lastName", defaultVal = "${default-params.lastName}", spec = Equal.class) Specification<Customer> spec) {
    	
    	return customerRepo.findAll(spec);
    }
@@ -550,7 +550,8 @@ Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-frame
    ```properties
    default-params.lastName=Simpson
    ```
-SpEL expression should be able to be evaluated to `java.lang.String`
+
+Defined in `defaultVal` SpEL expression should be able to be evaluated to `java.lang.String`.
 
 Annotated specification interfaces
 ----------------------------------
