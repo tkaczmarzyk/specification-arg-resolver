@@ -140,7 +140,7 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 	}
 	
 	@Test
-	public void filtersBySingleSpecWithoutParamUsingDefaultValInSpEL2() throws Exception {
+	public void filtersBySingleSpecWithoutParamUsingDefaultValInSpELWithTemporalConstructor() throws Exception {
 		mockMvc.perform(get("/customersFromTheFuture")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())

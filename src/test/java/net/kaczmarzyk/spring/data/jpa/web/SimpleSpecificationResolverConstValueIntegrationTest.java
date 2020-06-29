@@ -44,7 +44,7 @@ public class SimpleSpecificationResolverConstValueIntegrationTest extends Integr
 	}
 	
 	@Test
-	public void throwsIllegalArgumentExceptionWhenTryingToResolveConstValueInInvalidSpELSyntax() {
+	public void throwsIllegalArgumentExceptionWhenTryingToResolveConstValueWithInvalidSpELSyntax() {
 		SimpleSpecificationResolver resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
 		
 		MethodParameter param = methodParameter("testMethodWithConstValueInInvalidSpELSyntax", Specification.class);
@@ -72,10 +72,6 @@ public class SimpleSpecificationResolverConstValueIntegrationTest extends Integr
 	
 	 private static class TestController {
 		
-		 public void testMethodWithConstValue(
-				 @Spec(path = "thePath", spec = Equal.class, constVal = "test") Specification<Object> spec) {
-		 }
-		 
 		public void testMethodWithConstValueInSpEL(
 				@Spec(path = "thePath", spec = Equal.class, constVal = "#{'${SpEL-support.constVal.value}'.concat('ue')}") Specification<Object> spec) {
 		}

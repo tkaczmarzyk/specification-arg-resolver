@@ -46,7 +46,6 @@ public class EqualIgnoreCaseTest extends EqualTest {
 
         assertThat(moeFound).hasSize(1).containsOnly(moeSzyslak);
     }
-
-
+    
     
 }

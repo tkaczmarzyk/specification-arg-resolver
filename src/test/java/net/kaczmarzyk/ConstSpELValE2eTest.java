@@ -135,7 +135,7 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 	}
 	
 	@Test
-	public void filtersBySingleSpecWithoutParamUsingConstValInSpEL2() throws Exception {
+	public void filtersBySingleSpecWithoutParamUsingConstValInSpELWithTemporalConstructor() throws Exception {
 		mockMvc.perform(get("/customersBornInTheFutureConstVal")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
