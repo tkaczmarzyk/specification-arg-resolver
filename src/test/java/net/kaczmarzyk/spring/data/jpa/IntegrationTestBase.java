@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author TP Diffenbach
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { Application.class })
+@ContextConfiguration(classes = { ApplicationWithSARConfiguredWithApplicationContext.class })
 @WebAppConfiguration
 @Transactional
 public abstract class IntegrationTestBase {

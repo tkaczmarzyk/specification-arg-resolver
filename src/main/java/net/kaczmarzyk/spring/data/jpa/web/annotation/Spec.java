@@ -22,8 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.Spec.StringValueType.RAW;
-
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -46,30 +44,17 @@ public @interface Spec {
     
     /**
      * The constant value designed for specification without related HTTP param. Const value can be a raw string or SpEL expression.
-     * For SpEL expression value {@link #defaultValType()} should be set to {@code SpEL}
      * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
      */
     String[] constVal() default {};
     
     /**
-     * RAW - if default val should be handled as plain text value (default)
-     * SpEL - if default val should be handled as SpEL expression
-     */
-    StringValueType constValType() default RAW;
-    
-    /**
      * The default value to use as a fallback when the request parameter is
      * not provided or has an empty value. Default value can be a raw string or SpEL expression.
-     * For SpEL expression value {@link #defaultValType()} should be set to {@code SpEL}
      * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
      */
     String[] defaultVal() default {};
-    
-    /**
-     * RAW - if default val should be handled as plain text value (default)
-     * SpEL - if default val should be handled as SpEL expression
-     */
-    StringValueType defaultValType() default RAW;
+
     
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
     

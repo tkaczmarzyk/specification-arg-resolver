@@ -451,7 +451,7 @@ will always produce the following: `where deleted = false`. It is often convenie
 
 Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `constVal` could be enabled in following way:
 
-1) Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
   
    Example:
    ```java
@@ -464,9 +464,8 @@ Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-frame
    }
    ```
   
-2) Set `constValType` to `SpEL` (default `RAW`)
 
-   Example #1:
+   Code example #1:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody
@@ -477,7 +476,7 @@ Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-frame
    }
    ```
 
-   Example #2:
+   Code example #2:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody
@@ -528,10 +527,8 @@ Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-frame
    	argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
    }
    ```
-  
-2) Set `defaultValType` to `SpEL` (default `RAW`)
 
-   Example #1:
+   Code example #1:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody
@@ -542,7 +539,7 @@ Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-frame
    }
    ```
 
-   Example #2:
+   Code example #2:
    ```java
    @RequestMapping(value = "/customers")
    @ResponseBody

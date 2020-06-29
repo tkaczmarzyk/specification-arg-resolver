@@ -20,6 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.EmbeddedValueResolver;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.convert.ConversionService;
@@ -33,7 +34,6 @@ import java.util.Collection;
 import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.Spec.StringValueType.SpEL;
 
 
 /**
@@ -143,7 +143,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	}
 	
 	private Collection<String> resolveConstVal(Spec specDef) {
-		if (specDef.constValType().equals(SpEL)) {
+		if (embeddedValueResolver != null) {
 			ArrayList<String> evaluatedArgs = new ArrayList<>(specDef.constVal().length);
 			for (String rawConstVal : specDef.constVal()) {
 				evaluatedArgs.add(evaluatedSpELValue(rawConstVal));
@@ -157,7 +157,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	private Collection<String> resolveDefaultVal(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(context, specDef);
 		if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
-			if (specDef.defaultValType().equals(SpEL)) {
+			if (embeddedValueResolver != null) {
 				for (String rawDefaultVal : specDef.defaultVal()) {
 					resolved.add(evaluatedSpELValue(rawDefaultVal));
 				}
@@ -168,11 +168,15 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		return resolved;
 	}
 	
-	private String evaluatedSpELValue(String rawConstVal) {
+	private String evaluatedSpELValue(String rawSpELValue) {
+		if(embeddedValueResolver == null) {
+			throw new IllegalStateException("SpEL expression resolver could not be configured! " +
+					"Please configure SpecificationArgumentResolver by passing AbstractApplicationContext in constructor.");
+		}
 		try {
-			return embeddedValueResolver.resolveStringValue(rawConstVal);
-		} catch (ParseException e) {
-			throw new IllegalArgumentException("SpEL expression is not supported: '" + rawConstVal + "'");
+			return embeddedValueResolver.resolveStringValue(rawSpELValue);
+		} catch (BeansException|ParseException e) {
+			throw new IllegalArgumentException("Invalid SpEL expression: '" + rawSpELValue + "'");
 		}
 	}
 	

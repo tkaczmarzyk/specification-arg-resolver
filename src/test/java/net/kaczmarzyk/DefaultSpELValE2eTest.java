@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.time.LocalDate;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.Spec.StringValueType.SpEL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,8 +46,7 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			defaultVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}",
-			defaultValType = SpEL
+			defaultVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}"
 	)
 	public interface LastNameSpecWithDefaultValueInSpEL extends Specification<Customer> {
 	}
@@ -56,8 +54,7 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 	@Spec(
 			path = "birthDate",
 			spec = GreaterThanOrEqual.class,
-			defaultVal = "#{T(java.time.LocalDate).now()}",
-			defaultValType = SpEL
+			defaultVal = "#{T(java.time.LocalDate).now()}"
 	)
 	public interface CustomersBornInTheFuture extends Specification<Customer> {
 	
@@ -66,8 +63,7 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			defaultVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}",
-			defaultValType = SpEL
+			defaultVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}"
 	)
 	public interface LastNameSpecWithDefaultValueInSpELWithPropertyPlaceholder extends Specification<Customer> {
 	
@@ -76,8 +72,7 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			defaultVal = "${SpEL-support.lastName.value}",
-			defaultValType = SpEL
+			defaultVal = "${SpEL-support.lastName.value}"
 	)
 	public interface LastNameSpecWithDefaultValueWithPropertyPlaceholder extends Specification<Customer> {
 	
