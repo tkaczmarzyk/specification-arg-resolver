@@ -63,9 +63,4 @@ public @interface Spec {
     @SuppressWarnings("rawtypes")
     Class<? extends Specification> spec();
     
-    
-    enum StringValueType {
-        RAW,
-        SpEL
-    }
 }
