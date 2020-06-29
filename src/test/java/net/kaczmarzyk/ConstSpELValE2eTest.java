@@ -42,6 +42,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
+	@Spec(path = "lastName", params = "lastName", spec = Equal.class, constVal = "Flanders")
+	public static interface LastNameSpecWithRawString extends Specification<Customer> {
+	}
+	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
@@ -79,6 +83,12 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 		
 		@Autowired
 		CustomerRepository customerRepo;
+		
+		@RequestMapping("/constValRawString")
+		@ResponseBody
+		public Object listsCustomersUsingRawStringConstValue(DefaultSpELValE2eTest.LastNameSpecWithRawString spec) {
+			return customerRepo.findAll(spec);
+		}
 		
 		@RequestMapping("/constValInSpEL")
 		@ResponseBody
@@ -118,6 +128,16 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 		customer("Minnie", "Szyslak").build(em);
 		customer("Ned", "Flanders").build(em);
 		customer("Bart Jr.", "Simpsonx").birthDate(LocalDate.of(3000, 6, 22)).build(em);
+	}
+	
+	@Test
+	public void filtersBySingleSpecWithoutParamUsingRawStringConstValue() throws Exception {
+		mockMvc.perform(get("/constValRawString")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 	
 	@Test
