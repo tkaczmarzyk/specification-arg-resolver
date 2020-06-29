@@ -50,7 +50,7 @@ public class JoinFetchE2eTest extends E2eTestBase {
 			return customerRepository.findAll(spec);
 		}
 		
-		@RequestMapping("/join-fetch/customers/distinct-false")
+		@RequestMapping("/join-fetch/customers/not-distinct")
 		public Object findByFirstNameAndJoinFetchDistinctSetToFalse(
 				
 				@JoinFetch(paths = "badges", distinct = false)
@@ -83,8 +83,8 @@ public class JoinFetchE2eTest extends E2eTestBase {
 	}
 	
 	@Test
-	public void createsNotDistinctQueryIfDistinctPropertyIsSetToFalse() throws Exception {
-		mockMvc.perform(get("/join-fetch/customers/distinct-false")
+	public void createsNotDistinctQueryIfDistinctAttributeIsSetToFalse() throws Exception {
+		mockMvc.perform(get("/join-fetch/customers/not-distinct")
 				.param("firstName", "Homer")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
