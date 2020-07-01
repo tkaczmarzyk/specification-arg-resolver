@@ -1,4 +1,8 @@
-v2.4.0 - UNRELEASED
+v2.4.1 - UNRELEASED
+======
+* Added `distinct` (default: `true`) attribute to `JoinFetch` annotation. Attribute determines that query should be distinct or not.
+
+v2.4.0
 ======
 * Added conversion support for `UUID`, `OffsetDatetime`, `Instant`
 

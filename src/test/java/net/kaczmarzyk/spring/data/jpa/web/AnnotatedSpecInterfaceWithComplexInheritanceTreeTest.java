@@ -16,11 +16,11 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.*;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -234,7 +234,7 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 								new EmptyResultOnTypeMismatch<>(new Null<>(ctx.queryContext(), "or1spec2", new String[]{ "or1spec2Val" }, converter))
 						),
 						// JoinFetchFilter
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "joinFetch1path1", "joinFetch1path2", "joinFetch1path3" }, LEFT),
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "joinFetch1path1", "joinFetch1path2", "joinFetch1path3" }, LEFT, true),
 						// JoinFilter
 						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "join1", "join1alias", LEFT, false)
 				);

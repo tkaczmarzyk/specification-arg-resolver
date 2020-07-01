@@ -15,12 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
+import javax.persistence.criteria.JoinType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import javax.persistence.criteria.JoinType;
 
 
 /**
@@ -38,4 +37,6 @@ public @interface JoinFetch {
     String[] paths();
     
     JoinType joinType() default JoinType.LEFT;
+    
+    boolean distinct() default true;
 }

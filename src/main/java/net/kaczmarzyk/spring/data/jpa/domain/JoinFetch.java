@@ -15,16 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.springframework.data.jpa.domain.Specification;
 
 
 /**
@@ -38,17 +33,19 @@ public class JoinFetch<T> implements Specification<T> {
 	private static final long serialVersionUID = 1L;
 	
 	private List<String> pathsToFetch;
-    	private JoinType joinType;
+	private JoinType joinType;
+	private boolean distinct;
 
     
-    public JoinFetch(String[] pathsToFetch, JoinType joinType) {
+    public JoinFetch(String[] pathsToFetch, JoinType joinType, boolean distinct) {
         this.pathsToFetch = Arrays.asList(pathsToFetch);
         this.joinType = joinType;
+        this.distinct = distinct;
     }
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        query.distinct(true);
+        query.distinct(distinct);
         if (!Number.class.isAssignableFrom(query.getResultType())) { // do not join in count queries
             for (String path : pathsToFetch){
                 root.fetch(path, joinType);
