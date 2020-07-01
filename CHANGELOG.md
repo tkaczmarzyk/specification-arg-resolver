@@ -1,4 +1,4 @@
-v2.4.1 - UNRELEASED
+v2.4.1
 ======
 * Added `distinct` (default: `true`) attribute to `JoinFetch` annotation. Attribute determines that query should be distinct or not.
 
