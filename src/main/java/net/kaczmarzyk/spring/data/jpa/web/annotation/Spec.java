@@ -44,13 +44,15 @@ public @interface Spec {
     
     /**
      * The constant value designed for specification without related HTTP param. Const value can be a raw string or SpEL expression.
+     * SpEL expressions could be used only with properly configured SpecificationArgumentResolver, see README.md for details.
      * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
      */
     String[] constVal() default {};
     
     /**
      * The default value to use as a fallback when the request parameter is
-     * not provided or has an empty value. Default value can be a raw string or SpEL expression.
+     * not provided or has an empty value. Default value can be a raw string or SpEL expression (could  SpecificationArgumentResolver.
+     * SpEL expressions could be used only with properly configured SpecificationArgumentResolver, see README.md for details.
      * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
      */
     String[] defaultVal() default {};

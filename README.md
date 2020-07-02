@@ -451,7 +451,7 @@ will always produce the following: `where deleted = false`. It is often convenie
 
 Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `constVal` could be enabled in following way:
 
-1. Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
   
 Configuration example:
    ```java
@@ -513,20 +513,7 @@ Would handle request such as `GET /users` with the following query: `select u fr
 
 Supplying `constVal` implicitly sets `defaultVal` to empty.
 
-Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `defaultVal` could be enabled in following way:
-
-1. Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
-  
-Configuration example:
-   ```java
-   @Autowired
-   AbstractApplicationContext applicationContext;
-    
-   @Override
-   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-   	argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
-   }
-   ```
+Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `defaultVal` could be enabled in the same way as for [constVal](#static-parts-of-queries)
 
 Usage example #1:
    ```java
