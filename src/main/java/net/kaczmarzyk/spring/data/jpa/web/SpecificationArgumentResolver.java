@@ -40,7 +40,7 @@ import static java.util.stream.Collectors.toMap;
  */
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
-	private static Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
+	private Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
 	public SpecificationArgumentResolver() {
 		 this(null, null);
