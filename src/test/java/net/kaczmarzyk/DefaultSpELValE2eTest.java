@@ -44,47 +44,59 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
 	@Spec(path = "lastName", params = "lastName", spec = Equal.class, defaultVal = "Flanders")
-	public static interface LastNameSpecWithRawString extends Specification<Customer> {
+	private	interface LastNameSpecWithRawString extends Specification<Customer> {
 	}
 	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			defaultVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}"
+			defaultVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}",
+			valueInSpEL = true
 	)
-	public interface LastNameSpecWithDefaultValueInSpEL extends Specification<Customer> {
+	private interface LastNameSpecWithDefaultValueInSpEL extends Specification<Customer> {
 	}
 	
 	@Spec(
 			path = "birthDate",
 			spec = GreaterThanOrEqual.class,
-			defaultVal = "#{T(java.time.LocalDate).now()}"
+			defaultVal = "#{T(java.time.LocalDate).now()}",
+			valueInSpEL = true
 	)
-	public interface CustomersBornInTheFuture extends Specification<Customer> {
+	private interface CustomersBornInTheFuture extends Specification<Customer> {
 	
 	}
 	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			defaultVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}"
+			defaultVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}",
+			valueInSpEL = true
 	)
-	public interface LastNameSpecWithDefaultValueInSpELWithPropertyPlaceholder extends Specification<Customer> {
-	
+	private interface LastNameSpecWithDefaultValueInSpELWithPropertyPlaceholder extends Specification<Customer> {
 	
 	}
+
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			defaultVal = "${SpEL-support.lastName.value}"
+			defaultVal = "${SpEL-support.lastName.value}",
+			valueInSpEL = true
 	)
-	public interface LastNameSpecWithDefaultValueWithPropertyPlaceholder extends Specification<Customer> {
+	private interface LastNameSpecWithDefaultValueWithPropertyPlaceholder extends Specification<Customer> {
 	
-	
+	}
+
+	@Spec(
+			path = "lastName",
+			spec = Equal.class,
+			defaultVal = "#{${SpEL-support.lastName",
+			valueInSpEL = false
+	)
+	private interface LastNameWithRawSpEL extends Specification<Customer> {
 	}
 	
 	@Controller
-	public static class TestController {
+	static class TestController {
 		
 		@Autowired
 		CustomerRepository customerRepo;
@@ -118,6 +130,12 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 		public Object listsCustomersUsingSpecWithDefaultValueWithPropertyPlaceholder(LastNameSpecWithDefaultValueWithPropertyPlaceholder spec) {
 			return customerRepo.findAll(spec);
 		}
+
+		@RequestMapping("/defaultValWithRawSpEL")
+		@ResponseBody
+		public Object listsCustomersUsingSpecRawSpELConstValue(LastNameWithRawSpEL spec) {
+			return customerRepo.findAll(spec);
+		}
 		
 	}
 	
@@ -133,6 +151,7 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 		customer("Minnie", "Szyslak").build(em);
 		customer("Ned", "Flanders").build(em);
 		customer("Bart Jr.", "Simpsonx").birthDate(LocalDate.of(3000, 6, 22)).build(em);
+		customer("BartWithInvalidLastName", "#{${SpEL-support.lastName").build(em);
 	}
 	
 	@Test
@@ -189,5 +208,15 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 				.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Minnie')]").exists())
 				.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void filtersBySingleSpecWithoutParamUsingRawSpELDefaultValue() throws Exception {
+		mockMvc.perform(get("/defaultValWithRawSpEL")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='BartWithInvalidLastName')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 }

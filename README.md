@@ -446,8 +446,8 @@ If you don't want to bind your Specification to any HTTP parameter, you can use 
 will always produce the following: `where deleted = false`. It is often convenient to combine such a static part with dynamic ones using `@And` or `@Or` described below.
 
 Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `constVal` could be enabled in following way:
-
-Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+* Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+* Set attribute `valueInSpEL` value to `true`
   
 Configuration example:
    ```java
@@ -466,7 +466,7 @@ Usage example #1:
    @RequestMapping(value = "/customers")
    @ResponseBody
    public Object findCustomersBornInTheFuture(
-           @Spec(path = "birthDate", constVal = "#{T(java.time.LocalDate).now()}", spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
+           @Spec(path = "birthDate", constVal = "#{T(java.time.LocalDate).now()}", valueInSpEL = true, spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
    	
    	return customerRepo.findAll(spec);
    }
@@ -477,7 +477,7 @@ Usage example #2:
    @RequestMapping(value = "/customers")
    @ResponseBody
    public Object findCustomersWithTheLastNameSimpson(
-           @Spec(path = "lastName", constVal = "${search.default-params.lastName}", spec = Equal.class) Specification<Customer> spec) {
+           @Spec(path = "lastName", constVal = "${search.default-params.lastName}", valueInSpEL = true, spec = Equal.class) Specification<Customer> spec) {
    	
    	return customerRepo.findAll(spec);
    }
@@ -488,7 +488,8 @@ Usage example #2:
    search.default-params.lastName=Simpson
    ```
    
-Defined in `constVal` SpEL expression should be able to be evaluated to `java.lang.String`.
+Defined in `constVal` SpEL expression should be able to be evaluated to `java.lang.String`. 
+
 
 Default value of queries
 ------------------------
@@ -510,35 +511,6 @@ Would handle request such as `GET /users` with the following query: `select u fr
 Supplying `constVal` implicitly sets `defaultVal` to empty.
 
 Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) in `defaultVal` could be enabled in the same way as for [constVal](#static-parts-of-queries)
-
-Usage example #1:
-   ```java
-   @RequestMapping(value = "/customers")
-   @ResponseBody
-   public Object findCustomersBornInTheFuture(
-           @Spec(path = "birthDate", params = "birthDate", defaultVal = "#{T(java.time.LocalDate).now()}", spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
-   	
-   	return customerRepo.findAll(spec);
-   }
-   ```
-
-Usage example #2:
-   ```java
-   @RequestMapping(value = "/customers")
-   @ResponseBody
-   public Object findCustomersWithTheLastNameSimpson(
-           @Spec(path = "lastName", params = "lastName", defaultVal = "${default-params.lastName}", spec = Equal.class) Specification<Customer> spec) {
-   	
-   	return customerRepo.findAll(spec);
-   }
-   ```
-
-   application.properties
-   ```properties
-   default-params.lastName=Simpson
-   ```
-
-Defined in `defaultVal` SpEL expression should be able to be evaluated to `java.lang.String`.
 
 Annotated specification interfaces
 ----------------------------------

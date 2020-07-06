@@ -75,6 +75,19 @@ public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest ext
 		assertThat(resolved)
 				.isEqualTo(equalWithPathAndExpectedValue(ctx, "thePath", "Property value"));
 	}
+
+	@Test
+	public void returnsSpecificationWithRawConstValueIfValueInSpELAttributeIsSetToFalse() {
+		MethodParameter param = methodParameter("testMethodWithRawConstValueInSpEL", Specification.class);
+		NativeWebRequest req = mock(NativeWebRequest.class);
+
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+		assertThat(resolved)
+				.isEqualTo(equalWithPathAndExpectedValue(ctx, "thePath", "#{'${SpEL-support.constVal.value}'.concat('ue')}"));
+	}
 	
 	@Test
 	public void throwsIllegalArgumentExceptionWhenTryingToResolveConstValueWithInvalidSpELSyntax() {
@@ -107,11 +120,15 @@ public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest ext
 		 }
 		
 		public void testMethodWithConstValueInSpEL(
-				@Spec(path = "thePath", spec = Equal.class, constVal = "#{'${SpEL-support.constVal.value}'.concat('ue')}") Specification<Object> spec) {
+				@Spec(path = "thePath", spec = Equal.class, constVal = "#{'${SpEL-support.constVal.value}'.concat('ue')}", valueInSpEL = true) Specification<Object> spec) {
 		}
+
+		 public void testMethodWithRawConstValueInSpEL(
+				 @Spec(path = "thePath", spec = Equal.class, constVal = "#{'${SpEL-support.constVal.value}'.concat('ue')}", valueInSpEL = false) Specification<Object> spec) {
+		 }
 		
 		 public void testMethodWithConstValueInInvalidSpELSyntax(
-				 @Spec(path = "thePath", spec = Equal.class, constVal = "#{${SpEL-support.constVal.value}.concat('test')}") Specification<Object> spec) {
+				 @Spec(path = "thePath", spec = Equal.class, constVal = "#{${SpEL-support.constVal.value}.concat('test')}", valueInSpEL = true) Specification<Object> spec) {
 		 }
 	}
 	
