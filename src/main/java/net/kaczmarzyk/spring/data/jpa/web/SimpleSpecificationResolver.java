@@ -143,7 +143,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	}
 	
 	private Collection<String> resolveConstVal(Spec specDef) {
-		if (embeddedValueResolver != null) {
+		if (embeddedValueResolver != null && specDef.valueInSpEL()) {
 			ArrayList<String> evaluatedArgs = new ArrayList<>(specDef.constVal().length);
 			for (String rawConstVal : specDef.constVal()) {
 				evaluatedArgs.add(evaluateRawSpELValue(rawConstVal));
@@ -157,7 +157,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	private Collection<String> resolveDefaultVal(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(context, specDef);
 		if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
-			if (embeddedValueResolver != null) {
+			if (embeddedValueResolver != null && specDef.valueInSpEL()) {
 				for (String rawDefaultVal : specDef.defaultVal()) {
 					resolved.add(evaluateRawSpELValue(rawDefaultVal));
 				}

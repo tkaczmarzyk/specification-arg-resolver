@@ -57,6 +57,11 @@ public @interface Spec {
      */
     String[] defaultVal() default {};
 
+    /**
+     * Attribute determines that constVal/defaultVal value is in SpEL (Spring Expression Language) format.
+     * Attribute is ignored when SpEL support is disabled.
+     */
+    boolean valueInSpEL() default false;
     
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
     

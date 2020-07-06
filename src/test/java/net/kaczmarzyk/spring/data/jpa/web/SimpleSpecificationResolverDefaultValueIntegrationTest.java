@@ -76,6 +76,19 @@ public class SimpleSpecificationResolverDefaultValueIntegrationTest extends Inte
 		assertThat(resolved)
 				.isEqualTo(equalWithPathAndExpectedValue(ctx, "thePath", "defaultPropertyValue"));
 	}
+
+	@Test
+	public void returnsSpecificationWithRawDefaultValueIfValueInSpELAttributeIsSetToFalse() {
+		MethodParameter param = methodParameter("testMethodWithRawSpELDefaultValue", Specification.class);
+		NativeWebRequest req = mock(NativeWebRequest.class);
+
+		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+		assertThat(resolved)
+				.isEqualTo(equalWithPathAndExpectedValue(ctx, "thePath", "#{'${SpEL-support.defaultVal.value}'.concat('ue')}"));
+	}
 	
 	@Test
 	public void throwsIllegalArgumentExceptionWhenTryingToResolveDefaultValueWithInvalidSpELSyntax() {
@@ -108,11 +121,15 @@ public class SimpleSpecificationResolverDefaultValueIntegrationTest extends Inte
 		 }
 		 
 		public void testMethodWithDefaultValueInSpEL(
-				@Spec(path = "thePath", spec = Equal.class, defaultVal = "#{'${SpEL-support.defaultVal.value}'.concat('ue')}") Specification<Object> spec) {
+				@Spec(path = "thePath", spec = Equal.class, defaultVal = "#{'${SpEL-support.defaultVal.value}'.concat('ue')}", valueInSpEL = true) Specification<Object> spec) {
 		}
-		
+
+		 public void testMethodWithRawSpELDefaultValue(
+				 @Spec(path = "thePath", spec = Equal.class, defaultVal = "#{'${SpEL-support.defaultVal.value}'.concat('ue')}", valueInSpEL = false) Specification<Object> spec) {
+		 }
+
 		 public void testMethodWithDefaultValueInInvalidSpELSyntax(
-				 @Spec(path = "thePath", spec = Equal.class, defaultVal = "#{${SpEL-support.defaultVal.value}.concat('test')}") Specification<Object> spec) {
+				 @Spec(path = "thePath", spec = Equal.class, defaultVal = "#{${SpEL-support.defaultVal.value}.concat('test')}", valueInSpEL = true) Specification<Object> spec) {
 		 }
 	}
 	

@@ -43,50 +43,63 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
 	@Spec(path = "lastName", params = "lastName", spec = Equal.class, constVal = "Flanders")
-	public static interface LastNameSpecWithRawString extends Specification<Customer> {
+	private interface LastNameSpecWithRawString extends Specification<Customer> {
 	}
 	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			constVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}"
+			constVal = "#{new String('Sim').concat(new String(T(java.util.Base64).getDecoder().decode('cHNvbg==')))}",
+			valueInSpEL = true
 	)
-	public interface LastNameSpecWithConstValueInSpEL extends Specification<Customer> {
+	private interface LastNameSpecWithConstValueInSpEL extends Specification<Customer> {
 	}
 	
 	@Spec(
 			path = "birthDate",
 			spec = GreaterThanOrEqual.class,
-			constVal = "#{T(java.time.LocalDate).now()}"
+			constVal = "#{T(java.time.LocalDate).now()}",
+			valueInSpEL = true
 	)
-	public interface CustomersBornInTheFuture extends Specification<Customer> {
+	private interface CustomersBornInTheFuture extends Specification<Customer> {
 	}
 	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			constVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}"
+			constVal = "#{'${SpEL-support.lastName.prefix}'.concat('ak')}",
+			valueInSpEL = true
 	)
-	public interface LastNameSpecWithConstValueInSpELWithPropertyPlaceholder extends Specification<Customer> {
+	private interface LastNameSpecWithConstValueInSpELWithPropertyPlaceholder extends Specification<Customer> {
 	}
 	
 	@Spec(
 			path = "lastName",
 			spec = Equal.class,
-			constVal = "${SpEL-support.lastName.value}"
+			constVal = "${SpEL-support.lastName.value}",
+			valueInSpEL = true
 	)
-	public interface LastNameSpecWithConstValueWithPropertyPlaceholder extends Specification<Customer> {
+	private	interface LastNameSpecWithConstValueWithPropertyPlaceholder extends Specification<Customer> {
+	}
+
+	@Spec(
+			path = "lastName",
+			spec = Equal.class,
+			constVal = "#{${SpEL-support.lastName",
+			valueInSpEL = false
+	)
+	private interface LastNameWithRawSpEL extends Specification<Customer> {
 	}
 	
 	@Controller
-	public static class TestController {
+	static class TestController {
 		
 		@Autowired
 		CustomerRepository customerRepo;
 		
 		@RequestMapping("/constValRawString")
 		@ResponseBody
-		public Object listsCustomersUsingRawStringConstValue(DefaultSpELValE2eTest.LastNameSpecWithRawString spec) {
+		public Object listsCustomersUsingRawStringConstValue(LastNameSpecWithRawString spec) {
 			return customerRepo.findAll(spec);
 		}
 		
@@ -113,7 +126,13 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 		public Object listsCustomersUsingSpecWithConstValueWithPropertyPlaceholder(LastNameSpecWithConstValueWithPropertyPlaceholder spec) {
 			return customerRepo.findAll(spec);
 		}
-		
+
+		@RequestMapping("/constValWithRawSpEL")
+		@ResponseBody
+		public Object listsCustomersUsingSpecRawSpELConstValue(LastNameWithRawSpEL spec) {
+			return customerRepo.findAll(spec);
+		}
+
 	}
 	
 	@Before
@@ -128,6 +147,7 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 		customer("Minnie", "Szyslak").build(em);
 		customer("Ned", "Flanders").build(em);
 		customer("Bart Jr.", "Simpsonx").birthDate(LocalDate.of(3000, 6, 22)).build(em);
+		customer("BartWithInvalidLastName", "#{${SpEL-support.lastName").build(em);
 	}
 	
 	@Test
@@ -185,5 +205,14 @@ public class ConstSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredWit
 				.andExpect(jsonPath("$[?(@.firstName=='Minnie')]").exists())
 				.andExpect(jsonPath("$[2]").doesNotExist());
 	}
-	
+
+	@Test
+	public void filtersBySingleSpecWithoutParamUsingRawSpELConstValue() throws Exception {
+		mockMvc.perform(get("/constValWithRawSpEL")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='BartWithInvalidLastName')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
 }

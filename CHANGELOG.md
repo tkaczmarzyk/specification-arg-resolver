@@ -1,19 +1,21 @@
 v2.5.0 UNRELEASED
 ======
-* Added support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) and [property placeholders](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html) in `@Spec` attributes: `constVal`, `defaultVal`. 
+* Added support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) and [property placeholders](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html) in `@Spec` attributes: `constVal`, `defaultVal`.
+ 
   To enable SpEL support:
   * Configure `SpecificationArgumentResolver` by passing `AbstractApplicationContext` in constructor
+  * Set `Spec` attribute `valueInSpEL` value to `true` 
   
-    Configuration example:
-    ```java
-    	@Autowired
-    	AbstractApplicationContext applicationContext;
-    	
-    	@Override
-    	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-    		argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
-    	}
-    ```
+   Configuration example:
+   ```java
+  	@Autowired
+  	AbstractApplicationContext applicationContext;
+  	
+  	@Override
+  	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+  		argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
+  	}
+  ```
 
   Usage example of default value with property placeholder:
 
@@ -21,7 +23,7 @@ v2.5.0 UNRELEASED
   @RequestMapping(value = "/customers")
   @ResponseBody
   public Object findByLastName(
-          @Spec(path = "id", params="lastName", defaultVal='${search.default-params.lastName}', spec = Equal.class) Specification<Customer> spec) {
+          @Spec(path = "id", params="lastName", defaultVal='${search.default-params.lastName}', valueInSpEL = true, spec = Equal.class) Specification<Customer> spec) {
   	
   	return customerRepo.findAll(spec);
   }
@@ -38,7 +40,7 @@ v2.5.0 UNRELEASED
   @RequestMapping(value = "/customers")
   @ResponseBody
   public Object findCustomersWhoCameFromTheFuture(
-          @Spec(path = "id", params="birthDate", defaultVal='#{T(java.time.LocalDate).now()}', spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
+          @Spec(path = "id", params="birthDate", defaultVal='#{T(java.time.LocalDate).now()}', valueInSpEL = true, spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
   	
   	return customerRepo.findAll(spec);
   }
