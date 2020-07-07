@@ -56,7 +56,9 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 				new AndSpecificationResolver(simpleSpecificationResolver),
 				new JoinSpecificationResolver(),
 				new JoinsSpecificationResolver(),
-				new JoinFetchSpecificationResolver()).stream()
+				new JoinFetchSpecificationResolver(),
+				new RepeatedJoinFetchResolver(),
+				new RepeatedJoinResolver()).stream()
 				.collect(toMap(
 								SpecificationResolver::getSupportedSpecificationDefinition,
 								identity(),
