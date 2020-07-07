@@ -88,7 +88,12 @@ public class ConverterTest {
 	public void convertsToEnum() {
 		assertThat(converter.convert("FEMALE", Gender.class)).isEqualTo(Gender.FEMALE);
 	}
-	
+
+	@Test
+	public void convertsToEnumIgnoringCase() {
+		assertThat(converter.convert("fEmAlE", Gender.class, true)).isEqualTo(Gender.FEMALE);
+	}
+
 	@Test
 	public void convertsToBoolean() {
 		assertThat(converter.convert("true", Boolean.class)).isEqualTo(true);

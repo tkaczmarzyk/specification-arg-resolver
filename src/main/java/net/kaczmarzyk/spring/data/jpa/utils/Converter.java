@@ -28,6 +28,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static java.util.Objects.nonNull;
 
@@ -122,8 +123,12 @@ public class Converter {
 	}
 	
 	public <T> T convert(String value, Class<T> expectedClass) {
+		return convert(value, expectedClass, false);
+	}
+
+	public <T> T convert(String value, Class<T> expectedClass, boolean ignoreCase) {
 		if (expectedClass.isEnum()) {
-			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
+			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass, ignoreCase);
 		} else if (expectedClass.isAssignableFrom(Date.class)) {
 			return (T) convertToDate(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
@@ -149,7 +154,7 @@ public class Converter {
 		} else if (nonNull(conversionService) && conversionService.canConvert(String.class, expectedClass)) {
 			return conversionService.convert(value, expectedClass);
 		}
-		
+
 		return (T) value;
 	}
 	
@@ -266,14 +271,23 @@ public class Converter {
 			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat);
 		}
 	}
-	
-	private <T> T convertToEnum(String value, Class<? extends Enum<?>> enumClass) {
+
+	private <T> T convertToEnum(String value, Class<? extends Enum<?>> enumClass, Boolean ignoreCase) {
+		Predicate<Enum<?>> enumPredicate = ignoreCase ? enumMatcherIgnoreCase(value): enumMatcher(value);
 		for (Enum<?> enumVal : enumClass.getEnumConstants()) {
-			if (enumVal.name().equals(value)) {
+			if (enumPredicate.test(enumVal)) {
 				return (T) enumVal;
 			}
 		}
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
+	}
+
+	private Predicate<Enum<?>> enumMatcher(String value) {
+		return (enumVal) -> enumVal.name().equals(value);
+	}
+
+	private Predicate<Enum<?>> enumMatcherIgnoreCase(String value) {
+		return (enumVal) -> enumVal.name().toUpperCase().equals(value.toUpperCase());
 	}
 	
 	@Override

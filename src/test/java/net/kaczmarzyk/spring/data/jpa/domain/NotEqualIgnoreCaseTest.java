@@ -32,6 +32,15 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 		assertFilterMembers(notHomer, margeSimpson, joeQuimby);
 	}
 
+	@Test
+	public void filtersByEnumCaseInsensitive() {
+		NotEqualIgnoreCase<Customer> notMale = notEqualIgnoreCaseSpec("gender", "maLe");
+		assertFilterMembers(notMale, margeSimpson);
+
+		NotEqualIgnoreCase<Customer> notFemale = notEqualIgnoreCaseSpec("gender", "fEmALE");
+		assertFilterMembers(notFemale, homerSimpson);
+	}
+
 	private <T> NotEqualIgnoreCase<T> notEqualIgnoreCaseSpec(String path, Object expectedValue) {
 		return new NotEqualIgnoreCase<>(queryCtx, path, new String[]{expectedValue.toString()}, defaultConverter);
 	}
