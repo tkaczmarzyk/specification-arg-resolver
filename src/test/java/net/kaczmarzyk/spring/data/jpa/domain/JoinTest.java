@@ -149,4 +149,12 @@ public class JoinTest extends IntegrationTestBase {
 		);
 	}
 
+	@Test
+	public void equalsContract() {
+		EqualsVerifier.forClass(Join.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
 }

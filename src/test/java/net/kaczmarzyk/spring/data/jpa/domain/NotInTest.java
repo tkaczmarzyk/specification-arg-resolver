@@ -20,6 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -149,4 +151,12 @@ public class NotInTest extends IntegrationTestBase {
     	
     	assertThat(found).hasSize(1).containsOnly(joeQuimby);
     }
+
+	@Test
+	public void equalsContract() {
+		EqualsVerifier.forClass(NotIn.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
 }

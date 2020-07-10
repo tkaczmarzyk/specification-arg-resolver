@@ -19,13 +19,16 @@ import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 
 /**
  * @author Tomasz Kaczmarzyk
  */
 class EnhancerUtil {
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
     	Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(iface);
@@ -33,9 +36,48 @@ class EnhancerUtil {
 			if ("toString".equals(method.getName())) {
 				return iface.getSimpleName() + "[" + method.invoke(targetSpec, args) + "]";
 			}
+			if ("equals".equals(method.getName())) {
+				if (args.length != 1
+						|| args[0] == null
+						|| args[0].getClass().getInterfaces().length == 0
+						|| obj.getClass().getInterfaces().length == 0) {
+					return false;
+				}
+
+				if (!args[0].getClass().getInterfaces()[0].equals(obj.getClass().getInterfaces()[0])) {
+					return false;
+				}
+
+				return ReflectionUtils.get(ReflectionUtils.get(args[0], "CGLIB$CALLBACK_0"), "val$targetSpec").equals(targetSpec);
+			}
 			return proxy.invoke(targetSpec, args);
 		});
 		
 		return (T) enhancer.create();
-    }
+	}
+
+	private static final class ReflectionUtils {
+
+		@SuppressWarnings("unchecked")
+		static <T> T get(Object target, String fieldname) {
+			try {
+				Class<?> classToBeUsed = target.getClass();
+				do {
+					try {
+						Field f = classToBeUsed.getDeclaredField(fieldname);
+						f.setAccessible(true);
+						return (T) f.get(target);
+					} catch (NoSuchFieldException err) {
+						classToBeUsed = classToBeUsed.getSuperclass();
+						if (classToBeUsed == Object.class) {
+							throw err;
+						}
+					}
+				} while (classToBeUsed != Object.class);
+				throw new NoSuchFieldException();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
 }
