@@ -20,6 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -154,4 +156,11 @@ public class NotEqualTest extends IntegrationTestBase {
 		return new NotEqual<>(queryCtx, path, new String[]{expectedValue.toString()}, converter);
 	}
 
+	@Test
+	public void equalsContract() {
+		EqualsVerifier.forClass(NotEqual.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
 }

@@ -15,16 +15,17 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import java.util.List;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -73,5 +74,13 @@ public class NotLikeTest extends IntegrationTestBase {
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() {
         new NotLike<>(queryCtx, "path", new String[] {"a", "b"});
+    }
+
+    @Test
+    public void equalsContract() {
+        EqualsVerifier.forClass(NotLike.class)
+                .usingGetClass()
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
     }
 }

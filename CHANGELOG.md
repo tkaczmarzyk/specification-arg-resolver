@@ -1,3 +1,7 @@
+v2.7.0 - UNRELEASED
+======
+* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html) support for specifications based on annotated interface.
+
 v2.6.1
 ======
 * fixed bug which caused invalid query to be created when multiple `@JoinFetch` annotations referenced the same alias
