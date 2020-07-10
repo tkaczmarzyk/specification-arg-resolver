@@ -28,7 +28,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.function.BiFunction;
 
 import static java.util.Objects.nonNull;
 
@@ -80,7 +80,7 @@ public class Converter {
 			return this.getClass().getSimpleName() + ": " + getMessage();
 		}
 	}
-	
+
 	private static Map<Class<?>, String> DEFAULT_DATE_FORMATS = new HashMap<>();
 	
 	static {
@@ -90,7 +90,12 @@ public class Converter {
 		DEFAULT_DATE_FORMATS.put(OffsetDateTime.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
 		DEFAULT_DATE_FORMATS.put(Instant.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
 	}
-	
+
+	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseSensitive = (enumVal, rawValue) -> enumVal.name().equals(rawValue);
+
+	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseInsensitive =
+			(enumVal, rawValue) -> enumVal.name().toUpperCase().equals(rawValue.toUpperCase());
+
 	private String dateFormat;
 	private OnTypeMismatch onTypeMismatch;
 	
@@ -273,23 +278,15 @@ public class Converter {
 	}
 
 	private <T> T convertToEnum(String value, Class<? extends Enum<?>> enumClass, Boolean ignoreCase) {
-		Predicate<Enum<?>> enumPredicate = ignoreCase ? enumMatcherIgnoreCase(value): enumMatcher(value);
+		BiFunction<Enum<?>, String, Boolean> enumMatcher = ignoreCase ? enumMatcherCaseInsensitive : enumMatcherCaseSensitive;
 		for (Enum<?> enumVal : enumClass.getEnumConstants()) {
-			if (enumPredicate.test(enumVal)) {
+			if (enumMatcher.apply(enumVal, value)) {
 				return (T) enumVal;
 			}
 		}
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
 	}
 
-	private Predicate<Enum<?>> enumMatcher(String value) {
-		return (enumVal) -> enumVal.name().equals(value);
-	}
-
-	private Predicate<Enum<?>> enumMatcherIgnoreCase(String value) {
-		return (enumVal) -> enumVal.name().toUpperCase().equals(value.toUpperCase());
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
