@@ -153,13 +153,18 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		
 		if (specDef.params().length != 0) {
 			for (String webParamName : specDef.params()) {
-				String[] httpParamValues = delimitationStrategy.extractSingularValues(context.getParameterValues(webParamName));
-				addValuesToArgs(httpParamValues, args);
+				String[] parameterValues = context.getParameterValues(webParamName);
+				if(parameterValues != null) {
+					String[] httpParamValues = delimitationStrategy.extractSingularValues(parameterValues);
+					addValuesToArgs(httpParamValues, args);
+				}
 			}
 		} else {
-			String[] httpParamValues = delimitationStrategy.extractSingularValues(context.getParameterValues(specDef.path()));
-			addValuesToArgs(httpParamValues, args);
-			
+			String[] parameterValues = context.getParameterValues(specDef.path());
+			if(parameterValues != null) {
+				String[] httpParamValues = delimitationStrategy.extractSingularValues(parameterValues);
+				addValuesToArgs(httpParamValues, args);
+			}
 		}
 		
 		return args;
