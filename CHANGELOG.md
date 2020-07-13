@@ -1,6 +1,6 @@
 v2.4.2
 ======
-* Fixed `NullPointerException` for requests with missing params to an endpoint with specs which uses param separator. In previous versions `NullPointerException` had been thrown for request with missing parameter. Now spec with `paramSeparator` attribute is skipped for request with missing param.
+* Fixed `NullPointerException` for requests with missing params to an endpoint with specs which uses param separator. In previous versions `NullPointerException` had been thrown for requests with missing parameters. Now spec with `paramSeparator` attribute is skipped for request with missing params.
 
 v2.4.1
 ======
