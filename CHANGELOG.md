@@ -1,4 +1,4 @@
-v2.5.0 - UNRELEASED
+v2.5.0
 ======
 * Added support for repeatable `@Join` and `@JoinFetch` annotations. `@Joins` annotation is now deprecated and it's going to be removed in the future.
 
