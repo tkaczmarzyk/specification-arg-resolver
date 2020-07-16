@@ -22,29 +22,64 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Objects;
 
 /**
  * <p>Filters with not equal where-clause (e.g. {@code where firstName <> "Homer"}).</p>
  *
  * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  *
- * <p>If the field type is string, the where-clause is case insensitive</p>
+ * <p>If the field type is string or enum, the where-clause is case insensitive</p>
  *
  * @author Mateusz Fedkowicz
  **/
-public class NotEqualIgnoreCase<T> extends NotEqual<T> {
+public class NotEqualIgnoreCase<T> extends PathSpecification<T> {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
+
+	protected String expectedValue;
+	private Converter converter;
 
 	public NotEqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
-		super(queryContext, path, httpParamValues, converter);
+		super(queryContext, path);
+		if (httpParamValues == null || httpParamValues.length != 1) {
+			throw new IllegalArgumentException();
+		}
+		this.expectedValue = httpParamValues[0];
+		this.converter = converter;
 	}
 
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		return path(root).getJavaType().equals(String.class)
-				? cb.notEqual(cb.upper(this.<String>path(root)), expectedValue.toUpperCase())
-				: super.toPredicate(root, query, cb);
+		if(path(root).getJavaType().equals(String.class)) {
+			return cb.notEqual(cb.upper(this.<String>path(root)), expectedValue.toUpperCase());
+		}
+
+		Class<?> typeOnPath = path(root).getJavaType();
+		return cb.notEqual(path(root), converter.convert(expectedValue, typeOnPath, true));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		NotEqualIgnoreCase<?> notEqual = (NotEqualIgnoreCase<?>) o;
+		return Objects.equals(expectedValue, notEqual.expectedValue) &&
+				Objects.equals(converter, notEqual.converter);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), expectedValue, converter);
+	}
+
+	@Override
+	public String toString() {
+		return "NotEqualIgnoreCase[" +
+				"expectedValue='" + expectedValue + '\'' +
+				", converter=" + converter +
+				']';
 	}
 
 }

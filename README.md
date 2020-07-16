@@ -144,7 +144,7 @@ A negation for this specification is also available: `NotEqual`.
 
 ### EqualIgnoreCase ###
 
-Works as `Equal`, but the query is also case-insensitive.
+Works as `Equal`, but the query is also case-insensitive, could be used for fields of type: `String`, `Enum`.
 
 A negation for this specification is also available: `NotEqualIgnoreCase`.
 
