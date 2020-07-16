@@ -52,7 +52,7 @@ class EnhancerUtil {
 			}
 			return proxy.invoke(targetSpec, args);
 		});
-		
+
 		return (T) enhancer.create();
 	}
 

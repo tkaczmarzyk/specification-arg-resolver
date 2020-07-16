@@ -1,6 +1,6 @@
 v2.8.0 - UNRELEASED
 ======
-* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html) support for specifications based on annotated interface.
+* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html) support for specification interfaces.
 
 v2.7.0
 ======

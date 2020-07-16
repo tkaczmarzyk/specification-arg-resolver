@@ -21,38 +21,6 @@ import org.junit.Test;
 
 public class EqualIgnoreCaseTest {
 
-    @Test
-    public void filtersByStringCaseInsensitive() {
-        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "SIMpsOn" }, defaultConverter);
-        List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
-
-        assertThat(simpsonsFound).hasSize(2).containsOnly(homerSimpson, margeSimpson);
-
-
-        EqualIgnoreCase<Customer> lastNameS = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "s" }, defaultConverter);
-        List<Customer> found = customerRepo.findAll(lastNameS);
-
-        assertThat(found).isEmpty();
-
-
-        EqualIgnoreCase<Customer> firstName = new EqualIgnoreCase<>(queryCtx, "firstName", new String[] { "Moe" }, defaultConverter);
-        List<Customer> moeFound = customerRepo.findAll(firstName);
-
-        assertThat(moeFound).hasSize(1).containsOnly(moeSzyslak);
-    }
-
-    @Test
-    public void filtersByEnumCaseInsensitive() {
-        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "fEmAlE" }, defaultConverter);
-        List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
-        assertThat(simpsonsFound).hasSize(1).containsOnly(margeSimpson);
-
-
-        EqualIgnoreCase<Customer> firstName = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "mAlE" }, defaultConverter);
-        List<Customer> moeFound = customerRepo.findAll(firstName);
-        assertThat(moeFound).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
-    }
-
 	@Test
 	public void equalsContract() {
 		EqualsVerifier.forClass(EqualIgnoreCase.class)
