@@ -28,6 +28,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.function.BiFunction;
 
 import static java.util.Objects.nonNull;
 
@@ -79,7 +80,7 @@ public class Converter {
 			return this.getClass().getSimpleName() + ": " + getMessage();
 		}
 	}
-	
+
 	private static Map<Class<?>, String> DEFAULT_DATE_FORMATS = new HashMap<>();
 	
 	static {
@@ -89,7 +90,12 @@ public class Converter {
 		DEFAULT_DATE_FORMATS.put(OffsetDateTime.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
 		DEFAULT_DATE_FORMATS.put(Instant.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
 	}
-	
+
+	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseSensitive = (enumVal, rawValue) -> enumVal.name().equals(rawValue);
+
+	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseInsensitive =
+			(enumVal, rawValue) -> enumVal.name().toUpperCase().equals(rawValue.toUpperCase());
+
 	private String dateFormat;
 	private OnTypeMismatch onTypeMismatch;
 	
@@ -122,8 +128,12 @@ public class Converter {
 	}
 	
 	public <T> T convert(String value, Class<T> expectedClass) {
+		return convert(value, expectedClass, false);
+	}
+
+	public <T> T convert(String value, Class<T> expectedClass, boolean ignoreCase) {
 		if (expectedClass.isEnum()) {
-			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass);
+			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass, ignoreCase);
 		} else if (expectedClass.isAssignableFrom(Date.class)) {
 			return (T) convertToDate(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
@@ -149,7 +159,7 @@ public class Converter {
 		} else if (nonNull(conversionService) && conversionService.canConvert(String.class, expectedClass)) {
 			return conversionService.convert(value, expectedClass);
 		}
-		
+
 		return (T) value;
 	}
 	
@@ -266,16 +276,17 @@ public class Converter {
 			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat);
 		}
 	}
-	
-	private <T> T convertToEnum(String value, Class<? extends Enum<?>> enumClass) {
+
+	private <T> T convertToEnum(String value, Class<? extends Enum<?>> enumClass, Boolean ignoreCase) {
+		BiFunction<Enum<?>, String, Boolean> enumMatcher = ignoreCase ? enumMatcherCaseInsensitive : enumMatcherCaseSensitive;
 		for (Enum<?> enumVal : enumClass.getEnumConstants()) {
-			if (enumVal.name().equals(value)) {
+			if (enumMatcher.apply(enumVal, value)) {
 				return (T) enumVal;
 			}
 		}
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

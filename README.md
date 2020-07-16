@@ -144,7 +144,7 @@ A negation for this specification is also available: `NotEqual`.
 
 ### EqualIgnoreCase ###
 
-Works as `Equal`, but the query is also case-insensitive.
+Works as `Equal`, but the query is also case-insensitive, could be used for fields of type: `String`, `Enum`.
 
 A negation for this specification is also available: `NotEqualIgnoreCase`.
 
@@ -726,7 +726,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.4.1</version>
+    <version>2.4.2</version>
 </dependency>
 ```
 

@@ -22,22 +22,31 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Objects;
 
 /**
  * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
  *
  * <p>Supports multiple field types: strings, numbers, booleans, enums, dates.</p>
  *
- * <p>If the field type is string, the where-clause is case insensitive</p>
+ * <p>If the field type is string or enum, the where-clause is case insensitive</p>
  *
  * @author Ricardo Pardinho
  */
-public class EqualIgnoreCase<T> extends Equal<T> {
+public class EqualIgnoreCase<T> extends PathSpecification<T> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-	public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
-        super(queryContext, path, httpParamValues, converter);
+    protected String expectedValue;
+    private Converter converter;
+
+    public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+        super(queryContext, path);
+        if (httpParamValues == null || httpParamValues.length != 1) {
+            throw new IllegalArgumentException();
+        }
+        this.expectedValue = httpParamValues[0];
+        this.converter = converter;
     }
 
     @Override
@@ -47,6 +56,27 @@ public class EqualIgnoreCase<T> extends Equal<T> {
             return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase());
         }
 
-        return super.toPredicate(root, query, cb);
+        Class<?> typeOnPath = path(root).getJavaType();
+        return cb.equal(path(root), converter.convert(expectedValue, typeOnPath, true));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        EqualIgnoreCase<?> that = (EqualIgnoreCase<?>) o;
+        return Objects.equals(expectedValue, that.expectedValue) &&
+                Objects.equals(converter, that.converter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), expectedValue, converter);
+    }
+
+    @Override
+    public String toString() {
+        return "EqualIgnoreCase [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + "]";
     }
 }
