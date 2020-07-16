@@ -15,21 +15,7 @@ v2.5.0 - UNRELEASED
     	return customerRepository.findAll(spec);
     }
     ```
-    instead annotation container `@Joins`
-    ```java
-    @RequestMapping(value = "/findBy", params = {""})
-    public void findByBadgeTypeAndOrderItemName(
-    		@Joins({
-    				@Join(path = "orders", alias = "o", type = JoinType.LEFT)
-    				@Join(path = "badges", alias = "b", type = JoinType.LEFT)
-    		})
-    		@Or({
-    				@Spec(path = "o.itemName", params = "order", spec = Like.class),
-    				@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
-    		}) Specification<Customer> spec) {
-    	return customerRepository.findAll(spec);
-    }
-    ```
+    instead of using annotation container `@Joins`.
 
 * Added support for enum in specs: `EqualIgnoreCase.class`, `NotEqualIgnoreCase.class`
 
