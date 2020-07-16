@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -66,17 +81,7 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 	}
 
 	@Test
-	public void specificationResultShouldBeCached() throws Exception {
-
-		mockMvc.perform(post("/cache/simpsons")
-				.param("lastName", "Simpson"))
-				.andExpect(status().isOk());
-		Assertions.assertThat(cacheEntries().size()).isEqualTo(1);
-
-		mockMvc.perform(post("/cache/simpsons")
-				.param("lastName", "Simpson"))
-				.andExpect(status().isOk());
-		Assertions.assertThat(cacheEntries().size()).isEqualTo(1);
+	public void specificationSearchResultsShouldBeCached() throws Exception {
 
 		mockMvc.perform(post("/cache/simpsons")
 				.param("lastName", "Simpson"))
@@ -90,7 +95,7 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 	}
 
 	@Test
-	public void specificationResultShouldBeCached2() throws Exception {
+	public void specificationSearchResultsShouldBeReturnedFromCache() throws Exception {
 		Customer homer = customer("Homer", "Simpson").build(em);
 
 		mockMvc.perform(post("/cache/simpsons")
@@ -100,7 +105,6 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 				.andExpect(jsonPath("$[1]").doesNotExist());
 
 		Assertions.assertThat(cacheEntries().size()).isEqualTo(1);
-
 		Assertions.assertThat(cachedResults()).containsExactly(homer);
 
 		Customer marge = customer("Marge", "Simpson").build(em);
