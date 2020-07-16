@@ -363,15 +363,13 @@ The default join type is `INNER`. You can use `type` attribute of the annotation
 
 Using `@Join` annotation makes the query distinct by default. While it is the best approach for most of the cases, you can override it by using `distinct` attribute of the annotation.
 
-You can specify multiple different joins with container annotaion `@Joins`, for example:
+You can specify multiple different joins, for example:
 
 ```java
 @RequestMapping("/customers")
 public Object findByOrderedOrFavouriteItem(
-        @Joins({
-            @Join(path = "orders", alias = "o")
-            @Join(path = "favourites", alias = "f")
-        })
+        @Join(path = "orders", alias = "o")
+        @Join(path = "favourites", alias = "f")
         @Or({
             @Spec(path="o.itemName", params="item", spec=Like.class),
             @Spec(path="f.itemName", params="item", spec=Like.class)}) Specification<Customer> customersByItem) {
@@ -398,15 +396,13 @@ public Object findByCityFetchOrdersAndAddresses(
 ```
 
 As with `@Join`, the use of `@JoinFetch` makes the query distinct by default.
-The default join type is `LEFT`. You can use `joinType` attribute of the annotation to specify different value. You can specify multiple different joins with container annotation `@Joins`, for example:
+The default join type is `LEFT`. You can use `joinType` attribute of the annotation to specify different value. You can specify multiple different joins, for example:
 
 ```java
 @RequestMapping("/customers")
 public Object findByCityFetchOrdersAndAddresses(
-        @Joins(fetch = {
-            @JoinFetch(paths = "orders")
-            @JoinFetch(paths = "addresses", joinType = JoinType.INNER)
-        })
+        @JoinFetch(paths = "orders")
+        @JoinFetch(paths = "addresses", joinType = JoinType.INNER)
         @Spec(path="address.city", params="town", spec=Like.class) Specification<Customer> customersByCitySpec) {
 
     return customerRepo.findAll(customersByCitySpec);

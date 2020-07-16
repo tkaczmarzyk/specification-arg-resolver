@@ -20,19 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
- * @deprecated
- * Instead this class repeated {@link net.kaczmarzyk.spring.data.jpa.domain.Join} and {@link net.kaczmarzyk.spring.data.jpa.domain.JoinFetch} annotation should be used.
- * This is going to be removed in the future.
- *
- * @author Tomasz Kaczmarzyk
+ * Container for {@link net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch} annotations.
+ * @author Jakub Radlica
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.TYPE })
-@Deprecated
-public @interface Joins {
+public @interface RepeatedJoinFetch {
 
-	Join[] value() default {};
-	JoinFetch[] fetch() default {};
+	JoinFetch[] value() default {};
+
 }

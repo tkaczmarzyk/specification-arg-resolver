@@ -1,5 +1,22 @@
 v2.5.0 - UNRELEASED
 ======
+* Added support for repeatable `@Join` and `@JoinFetch` annotations. `@Joins` annotation is now deprecated and it's going to be removed in the future.
+
+    To specifying multiple different joins, repeated `@Join` annotation should be used: 
+    ```java
+    @RequestMapping(value = "/findBy", params = {""})
+    public void findByBadgeTypeAndOrderItemName(
+    		@Join(path = "orders", alias = "o", type = JoinType.LEFT)
+    		@Join(path = "badges", alias = "b", type = JoinType.LEFT)
+    		@Or({
+    				@Spec(path = "o.itemName", params = "order", spec = Like.class),
+    				@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
+    		}) Specification<Customer> spec) {
+    	return customerRepository.findAll(spec);
+    }
+    ```
+    instead of using annotation container `@Joins`.
+
 * Added support for enum in specs: `EqualIgnoreCase.class`, `NotEqualIgnoreCase.class`
 
 v2.4.2

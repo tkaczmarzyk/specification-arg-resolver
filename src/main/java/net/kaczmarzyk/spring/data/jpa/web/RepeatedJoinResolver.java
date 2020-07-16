@@ -17,41 +17,30 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.RepeatedJoin;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
 /**
- * @deprecated
- * This is going to be removed with {@link net.kaczmarzyk.spring.data.jpa.web.annotation.Joins}
- *
- * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
-@Deprecated
-class JoinsSpecificationResolver implements SpecificationResolver<Joins> {
+public class RepeatedJoinResolver implements SpecificationResolver<RepeatedJoin> {
 
-	private JoinFetchSpecificationResolver joinFetchSpecificationResolver = new JoinFetchSpecificationResolver();
 	private JoinSpecificationResolver joinSpecificationResolver = new JoinSpecificationResolver();
 
 	@Override
 	public Class<? extends Annotation> getSupportedSpecificationDefinition() {
-		return Joins.class;
+		return RepeatedJoin.class;
 	}
 
 	@Override
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Joins joinsDef) {
+	public Specification<Object> buildSpecification(WebRequestProcessingContext context, RepeatedJoin def) {
 		Collection<Specification<Object>> joins = new ArrayList<>();
 
-		for (JoinFetch fetchDef : joinsDef.fetch()) {
-			joins.add(joinFetchSpecificationResolver.buildSpecification(context, fetchDef));
-		}
-
-		for (Join joinDef : joinsDef.value()) {
+		for (Join joinDef : def.value()) {
 			joins.add(joinSpecificationResolver.buildSpecification(context, joinDef));
 		}
 
