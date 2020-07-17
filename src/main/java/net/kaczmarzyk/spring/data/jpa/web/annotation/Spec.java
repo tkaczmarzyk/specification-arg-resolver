@@ -65,12 +65,12 @@ public @interface Spec {
      * to get more information about enabling/disabling SpEL support.
      */
     boolean valueInSpEL() default false;
-    
+
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
     
     String path();
     
     @SuppressWarnings("rawtypes")
     Class<? extends Specification> spec();
-    
+
 }

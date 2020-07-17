@@ -41,10 +41,10 @@ import static java.util.Arrays.asList;
  * @author Jakub Radlica
  */
 class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
-	
+
 	private final ConversionService conversionService;
 	private final EmbeddedValueResolver embeddedValueResolver;
-	
+
 	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext) {
 		this.conversionService = conversionService;
 		this.embeddedValueResolver = applicationContext != null ? new EmbeddedValueResolver(applicationContext.getBeanFactory()) : null;
@@ -141,7 +141,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			return resolveDefaultVal(context, specDef);
 		}
 	}
-	
+
 	private Collection<String> resolveConstVal(Spec specDef) {
 		if (embeddedValueResolver != null && specDef.valueInSpEL()) {
 			ArrayList<String> evaluatedArgs = new ArrayList<>(specDef.constVal().length);
@@ -153,7 +153,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			return asList(specDef.constVal());
 		}
 	}
-	
+
 	private Collection<String> resolveDefaultVal(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(context, specDef);
 		if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
@@ -167,7 +167,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 		return resolved;
 	}
-	
+
 	private String evaluateRawSpELValue(String rawSpELValue) {
 		try {
 			return embeddedValueResolver.resolveStringValue(rawSpELValue);
