@@ -44,7 +44,8 @@ public @interface Spec {
     
     /**
      * The constant value designed for specification without related HTTP param. Const value can be a raw string or SpEL expression.
-     * SpEL expressions could be used only with properly configured SpecificationArgumentResolver, see README.md for details.
+     * SpEL expression require {@code valueInSpEL} to be set to {@code true} and {@code SpecificationArgumentResolver} to be properly
+     * with the {@code AbstractApplicationContext}, see <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a> for details.
      * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
      */
     String[] constVal() default {};
@@ -52,14 +53,16 @@ public @interface Spec {
     /**
      * The default value to use as a fallback when the request parameter is
      * not provided or has an empty value. Default value can be a raw string or SpEL expression (could  SpecificationArgumentResolver.
-     * SpEL expressions could be used only with properly configured SpecificationArgumentResolver, see README.md for details.
+     * SpEL expression require {@code valueInSpEL} to be set to {@code true} and {@code SpecificationArgumentResolver} to be properly
+     * with the {@code AbstractApplicationContext}, see <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a> for details.
      * <p>Supplying {@link #constVal} implicitly sets {@link #defaultVal} to empty
      */
     String[] defaultVal() default {};
 
     /**
      * Attribute determines that constVal/defaultVal value is in SpEL (Spring Expression Language) format.
-     * Attribute is ignored when SpEL support is disabled.
+     * Attribute is ignored when SpEL support is disabled, see <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a>
+     * to get more information about enabling/disabling SpEL support.
      */
     boolean valueInSpEL() default false;
     
