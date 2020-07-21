@@ -16,8 +16,8 @@ v2.6.0 - UNRELEASED
   }
   ```
   
-  Multilevel join fetch could be defined similarly to join.
-  
+  Multi-level join fetch could be defined similarly to multi-level join.
+ 
   For example:
   ```java
   @RequestMapping(value = "/findCustomers")
