@@ -13,25 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.utils;
+package net.kaczmarzyk.spring.data.jpa;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Root;
-import java.util.function.Function;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
- *
- * @author Tomasz Kaczmarzyk
- */
-public interface QueryContext {
-
-	Object getEvaluated(String key, Root<?> root);
-	
-	void putLazyVal(String key, Function<Root<?>, Object> value);
-
-	Fetch<?, ?> getEvaluatedJoinFetch(String key);
-
-	void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch);
-
+public interface ItemTagRepository extends JpaRepository<ItemTag, Long> {
 }

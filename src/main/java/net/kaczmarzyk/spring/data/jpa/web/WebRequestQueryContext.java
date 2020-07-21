@@ -15,16 +15,16 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
+import net.kaczmarzyk.spring.data.jpa.utils.JoinFetchContext;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Root;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -32,8 +32,11 @@ import javax.persistence.criteria.Root;
 public class WebRequestQueryContext implements QueryContext {
 
 	private static final String ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY";
-	
+	private static final String JOIN_FETCH_ATTRIBUTE_KEY = JoinFetchContext.class.getName() + ".ATTRIBUTE_KEY_JOIN_FETCH";
+
 	private HashMap<String, Object> contextMap;
+	private HashMap<String, Fetch<?, ?>> evaluatedJoinFetch;
+
 	private Map<Pair<String, Root>, Object> rootCache = new HashMap<>();
 
 	public WebRequestQueryContext(NativeWebRequest request) {
@@ -41,6 +44,12 @@ public class WebRequestQueryContext implements QueryContext {
 		if (this.contextMap == null) {
 			this.contextMap = new HashMap<>();
 			request.setAttribute(ATTRIBUTE_KEY, contextMap, NativeWebRequest.SCOPE_REQUEST);
+		}
+		this.evaluatedJoinFetch = (HashMap<String, Fetch<?, ?>>) request.getAttribute(JOIN_FETCH_ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
+
+		if (this.evaluatedJoinFetch == null) {
+			this.evaluatedJoinFetch = new HashMap<>();
+			request.setAttribute(JOIN_FETCH_ATTRIBUTE_KEY, evaluatedJoinFetch, NativeWebRequest.SCOPE_REQUEST);
 		}
 	}
 	
@@ -63,6 +72,16 @@ public class WebRequestQueryContext implements QueryContext {
 	@Override
 	public void putLazyVal(String key, Function<Root<?>, Object> value) {
 		contextMap.put(key, value);
+	}
+
+	@Override
+	public Fetch<?, ?> getEvaluatedJoinFetch(String key) {
+		return this.evaluatedJoinFetch.get(key);
+	}
+
+	@Override
+	public void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch) {
+		this.evaluatedJoinFetch.put(key, fetch);
 	}
 
 	@Override

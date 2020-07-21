@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.utils;
+package net.kaczmarzyk.utils.interceptor;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Root;
-import java.util.function.Function;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
- *
- * @author Tomasz Kaczmarzyk
- */
-public interface QueryContext {
+import java.util.Map;
 
-	Object getEvaluated(String key, Root<?> root);
-	
-	void putLazyVal(String key, Function<Root<?>, Object> value);
+@Configuration
+public class HibernatePropertiesConfig implements HibernatePropertiesCustomizer {
 
-	Fetch<?, ?> getEvaluatedJoinFetch(String key);
-
-	void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch);
-
+    public void customize(Map<String, Object> hibernateProperties) {
+        hibernateProperties.put("hibernate.session_factory.interceptor", new HibernateStatementInterceptor());
+    }
 }

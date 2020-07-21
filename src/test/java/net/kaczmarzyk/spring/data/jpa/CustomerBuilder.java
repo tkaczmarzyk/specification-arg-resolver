@@ -110,6 +110,13 @@ public class CustomerBuilder {
 		}
 		return this;
 	}
+
+	public CustomerBuilder orders(OrderBuilder... orderBuilders) {
+		for(OrderBuilder order: orderBuilders) {
+			order.build(customer);
+		}
+		return this;
+	}
 	
 	public CustomerBuilder badges(String... badgeTypes) {
 		for (String badgeType : badgeTypes) {

@@ -15,15 +15,10 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.data.jpa.domain.Specification;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import javax.persistence.criteria.*;
 
 /**
  *
@@ -51,8 +46,39 @@ public class Join<T> implements Specification<T>, Fake {
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		query.distinct(distinctQuery);
-		queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+
+		if(!pathToJoinContainsAlias()) {
+			queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+		} else {
+			String[] pathToJoinOnSplittedByDot = pathToJoinOn.split("\\.");
+
+			if(pathToJoinOnSplittedByDot.length != 2) {
+				throw new IllegalArgumentException(
+						"Expected pathToJoin with single alias in pattern: 'alias.attribute' (without an apostrophe) where: " +
+						"alias is a alias of another join (of which annotation should be before annotation of actual join)," +
+						"attribute - name of the attribute for the target of the join."
+				);
+			}
+
+			String extractedAlias = pathToJoinOnSplittedByDot[0];
+			Object evaluated = queryContext.getEvaluated(extractedAlias, root);
+
+			if(evaluated instanceof javax.persistence.criteria.Join<?, ?>) {
+				String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
+
+				queryContext.putLazyVal(
+						alias,
+						(r) -> ((javax.persistence.criteria.Join<?, ?>) evaluated).join(extractedPathToJoin, joinType)
+				);
+			} else {
+				queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+			}
+		}
 		return null;
+	}
+
+	private boolean pathToJoinContainsAlias() {
+		return pathToJoinOn.contains(".");
 	}
 
 	@Override

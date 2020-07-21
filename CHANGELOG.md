@@ -1,3 +1,36 @@
+v2.6.0 - UNRELEASED
+======
+* Added support for multi-level joins. 
+
+  It's now possible to define multi-level join where each next join based on aliases of previous joins  (see [README.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md) for the details).
+  
+  For example:
+  ```java
+  @RequestMapping(value = "/findCustomersByOrderedItemTag")
+  @PostMapping
+  public Object findCustomersByOrderedItemTag(
+  		@Join(path = "orders", alias = "o")
+  		@Join(path = "o.tags", alias = "t")
+  		@Spec(path = "t.name", params = "tag", spec = Equal.class) Specification<Customer> spec) {
+  	return customerRepo.findAll(spec, Sort.by("id"));
+  }
+  ```
+  
+  Multilevel join fetch could be defined similarly to join.
+  
+  For example:
+  ```java
+  @RequestMapping(value = "/findCustomers")
+  @PostMapping
+  public Object findAllCustomers(
+  		@JoinFetch(paths = "orders", alias = "o")
+  		@JoinFetch(paths = "o.tags") Specification<Customer> spec) {
+  	return customerRepo.findAll(spec).stream()
+  			.map(this::mapToCustomerDto)
+  			.collect(toList());
+  }
+  ```
+
 v2.5.0
 ======
 * Added support for repeatable `@Join` and `@JoinFetch` annotations. `@Joins` annotation is now deprecated and it's going to be removed in the future.

@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.*;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.assertj.core.api.Assertions;
@@ -87,6 +88,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 				.withParameterValues("itemName", "Item-123").build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+		QueryContext queryCtx = new WebRequestQueryContext(req);
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -96,7 +98,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 		assertThat(innerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
-						new JoinFetch<>(new String[]{ "orders" }, LEFT, true),
+						new JoinFetch<>(queryCtx, new String[]{ "orders" }, LEFT, true),
 						new EmptyResultOnTypeMismatch<>(equal(ctx, "o.itemName", "Item-123"))
 				);
 	}
@@ -116,6 +118,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 				.withParameterValues("nickName", "Hom").build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+		QueryContext queryCtx = new WebRequestQueryContext(req);
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -127,8 +130,8 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 		Assertions.assertThat(innerSpecs)
 				.hasSize(6)
 				.containsOnly(
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "orders" }, LEFT,true),
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "badges" }, INNER, true),
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{ "orders" }, LEFT,true),
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{ "badges" }, INNER, true),
 						new EmptyResultOnTypeMismatch<>(new Equal<>(ctx.queryContext(), "b.badgeType", new String[]{ "Beef Eater" }, converter)),
 						new Conjunction<>(
 								new EmptyResultOnTypeMismatch<>(new In<>(ctx.queryContext(), "gender", new String[]{ "MALE" }, converter)),

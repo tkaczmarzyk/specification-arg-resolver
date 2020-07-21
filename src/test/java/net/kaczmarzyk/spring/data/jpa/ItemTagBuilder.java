@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.utils;
+package net.kaczmarzyk.spring.data.jpa;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Root;
-import java.util.function.Function;
+import javax.persistence.EntityManager;
 
-/**
- * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
- *
- * @author Tomasz Kaczmarzyk
- */
-public interface QueryContext {
+public class ItemTagBuilder {
 
-	Object getEvaluated(String key, Root<?> root);
-	
-	void putLazyVal(String key, Function<Root<?>, Object> value);
+	private final String tagName;
 
-	Fetch<?, ?> getEvaluatedJoinFetch(String key);
+	private ItemTagBuilder(String tagName) {
+		this.tagName = tagName;
+	}
 
-	void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch);
+	public static ItemTagBuilder itemTag(String tagName) {
+		return new ItemTagBuilder(tagName);
+	}
 
+	public ItemTag build(EntityManager em) {
+		ItemTag tag = new ItemTag(tagName);
+		em.persist(tag);
+		return tag;
+	}
 }

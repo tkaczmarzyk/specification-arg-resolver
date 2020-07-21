@@ -19,15 +19,10 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.utils.TestLogAppender;
 import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static java.time.ZoneOffset.UTC;
@@ -49,13 +44,9 @@ public abstract class E2eTestBase extends IntegrationTestBase {
     protected Customer moeSzyslak;
     protected Customer nedFlanders;
 
-    @Autowired
-    WebApplicationContext wac;
-
-    protected MockMvc mockMvc;
-
     @Before
     public void initialize() {
+
         homerSimpson = customer("Homer", "Simpson")
                 .nickName("Homie")
                 .registrationDate(2014, 3, 15)
@@ -131,8 +122,6 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .lastOrderTime(LocalDateTime.of(2016, 10, 17, 18, 29,0))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 7, 19, 16, 17, 0, 0, ofHours(4)))
                 .build(em);
-
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 
         TestLogAppender.clearInterceptedLogs();
     }

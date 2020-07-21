@@ -50,7 +50,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
-            .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
+            .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
     }
     
     @Test
@@ -66,8 +66,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
             .hasSize(2)
             .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
             .contains(new Conjunction<>(
-                    new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "fetch1" }, JoinType.LEFT, true),
-                    new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "fetch2" }, JoinType.INNER, true)));
+                    new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{ "fetch1" }, JoinType.LEFT, true),
+                    new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{ "fetch2" }, JoinType.INNER, true)));
     }
     
     @Test
@@ -83,8 +83,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1" }, JoinType.LEFT, true),
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch2" }, JoinType.INNER, true)));
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1" }, JoinType.LEFT, true),
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch2" }, JoinType.INNER, true)));
     }
     
     @Test
@@ -117,8 +117,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1" }, JoinType.LEFT, true),
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch2" }, JoinType.INNER, true),
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1" }, JoinType.LEFT, true),
+            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch2" }, JoinType.INNER, true),
             		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join1", "alias1", JoinType.INNER, true),
             		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join2", "alias2", JoinType.LEFT, false)));
     }
@@ -127,11 +127,12 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     public void resolvesJoinFetchEvenIfOtherSpecificationIsNotPresent() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
         assertThat(resolved)
-            .isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
+            .isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
     }
     
     @Test
@@ -146,7 +147,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         assertThat(innerSpecs(resolved))
                 .hasSize(2)
                 .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
-                .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
+                .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
     }
     
     @Test
@@ -162,8 +163,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
                 .hasSize(2)
                 .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
                 .contains(new Conjunction<>(
-                        new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "fetch1" }, JoinType.LEFT, true),
-                        new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "fetch2" }, JoinType.LEFT, true)));
+                        new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{ "fetch1" }, JoinType.LEFT, true),
+                        new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{ "fetch2" }, JoinType.LEFT, true)));
     }
     
     @Test
