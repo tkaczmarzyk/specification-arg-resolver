@@ -2,7 +2,7 @@ v2.6.0 - UNRELEASED
 ======
 * Added support for multi-level joins. 
 
-  It's now possible to define multi-level join where each next join based on aliases of previous joins  (see [README.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md) for the details).
+  It's now possible to define multi-level join where each join can use aliases defined by previous joins (see [README.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md) for the details).
   
   For example:
   ```java

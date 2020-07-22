@@ -15,7 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.utils.JoinFetchContext;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -32,7 +31,7 @@ import java.util.function.Function;
 public class WebRequestQueryContext implements QueryContext {
 
 	private static final String ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY";
-	private static final String JOIN_FETCH_ATTRIBUTE_KEY = JoinFetchContext.class.getName() + ".ATTRIBUTE_KEY_JOIN_FETCH";
+	private static final String JOIN_FETCH_ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY_JOIN_FETCH";
 
 	private HashMap<String, Object> contextMap;
 	private HashMap<String, Fetch<?, ?>> evaluatedJoinFetch;

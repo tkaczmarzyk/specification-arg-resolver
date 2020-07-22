@@ -53,7 +53,9 @@ public class JoinFetch<T> implements Specification<T> {
 		this.distinct = distinct;
 
 		if (!alias.isEmpty() && pathsToFetch.length != 1) {
-			throw new IllegalArgumentException("Join fetch alias can be defined for join fetch with single path!");
+			throw new IllegalArgumentException("" +
+					"Join fetch alias can be defined only for join fetch with a single path! " +
+					"Remove alias from the annotation or repeat @JoinFetch annotation for every path and use unique alias for each join.");
 		}
 	}
 
@@ -68,9 +70,10 @@ public class JoinFetch<T> implements Specification<T> {
 					String alias = pathToJoinFetchOnSplittedByDot[0];
 					String path = pathToJoinFetchOnSplittedByDot[1];
 
-					Fetch<?, ?> evaluated = context.getEvaluatedJoinFetch(alias);
-					evaluated = evaluated.fetch(path, joinType);
-					context.putEvaluatedJoinFetch(alias, evaluated);
+					Fetch<?, ?> evaluatedJoinFetchForGivenAlias = context.getEvaluatedJoinFetch(alias);
+
+					Fetch<?,?> joinFetch = evaluatedJoinFetchForGivenAlias.fetch(path, joinType);
+					context.putEvaluatedJoinFetch(alias, joinFetch);
 				} else {
 					Fetch<Object, Object> evaluated = root.fetch(pathToFetch, joinType);
 					context.putEvaluatedJoinFetch(alias, evaluated);

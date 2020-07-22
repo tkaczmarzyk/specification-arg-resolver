@@ -539,6 +539,8 @@ public Object findCustomersByOrderedItemTag(
 }
 ```
 
+If there is a need to refer to joined paths in other specs, then regular join (not fetch) should be used as described in the Join section.
+
 Advanced HTTP parameter handling
 --------------------------------
 
