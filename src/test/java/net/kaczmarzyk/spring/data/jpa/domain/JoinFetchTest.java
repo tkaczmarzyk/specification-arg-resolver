@@ -111,7 +111,7 @@ public class JoinFetchTest extends IntegrationTestBase {
     }
 
     @Test
-    public void throwsIllegalArgumentExceptionWhenMultiplePathsAndAliasPassedToConstructor() {
+    public void throwsIllegalArgumentExceptionWhenAliasAndMultiplePathsWerePassedToConstructor() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new JoinFetch<Customer>(queryCtx, new String[] { "orders", "orders2" }, "alias", JoinType.INNER, true),

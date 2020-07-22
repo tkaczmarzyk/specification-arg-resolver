@@ -16,9 +16,7 @@
 package net.kaczmarzyk.utils.interceptor;
 
 import org.hibernate.EmptyInterceptor;
-import org.hibernate.type.Type;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -30,11 +28,6 @@ public class HibernateStatementInterceptor extends EmptyInterceptor {
 	public String onPrepareStatement(String sql) {
 		statements.add(sql);
 		return super.onPrepareStatement(sql);
-	}
-
-	@Override
-	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-		return super.onLoad(entity, id, state, propertyNames, types);
 	}
 
 	public static List<String> getInterceptedStatements() {

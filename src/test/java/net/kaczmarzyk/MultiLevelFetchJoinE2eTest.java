@@ -50,9 +50,9 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		@Autowired
 		CustomerRepository customerRepo;
 
-		@RequestMapping(value = "/findAllUsingLeftFetchJoins")
+		@RequestMapping(value = "/findAll")
 		@PostMapping
-		public Object findAllCustomersWithJoinFetch(
+		public Object findAllCustomers(
 				@JoinFetch(paths = "orders", alias = "o")
 				@JoinFetch(paths = "o.tags") Specification<Customer> spec) {
 			return customerRepo.findAll(spec, Sort.by("id")).stream()
@@ -62,7 +62,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		@RequestMapping(value = "/findAllWthUsingInnerFetchJoins")
 		@PostMapping
-		public Object findAllCustomersWithInnerFetchJoins(
+		public Object findAllCustomersUsingInnerFetchJoins(
 				@JoinFetch(paths = "orders", alias = "o", joinType = JoinType.INNER)
 				@JoinFetch(paths = "o.tags", joinType = JoinType.INNER) Specification<Customer> spec) {
 			return customerRepo.findAll(spec, Sort.by("id")).stream()
@@ -70,9 +70,9 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 					.collect(toList());
 		}
 
-		@RequestMapping(value = "/findAll-without-fetch-joins")
+		@RequestMapping(value = "/findAllWithoutFetchJoins")
 		@PostMapping
-		public Object findCustomersByOrderedItemTag(
+		public Object findAllWithoutFetchJoins(
 				@Spec(params = "ignoredParam", path = "notExistingAttribute", spec = Equal.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec).stream()
 					.map(this::mapToCustomerDto)
@@ -153,16 +153,16 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 	public void shouldFindCustomersUsingLeftFetchJoins() throws Exception {
 		HibernateStatementInterceptor.clearInterceptedStatements();
 
-		mockMvc.perform(post("/multilevel-join-fetch/findAllUsingLeftFetchJoins")
+		mockMvc.perform(post("/multilevel-join-fetch/findAll")
 				.param("tag", "#snacks"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Marge"))
-				.andExpect(jsonPath("$[2].firstName").value("Bart"))
-				.andExpect(jsonPath("$[3].firstName").value("Lisa"))
-				.andExpect(jsonPath("$[4].firstName").value("Maggie"))
-				.andExpect(jsonPath("$[5]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[4].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
 				.hasSelects(1);
@@ -174,12 +174,12 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		mockMvc.perform(post("/multilevel-join-fetch/findAllWthUsingInnerFetchJoins")
 				.param("tag", "#snacks"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Marge"))
-				.andExpect(jsonPath("$[2].firstName").value("Bart"))
-				.andExpect(jsonPath("$[3]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3]").doesNotExist());
 
 		assertThatInterceptedStatements()
 				.hasSelects(1);
@@ -189,16 +189,16 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 	public void shouldFindCustomersUsingMultilevelFetchJoin() throws Exception {
 		HibernateStatementInterceptor.clearInterceptedStatements();
 
-		mockMvc.perform(post("/multilevel-join-fetch/findAll-without-fetch-joins")
+		mockMvc.perform(post("/multilevel-join-fetch/findAllWithoutFetchJoins")
 				.param("tag", "#snacks"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Marge"))
-				.andExpect(jsonPath("$[2].firstName").value("Bart"))
-				.andExpect(jsonPath("$[3].firstName").value("Lisa"))
-				.andExpect(jsonPath("$[4].firstName").value("Maggie"))
-				.andExpect(jsonPath("$[5]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[4].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
 				.hasSelects(10)

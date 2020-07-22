@@ -54,7 +54,7 @@ public class JoinPathUtilsTest {
 	}
 
 	@Test
-	public void throwsIllegalArgumentExceptionWhenAliasContainsMultipleDots() {
+	public void throwsIllegalArgumentExceptionWhenPathContainsMultipleDots() {
 		assertThrows(
 				IllegalArgumentException.class,
 				() -> pathToJoinSplittedByDot("alias.attribute.attribute2"),

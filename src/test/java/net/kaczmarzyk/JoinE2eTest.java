@@ -123,10 +123,10 @@ public class JoinE2eTest extends E2eTestBase {
 				.param("firstName", "Homer")
 				.param("order", "Duff Beer")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
 	@Test
@@ -134,11 +134,11 @@ public class JoinE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/join/customers")
 				.param("order", "Duff Beer")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Moe"))
-				.andExpect(jsonPath("$[2]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
 	@Test
@@ -147,11 +147,11 @@ public class JoinE2eTest extends E2eTestBase {
 				.param("order1", "Beer")
 				.param("order2", "Donuts")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Moe"))
-				.andExpect(jsonPath("$[2]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
 	@Test
@@ -159,10 +159,10 @@ public class JoinE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/join/customers")
 				.param("orderIn", "Pizza")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
 	@Test
@@ -171,11 +171,11 @@ public class JoinE2eTest extends E2eTestBase {
 				.param("order", "Pizza")
 				.param("badge", "Troll Face")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Moe"))
-				.andExpect(jsonPath("$[2]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
 	@Test
@@ -186,13 +186,13 @@ public class JoinE2eTest extends E2eTestBase {
 				.param("size", "1")
 				.param("sort", "id")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content").isArray())
-				.andExpect(jsonPath("$.content", hasSize(1)))
-				.andExpect(jsonPath("$.content[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$.totalPages").value(2))
-				.andExpect(jsonPath("$.totalElements").value(2))
-				.andExpect(jsonPath("$.size").value(1));
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content").isArray())
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$.totalPages").value(2))
+			.andExpect(jsonPath("$.totalElements").value(2))
+			.andExpect(jsonPath("$.size").value(1));
 	}
 
 }

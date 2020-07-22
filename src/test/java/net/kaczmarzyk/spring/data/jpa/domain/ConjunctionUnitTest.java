@@ -57,8 +57,8 @@ public class ConjunctionUnitTest {
 	@Test
 	public void executesFakeSpecBeforeRegularOnes() {
 		Specification<Customer> fakeSpec = mock(FakeSpec.class);
-		Specification<Customer> regularSpec1 = mockToPredicate(mock(Like.class));
-		Specification<Customer> regularSpec2 = mockToPredicate(mock(Equal.class));
+		Specification<Customer> regularSpec1 = withMockedToPredicateMethod(mock(Like.class));
+		Specification<Customer> regularSpec2 = withMockedToPredicateMethod(mock(Equal.class));
 		
 		Conjunction<Customer> conjunction = new Conjunction<>(regularSpec2, fakeSpec, regularSpec1);
 		
@@ -70,7 +70,7 @@ public class ConjunctionUnitTest {
 		inOrder.verify(regularSpec1).toPredicate(root, query, criteriaBuilder);
 	}
 
-	public Specification<Customer> mockToPredicate(Specification<Customer> spec) {
+	public Specification<Customer> withMockedToPredicateMethod(Specification<Customer> spec) {
 		when(spec.toPredicate(any(), any(), any()))
 				.thenReturn(mock(Predicate.class));
 

@@ -58,7 +58,7 @@ public class JoinTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void joinsLazyCollection() {
+	public void joinsCollection() {
 		Join<Customer> joinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
 		Equal<Customer> orderedItemName = new Equal<>(queryCtx, "o.itemName", new String[]{ "Duff Beer" }, defaultConverter);
 
@@ -69,24 +69,6 @@ public class JoinTest extends IntegrationTestBase {
 		assertThat(customers)
 				.extracting(Customer::getFirstName)
 				.containsExactly("Homer");
-	}
-
-	@Test
-	public void throwsIllegalArgumentExceptionWhenJoinsAreDefinedInInvalidOrder() {
-		Join<Customer> joinTags = new Join<>(queryCtx, "o.tags", "t", LEFT, true);
-		Join<Customer> joinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
-		Equal<Customer> tagEqual = new Equal<>(queryCtx, "t.name", new String[]{ "books" }, defaultConverter);
-
-		Conjunction<Customer> conjunction = new Conjunction<>(joinTags, joinOrders, tagEqual);
-
-		assertThrows(
-				InvalidDataAccessApiUsageException.class,
-				() -> customerRepo.findAll(conjunction),
-				"Join definition with alias: 'o' not found! " +
-						"Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'; " +
-						"nested exception is java.lang.IllegalArgumentException: " +
-						"Join definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
-		);
 	}
 
 	@Test
@@ -147,6 +129,24 @@ public class JoinTest extends IntegrationTestBase {
 		assertThat(customers)
 				.extracting(Customer::getFirstName)
 				.containsExactly("Homer");
+	}
+
+	@Test
+	public void throwsIllegalArgumentExceptionWhenJoinsAreDefinedInInvalidOrder() {
+		Join<Customer> joinTags = new Join<>(queryCtx, "o.tags", "t", LEFT, true);
+		Join<Customer> joinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
+		Equal<Customer> tagEqual = new Equal<>(queryCtx, "t.name", new String[]{ "books" }, defaultConverter);
+
+		Conjunction<Customer> conjunction = new Conjunction<>(joinTags, joinOrders, tagEqual);
+
+		assertThrows(
+				InvalidDataAccessApiUsageException.class,
+				() -> customerRepo.findAll(conjunction),
+				"Join definition with alias: 'o' not found! " +
+						"Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'; " +
+						"nested exception is java.lang.IllegalArgumentException: " +
+						"Join definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
+		);
 	}
 
 }

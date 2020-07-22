@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
@@ -99,41 +100,21 @@ public class JoinFetch<T> implements Specification<T> {
 		return null;
 	}
 
-
-
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((joinType == null) ? 0 : joinType.hashCode());
-		result = prime * result + ((pathsToFetch == null) ? 0 : pathsToFetch.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		JoinFetch<?> joinFetch = (JoinFetch<?>) o;
+		return distinct == joinFetch.distinct &&
+				Objects.equals(context, joinFetch.context) &&
+				Objects.equals(pathsToFetch, joinFetch.pathsToFetch) &&
+				Objects.equals(alias, joinFetch.alias) &&
+				joinType == joinFetch.joinType;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		@SuppressWarnings("rawtypes")
-		JoinFetch other = (JoinFetch) obj;
-		if (joinType != other.joinType) {
-			return false;
-		}
-		if (pathsToFetch == null) {
-			if (other.pathsToFetch != null) {
-				return false;
-			}
-		} else if (!pathsToFetch.equals(other.pathsToFetch)) {
-			return false;
-		}
-		return true;
+	public int hashCode() {
+		return Objects.hash(context, pathsToFetch, alias, joinType, distinct);
 	}
 
 	@Override

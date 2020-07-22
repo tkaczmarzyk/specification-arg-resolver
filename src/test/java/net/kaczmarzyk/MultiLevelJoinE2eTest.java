@@ -109,11 +109,11 @@ public class MultiLevelJoinE2eTest extends IntegrationTestBase {
 	public void shouldFindCustomersWithOrderedItemTaggedDifferentlyThanSnacks() throws Exception {
 		mockMvc.perform(post("/findCustomersWithOrderedItemTaggedDifferentlyThan")
 				.param("tag", "#snacks"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Marge"))
-				.andExpect(jsonPath("$[2]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
 }

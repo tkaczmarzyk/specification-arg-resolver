@@ -34,8 +34,6 @@ public class JoinPathUtils {
 
 		if(pathSplittedByDot[0].isEmpty()) {
 			throw new IllegalArgumentException("Expected path to join with single alias in the pattern: 'alias.attribute'. An alias has to be not empty value!");
-		} else if(pathSplittedByDot[1].isEmpty()) {
-			throw new IllegalArgumentException("Expected path to join with single alias in the pattern: 'alias.attribute'. An attribute has to be not empty value!");
 		}
 
 		return pathSplittedByDot;
