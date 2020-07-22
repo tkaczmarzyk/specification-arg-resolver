@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.function.Function;
 
@@ -26,9 +27,9 @@ import java.util.function.Function;
  */
 public interface QueryContext {
 
-	Object getEvaluated(String key, Root<?> root);
+	Join<?, ?> getEvaluated(String key, Root<?> root);
 	
-	void putLazyVal(String key, Function<Root<?>, Object> value);
+	void putLazyVal(String key, Function<Root<?>, Join<?, ?>> value);
 
 	Fetch<?, ?> getEvaluatedJoinFetch(String key);
 

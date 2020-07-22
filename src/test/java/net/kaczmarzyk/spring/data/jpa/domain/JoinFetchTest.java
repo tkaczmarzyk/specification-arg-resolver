@@ -22,6 +22,7 @@ import net.kaczmarzyk.spring.data.jpa.Order;
 import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 
 import javax.persistence.criteria.JoinType;
@@ -30,6 +31,7 @@ import java.util.List;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
+import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -75,9 +77,52 @@ public class JoinFetchTest extends IntegrationTestBase {
             assertTrue(Hibernate.isInitialized(customer.getOrders()));
         }
     }
-    
+
     @Test
-    public void performsTwoFetches() {
+    public void performsTwoFetchesUsingSingleLeftJoinFetchDefinition() {
+        JoinFetch<Customer> joinFetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders", "orders2" }, JoinType.LEFT, true);
+
+        List<Customer> customers = customerRepo.findAll(joinFetch, Sort.by("id"));
+
+        assertThat(customers)
+                .extracting(Customer::getFirstName)
+                .containsExactly("Homer", "Marge", "Bart");
+
+        for (Customer customer : customers) {
+            assertTrue(Hibernate.isInitialized(customer.getOrders()));
+            assertTrue(Hibernate.isInitialized(customer.getOrders2()));
+        }
+    }
+
+    @Test
+    public void performsTwoFetchesUsingSingleInnerJoinFetchDefinition() {
+        JoinFetch<Customer> joinFetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders", "orders2" }, JoinType.INNER, true);
+
+        List<Customer> customers = customerRepo.findAll(joinFetch, Sort.by("id"));
+
+        assertThat(customers)
+                .extracting(Customer::getFirstName)
+                .containsExactly("Homer", "Bart");
+
+        for (Customer customer : customers) {
+            assertTrue(Hibernate.isInitialized(customer.getOrders()));
+            assertTrue(Hibernate.isInitialized(customer.getOrders2()));
+        }
+    }
+
+    @Test
+    public void throwsIllegalArgumentExceptionWhenMultiplePathsAndAliasPassedToConstructor() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new JoinFetch<Customer>(queryCtx, new String[] { "orders", "orders2" }, "alias", JoinType.INNER, true),
+                "Join fetch alias can be defined only for join fetch with a single path! " +
+                        "Remove alias from the annotation or repeat @JoinFetch annotation for every path and use unique alias for each join."
+        );
+    }
+
+
+    @Test
+    public void performsTwoFetchesUsingTwoJoinFetchDefinition() {
     	JoinFetch<Customer> spec1 = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
     	JoinFetch<Customer> spec2 = new JoinFetch<Customer>(queryCtx, new String[] { "orders2" }, "o", JoinType.INNER, true);
         
@@ -267,6 +312,23 @@ public class JoinFetchTest extends IntegrationTestBase {
                 assertTrue(Hibernate.isInitialized(order.getNote()));
             }
         }
+    }
+
+    @Test
+    public void throwsIllegalArgumentExceptionWhenFetchJoinsAreDefinedInInvalidOrder() {
+        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tags" }, JoinType.LEFT, true);
+        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
+
+        Conjunction<Customer> spec = new Conjunction<Customer>(tags, orders);
+
+        assertThrows(
+                InvalidDataAccessApiUsageException.class,
+                () -> customerRepo.findAll(spec),
+                "Join fetch definition with alias: 'o' not found! " +
+                        "Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'; " +
+                        "nested exception is java.lang.IllegalArgumentException: " +
+                        "Join fetch definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
+        );
     }
 
     @Test

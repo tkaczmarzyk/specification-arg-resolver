@@ -20,6 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -28,6 +29,7 @@ import static javax.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
+import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JoinTest extends IntegrationTestBase {
@@ -67,6 +69,24 @@ public class JoinTest extends IntegrationTestBase {
 		assertThat(customers)
 				.extracting(Customer::getFirstName)
 				.containsExactly("Homer");
+	}
+
+	@Test
+	public void throwsIllegalArgumentExceptionWhenJoinsAreDefinedInInvalidOrder() {
+		Join<Customer> joinTags = new Join<>(queryCtx, "o.tags", "t", LEFT, true);
+		Join<Customer> joinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
+		Equal<Customer> tagEqual = new Equal<>(queryCtx, "t.name", new String[]{ "books" }, defaultConverter);
+
+		Conjunction<Customer> conjunction = new Conjunction<>(joinTags, joinOrders, tagEqual);
+
+		assertThrows(
+				InvalidDataAccessApiUsageException.class,
+				() -> customerRepo.findAll(conjunction),
+				"Join definition with alias: 'o' not found! " +
+						"Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'; " +
+						"nested exception is java.lang.IllegalArgumentException: " +
+						"Join definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
+		);
 	}
 
 	@Test

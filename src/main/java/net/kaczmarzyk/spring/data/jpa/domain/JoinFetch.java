@@ -22,12 +22,16 @@ import javax.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.List;
 
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
+
 
 /**
  * <p>Extension to specification-arg-resolver to allow fetching collections in a specification query</p>
  *
  * @author Tomasz Kaczmarzyk
  * @author Gerald Humphries
+ * @author Jakub Radlica
  */
 public class JoinFetch<T> implements Specification<T> {
 
@@ -53,9 +57,10 @@ public class JoinFetch<T> implements Specification<T> {
 		this.distinct = distinct;
 
 		if (!alias.isEmpty() && pathsToFetch.length != 1) {
-			throw new IllegalArgumentException("" +
+			throw new IllegalArgumentException(
 					"Join fetch alias can be defined only for join fetch with a single path! " +
-					"Remove alias from the annotation or repeat @JoinFetch annotation for every path and use unique alias for each join.");
+					"Remove alias from the annotation or repeat @JoinFetch annotation for every path and use unique alias for each join."
+			);
 		}
 	}
 
@@ -66,11 +71,18 @@ public class JoinFetch<T> implements Specification<T> {
 			if (pathsToFetch.size() == 1) {
 				String pathToFetch = pathsToFetch.get(0);
 				if (pathToJoinContainsAlias(pathToFetch)) {
-					String[] pathToJoinFetchOnSplittedByDot = pathToJoinFetchSplittedByDto(pathToFetch);
+					String[] pathToJoinFetchOnSplittedByDot = pathToJoinSplittedByDot(pathToFetch);
 					String alias = pathToJoinFetchOnSplittedByDot[0];
 					String path = pathToJoinFetchOnSplittedByDot[1];
 
 					Fetch<?, ?> evaluatedJoinFetchForGivenAlias = context.getEvaluatedJoinFetch(alias);
+
+					if(evaluatedJoinFetchForGivenAlias == null) {
+						throw new IllegalArgumentException(
+								"Join fetch definition with alias: '" + alias + "' not found! " +
+										"Make sure that join with the alias '" + alias +"' is defined before the join with path: '" + pathToFetch + "'"
+						);
+					}
 
 					Fetch<?,?> joinFetch = evaluatedJoinFetchForGivenAlias.fetch(path, joinType);
 					context.putEvaluatedJoinFetch(alias, joinFetch);
@@ -87,21 +99,7 @@ public class JoinFetch<T> implements Specification<T> {
 		return null;
 	}
 
-	private String[] pathToJoinFetchSplittedByDto(String pathToFetch) {
-		String[] pathToJoinFetchOnSplittedByDot = pathToFetch.split("\\.");
-		if (pathToJoinFetchOnSplittedByDot.length != 2) {
-			throw new IllegalArgumentException(
-					"Expected pathsToFetch with single alias in pattern: 'alias.attribute' (without an apostrophe) where: " +
-							"alias is a alias of another join fetch (of which annotation should be before annotation of actual join fetch)," +
-							"attribute - name of the attribute for the target of the join."
-			);
-		}
-		return pathToJoinFetchOnSplittedByDot;
-	}
 
-	private boolean pathToJoinContainsAlias(String pathToJoinOn) {
-		return pathToJoinOn.contains(".");
-	}
 
 	@Override
 	public int hashCode() {

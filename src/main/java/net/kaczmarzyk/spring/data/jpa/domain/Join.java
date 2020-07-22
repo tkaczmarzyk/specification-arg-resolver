@@ -20,21 +20,24 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
+
 /**
- *
  * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
 public class Join<T> implements Specification<T>, Fake {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private String pathToJoinOn;
 	private String alias;
 	private JoinType joinType;
 	private QueryContext queryContext;
 	private boolean distinctQuery;
-	
-	
+
+
 	public Join(QueryContext queryContext, String pathToJoinOn, String alias, JoinType joinType, boolean distinctQuery) {
 		this.pathToJoinOn = pathToJoinOn;
 		this.alias = alias;
@@ -47,38 +50,29 @@ public class Join<T> implements Specification<T>, Fake {
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		query.distinct(distinctQuery);
 
-		if(!pathToJoinContainsAlias()) {
+		if (!pathToJoinContainsAlias(pathToJoinOn)) {
 			queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
 		} else {
-			String[] pathToJoinOnSplittedByDot = pathToJoinOn.split("\\.");
-
-			if(pathToJoinOnSplittedByDot.length != 2) {
-				throw new IllegalArgumentException(
-						"Expected pathToJoin with single alias in pattern: 'alias.attribute' (without an apostrophe) where: " +
-						"alias is a alias of another join (of which annotation should be before annotation of actual join)," +
-						"attribute - name of the attribute for the target of the join."
-				);
-			}
+			String[] pathToJoinOnSplittedByDot = pathToJoinSplittedByDot(pathToJoinOn);
 
 			String extractedAlias = pathToJoinOnSplittedByDot[0];
-			Object evaluated = queryContext.getEvaluated(extractedAlias, root);
+			javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
 
-			if(evaluated instanceof javax.persistence.criteria.Join<?, ?>) {
-				String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
-
-				queryContext.putLazyVal(
-						alias,
-						(r) -> ((javax.persistence.criteria.Join<?, ?>) evaluated).join(extractedPathToJoin, joinType)
+			if (evaluated == null) {
+				throw new IllegalArgumentException(
+						"Join definition with alias: '" + extractedAlias + "' not found! " +
+								"Make sure that join with the alias '" + extractedAlias +"' is defined before the join with path: '" + pathToJoinOn + "'"
 				);
-			} else {
-				queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
 			}
+
+			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
+
+			queryContext.putLazyVal(
+					alias,
+					(r) -> evaluated.join(extractedPathToJoin, joinType)
+			);
 		}
 		return null;
-	}
-
-	private boolean pathToJoinContainsAlias() {
-		return pathToJoinOn.contains(".");
 	}
 
 	@Override
