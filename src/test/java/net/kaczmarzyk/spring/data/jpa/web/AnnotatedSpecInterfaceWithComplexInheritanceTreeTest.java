@@ -247,14 +247,14 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 								new EmptyResultOnTypeMismatch<>(new Null<>(ctx.queryContext(), "or1spec2", new String[]{ "or1spec2Val" }, converter))
 						),
 						// JoinFetchFilter
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{ "joinFetch1path1", "joinFetch1path2", "joinFetch1path3" }, LEFT, true),
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(ctx.queryContext(), new String[]{ "joinFetch1path1", "joinFetch1path2", "joinFetch1path3" }, LEFT, true),
 						// JoinFilter
 						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "join1", "join1alias", LEFT, false),
 						// 3xJoinFetch
 						new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(
-								new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{"repeatedJoinFetch1Path1", "repeatedJoinFetch1Path2"}, LEFT, false),
-								new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{"repeatedJoinFetch2Path1"}, INNER, true),
-								new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{"repeatedJoinFetch3Path1", "repeatedJoinFetch3Path2"}, RIGHT, false)
+								new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(ctx.queryContext(), new String[]{"repeatedJoinFetch1Path1", "repeatedJoinFetch1Path2"}, LEFT, false),
+								new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(ctx.queryContext(), new String[]{"repeatedJoinFetch2Path1"}, INNER, true),
+								new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(ctx.queryContext(), new String[]{"repeatedJoinFetch3Path1", "repeatedJoinFetch3Path2"}, RIGHT, false)
 						),
 						// 3xJoin
 						new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(

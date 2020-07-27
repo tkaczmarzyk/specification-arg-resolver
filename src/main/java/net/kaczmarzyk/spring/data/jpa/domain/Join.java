@@ -15,31 +15,29 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.data.jpa.domain.Specification;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import javax.persistence.criteria.*;
+
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
 
 /**
- *
  * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
 public class Join<T> implements Specification<T>, Fake {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private String pathToJoinOn;
 	private String alias;
 	private JoinType joinType;
 	private QueryContext queryContext;
 	private boolean distinctQuery;
-	
-	
+
+
 	public Join(QueryContext queryContext, String pathToJoinOn, String alias, JoinType joinType, boolean distinctQuery) {
 		this.pathToJoinOn = pathToJoinOn;
 		this.alias = alias;
@@ -51,7 +49,29 @@ public class Join<T> implements Specification<T>, Fake {
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		query.distinct(distinctQuery);
-		queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+
+		if (!pathToJoinContainsAlias(pathToJoinOn)) {
+			queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+		} else {
+			String[] pathToJoinOnSplittedByDot = pathToJoinSplittedByDot(pathToJoinOn);
+
+			String extractedAlias = pathToJoinOnSplittedByDot[0];
+			javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
+
+			if (evaluated == null) {
+				throw new IllegalArgumentException(
+						"Join definition with alias: '" + extractedAlias + "' not found! " +
+								"Make sure that join with the alias '" + extractedAlias +"' is defined before the join with path: '" + pathToJoinOn + "'"
+				);
+			}
+
+			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
+
+			queryContext.putLazyVal(
+					alias,
+					(r) -> evaluated.join(extractedPathToJoin, joinType)
+			);
+		}
 		return null;
 	}
 

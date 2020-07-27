@@ -20,6 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.JoinFetch;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
@@ -91,14 +92,15 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 		MethodParameter param = methodParameter("annotatedInterface", OrderedItemNameBadgeFilter.class);
 
 		NativeWebRequest req = nativeWebRequest().build();
+		QueryContext queryCtx = new WebRequestQueryContext(req);
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
 		assertThat(innerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
-						new JoinFetch<>(new String[]{ "orders" }, LEFT, true),
-						new JoinFetch<>(new String[]{ "badges" }, INNER, true)
+						new JoinFetch<>(queryCtx, new String[]{ "orders" }, LEFT, true),
+						new JoinFetch<>(queryCtx, new String[]{ "badges" }, INNER, true)
 				);
 	}
 
@@ -114,6 +116,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 				.build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+		QueryContext queryCtx = new WebRequestQueryContext(req);
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -121,10 +124,10 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 				.hasSize(3)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(
-								new JoinFetch<>(new String[]{ "orders" }, LEFT, true),
-								new JoinFetch<>(new String[]{ "badges" }, INNER, true)
+								new JoinFetch<>(queryCtx, new String[]{ "orders" }, LEFT, true),
+								new JoinFetch<>(queryCtx, new String[]{ "badges" }, INNER, true)
 						),
-						new JoinFetch<>(new String[]{ "orders2" }, LEFT, true),
+						new JoinFetch<>(queryCtx, new String[]{ "orders2" }, LEFT, true),
 						new EmptyResultOnTypeMismatch<>(new Equal<>(ctx.queryContext(), "o.itemName", new String[]{ "Duff Beer" }, defaultConverter))
 				);
 	}
@@ -139,6 +142,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 		NativeWebRequest req = nativeWebRequest()
 				.withParameterValues("itemName", "Duff Beer")
 				.build();
+		QueryContext queryCtx = new WebRequestQueryContext(req);
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -146,12 +150,12 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(
-								new JoinFetch<>(new String[]{ "orders" }, LEFT, true),
-								new JoinFetch<>(new String[]{ "badges" }, INNER, true)
+								new JoinFetch<>(queryCtx, new String[]{ "orders" }, LEFT, true),
+								new JoinFetch<>(queryCtx, new String[]{ "badges" }, INNER, true)
 						),
 						new Conjunction<>(
-								new JoinFetch<>(new String[]{ "orders2" }, RIGHT, false),
-								new JoinFetch<>(new String[]{ "badges2" }, RIGHT, true)
+								new JoinFetch<>(queryCtx, new String[]{ "orders2" }, RIGHT, false),
+								new JoinFetch<>(queryCtx, new String[]{ "badges2" }, RIGHT, true)
 						)
 				);
 	}

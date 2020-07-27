@@ -34,7 +34,9 @@ class JoinFetchSpecificationResolver implements SpecificationResolver<JoinFetch>
 	@Override
 	public Specification<Object> buildSpecification(WebRequestProcessingContext context, JoinFetch fetchDef) {
 		return new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(
+				context.queryContext(),
 				fetchDef.paths(),
+				fetchDef.alias(),
 				fetchDef.joinType(),
 				fetchDef.distinct()
 		);

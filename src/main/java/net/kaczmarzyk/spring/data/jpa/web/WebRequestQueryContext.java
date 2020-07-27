@@ -15,16 +15,16 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -32,37 +32,57 @@ import javax.persistence.criteria.Root;
 public class WebRequestQueryContext implements QueryContext {
 
 	private static final String ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY";
-	
-	private HashMap<String, Object> contextMap;
-	private Map<Pair<String, Root>, Object> rootCache = new HashMap<>();
+	private static final String JOIN_FETCH_ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY_JOIN_FETCH";
+
+	private HashMap<String, Function<Root<?>, Join<?, ?>>> contextMap;
+	private HashMap<String, Fetch<?, ?>> evaluatedJoinFetch;
+
+	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache = new HashMap<>();
 
 	public WebRequestQueryContext(NativeWebRequest request) {
-		this.contextMap = (HashMap<String, Object>) request.getAttribute(ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
+		this.contextMap = (HashMap<String, Function<Root<?>, Join<?, ?>>>) request.getAttribute(ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
 		if (this.contextMap == null) {
 			this.contextMap = new HashMap<>();
 			request.setAttribute(ATTRIBUTE_KEY, contextMap, NativeWebRequest.SCOPE_REQUEST);
 		}
-	}
-	
-	@Override
-	public Object getEvaluated(String key, Root<?> root) {
-		Object value = contextMap.get(key);
-		if (value instanceof Function) {
-			Pair<String, Root> rootKey = Pair.of(key, root);
+		this.evaluatedJoinFetch = (HashMap<String, Fetch<?, ?>>) request.getAttribute(JOIN_FETCH_ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
 
-			if (!rootCache.containsKey(rootKey)) {
-				Object evaluated = ((Function) value).apply(root);
-				rootCache.put(rootKey, evaluated);
-			}
-			return rootCache.get(rootKey);
-		} else {
-			return value;
+		if (this.evaluatedJoinFetch == null) {
+			this.evaluatedJoinFetch = new HashMap<>();
+			request.setAttribute(JOIN_FETCH_ATTRIBUTE_KEY, evaluatedJoinFetch, NativeWebRequest.SCOPE_REQUEST);
 		}
 	}
 
 	@Override
-	public void putLazyVal(String key, Function<Root<?>, Object> value) {
+	public Join<?, ?> getEvaluated(String key, Root<?> root) {
+		Function<Root<?>, Join<?, ?>> value = contextMap.get(key);
+
+		if (value == null) {
+			return null;
+		}
+
+		Pair<String, Root> rootKey = Pair.of(key, root);
+
+		if (!rootCache.containsKey(rootKey)) {
+			Join<?, ?> evaluated = value.apply(root);
+			rootCache.put(rootKey, evaluated);
+		}
+		return rootCache.get(rootKey);
+	}
+
+	@Override
+	public void putLazyVal(String key, Function<Root<?>, Join<?, ?>> value) {
 		contextMap.put(key, value);
+	}
+
+	@Override
+	public Fetch<?, ?> getEvaluatedJoinFetch(String key) {
+		return this.evaluatedJoinFetch.get(key);
+	}
+
+	@Override
+	public void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch) {
+		this.evaluatedJoinFetch.put(key, fetch);
 	}
 
 	@Override

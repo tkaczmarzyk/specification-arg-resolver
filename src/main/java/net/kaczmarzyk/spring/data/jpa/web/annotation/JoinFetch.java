@@ -33,6 +33,8 @@ import java.lang.annotation.*;
 public @interface JoinFetch {
 
     String[] paths();
+
+    String alias() default "";
     
     JoinType joinType() default JoinType.LEFT;
     

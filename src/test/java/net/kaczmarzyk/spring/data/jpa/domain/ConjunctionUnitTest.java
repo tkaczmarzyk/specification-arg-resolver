@@ -15,20 +15,17 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
+import net.kaczmarzyk.spring.data.jpa.Customer;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.jayway.jsonpath.Criteria;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -60,8 +57,8 @@ public class ConjunctionUnitTest {
 	@Test
 	public void executesFakeSpecBeforeRegularOnes() {
 		Specification<Customer> fakeSpec = mock(FakeSpec.class);
-		Specification<Customer> regularSpec1 = mock(Like.class);
-		Specification<Customer> regularSpec2 = mock(Equal.class);
+		Specification<Customer> regularSpec1 = withMockedToPredicateMethod(mock(Like.class));
+		Specification<Customer> regularSpec2 = withMockedToPredicateMethod(mock(Equal.class));
 		
 		Conjunction<Customer> conjunction = new Conjunction<>(regularSpec2, fakeSpec, regularSpec1);
 		
@@ -69,7 +66,14 @@ public class ConjunctionUnitTest {
 		
 		InOrder inOrder = inOrder(fakeSpec, regularSpec1, regularSpec2);
 		inOrder.verify(fakeSpec).toPredicate(root, query, criteriaBuilder);
-		inOrder.verify(regularSpec1).toPredicate(root, query, criteriaBuilder);
 		inOrder.verify(regularSpec2).toPredicate(root, query, criteriaBuilder);
+		inOrder.verify(regularSpec1).toPredicate(root, query, criteriaBuilder);
+	}
+
+	public Specification<Customer> withMockedToPredicateMethod(Specification<Customer> spec) {
+		when(spec.toPredicate(any(), any(), any()))
+				.thenReturn(mock(Predicate.class));
+
+		return spec;
 	}
 }

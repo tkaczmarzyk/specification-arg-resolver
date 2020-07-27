@@ -1,5 +1,34 @@
-v2.6.0 UNRELEASED
+v2.6.0 - UNRELEASED
 ======
+* Added support for multi-level joins. 
+
+  It's now possible to define multi-level join where each join can use aliases defined by previous joins (see [README.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md) for the details).
+  
+  For example:
+  ```java
+  @RequestMapping(value = "/findCustomersByOrderedItemTag")
+  @PostMapping
+  public Object findCustomersByOrderedItemTag(
+  		@Join(path = "orders", alias = "o")
+  		@Join(path = "o.tags", alias = "t")
+  		@Spec(path = "t.name", params = "tag", spec = Equal.class) Specification<Customer> spec) {
+  	return customerRepo.findAll(spec, Sort.by("id"));
+  }
+  ```
+  
+  Multi-level join fetch could be defined similarly to multi-level join.
+ 
+  For example:
+  ```java
+  @RequestMapping(value = "/findCustomers")
+  @PostMapping
+  public Object findAllCustomers(
+  		@JoinFetch(paths = "orders", alias = "o")
+  		@JoinFetch(paths = "o.tags") Specification<Customer> spec) {
+  	return customerRepo.findAll(spec).stream()
+  			.map(this::mapToCustomerDto)
+  			.collect(toList());
+
 * Added support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) and [property placeholders](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html) in `@Spec` attributes: `constVal`, `defaultVal`.
  
   To enable SpEL support:

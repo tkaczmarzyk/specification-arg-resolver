@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.RepeatedJoinFetch;
 import org.junit.Test;
@@ -41,13 +42,14 @@ public class RepeatedJoinFetchResolverTest extends ResolverTestBase {
 		NativeWebRequest req = mock(NativeWebRequest.class);
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+		QueryContext queryCtx = new WebRequestQueryContext(req);
 
 		Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(RepeatedJoinFetch.class));
 
 		assertThat(result).isEqualTo(
 				new Conjunction<>(
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{"path1"}, LEFT, true),
-						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(new String[]{"path2"}, RIGHT, false)
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{"path1"}, LEFT, true),
+						new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{"path2"}, RIGHT, false)
 				)
 		);
 	}

@@ -17,7 +17,9 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.WebRequestQueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -26,13 +28,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.Root;
-import java.util.function.Function;
 
+import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -48,42 +54,54 @@ public abstract class IntegrationTestBase {
 	private static final Customer[] EMPTY_LIST = {};
 
 	@Rule
-    public ExpectedException expectedException = ExpectedException.none();
-	
-    @Autowired
-    protected CustomerRepository customerRepo;
-    
-    @PersistenceContext
-    protected EntityManager em;
-	
-    protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
-    
-    protected QueryContext queryCtx = new QueryContext() {
-	
-		@Override
-		public void putLazyVal(String key, Function<Root<?>, Object> value) {
-		}
-	
-		@Override
-		public Object getEvaluated(String key, Root<?> root) {
+	public ExpectedException expectedException = ExpectedException.none();
+
+	@Autowired
+	protected CustomerRepository customerRepo;
+
+	@PersistenceContext
+	protected EntityManager em;
+
+	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+
+	protected QueryContext queryCtx = new WebRequestQueryContext(nativeWebRequest().build());
+
+	@Autowired
+	WebApplicationContext wac;
+
+	protected MockMvc mockMvc;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
+	@Before
+	public void setupMockMvc() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	}
+
+	/**
+	 * Call findAll with the Specification, and assert its members match the expectedMembers
+	 * @param spec the Specification
+	 * @param expectedMembers the expected members after the Specification has filtered.
+	 */
+	protected void assertFilterMembers(Specification<Customer> spec, Customer... expectedMembers) {
+		assertThat(customerRepo.findAll(spec)).hasSize(expectedMembers.length).containsOnly(expectedMembers);
+	}
+
+	/**
+	 * Call findAll with the Specification, and assert its returns the empty list.
+	 * @param spec Specification
+	 */
+	protected void assertFilterEmpty(Specification<Customer> spec) {
+		assertFilterMembers(spec, EMPTY_LIST);
+	}
+
+	protected void doInNewTransaction(Runnable callback) {
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+		template.execute(tx -> {
+			callback.run();
 			return null;
-		}
-	};
-    
-    /**
-     * Call findAll with the Specification, and assert its members match the expectedMembers
-     * @param spec the Specification 
-     * @param expectedMembers the expected members after the Specification has filtered.
-     */
-    protected void assertFilterMembers(Specification<Customer> spec, Customer... expectedMembers) {
-    	assertThat(customerRepo.findAll(spec)).hasSize(expectedMembers.length).containsOnly(expectedMembers);
-    }
-    
-    /**
-     * Call findAll with the Specification, and assert its returns the empty list.
-     * @param spec Specification
-     */
-    protected void assertFilterEmpty(Specification<Customer> spec) {
-    	assertFilterMembers(spec, EMPTY_LIST);
-    }
+		});
+	}
 }

@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.utils;
+package net.kaczmarzyk.utils.interceptor;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-import java.util.function.Function;
+import org.hibernate.EmptyInterceptor;
 
-/**
- * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
- *
- * @author Tomasz Kaczmarzyk
- */
-public interface QueryContext {
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-	Join<?, ?> getEvaluated(String key, Root<?> root);
-	
-	void putLazyVal(String key, Function<Root<?>, Join<?, ?>> value);
+public class HibernateStatementInterceptor extends EmptyInterceptor {
 
-	Fetch<?, ?> getEvaluatedJoinFetch(String key);
+	private static List<String> statements = new CopyOnWriteArrayList<>();
 
-	void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch);
+	@Override
+	public String onPrepareStatement(String sql) {
+		statements.add(sql);
+		return super.onPrepareStatement(sql);
+	}
 
+	public static List<String> getInterceptedStatements() {
+		return statements;
+	}
+
+	public static void clearInterceptedStatements() {
+		statements.clear();
+	}
 }

@@ -378,6 +378,70 @@ public Object findByOrderedOrFavouriteItem(
 }
 ```
 
+Multi-level joins are supported. To create multi-level join you should specify multiple joins in which join path contains alias of another join with higher priority. 
+
+For example, let's assume the following entities:
+```java
+@Entity
+class Customer {
+
+    // other fields omitted for brevity
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Order> orders;
+
+}
+
+@Entity
+class Order {
+
+    // other fields omitted for brevity
+
+    @ManyToOne
+    private Customer customer;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<ItemTag> tags;
+
+    ...
+}
+
+@Entity
+public class ItemTag {
+
+    // other fields omitted for brevity
+	private String name;
+    
+    ...
+}
+``` 
+
+If you want to find all customers who ordered item tagged as `#snacks`, you can do the following:
+```java
+@RequestMapping(value = "/findCustomersByOrderedItemTag")
+@PostMapping
+public Object findCustomersByOrderedItemTag(
+		@Join(path = "orders", alias = "o")
+		@Join(path = "o.tags", alias = "t")
+		@Spec(path = "t.name", params = "tag", spec = Equal.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec, Sort.by("id"));
+}
+```
+
+__Annotations are processed sequentially, the order must be kept!__
+
+Following spec is invalid:
+```java
+@RequestMapping(value = "/findCustomersByOrderedItemTag")
+@PostMapping
+public Object findCustomersByOrderedItemTag(
+		@Join(path = "o.tags", alias = "t") // "o" alias will be not exist during processing this @Join
+		@Join(path = "orders", alias = "o")
+		@Spec(path = "t.name", params = "tag", spec = Equal.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec, Sort.by("id"));
+}
+```
+
 You can use join annotations with custom [annotated specification interfaces](#annotated-specification-interfaces).
 
 Join fetch
@@ -411,6 +475,71 @@ public Object findByCityFetchOrdersAndAddresses(
 
 You can use join annotations with custom [annotated specification interfaces](#annotated-specification-interfaces).
 
+Multi-level fetch join is supported. To create multi-level fetch join you should specify multiple fetch joins in which join path contains alias of another fetch join with higher priority.
+
+For example, let's assume the following entities:
+```java
+@Entity
+class Customer {
+
+    // other fields omitted for brevity
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Order> orders;
+
+}
+
+@Entity
+class Order {
+
+    // other fields omitted for brevity
+
+    @ManyToOne
+    private Customer customer;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<ItemTag> tags;
+
+    ...
+}
+
+@Entity
+public class ItemTag {
+
+    // other fields omitted for brevity
+	private String name;
+    
+    ...
+}
+``` 
+
+If you want to find all customers and fetch additional nested attributes (entities) to avoid `SELECT N+1 Problem` you can do the following:
+```java
+@RequestMapping(value = "/findCustomersByOrderedItemTag")
+@PostMapping
+public Object findCustomers(
+	    @JoinFetch(paths = "orders", alias = "o")
+	    @JoinFetch(paths = "o.tags") Specification<Customer> spec) {
+	return customerRepo.findAll(spec, Sort.by("id"));
+}
+```
+
+The same as in case of multi-level joins, annotations are processed sequentially, the order must be kept!
+
+__Join Fetch aliases exists only in context of join fetch and can't be used in another specs paths!__ 
+Following spec is invalid:
+
+```java
+@RequestMapping(value = "/findCustomersByOrderedItemTag")
+@PostMapping
+public Object findCustomersByOrderedItemTag(
+		@JoinFetch(path = "orders", alias = "o")
+		@Spec(path = "o.itemName", params = "itemName", spec = Equal.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec, Sort.by("id"));
+}
+```
+
+If there is a need to refer to joined paths in other specs, then regular join (not fetch) should be used as described in the Join section.
 
 Advanced HTTP parameter handling
 --------------------------------

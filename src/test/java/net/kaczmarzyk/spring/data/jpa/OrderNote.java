@@ -13,26 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.utils;
+package net.kaczmarzyk.spring.data.jpa;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-import java.util.function.Function;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
-/**
- * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
- *
- * @author Tomasz Kaczmarzyk
- */
-public interface QueryContext {
+@Entity
+public class OrderNote {
 
-	Join<?, ?> getEvaluated(String key, Root<?> root);
-	
-	void putLazyVal(String key, Function<Root<?>, Join<?, ?>> value);
+	@Id
+	@GeneratedValue
+	private Long id;
 
-	Fetch<?, ?> getEvaluatedJoinFetch(String key);
+	private String title;
 
-	void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch);
+	@OneToOne
+	private Customer customer;
 
+	OrderNote() {}
+
+	public OrderNote(String title) {
+		this.title = title;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 }
