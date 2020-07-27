@@ -23,9 +23,16 @@
 		<developer>
 			<name>Tomasz Kaczmarzyk</name>
 			<roles>
-				<role>Developer</role>
+				<role>Lead Developer</role>
 			</roles>
 			<organization>kaczmarzyk.net</organization>
+		</developer>
+		<developer>
+			<name>Jakub Radlica</name>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<organization>tratif.com</organization>
 		</developer>
 	</developers>
 
