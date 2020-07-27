@@ -186,7 +186,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void shouldFindCustomersUsingMultilevelFetchJoin() throws Exception {
+	public void shouldFindAllCustomersWithoutUsingJoinFetches() throws Exception {
 		HibernateStatementInterceptor.clearInterceptedStatements();
 
 		mockMvc.perform(post("/multilevel-join-fetch/findAllWithoutFetchJoins")
