@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.utils.TypeUtil;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,14 +40,22 @@ import static java.util.stream.Collectors.toMap;
  */
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
-	private static Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
+	private Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
 	public SpecificationArgumentResolver() {
-		 this(null);
+		 this(null, null);
 	}
 	
 	public SpecificationArgumentResolver(ConversionService conversionService) {
-		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(conversionService);
+		this(conversionService, null);
+	}
+	
+	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext) {
+		this(null, applicationContext);
+	}
+	
+	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext) {
+		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(conversionService, abstractApplicationContext);
 		
 		resolversBySupportedType = Arrays.asList(
 				simpleSpecificationResolver,
