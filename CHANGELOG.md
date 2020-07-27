@@ -1,4 +1,4 @@
-v2.6.0 - UNRELEASED
+v2.6.0
 ======
 * Added support for multi-level joins. 
 
