@@ -87,8 +87,6 @@ public class JoinFetch<T> implements Specification<T> {
 					}
 
 					Fetch<?,?> joinFetch = evaluatedJoinFetchForGivenAlias.fetch(path, joinType);
-					context.putEvaluatedJoinFetch(alias, evaluatedJoinFetchForGivenAlias);
-
 					if (StringUtils.isNotBlank(this.alias)) {
 						context.putEvaluatedJoinFetch(this.alias, joinFetch);
 					}
