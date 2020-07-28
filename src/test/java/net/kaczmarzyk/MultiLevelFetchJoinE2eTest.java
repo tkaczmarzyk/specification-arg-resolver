@@ -20,6 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.criteria.JoinType;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -79,6 +85,18 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 					.collect(toList());
 		}
 
+		@RequestMapping(value = "/findAllCustomersFetchOrdersWithTagsAndNotes")
+		@PostMapping
+		public Object findAllCustomersFetchOrdersWithTagsAndNotes(
+				@JoinFetch(paths = "orders", alias = "o")
+				@JoinFetch(paths = "o.tags")
+				@JoinFetch(paths = "o.note")
+						Specification<Customer> spec) {
+			return customerRepo.findAll(spec, Sort.by("id")).stream()
+					.map(this::mapToCustomerWithOrdersWithTagsAndNotes)
+					.collect(toList());
+		}
+
 		private CustomerDto mapToCustomerDto(Customer customer) {
 			String tagOfFirstOrderedItem = customer.getOrders().stream()
 					.flatMap(order -> order.getTags().stream())
@@ -88,6 +106,17 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			return new CustomerDto(
 					customer.getFirstName(),
 					tagOfFirstOrderedItem
+			);
+		}
+
+		private CustomerWithOrdersWithTagsAndNotes mapToCustomerWithOrdersWithTagsAndNotes(Customer customer) {
+			return new CustomerWithOrdersWithTagsAndNotes(
+					customer.getFirstName(),
+					customer.getOrders().stream().map(order -> new OrdersWithTagsAndNotes(
+							order.getItemName(),
+							order.getTags().stream().map(ItemTag::getName).sorted(StringUtils::compare).collect(Collectors.joining(",")),
+							order.getNote().getTitle()
+					)).sorted((o1, o2) -> StringUtils.compare(o1.itemName, o2.itemName)).collect(Collectors.toList())
 			);
 		}
 
@@ -106,6 +135,48 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 			public String getTagOfFirstCustomerItem() {
 				return tagOfFirstCustomerItem;
+			}
+		}
+
+		class OrdersWithTagsAndNotes {
+			private String itemName;
+			private String tags;
+			private String notes;
+
+			public OrdersWithTagsAndNotes(String itemName, String tags, String notes) {
+				this.itemName = itemName;
+				this.tags = tags;
+				this.notes = notes;
+			}
+
+			public String getItemName() {
+				return itemName;
+			}
+
+			public String getTags() {
+				return tags;
+			}
+
+			public String getNotes() {
+				return notes;
+			}
+		}
+
+		class CustomerWithOrdersWithTagsAndNotes {
+			private String firstName;
+			private List<OrdersWithTagsAndNotes> orders;
+
+			public CustomerWithOrdersWithTagsAndNotes(String firstName, List<OrdersWithTagsAndNotes> orders) {
+				this.firstName = firstName;
+				this.orders = orders;
+			}
+
+			public String getFirstName() {
+				return firstName;
+			}
+
+			public List<OrdersWithTagsAndNotes> getOrders() {
+				return orders;
 			}
 		}
 	}
@@ -204,5 +275,51 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 				.hasSelects(10)
 				.hasSelectsFromSingleTableWithWhereClause(9);
 	}
+
+	@Test
+	public void shouldFindCustomersWithFetchedOrderWithTagsAndNotes() throws Exception {
+		HibernateStatementInterceptor.clearInterceptedStatements();
+
+		mockMvc.perform(post("/multilevel-join-fetch/findAllCustomersFetchOrdersWithTagsAndNotes")
+				.param("tag", "#snacks"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0].firstName").value("Homer"))
+				.andExpect(jsonPath("$[0].orders").isArray())
+
+				.andExpect(jsonPath("$[0].orders[0].itemName").value("Donuts"))
+				.andExpect(jsonPath("$[0].orders[0].tags").value("#homerApproved,#snacks"))
+				.andExpect(jsonPath("$[0].orders[0].notes").value("NoteDonuts"))
+
+				.andExpect(jsonPath("$[0].orders[1].itemName").value("Duff Beer"))
+				.andExpect(jsonPath("$[0].orders[1].tags").value("#homerApproved,#snacks"))
+				.andExpect(jsonPath("$[0].orders[1].notes").value("NoteDuff Beer"))
+
+				.andExpect(jsonPath("$[1].firstName").value("Marge"))
+				.andExpect(jsonPath("$[1].orders").isArray())
+				.andExpect(jsonPath("$[1].orders[0].itemName").value("Apple"))
+				.andExpect(jsonPath("$[1].orders[0].tags").value("#fruits"))
+				.andExpect(jsonPath("$[1].orders[0].notes").value("NoteApple"))
+
+				.andExpect(jsonPath("$[2].firstName").value("Bart"))
+				.andExpect(jsonPath("$[2].orders").isArray())
+				.andExpect(jsonPath("$[2].orders[0].itemName").value("Pizza"))
+				.andExpect(jsonPath("$[2].orders[0].tags").value("#snacks"))
+				.andExpect(jsonPath("$[2].orders[0].notes").value("NotePizza"))
+
+				.andExpect(jsonPath("$[3].firstName").value("Lisa"))
+				.andExpect(jsonPath("$[3].orders").isArray())
+				.andExpect(jsonPath("$[3].orders[0].itemName").value("Jazz music disc"))
+				.andExpect(jsonPath("$[3].orders[0].tags").value(""))
+				.andExpect(jsonPath("$[3].orders[0].notes").value("NoteJazz music disc"))
+
+				.andExpect(jsonPath("$[4].firstName").value("Maggie"))
+
+				.andExpect(jsonPath("$[5]").doesNotExist());
+
+		assertThatInterceptedStatements()
+				.hasSelects(1);
+	}
+
 
 }
