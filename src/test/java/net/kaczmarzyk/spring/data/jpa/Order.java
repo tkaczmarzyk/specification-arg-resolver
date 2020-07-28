@@ -92,4 +92,12 @@ public class Order {
     public void setNote(OrderNote note) {
         this.note = note;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
 }

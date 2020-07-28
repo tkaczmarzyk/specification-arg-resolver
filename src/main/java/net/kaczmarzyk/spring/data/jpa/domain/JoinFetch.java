@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
@@ -86,7 +87,11 @@ public class JoinFetch<T> implements Specification<T> {
 					}
 
 					Fetch<?,?> joinFetch = evaluatedJoinFetchForGivenAlias.fetch(path, joinType);
-					context.putEvaluatedJoinFetch(alias, joinFetch);
+					context.putEvaluatedJoinFetch(alias, evaluatedJoinFetchForGivenAlias);
+
+					if (StringUtils.isNotBlank(this.alias)) {
+						context.putEvaluatedJoinFetch(this.alias, joinFetch);
+					}
 				} else {
 					Fetch<Object, Object> evaluated = root.fetch(pathToFetch, joinType);
 					context.putEvaluatedJoinFetch(alias, evaluated);
