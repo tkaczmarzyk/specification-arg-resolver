@@ -59,8 +59,9 @@ public class SimpleSpecificationGenerator {
 
 	/**
 	 * Returns specification instance. Specification path and argument values depend on a seed value (for the given seed value always the same values are returned)
+	 *
 	 * @param specificationType type of specification to be created
-	 * @param seed - seed value used for specification generation
+	 * @param seed              seed value used for specification generation
 	 * @return specification instance
 	 */
 	public static Specification<Object> testSpecification(Class<? extends PathSpecification> specificationType, Integer seed) {
@@ -95,13 +96,13 @@ public class SimpleSpecificationGenerator {
 	}
 
 	private static String getPath(Integer seed) {
-		return "path_"+seed;
+		return "path_" + seed;
 	}
 
 	private static String[] getArgs(Integer argsNumber, Integer seed) {
 		String[] args = new String[argsNumber];
-		for(int i=0; i<argsNumber; i++) {
-			args[i]= GENERATOR_LOCAL_BASE_DATE_TIME.plusSeconds(seed).toString();
+		for (int i = 0; i < argsNumber; i++) {
+			args[i] = GENERATOR_LOCAL_BASE_DATE_TIME.plusSeconds(seed).toString();
 		}
 		return args;
 	}
