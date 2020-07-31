@@ -281,8 +281,6 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 
 		NativeWebRequest req = this.nativeWebRequestBuilder.build();
 
-		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
 		Specification<?> originalResolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 		Specification<?> resolvedWithTheSameParams = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 

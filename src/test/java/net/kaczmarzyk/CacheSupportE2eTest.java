@@ -86,11 +86,13 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 		mockMvc.perform(post("/cache/simpsons")
 				.param("lastName", "Simpson"))
 				.andExpect(status().isOk());
+
 		Assertions.assertThat(cacheEntries().size()).isEqualTo(1);
 
 		mockMvc.perform(post("/cache/simpsons")
 				.param("lastName", "Szyslak"))
 				.andExpect(status().isOk());
+
 		Assertions.assertThat(cacheEntries().size()).isEqualTo(2);
 	}
 
