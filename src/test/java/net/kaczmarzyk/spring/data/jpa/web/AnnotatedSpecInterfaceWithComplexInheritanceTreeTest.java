@@ -21,6 +21,9 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
+import net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder;
+import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,6 +31,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.persistence.criteria.JoinType;
 import java.util.Collection;
+import java.util.UUID;
 
 import static javax.persistence.criteria.JoinType.*;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
@@ -171,11 +175,11 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 		}
 	}
 
-	@Test
-	public void createsConjunctionOutOfSpecsFromWholeInheritanceTree() throws Exception {
-		MethodParameter param = methodParameter("testMethod", JoinFilter.class);
+	NativeWebRequestBuilder nativeWebRequestBuilder;
 
-		NativeWebRequest req = nativeWebRequest()
+	@Before
+	public void setupNativeWebRequestBuilder() {
+		nativeWebRequestBuilder = nativeWebRequest()
 				.withParameterValues("disjunctionAnd1Param1", "disjunctionAnd1Param1Val")
 				.withParameterValues("disjunctionAnd1Param2", "disjunctionAnd1Param2Val")
 				.withParameterValues("disjunctionAnd2Param1", "disjunctionAnd2Param1Val")
@@ -191,8 +195,14 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 				.withParameterValues("conjunction1AndSpec1", "conjunction1AndSpec1Val")
 				.withParameterValues("conjunction1AndSpec2", "conjunction1AndSpec2Val")
 				.withParameterValues("or1spec1", "or1spec1Val")
-				.withParameterValues("or1spec2", "or1spec2Val")
-				.build();
+				.withParameterValues("or1spec2", "or1spec2Val");
+	}
+
+	@Test
+	public void createsConjunctionOutOfSpecsFromWholeInheritanceTree() throws Exception {
+		MethodParameter param = methodParameter("testMethod", JoinFilter.class);
+
+		NativeWebRequest req = this.nativeWebRequestBuilder.build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
@@ -263,6 +273,29 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 								new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "repeatedJoin3", "repeatedJoin3alias", RIGHT, false)
 						)
 				);
+	}
+
+	@Test
+	public void equalsTest() throws Exception {
+		MethodParameter param = methodParameter("testMethod", JoinFilter.class);
+
+		NativeWebRequest req = this.nativeWebRequestBuilder.build();
+
+		Specification<?> originalResolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
+		Specification<?> resolvedWithTheSameParams = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
+
+		req = this.nativeWebRequestBuilder.withParameterValues("or1spec2", UUID.randomUUID().toString()).build();
+
+		Specification<?> resolvedWithDifferentParams = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
+
+		Assertions.assertThat(originalResolved).isEqualTo(resolvedWithTheSameParams);
+		Assertions.assertThat(originalResolved).isNotEqualTo(resolvedWithDifferentParams);
+
+		Assertions.assertThat(resolvedWithTheSameParams).isEqualTo(originalResolved);
+		Assertions.assertThat(resolvedWithTheSameParams).isNotEqualTo(resolvedWithDifferentParams);
+
+		Assertions.assertThat(resolvedWithDifferentParams).isNotEqualTo(originalResolved);
+		Assertions.assertThat(resolvedWithDifferentParams).isNotEqualTo(resolvedWithTheSameParams);
 	}
 
 	@Override

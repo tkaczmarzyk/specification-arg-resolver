@@ -15,12 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import org.junit.Test;
-import org.springframework.data.jpa.domain.Specification;
-
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+import org.junit.Test;
+import org.springframework.data.jpa.domain.Specification;
 
 
 /**
@@ -124,6 +125,13 @@ public class LessThanOrEqualTest extends ComparableTestBase {
     	assertFilterContainsOnlyExpectedMembers("registrationDate", "01-03-2015", "dd-MM-yyyy", homerSimpson, margeSimpson);
     	assertFilterContainsOnlyExpectedMembers("registrationDate", "03-03-2015", "dd-MM-yyyy", moeSzyslak, homerSimpson, margeSimpson);
     }
-    
+
+	@Test
+	public void equalsContract() {
+		EqualsVerifier.forClass(LessThanOrEqual.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
 
 }
