@@ -28,6 +28,9 @@ import java.lang.reflect.Method;
  */
 class EnhancerUtil {
 
+	public interface GlibEnhancedObjectMarker {
+	}
+
 	@SuppressWarnings("unchecked")
 	static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
     	Enhancer enhancer = new Enhancer();
@@ -37,23 +40,43 @@ class EnhancerUtil {
 				return iface.getSimpleName() + "[" + method.invoke(targetSpec, args) + "]";
 			}
 			if ("equals".equals(method.getName())) {
-				if (args.length != 1
-						|| args[0] == null
-						|| args[0].getClass().getInterfaces().length == 0
-						|| obj.getClass().getInterfaces().length == 0) {
-					return false;
-				}
-
-				if (!args[0].getClass().getInterfaces()[0].equals(obj.getClass().getInterfaces()[0])) {
-					return false;
-				}
-
-				return ReflectionUtils.get(ReflectionUtils.get(args[0], "CGLIB$CALLBACK_0"), "val$targetSpec").equals(targetSpec);
+				return EnhancerUtil.equals(iface, targetSpec, args);
 			}
-			return proxy.invoke(targetSpec, args);
-		});
 
+				return proxy.invoke(targetSpec, args);
+			});
 		return (T) enhancer.create();
+	}
+
+	private static boolean equals(Class<?> iface, Specification<Object> targetSpec, Object[] args) {
+		if (args.length != 1 || args[0] == null) {
+			return false;
+		}
+
+		// The argument is not equal to the actual object if it is not a glib enhanced object
+		if (!isAnObjectThatImplementsGivenInterface(args[0], GlibEnhancedObjectMarker.class)) {
+			return false;
+		}
+
+		// The argument is not equal to the actual object if it is not a direct implementation of the actual interface
+		if (!isAnObjectThatImplementsGivenInterface(args[0], iface)) {
+			return false;
+		}
+
+		return ReflectionUtils.get(ReflectionUtils.get(args[0], "CGLIB$CALLBACK_0"), "val$targetSpec").equals(targetSpec);
+	}
+
+	private static boolean isAnObjectThatImplementsGivenInterface(Object object, Class<?> expectedType) {
+		return arrayContains(object.getClass().getInterfaces(), expectedType);
+	}
+
+	private static boolean arrayContains(Class<?>[] array, Class<?> valueToFind) {
+		for(Class<?> arrayValue: array) {
+			if(arrayValue.equals(valueToFind)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static final class ReflectionUtils {

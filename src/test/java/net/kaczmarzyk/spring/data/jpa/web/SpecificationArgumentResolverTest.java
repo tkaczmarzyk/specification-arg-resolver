@@ -171,12 +171,24 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     public void resolvesJoinContainerForAnnotatedInterface() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithCustomSpec_joinContainer", CustomSpecJoinContainer.class), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
+        QueryContext queryCtx = new WebRequestQueryContext(req);
+
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
         assertThat(resolved)
-            .isInstanceOf(CustomSpecJoinContainer.class); // TODO better assertions
+            .isInstanceOf(CustomSpecJoinContainer.class);
+
+        assertThat(innerSpecs(resolved))
+                .hasSize(2)
+                .contains(
+                        new Conjunction<>(
+                                new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{"fetch1"}, JoinType.LEFT, true),
+                                new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<>(queryCtx, new String[]{"fetch2"}, JoinType.INNER, true)
+                        ),
+                        new Like<>(queryCtx, "path1", "value1")
+                );
     }
 
     @Override

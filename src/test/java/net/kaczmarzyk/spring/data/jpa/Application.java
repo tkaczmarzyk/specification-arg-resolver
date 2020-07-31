@@ -16,12 +16,10 @@
 package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -37,23 +35,17 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
 @Configuration
 @ComponentScan(basePackages = "net.kaczmarzyk", excludeFilters = {
 		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithConfiguredConversionService.class }),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithSARConfiguredWithApplicationContext.class })
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = {
-				ApplicationWithConfiguredConversionService.class,
-				ApplicationWithConfiguredCache.class
-		})
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithSARConfiguredWithApplicationContext.class }),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithConfiguredCache.class })
 })
 @EnableJpaRepositories
 @EnableAutoConfiguration
 @EnableMBeanExport(registration = IGNORE_EXISTING)
 public class Application implements WebMvcConfigurer {
 	
-	@Autowired
-	AbstractApplicationContext applicationContext;
-
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
+		argumentResolvers.add(new SpecificationArgumentResolver());
 	}
 	
 }

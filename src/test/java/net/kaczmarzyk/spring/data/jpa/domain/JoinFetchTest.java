@@ -17,10 +17,10 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import nl.jqno.equalsverifier.EqualsVerifier;
-import nl.jqno.equalsverifier.Warning;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
 import net.kaczmarzyk.spring.data.jpa.Order;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
