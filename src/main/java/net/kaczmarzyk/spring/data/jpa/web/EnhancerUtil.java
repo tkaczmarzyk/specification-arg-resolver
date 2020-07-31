@@ -54,19 +54,19 @@ class EnhancerUtil {
 		}
 
 		// The argument is not equal to the actual object if it is not a glib enhanced object
-		if (!isAnObjectThatImplementsGivenInterface(args[0], GlibEnhancedObjectMarker.class)) {
+		if (!isAnObjectThatDirectImplementsGivenInterface(args[0], GlibEnhancedObjectMarker.class)) {
 			return false;
 		}
 
 		// The argument is not equal to the actual object if it is not a direct implementation of the actual interface
-		if (!isAnObjectThatImplementsGivenInterface(args[0], iface)) {
+		if (!isAnObjectThatDirectImplementsGivenInterface(args[0], iface)) {
 			return false;
 		}
 
 		return ReflectionUtils.get(ReflectionUtils.get(args[0], "CGLIB$CALLBACK_0"), "val$targetSpec").equals(targetSpec);
 	}
 
-	private static boolean isAnObjectThatImplementsGivenInterface(Object object, Class<?> expectedType) {
+	private static boolean isAnObjectThatDirectImplementsGivenInterface(Object object, Class<?> expectedType) {
 		return arrayContains(object.getClass().getInterfaces(), expectedType);
 	}
 
