@@ -34,16 +34,6 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
     SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
-    @Test(expected = InvalidPathVariableRequestedException.class)
-    public void throwsExceptionIfPathVariableNotPresent() throws Exception {
-    	 MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariable");
-         MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
-
-	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-	    resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-    }
-
     @Test
     public void buildsTheSpecUsingPathVariableFromControllerClass() throws Exception {
         MethodParameter param = testMethodParameter("testMethodUsingPathVariableFromClass");
@@ -54,6 +44,18 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
         assertThat(resolved).isEqualTo(new Like<>(ctx.queryContext(), "thePath", new String[] { "theCustomerIdValue" }));
+    }
+
+    @Test
+    public void testMethodUsingMultiPathVariableFromClass() throws Exception {
+    	MethodParameter param = testMethodParameter("testMethodUsingMultiPathVariableFromClass");
+    	MockWebRequest req = new MockWebRequest("/employees/theEmployeeIdValue/orders/theOrderIdValue");
+    	
+    	WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+    	
+    	Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+    	
+    	assertThat(resolved).isEqualTo(new Like<>(ctx.queryContext(), "thePath", new String[] { "theEmployeeIdValue" }));
     }
 
     @Test
@@ -80,12 +82,16 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
         assertThat(resolved).isEqualTo(new DateBetween<>(ctx.queryContext(), "thePath", new String[] { "2019-01-25", "2019-01-27" }, defaultConverter));
     }
 
-    @RequestMapping(path = "/customers/{customerId}")
+    @RequestMapping(path = {"/customers/{customerId}", "/employees/{employeeId}"})
     public static class TestController {
 
     	@RequestMapping(path = "/orders/{orderId}")
         public void testMethodUsingPathVariableFromClass(@Spec(path = "thePath", pathVars="customerId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
+
+    	@RequestMapping(path = "/orders/{orderId}")
+    	public void testMethodUsingMultiPathVariableFromClass(@Spec(path = "thePath", pathVars="employeeId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+    	}
 
     	@RequestMapping(path = "/orders/{orderId}")
         public void testMethodUsingPathVariableFromMethod(@Spec(path = "thePath", pathVars="orderId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
