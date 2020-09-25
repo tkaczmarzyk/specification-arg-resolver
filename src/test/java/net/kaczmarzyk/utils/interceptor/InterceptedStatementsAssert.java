@@ -15,10 +15,10 @@
  */
 package net.kaczmarzyk.utils.interceptor;
 
-import org.assertj.core.api.Assertions;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class InterceptedStatementsAssert {
 
@@ -37,7 +37,19 @@ public class InterceptedStatementsAssert {
 				.filter(statement -> statement.contains("SELECT") || statement.contains("select"))
 				.count();
 
-		Assertions.assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
+		assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
+
+		return this;
+	}
+
+	public InterceptedStatementsAssert hasJoins(int joins) {
+		long joinsCount = logs.stream()
+				.map(statement -> countNumberOfSqlClauseInStatement(statement, "join"))
+				.reduce((i, joinCounter) -> joinCounter += i)
+				.orElseThrow(() -> new IllegalStateException("No join clause was found!"));
+
+		assertThat(joinsCount)
+				.isEqualTo(joins);
 
 		return this;
 	}
@@ -50,7 +62,7 @@ public class InterceptedStatementsAssert {
 						return false;
 					}
 					int from = countNumberOfSqlClauseInStatement(statement, "from");
-					if(from != 1) {
+					if (from != 1) {
 						return false;
 					}
 
@@ -60,7 +72,7 @@ public class InterceptedStatementsAssert {
 				})
 				.count();
 
-		Assertions.assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
+		assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
 
 		return this;
 	}
@@ -69,13 +81,13 @@ public class InterceptedStatementsAssert {
 		int index = statement.indexOf(sqlClause);
 		int count = 0;
 
-		if(index!=-1) {
+		if (index != -1) {
 			count++;
 		}
 
 		while (index >= 0) {
 			index = statement.indexOf(sqlClause, index + 1);
-			if(index!=-1) {
+			if (index != -1) {
 				count++;
 			}
 		}

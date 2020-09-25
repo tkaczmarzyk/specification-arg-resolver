@@ -35,7 +35,7 @@ import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplit
  * @author Gerald Humphries
  * @author Jakub Radlica
  */
-public class JoinFetch<T> implements Specification<T> {
+public class JoinFetch<T> implements Specification<T>, Fake {
 
 	private static final long serialVersionUID = 1L;
 
