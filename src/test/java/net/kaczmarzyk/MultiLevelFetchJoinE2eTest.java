@@ -17,10 +17,12 @@ package net.kaczmarzyk;
 
 import net.kaczmarzyk.spring.data.jpa.*;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.NotEqual;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
 import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.core.AllOf;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +47,7 @@ import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
 import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -110,6 +113,30 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 				@JoinFetch(paths = "o.note") Specification<Customer> spec,
 				Pageable pageable) {
 			return customerRepo.findAll(spec, pageable);
+		}
+
+		@RequestMapping(value = "/findCustomersByOrderedItemTag_fetchOrdersWithTagsAndNotes")
+		@PostMapping
+		public Object findCustomersByOrderedItemTag(
+				@JoinFetch(paths = "orders", alias = "o")
+				@JoinFetch(paths = "o.tags", alias = "t")
+				@JoinFetch(paths = "o.note")
+				@Spec(path = "t.name", params = "tag", spec = Equal.class) Specification<Customer> spec) {
+			return customerRepo.findAll(spec, Sort.by("id")).stream()
+					.map(this::mapToCustomerWithOrdersWithTagsAndNotes)
+					.collect(toList());
+		}
+
+		@RequestMapping(value = "/findCustomersWithOrderedItemTaggedDifferentlyThan_fetchOrderWithTagsAndNotes")
+		@PostMapping
+		public Object findCustomersWithOrderedItemTaggedWithDifferentTagThan(
+				@JoinFetch(paths = "orders", alias = "o", joinType = JoinType.INNER)
+				@JoinFetch(paths = "o.tags", alias = "t", joinType = JoinType.INNER)
+				@JoinFetch(paths = "o.note")
+				@Spec(path = "t.name", params = "tag", spec = NotEqual.class) Specification<Customer> spec) {
+			return customerRepo.findAll(spec, Sort.by("id")).stream()
+					.map(this::mapToCustomerWithOrdersWithTagsAndNotes)
+					.collect(toList());
 		}
 
 		private CustomerDto mapToCustomerDto(Customer customer) {
@@ -301,7 +328,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[0].firstName").value("Homer"))
 				.andExpect(jsonPath("$[0].orders").isArray())
-
 				.andExpect(jsonPath("$[0].orders[0].itemName").value("Donuts"))
 				.andExpect(jsonPath("$[0].orders[0].tags").value("#homerApproved,#snacks"))
 				.andExpect(jsonPath("$[0].orders[0].notes").value("NoteDonuts"))
@@ -356,5 +382,58 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$.content[1]").doesNotExist());
 	}
 
+
+	@Test
+	public void shouldFindCustomersByOrderedItemTag_withFetchedOrdersWithTagsAndNotes() throws Exception {
+		HibernateStatementInterceptor.clearInterceptedStatements();
+
+		mockMvc.perform(post("/multilevel-join-fetch/findCustomersByOrderedItemTag_fetchOrdersWithTagsAndNotes")
+				.param("tag", "#fruits"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+
+			.andExpect(jsonPath("$[0].firstName").value("Marge"))
+			.andExpect(jsonPath("$[0].orders").isArray())
+			.andExpect(jsonPath("$[0].orders[0].itemName").value("Apple"))
+			.andExpect(jsonPath("$[0].orders[0].tags").value("#fruits"))
+			.andExpect(jsonPath("$[0].orders[0].notes").value("NoteApple"))
+
+			.andExpect(jsonPath("$[1]").doesNotExist());
+
+		assertThatInterceptedStatements()
+				.hasSelects(1);
+	}
+
+	@Test
+	public void shouldFindCustomersByOrderedItemWithTagDifferentThan_withFetchedOrdersWithTagsAndNotes() throws Exception {
+		HibernateStatementInterceptor.clearInterceptedStatements();
+
+		mockMvc.perform(post("/multilevel-join-fetch/findCustomersWithOrderedItemTaggedDifferentlyThan_fetchOrderWithTagsAndNotes")
+				.param("tag", "#fruits"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+
+			.andExpect(jsonPath("$[0]").exists())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[0].orders").isArray())
+			.andExpect(jsonPath("$[0].orders[0].itemName").value("Donuts"))
+			.andExpect(jsonPath("$[0].orders[0].tags").value("#homerApproved,#snacks"))
+			.andExpect(jsonPath("$[0].orders[0].notes").value("NoteDonuts"))
+			.andExpect(jsonPath("$[0].orders[1].itemName").value("Duff Beer"))
+			.andExpect(jsonPath("$[0].orders[1].tags").value("#homerApproved,#snacks"))
+			.andExpect(jsonPath("$[0].orders[1].notes").value("NoteDuff Beer"))
+
+			.andExpect(jsonPath("$[1]").exists())
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[1].orders").isArray())
+			.andExpect(jsonPath("$[1].orders[0].itemName").value("Pizza"))
+			.andExpect(jsonPath("$[1].orders[0].tags").value("#snacks"))
+			.andExpect(jsonPath("$[1].orders[0].notes").value("NotePizza"))
+
+			.andExpect(jsonPath("$[2]").doesNotExist());
+
+		assertThatInterceptedStatements()
+				.hasSelects(1);
+	}
 
 }

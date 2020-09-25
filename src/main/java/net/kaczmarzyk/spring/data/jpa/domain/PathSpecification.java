@@ -38,14 +38,14 @@ public abstract class PathSpecification<T> implements Specification<T> {
     	this.queryContext = queryContext;
         this.path = path;
     }
-    
+
     @SuppressWarnings("unchecked")
     protected <F> Path<F> path(Root<T> root) {
         Path<?> expr = null;
         for (String field : path.split("\\.")) {
             if (expr == null) {
-            	if (queryContext != null && queryContext.getEvaluated(field, root) != null) {
-            		expr = (Path<T>) queryContext.getEvaluated(field, root);
+            	if (queryContext != null && getEvaluatedPath(field, root) != null) {
+            		expr = (Path<T>) getEvaluatedPath(field, root);
             	} else {
             		expr = root.get(field);
             	}
@@ -55,6 +55,16 @@ public abstract class PathSpecification<T> implements Specification<T> {
         }
         return (Path<F>) expr;
     }
+
+	private Path<T> getEvaluatedPath(String field, Root<T> root) {
+		Path<T> evaluated = (Path<T>) queryContext.getEvaluated(field, root);
+
+		if(evaluated == null) {
+			return (Path<T>) queryContext.getEvaluatedJoinFetch(field);
+		}
+
+		return evaluated;
+	}
 
 	@Override
 	public int hashCode() {

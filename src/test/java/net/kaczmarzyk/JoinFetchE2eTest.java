@@ -18,14 +18,19 @@ package net.kaczmarzyk;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.In;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -49,13 +54,13 @@ public class JoinFetchE2eTest extends E2eTestBase {
 
 			return customerRepository.findAll(spec);
 		}
-		
+
 		@RequestMapping("/join-fetch/customers/not-distinct")
 		public Object findByFirstNameAndJoinFetchDistinctSetToFalse(
-				
+
 				@JoinFetch(paths = "badges", distinct = false)
 				@Spec(path = "firstName", spec = Equal.class) Specification<Customer> spec) {
-			
+
 			return customerRepository.findAll(spec);
 		}
 
@@ -67,6 +72,31 @@ public class JoinFetchE2eTest extends E2eTestBase {
 				Pageable pageable) {
 
 			return customerRepository.findAll(spec, pageable);
+		}
+
+		@JoinFetch(paths = "orders", alias = "o")
+		@Spec(path = "o.itemName", params = "orderIn", spec = In.class)
+		private interface OrderInSpecification extends Specification<Customer> {
+		}
+
+		@RequestMapping(value = "/join-fetch-interface/customers", params = { "orderIn" })
+		@ResponseBody
+		public Object findByOrderIn(OrderInSpecification spec) {
+			return customerRepository.findAll(spec, Sort.by("id"));
+		}
+
+		@RequestMapping(value = "/multi-join-fetch/customers", params = { "order", "badge" })
+		@ResponseBody
+		public Object findByOrdersAndBadges(
+
+				@JoinFetch(paths = "orders", alias = "o")
+				@JoinFetch(paths = "badges", alias = "b")
+				@Or({
+						@Spec(path = "o.itemName", params = "order", spec = Like.class),
+						@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
+				}) Specification<Customer> spec) {
+
+			return customerRepository.findAll(spec, Sort.by("id"));
 		}
 
 	}
@@ -81,18 +111,18 @@ public class JoinFetchE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1]").doesNotExist());
 	}
-	
+
 	@Test
 	public void createsNotDistinctQueryIfDistinctAttributeIsSetToFalse() throws Exception {
 		mockMvc.perform(get("/join-fetch/customers/not-distinct")
 				.param("firstName", "Homer")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Homer"))
-				.andExpect(jsonPath("$[2].firstName").value("Homer"))
-				.andExpect(jsonPath("$[3]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Homer"))
+			.andExpect(jsonPath("$[2].firstName").value("Homer"))
+			.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 
 	@Test
@@ -110,6 +140,30 @@ public class JoinFetchE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$.totalPages").value(5))
 			.andExpect(jsonPath("$.totalElements").value(5))
 			.andExpect(jsonPath("$.size").value(1));
+	}
+
+	@Test
+	public void resolvesJoinProperlyFromAnnotatedCustomInterface() throws Exception {
+		mockMvc.perform(get("/join-fetch-interface/customers")
+				.param("orderIn", "Pizza")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void filtersByAttributesOfMultipleJoins() throws Exception {
+		mockMvc.perform(get("/multi-join-fetch/customers")
+				.param("order", "Pizza")
+				.param("badge", "Troll Face")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
 }
