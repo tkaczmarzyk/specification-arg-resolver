@@ -42,14 +42,36 @@ public class InterceptedStatementsAssert {
 		return this;
 	}
 
-	public InterceptedStatementsAssert hasJoins(int joins) {
+	public InterceptedStatementsAssert hasJoins(int expectedNumberOfJoins) {
 		long joinsCount = logs.stream()
 				.map(statement -> countNumberOfSqlClauseInStatement(statement, "join"))
 				.reduce((i, joinCounter) -> joinCounter += i)
-				.orElseThrow(() -> new IllegalStateException("No join clause was found!"));
+				.orElse(0);
 
-		assertThat(joinsCount)
-				.isEqualTo(joins);
+		if (joinsCount != expectedNumberOfJoins) {
+			throw new AssertionError(
+					"Expected clause number of joins: " + expectedNumberOfJoins + ", actual: " + joinsCount
+			);
+		}
+
+		return this;
+	}
+
+	public InterceptedStatementsAssert hasOneClause(String clause) {
+		return hasClause(clause, 1);
+	}
+
+	public InterceptedStatementsAssert hasClause(String clause, int expectedNumberOfClauseOccurrences) {
+		long clauseOccurrenceCount = logs.stream()
+				.map(statement -> countNumberOfSqlClauseInStatement(statement, clause))
+				.reduce((i, joinCounter) -> joinCounter += i)
+				.orElse(0);
+
+		if (clauseOccurrenceCount != expectedNumberOfClauseOccurrences) {
+			throw new AssertionError(
+					"Expected clause '" + clause + "' occurrences: " + expectedNumberOfClauseOccurrences + ", actual: " + clauseOccurrenceCount
+			);
+		}
 
 		return this;
 	}

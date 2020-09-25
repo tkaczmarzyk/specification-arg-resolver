@@ -535,32 +535,34 @@ The same as in case of multi-level joins, annotations are processed sequentially
 
   Following combinations are forbidden:
   
-   * join path which use join fetch alias  
+   * join path which uses join fetch alias  
   
         ```java
          @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
          @PostMapping
          public Object findCustomers(
          	    @JoinFetch(paths = "orders", alias = "o")
+                // Wrong, 'o' defined in join fetch tried to be used in a regular join
          	    @Join(path = "o.tags", alias = "t")
                 @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
          	return repository.findAll(spec);
          }
         ```
-   * join fetch path which use join alias
+   * join fetch path which uses join alias
     
        ```java
         @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
         @PostMapping
         public Object findCustomers(
         	    @Join(path = "orders", alias = "o")
+                // Wrong, 'o' defined in a join tried to be used in join fetch
         	    @JoinFetch(paths = "o.tags", alias = "t")
                @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
         	return repository.findAll(spec);
         }
        ```
      
-      If the same alias are defined both for join and join fetch, the join alias will be used during specification resolving.
+      If the same alias are defined both for join and join fetch, the join fetch alias will be used during specification resolving.
       
        ```java
         @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
@@ -568,15 +570,15 @@ The same as in case of multi-level joins, annotations are processed sequentially
         public Object findCustomers(
                  @JoinFetch(paths = "orders", alias = "o")
                  @JoinFetch(paths = "o.tags", alias = "t")
-                 @Join(path = "orders", alias = "o")
-                 @Join(path = "o.tags", alias = "t")
-                 //'t' refers to third join - @Join(path = "o.tags", alias = "t")
+                 @Join(path = "orders", alias = "o") // will be omitted
+                 @Join(path = "o.tags", alias = "t") // will be omitted
+                 //'t' refers to second join - @JoinFetch(paths = "o.tags", alias = "t")
                  @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
          
              return repository.findAll(spec);
         }
        ```
-     Using join and join fetch on the same path should be avoided, otherwise the same table will be joined twice (`orders` and `tags` in above example).
+     Using join and join fetch on the same path should be avoided, otherwise the same table could be joined twice (`orders` and `tags` in above example).
      The above example has been described in following README to show what will happen if a join and join fetch will be defined with the same alias and should be treated as anti-pattern.
 
 Advanced HTTP parameter handling
