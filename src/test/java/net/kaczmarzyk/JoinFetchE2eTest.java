@@ -15,14 +15,14 @@
  */
 package net.kaczmarzyk;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.*;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +33,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
+import static java.util.stream.Collectors.toList;
+import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -90,13 +96,16 @@ public class JoinFetchE2eTest extends E2eTestBase {
 		public Object findByOrdersAndBadges(
 
 				@JoinFetch(paths = "orders", alias = "o")
+				@JoinFetch(paths = "o.tags", alias = "t")
 				@JoinFetch(paths = "badges", alias = "b")
 				@Or({
 						@Spec(path = "o.itemName", params = "order", spec = Like.class),
 						@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
 				}) Specification<Customer> spec) {
 
-			return customerRepository.findAll(spec, Sort.by("id"));
+			return customerRepository.findAll(spec, Sort.by("id")).stream()
+					.map(CustomerDto::from)
+					.collect(toList());
 		}
 
 	}
@@ -155,6 +164,8 @@ public class JoinFetchE2eTest extends E2eTestBase {
 
 	@Test
 	public void filtersByAttributesOfMultipleJoins() throws Exception {
+		HibernateStatementInterceptor.clearInterceptedStatements();
+
 		mockMvc.perform(get("/multi-join-fetch/customers")
 				.param("order", "Pizza")
 				.param("badge", "Troll Face")
@@ -164,6 +175,15 @@ public class JoinFetchE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1].firstName").value("Moe"))
 			.andExpect(jsonPath("$[2]").doesNotExist());
+
+		assertThatInterceptedStatements()
+				.hasSelects(1)
+				.hasJoins(4)
+				.hasOneClause(" left outer join badges ")
+				.hasOneClause(" left outer join orders ")
+				.hasOneClause(" left outer join orders_tags ")
+				.hasOneClause(" left outer join item_tags ");
+
 	}
 
 }

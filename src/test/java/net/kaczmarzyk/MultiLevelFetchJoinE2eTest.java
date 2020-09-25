@@ -18,11 +18,11 @@ package net.kaczmarzyk;
 import net.kaczmarzyk.spring.data.jpa.*;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.NotEqual;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
 import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.core.AllOf;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,9 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.criteria.JoinType;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -84,7 +82,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		public Object findAllWithoutFetchJoins(
 				@Spec(params = "ignoredParam", path = "notExistingAttribute", spec = Equal.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec).stream()
-					.map(this::mapToCustomerDto)
+					.map(CustomerDto::from)
 					.collect(toList());
 		}
 
@@ -145,24 +143,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 							order.getNote().getTitle()
 					)).sorted((o1, o2) -> StringUtils.compare(o1.itemName, o2.itemName)).collect(Collectors.toList())
 			);
-		}
-
-		class CustomerDto {
-			private String firstName;
-			private String tagOfFirstCustomerItem;
-
-			public CustomerDto(String firstName, String tagOfFirstCustomerItem) {
-				this.firstName = firstName;
-				this.tagOfFirstCustomerItem = tagOfFirstCustomerItem;
-			}
-
-			public String getFirstName() {
-				return firstName;
-			}
-
-			public String getTagOfFirstCustomerItem() {
-				return tagOfFirstCustomerItem;
-			}
 		}
 
 		class OrdersWithTagsAndNotes {
@@ -263,7 +243,13 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
-				.hasSelects(1);
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 8 additional SELECT queries.
+				.hasSelects(1)
+				.hasJoins(3)
+				.hasOneClause(" left outer join orders ")
+				.hasOneClause(" left outer join orders_tags ")
+				.hasOneClause(" left outer join item_tags ");
 	}
 
 	@Test
@@ -280,7 +266,13 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[3]").doesNotExist());
 
 		assertThatInterceptedStatements()
-				.hasSelects(1);
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 8 additional SELECT queries.
+				.hasSelects(1)
+				.hasJoins(3)
+				.hasOneClause(" inner join orders ")
+				.hasOneClause(" inner join orders_tags ")
+				.hasOneClause(" inner join item_tags ");
 	}
 
 	@Test
@@ -299,6 +291,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
+				// Test case shows example of N+1 SELECT problem
 				.hasSelects(10)
 				.hasSelectsFromSingleTableWithWhereClause(9);
 	}
@@ -344,6 +337,8 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 				.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 14 additional SELECT queries.
 				.hasSelects(1);
 	}
 
@@ -366,7 +361,14 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[1]").doesNotExist());
 
 		assertThatInterceptedStatements()
-				.hasSelects(1);
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 3 additional SELECT queries.
+				.hasSelects(1)
+				.hasJoins(4)
+				.hasOneClause(" left outer join orders ")
+				.hasOneClause(" left outer join orders_tags ")
+				.hasOneClause(" left outer join order_note ")
+				.hasOneClause(" left outer join item_tags ");
 	}
 
 	@Test
@@ -398,7 +400,15 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[2]").doesNotExist());
 
 		assertThatInterceptedStatements()
-				.hasSelects(1);
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 8 additional SELECT queries.
+				.hasSelects(1)
+				.hasJoins(4)
+				.hasOneClause(" inner join orders ")
+				.hasOneClause(" inner join orders_tags ")
+				.hasOneClause(" inner join item_tags ")
+				.hasOneClause(" left outer join order_note ");
+
 	}
 
 }
