@@ -42,6 +42,7 @@ import static javax.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
+import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -208,7 +209,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 	public void throwsNestedServletExceptionWhenJoinPathContainsJoinFetchAlias() throws Exception {
 		HibernateStatementInterceptor.clearInterceptedStatements();
 
-		ThrowableAssertions.assertThrows(
+		assertThrows(
 				NestedServletException.class,
 				() -> {
 					mockMvc.perform(get("/join-and-join-fetch/customers_joinPathContainingJoinFetchAlias")
@@ -224,7 +225,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 	public void throwsNestedServletExceptionWhenJoinFetchPathContainsJoinAlias() throws Exception {
 		HibernateStatementInterceptor.clearInterceptedStatements();
 
-		ThrowableAssertions.assertThrows(
+		assertThrows(
 				NestedServletException.class,
 				() -> {
 					mockMvc.perform(get("/join-and-join-fetch/customers_joinFetchPathContainingJoinAlias")
@@ -240,13 +241,13 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 		mockMvc.perform(get(url)
 				.param("tagName", "#snacks")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[0].tagOfFirstCustomerItem").value("#snacks"))
-				.andExpect(jsonPath("$[1].firstName").value("Bart"))
-				.andExpect(jsonPath("$[1].tagOfFirstCustomerItem").value("#snacks"))
-				.andExpect(jsonPath("$[2]").doesNotExist());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[0].tagOfFirstCustomerItem").value("#snacks"))
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[1].tagOfFirstCustomerItem").value("#snacks"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
 }
