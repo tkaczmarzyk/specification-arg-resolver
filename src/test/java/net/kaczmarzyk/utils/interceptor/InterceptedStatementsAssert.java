@@ -50,7 +50,7 @@ public class InterceptedStatementsAssert {
 
 		if (joinsCount != expectedNumberOfJoins) {
 			throw new AssertionError(
-					"Expected clause number of joins: " + expectedNumberOfJoins + ", actual: " + joinsCount
+					"Expected number of `join` clause: " + expectedNumberOfJoins + ", actual: " + joinsCount
 			);
 		}
 
