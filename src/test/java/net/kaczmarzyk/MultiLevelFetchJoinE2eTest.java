@@ -244,7 +244,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
-				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 8 additional SELECT queries.
 				.hasSelects(1)
 				.hasJoins(3)
 				.hasOneClause(" left outer join orders ")
@@ -267,7 +266,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
-				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 8 additional SELECT queries.
 				.hasSelects(1)
 				.hasJoins(3)
 				.hasOneClause(" inner join orders ")
@@ -291,7 +289,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
-				// Test case shows example of N+1 SELECT problem
+				// N+1 SELECT problem occurs because standard joins have been used
 				.hasSelects(10)
 				.hasSelectsFromSingleTableWithWhereClause(9);
 	}
@@ -338,7 +336,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
-				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 14 additional SELECT queries.
 				.hasSelects(1);
 	}
 
@@ -362,7 +359,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
-				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 3 additional SELECT queries.
 				.hasSelects(1)
 				.hasJoins(4)
 				.hasOneClause(" left outer join orders ")
@@ -401,7 +397,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
-				// If regular joins are used, additional queries are executed (N+1 problem). In this case, there would be 8 additional SELECT queries.
 				.hasSelects(1)
 				.hasJoins(4)
 				.hasOneClause(" inner join orders ")
