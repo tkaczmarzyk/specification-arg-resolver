@@ -59,7 +59,15 @@ public abstract class PathSpecification<T> implements Specification<T> {
 	private Path<T> getEvaluatedPath(String field, Root<T> root) {
 		Path<T> evaluated = (Path<T>) queryContext.getEvaluated(field, root);
 
-		// evaluated could be null if join with given alias has been not defined
+		/**
+		 * if join with given alias is not defined, evaluated variable has null value in this place.
+		 *
+		 * Example spec:
+		 *     @JoinFetch(paths = "orders", alias = "o")
+		 *     @Spec(path = "o.itemName", params = "itemName", spec = Equal.class)
+		 *     interface CustomersWithOrderedItemSpecification { }
+ 		 */
+
 		if(evaluated == null) {
 			return (Path<T>) queryContext.getEvaluatedJoinFetch(field);
 		}
