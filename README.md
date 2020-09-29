@@ -542,9 +542,9 @@ The same as in case of multi-level joins, annotations are processed sequentially
          @PostMapping
          public Object findCustomers(
          	    @JoinFetch(paths = "orders", alias = "o")
-                // Wrong, 'o' defined in join fetch tried to be used in a regular join
+        	    // Wrong, 'o' defined in join fetch tried to be used in a regular join
          	    @Join(path = "o.tags", alias = "t")
-                @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
          	return repository.findAll(spec);
          }
         ```
@@ -555,9 +555,9 @@ The same as in case of multi-level joins, annotations are processed sequentially
         @PostMapping
         public Object findCustomers(
         	    @Join(path = "orders", alias = "o")
-                // Wrong, 'o' defined in a join tried to be used in join fetch
+        	    // Wrong, 'o' defined in a join tried to be used in join fetch
         	    @JoinFetch(paths = "o.tags", alias = "t")
-               @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
         	return repository.findAll(spec);
         }
        ```
@@ -568,12 +568,12 @@ The same as in case of multi-level joins, annotations are processed sequentially
         @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
         @PostMapping
         public Object findCustomers(
-                 @JoinFetch(paths = "orders", alias = "o")
-                 @JoinFetch(paths = "o.tags", alias = "t")
-                 @Join(path = "orders", alias = "o")
-                 @Join(path = "o.tags", alias = "t")
-                 //'t' refers to third join - @Join(path = "o.tags", alias = "t")
-                 @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+        	    @JoinFetch(paths = "orders", alias = "o")
+        	    @JoinFetch(paths = "o.tags", alias = "t")
+        	    @Join(path = "orders", alias = "o")
+        	    @Join(path = "o.tags", alias = "t")
+        	    //'t' refers to third join - @Join(path = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
          
              return repository.findAll(spec);
         }
