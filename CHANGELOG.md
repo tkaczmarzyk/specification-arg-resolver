@@ -1,3 +1,25 @@
+v2.7.0 - UNRELEASED
+======
+* Added support for join fetch aliases in specification paths.
+
+  For example:
+  ```java
+  @RequestMapping(value = "/customers", params = { "orderedItemName" })
+  @ResponseBody
+  public Object findCustomersByOrderedItemName(
+  		@JoinFetch(paths = "orders", alias = "o")
+  		@Spec(path = "o.itemName", params = "orderedItemName", spec = Like.class)) Specification<Customer> spec) {
+  	return customerRepository.findAll(spec, Sort.by("id"));
+  }
+  ```
+  
+  Please remember that:
+  * Join fetch path can use only aliases of another fetch joins. 
+  * Join path can use only aliases of another joins. 
+
+  (see [README.md](README.md#join-fetch) for the details)
+  
+
 v2.6.1
 ======
 * fixed bug which caused invalid query to be created when multiple `@JoinFetch` annotations referenced the same alias

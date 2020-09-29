@@ -77,7 +77,7 @@ public class JoinE2eTest extends E2eTestBase {
 
 		@Join(path = "orders", alias = "o")
 		@Spec(path = "o.itemName", params = "orderIn", spec = In.class)
-		public interface OrderInSpecification extends Specification<Customer> {
+		private interface OrderInSpecification extends Specification<Customer> {
 		}
 
 		@RequestMapping(value = "/join/customers", params = { "orderIn" })
@@ -88,7 +88,7 @@ public class JoinE2eTest extends E2eTestBase {
 
 		@RequestMapping(value = "/multi-join/customers", params = { "order", "badge" })
 		@ResponseBody
-		public Object findByOrderAndOrders2(
+		public Object findByOrdersAndBadges(
 
 				@Joins({
 						@Join(path = "orders", alias = "o"),
