@@ -21,9 +21,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -37,7 +35,17 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 	private static final long serialVersionUID = 1L;
 
 	private Collection<Specification<T>> innerSpecs;
-	private boolean fakesInitialized = false;
+
+	/**
+	 * In case of paged search, method {@link #toPredicate(Root, CriteriaQuery, CriteriaBuilder)}
+	 * will be executed on the same object in two different contexts.
+	 *
+	 * The first time during standard search.
+	 * The second time during count(*) query which is executed for paging purposes.
+	 *
+	 * Fakes should be initialized in both.
+	 */
+	private Set<CriteriaQuery<?>> queriesWithInitializedFakes = new HashSet<>();
 
 	@SafeVarargs
 	public Conjunction(Specification<T>... innerSpecs) {
@@ -51,7 +59,7 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initializeFakes(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		if (!fakesInitialized) {
+		if (!queriesWithInitializedFakes.contains(query)) {
 			for (Specification<T> spec : innerSpecs) {
 				if (spec instanceof FakeSpecWrapper) {
 					((FakeSpecWrapper<T>) spec).initializeFakes(root, query, cb);
@@ -62,7 +70,7 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 				}
 			}
 		}
-		fakesInitialized = true;
+		queriesWithInitializedFakes.add(query);
 	}
 
 	@Override
