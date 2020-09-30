@@ -26,6 +26,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @author Jakub Radlica
+ */
 public class MultiLevelJoinE2eTest extends IntegrationTestBase {
 
 	@RestController
@@ -66,6 +70,17 @@ public class MultiLevelJoinE2eTest extends IntegrationTestBase {
 				@Spec(path = "t.name", params = "tag", spec = NotEqual.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec, Sort.by("id"));
 		}
+
+		@RequestMapping(value = "/findCustomersWithOrderedItemTaggedDifferentlyThan_withPagination")
+		@PostMapping
+		public Object findCustomersWithOrderedItemTaggedWithDifferentTagThan_withPagination(
+				@Join(path = "orders", alias = "o", type = JoinType.INNER)
+				@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+				@Spec(path = "t.name", params = "tag", spec = NotEqual.class) Specification<Customer> spec,
+				Pageable pageable) {
+			return customerRepo.findAll(spec, pageable);
+		}
+
 	}
 
 	@Before
@@ -114,6 +129,23 @@ public class MultiLevelJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[0].firstName").value("Homer"))
 			.andExpect(jsonPath("$[1].firstName").value("Marge"))
 			.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void shouldFindCustomersWithOrderedItemTaggedDifferentlyThanSnacks_withPagination() throws Exception {
+		mockMvc.perform(post("/findCustomersWithOrderedItemTaggedDifferentlyThan_withPagination")
+				.param("tag", "#snacks")
+				.param("page", "0")
+				.param("size", "2")
+				.param("sort", "id"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.pageable").exists())
+			.andExpect(jsonPath("$.pageable.sort.sorted").value("true"))
+			.andExpect(jsonPath("$.pageable.pageNumber").value("0"))
+			.andExpect(jsonPath("$.pageable.pageSize").value("2"))
+			.andExpect(jsonPath("$.content[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$.content[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$.content[2]").doesNotExist());
 	}
 
 }

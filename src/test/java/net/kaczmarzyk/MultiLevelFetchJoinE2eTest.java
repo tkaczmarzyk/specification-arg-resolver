@@ -25,6 +25,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +49,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @author Jakub Radlica
+ */
 public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 	@RestController
@@ -95,6 +100,16 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			return customerRepo.findAll(spec, Sort.by("id")).stream()
 					.map(this::mapToCustomerWithOrdersWithTagsAndNotes)
 					.collect(toList());
+		}
+
+		@RequestMapping(value = "/findAllCustomersFetchOrdersWithTagsAndNotes_withPagination")
+		@PostMapping
+		public Object findAllCustomersFetchOrdersWithTagsAndNotes_withPagination(
+				@JoinFetch(paths = "orders", alias = "o")
+				@JoinFetch(paths = "o.tags")
+				@JoinFetch(paths = "o.note") Specification<Customer> spec,
+				Pageable pageable) {
+			return customerRepo.findAll(spec, pageable);
 		}
 
 		private CustomerDto mapToCustomerDto(Customer customer) {
@@ -319,6 +334,26 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 		assertThatInterceptedStatements()
 				.hasSelects(1);
+	}
+
+	@Test
+	public void shouldFindCustomersWithFetchedOrderWithTagsAndNotes_withPagination() throws Exception {
+		mockMvc.perform(post("/multilevel-join-fetch/findAllCustomersFetchOrdersWithTagsAndNotes_withPagination")
+				.param("tag", "#snacks")
+				.param("page", "0")
+				.param("size", "1")
+				.param("sort", "id"))
+			.andExpect(status().isOk())
+
+			.andExpect(jsonPath("$.pageable").exists())
+			.andExpect(jsonPath("$.pageable.sort.sorted").value("true"))
+			.andExpect(jsonPath("$.pageable.pageNumber").value("0"))
+			.andExpect(jsonPath("$.pageable.pageSize").value("1"))
+
+			.andExpect(jsonPath("$.content[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$.content[0].orders").isArray())
+
+			.andExpect(jsonPath("$.content[1]").doesNotExist());
 	}
 
 
