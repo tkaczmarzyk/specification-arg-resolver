@@ -19,7 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,7 +28,6 @@ import java.util.Collection;
 
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test cases:
@@ -130,14 +128,14 @@ public class AnnotatedConjunctionSpecInterfaceArgumentResolverTest extends Annot
 		assertThat(innerSpecs)
 				.hasSize(3)
 				.containsOnly(
-						new Conjunction<>(
+						new Conjunction<Object>(
 								new Disjunction<>(
 										new EmptyResultOnTypeMismatch<>(equal( ctx, "gender", "MALE")),
 										new EmptyResultOnTypeMismatch<>(equal(ctx, "lastName", "Simpson"))
 								),
 								new EmptyResultOnTypeMismatch<>(in(ctx, "registrationDate", "2014-03-25", "2014-03-20"))
 						),
-						new Conjunction<>(new Disjunction<>(new EmptyResultOnTypeMismatch<>(equal(ctx, "firstName", "Homer")))),
+						new Conjunction<Object>(new Disjunction<>(new EmptyResultOnTypeMismatch<>(equal(ctx, "firstName", "Homer")))),
 						new Like<>(ctx.queryContext(), "nickName", "Hom")
 				);
 	}

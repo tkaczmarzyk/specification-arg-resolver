@@ -113,6 +113,18 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 				LastNameOrNickNameAndGenderOrFirstNameSpec spec) {
 			return customerRepo.findAll(spec);
 		}
+		
+		// TC-6. interface with @Or spec and Multi pathVars
+		@RequestMapping(value = {"/multi-anno-iface-or/{nickName}/customersByLastNameFilterMultiPathVars",
+				"/multi-second-anno-iface-or/{lastName}/customersByLastNameFilterMultiPathVars"})
+		@ResponseBody
+		public List<Customer> getCustomersByLastNameFilterMultiPathVars(
+				@Or({
+					@Spec(path = "nickName", pathVars = "nickName", spec = Equal.class),
+					@Spec(path = "lastName", pathVars = "lastName", spec = Equal.class)
+				}) GenderOrFirstNameSpec spec) {
+			return customerRepo.findAll(spec);
+		}
 
 	}
 
@@ -190,6 +202,31 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
 				.andExpect(jsonPath("$[5]").doesNotExist());
+	}
+	
+	@Test // TC-6.1 interface with @Or spec with multi path vars (first path)
+	public void filtersAccordingToInterfaceWithOrMultiPathVars_firstPath() throws Exception {
+		mockMvc.perform(get("/multi-anno-iface-or/Homie/customersByLastNameFilterMultiPathVars")
+				.param("firstName", "Homer")
+				.param("gender", "FEMALE")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test // TC-6.2 interface with @Or spec with multi path vars (second path)
+	public void filtersAccordingToInterfaceWithOrMultiPathVars_secondPath() throws Exception {
+		mockMvc.perform(get("/multi-second-anno-iface-or/Simpson/customersByLastNameFilterMultiPathVars")
+				.param("firstName", "Homer")
+				.param("gender", "FEMALE")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Lisa')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
+				.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 
 }

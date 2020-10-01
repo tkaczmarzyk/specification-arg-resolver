@@ -71,7 +71,7 @@ public class WebRequestProcessingContext {
 		if (value != null) {
 			return value;
 		} else {
-			throw new InvalidPathVariableRequestedException(pathVariableName);
+			return "";
 		}
 	}
 
@@ -82,17 +82,17 @@ public class WebRequestProcessingContext {
 			Class<?> controllerClass = methodParameter.getContainingClass();
 			if (controllerClass.getAnnotation(RequestMapping.class) != null) {
 				RequestMapping controllerMapping = controllerClass.getAnnotation(RequestMapping.class);
-				pathPattern = firstOf(controllerMapping.value(), controllerMapping.path());
+				pathPattern = getPathFromValueOrPath(controllerMapping.value(), controllerMapping.path());
 			}
 			
 			String methodPathPattern = null;
 			
 			if (methodParameter.hasMethodAnnotation(RequestMapping.class)) {
 				RequestMapping methodMapping = methodParameter.getMethodAnnotation(RequestMapping.class);
-				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
+				methodPathPattern = getPathFromValueOrPath(methodMapping.value(), methodMapping.path());
 			} else if (methodParameter.hasMethodAnnotation(GetMapping.class)) {
 				GetMapping methodMapping = methodParameter.getMethodAnnotation(GetMapping.class);
-				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
+				methodPathPattern = getPathFromValueOrPath(methodMapping.value(), methodMapping.path());
 			}
 			
 			if (methodPathPattern != null) {
@@ -105,13 +105,43 @@ public class WebRequestProcessingContext {
 		return pathPattern;
 	}
 
-	private String firstOf(String[] array1, String[] array2) {
-		if (array1.length > 0) {
-			return array1[0];
-		} else if (array2.length > 0) {
-			return array2[0];
+	private String getPathFromValueOrPath(String[] value, String[] path) {
+		if (value.length > 0) {
+			return getPathMatchingRequestUrl(value);
+		} else if (path.length > 0) {
+			return getPathMatchingRequestUrl(path);
 		}
 		return null;
+	}
+
+	private String getPathMatchingRequestUrl(String[] paths) {
+		if (paths.length == 1) {
+			return paths[0];
+		}
+		String actualPath = actualWebPath();
+		int index = 0;
+		int matches = 0;
+		for (int i = 0; i < paths.length; i++) {
+			int pairs = countPairs(paths[i], actualPath);
+			if (pairs > matches) {
+				index = i;
+				matches = pairs;
+			}
+		}
+		return paths[index];
+	}
+
+	private int countPairs(String s1, String s2) {
+		int count = 0;
+		int minLength = s1.length() < s2.length() ? s1.length() : s2.length();
+		for (int i = 0; i < minLength; i++) {
+			if (s1.charAt(i) == s2.charAt(i)) {
+				count++;
+			} else {
+				break;
+			}
+		}
+		return count;
 	}
 
 	private String actualWebPath() {

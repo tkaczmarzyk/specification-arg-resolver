@@ -15,9 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,27 +24,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.lang.reflect.Executable;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * @author Tomasz Kaczmarzyk
  */
 public class WebRequestProcessingContextTest {
 	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-	
 	@Test
-	public void throwsExceptionIfPathVariableDoesntExist() {
+	public void returnEmptyValueIfPathVariableDoesntExist() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 		
-		thrown.expect(InvalidPathVariableRequestedException.class);
-		thrown.expectMessage("Requested path variable {notExisting} is not present in Controller request mapping annotations");
-		
-		context.getPathVariableValue("notExisting");
+		assertThat(context.getPathVariableValue("notExisting")).isEqualTo("");
 	}
-	
+
 	@Test
 	public void resolvesPathVariableValue_requestMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
@@ -54,6 +45,28 @@ public class WebRequestProcessingContextTest {
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 		
 		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
+		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+	}
+
+	@Test
+	public void resolvesPathVariableValue_requestMapping_multi_paths_first() {
+		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		WebRequestProcessingContext context = new WebRequestProcessingContext(
+				testMethodParameter("testMethodUsingPathVariable_requestMapping_multi_paths", TestController.class), req);
+		
+		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
+		assertThat(context.getPathVariableValue("employeeId")).isEqualTo("");
+		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+	}
+	
+	@Test
+	public void resolvesPathVariableValue_requestMapping_multi_paths_Second() {
+		MockWebRequest req = new MockWebRequest("/employees/777/orders/99");
+		WebRequestProcessingContext context = new WebRequestProcessingContext(
+				testMethodParameter("testMethodUsingPathVariable_requestMapping_multi_paths", TestController.class), req);
+		
+		assertThat(context.getPathVariableValue("employeeId")).isEqualTo("777");
+		assertThat(context.getPathVariableValue("customerId")).isEqualTo("");
 		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
 	}
 	
@@ -131,6 +144,10 @@ public class WebRequestProcessingContextTest {
 		
 		@RequestMapping(path = "/customers/{customerId}/orders/{orderId}")
 		public void testMethodUsingPathVariable_requestMapping_path(Specification<Object> spec) {
+		}
+
+		@RequestMapping(path = {"/customers/{customerId}/orders/{orderId}", "/employees/{employeeId}/orders/{orderId}"})
+		public void testMethodUsingPathVariable_requestMapping_multi_paths(Specification<Object> spec) {
 		}
 		
 		@RequestMapping(path = "/customers/{customerId:.*}/orders/{orderId:[0-9]+}")
