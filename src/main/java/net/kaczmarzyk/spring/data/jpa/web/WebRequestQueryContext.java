@@ -33,11 +33,12 @@ public class WebRequestQueryContext implements QueryContext {
 
 	private static final String ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY";
 	private static final String JOIN_FETCH_ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY_JOIN_FETCH";
+        private static final String ROOT_CACHE_ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY_ROOT_CACHE";
 
 	private HashMap<String, Function<Root<?>, Join<?, ?>>> contextMap;
 	private HashMap<String, Fetch<?, ?>> evaluatedJoinFetch;
 
-	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache = new HashMap<>();
+	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache;
 
 	public WebRequestQueryContext(NativeWebRequest request) {
 		this.contextMap = (HashMap<String, Function<Root<?>, Join<?, ?>>>) request.getAttribute(ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
@@ -50,6 +51,13 @@ public class WebRequestQueryContext implements QueryContext {
 		if (this.evaluatedJoinFetch == null) {
 			this.evaluatedJoinFetch = new HashMap<>();
 			request.setAttribute(JOIN_FETCH_ATTRIBUTE_KEY, evaluatedJoinFetch, NativeWebRequest.SCOPE_REQUEST);
+		}
+                
+                this.rootCache = (Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>>) request.getAttribute(ROOT_CACHE_ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
+
+		if (this.rootCache == null) {
+			this.rootCache = new HashMap<>();
+			request.setAttribute(ROOT_CACHE_ATTRIBUTE_KEY, rootCache, NativeWebRequest.SCOPE_REQUEST);
 		}
 	}
 
