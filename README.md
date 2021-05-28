@@ -26,6 +26,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
+   * [Jsonn Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
@@ -740,13 +741,13 @@ This behaviour has changed in version `0.9.0` (exception was the default value i
 Path variable support
 ---------------------
 
-Although in pure RESTful API this feature should not be needed, it sometimes might be useful to use values from path variables. Path variables are uri fragments resolvable with Spring's `@PathVariable` annotation. You can refer to them by using `pathVars` property of `@Spec` (instead of `params` property). For example:
+Although in pure RESTful API this feature should not be needed, it sometimes might be useful to use values from path variables. Path variables are uri fragments resolvable with Spring's `@PathVariable` annotation. You should specify `paramType` with value `ParamType.PATH` (by default it set as `ParamType.QUERY`). For example:
 
   ```java
   @RequestMapping("/customers/{customerLastName}")
   @ResponseBody
   public Object findNotDeletedCustomersByFirstName(
-                       @Spec(path = "lastName", pathVars = "customerLastName", spec=Equal.class) Specification<Customer> spec) {
+                       @Spec(path = "lastName", params = "customerLastName", paramType = ParamType.PATH, spec=Equal.class) Specification<Customer> spec) {
 
     return repository.findAll(spec);
   }
@@ -760,11 +761,90 @@ Basic regular expressions are supported for path variable matching. All patterns
 @RequestMapping(value = "/pathVar/customers/{customerId:[0-9]+}")
 @ResponseBody
 public Object findById(
-  @Spec(path = "id", pathVars = "customerId", spec = Equal.class) Specification<Customer> spec) {
+  @Spec(path = "id", params = "customerId", paramType = ParamType.PATH, spec = Equal.class) Specification<Customer> spec) {
 
   return customerRepo.findAll(spec);
 }
 ```
+
+Json request body support
+---------------------
+
+Also, you can specify value for specification in json request body. It might be useful when you use large number of filters for request because request url limited in size. Need specify `paramType` with value `ParamType.BODY` (by default it set as `ParamType.QUERY`). For example:
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByLastNameAndAge(
+                        @And({
+                            @Spec(path = "lastName", params = "customerLastName", paramType = ParamType.BODY, spec = Equal.class),
+                            @Spec(path = "age", params = "castomerAge", paramType = ParamType.BODY, spec = Equal.class)
+                        }) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "lastName": "Simpson",
+  "age": 18
+}
+```
+as `select c from Customers c where c.lastName = 'Simpson' and c.age >= 18`
+
+Nested object suppots in json. You should specify full path to node from root element dividing nodes by `.` 
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByLastNameAndGender(
+                        @And({
+                            @Spec(path = "lastName", params = "filters.customer.lastName", paramType = ParamType.BODY, spec = Equal.class),
+                            @Spec(path = "gender", params = "filters.gender", paramType = ParamType.BODY, spec = Equal.class)
+                        }) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "filters": {
+    "customer": {
+      "lastName": "Simpson"
+    },
+    "gender": "MALE"
+  }
+}
+```
+as `select c from Customers c where c.lastName = 'Simpson' and c.gender = 'MALE'`
+
+For multiple values you can use array as result node in json body. For example:
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByGenderIn(
+                    @Spec(path = "lastName", params = "filters.genders", paramType = ParamType.BODY, spec = IN.class) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "filters": {
+    "genders": ["MALE", "FEMALE"]
+  }
+}
+```
+as `select c from Customers c where c.gender in ('MALE', 'FEMALE')`
+
+<b>!!!ATTENTION:</b> Array cannot be root or middle json node.
 
 Type conversions for HTTP parameters
 -------------------
