@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
+import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.annotation.ElementType;
@@ -34,10 +35,19 @@ public @interface Spec {
     String[] params() default {};
 
     /**
+     * Attribute determines where to get the parameter values from
+     */
+    ParamType paramType() default ParamType.QUERY;
+
+    /**
      * Character used to param delimitation. Param delimitation is skipped when separator has a 0 value.
      */
     char paramSeparator() default 0;
 
+    /**
+     * @deprecated Use {@link #params()} and {@link #paramType()} with value {@link ParamType#PATH}
+     */
+    @Deprecated
     String[] pathVars() default {};
     
     String[] config() default {};
