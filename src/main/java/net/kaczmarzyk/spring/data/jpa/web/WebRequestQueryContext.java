@@ -24,6 +24,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -66,6 +67,12 @@ public class WebRequestQueryContext implements QueryContext {
 		Function<Root<?>, Join<?, ?>> value = contextMap.get(key);
 
 		if (value == null) {
+                        Optional<? extends Join<?, ?>> opJoin = root.getJoins().stream().filter(p -> p.getAlias() != null && p.getAlias().equals(key)).findFirst();
+                        if(opJoin.isPresent()){
+                            Join<?, ?> join = opJoin.get();
+                            putLazyVal(key, (r) -> join);
+                            return join;
+                        }
 			return null;
 		}
 
