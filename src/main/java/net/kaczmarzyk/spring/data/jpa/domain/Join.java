@@ -51,8 +51,7 @@ public class Join<T> implements Specification<T>, Fake {
 		query.distinct(distinctQuery);
 
 		if (!pathToJoinContainsAlias(pathToJoinOn)) {
-                        javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(alias, root);
-                        if(evaluated == null) {
+                        if(!queryContext.existsJoin(alias, root)) {
                             queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
                         }
 		} else {

@@ -26,6 +26,8 @@ import java.util.function.Function;
  * @author Tomasz Kaczmarzyk
  */
 public interface QueryContext {
+    
+        boolean existsJoin(String key, Root<?> root);
 
 	Join<?, ?> getEvaluated(String key, Root<?> root);
 	
