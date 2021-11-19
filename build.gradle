@@ -1,0 +1,163 @@
+buildscript {
+    ext {
+        springBootVersion = "2.5.6"
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version "$springBootVersion"
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.productmadness.versioning' version '0.1.0'
+    id 'com.jfrog.artifactory' version '4.21.0'
+    id 'maven-publish'
+    id 'java-library'
+    id 'jacoco'
+}
+apply from: "versioning.gradle"
+
+group = 'com.productmadness'
+sourceCompatibility = '11'
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+java {
+    withSourcesJar()
+}
+
+configurations {
+    checkstyleApi {
+        transitive false
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "${artifactory_context_url}/${artifactory_libs_repo_key}"
+        credentials {
+            username "${artifactory_user}"
+            password "${artifactory_password}"
+        }
+    }
+    mavenLocal()
+}
+
+ext {
+    isArtifactoryEnabled = project.hasProperty('artifactory')
+
+    findbugsVersion = "3.0.2"
+    javaxPersistenceVersion = "1.0.2.Final"
+}
+
+dependencies {
+
+    implementation 'org.springframework:spring-web'
+    implementation 'org.springframework.data:spring-data-jpa'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'javax.servlet:javax.servlet-api'
+    implementation "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:$javaxPersistenceVersion"
+
+    implementation "com.google.code.findbugs:jsr305:$findbugsVersion"
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'com.h2database:h2'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+    testImplementation 'com.fasterxml.jackson.core:jackson-core'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileJava {
+    dependsOn pullVersion
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+if (isArtifactoryEnabled) {
+    artifactory {
+        contextUrl = "${artifactory_context_url}"
+        publish {
+            repository {
+                repoKey = "${artifactory_libs_repo_key}"
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+                maven = true
+            }
+            defaults {
+                publications('mavenJava')
+                publishArtifacts = true
+                publishBuildInfo = false
+            }
+        }
+    }
+}
+
+if (!isArtifactoryEnabled) {
+    build.finalizedBy(publishToMavenLocal)
+}
+
+def qualityGateExcludeList = [
+        '**/domain/**',
+]
+
+jacocoTestReport {
+    dependsOn test
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: qualityGateExcludeList)
+        }))
+    }
+
+    reports {
+        xml.enabled = true
+        csv.enabled false
+        html.destination file("${buildDir}/reports/jacoco/jacocoHtml")
+    }
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: qualityGateExcludeList)
+        }))
+    }
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.89
+                counter = 'LINE'
+            }
+        }
+
+        rule {
+            limit {
+                minimum = 0.85
+                counter = 'BRANCH'
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification

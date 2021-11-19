@@ -24,8 +24,8 @@ import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -34,8 +34,8 @@ import java.util.Collection;
 
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 
@@ -146,7 +146,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 	NativeWebRequest req = mock(NativeWebRequest.class);
 	QueryContext queryCtx = new WebRequestQueryContext(req);
 
-	@Before
+	@BeforeEach
 	public void init() {
 		req = nativeWebRequest()
 				.withParameterValues("deleted", "false")

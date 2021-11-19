@@ -16,8 +16,8 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import net.kaczmarzyk.spring.data.jpa.Gender;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
 
@@ -39,7 +39,7 @@ public class ConverterFallbackMechanismTest {
 	ConversionService conversionService = mock(ConversionService.class);
 	Converter converter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, conversionService);
 	
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		Mockito.reset(conversionService);
 	}

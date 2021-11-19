@@ -22,6 +22,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Executable;
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 
 
@@ -58,14 +59,14 @@ public abstract class ResolverTestBase {
 
 	protected Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "val$targetSpec");
+				ReflectionUtils.get(Proxy.getInvocationHandler(resolvedSpec), "targetSpec");
 
 		return ReflectionUtils.get(resolvedConjunction, "innerSpecs");
 	}
 
 	protected Collection<Specification<Object>> innerSpecsFromDisjunction(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Disjunction<Object> resolvedDisjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "val$targetSpec");
+				ReflectionUtils.get(Proxy.getInvocationHandler(resolvedSpec), "targetSpec");
 
 		return ReflectionUtils.get(resolvedDisjunction, "innerSpecs");
 	}

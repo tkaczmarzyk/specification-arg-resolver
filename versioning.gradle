@@ -1,0 +1,14 @@
+versioning {
+    tagPrefix "v"
+    keywords {
+        major "[major]"
+        minor "[feature]", "[minor]"
+        patch "[bug]", "[patch]"
+    }
+}
+
+version = versioning.name()
+
+task printVersion {
+    print project.version
+}

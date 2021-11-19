@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.springframework.data.jpa.domain.Specification;
 

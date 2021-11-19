@@ -15,17 +15,20 @@
  */
 package net.kaczmarzyk;
 
-import net.kaczmarzyk.spring.data.jpa.*;
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.ItemTag;
+import net.kaczmarzyk.spring.data.jpa.ItemTagRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,10 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.criteria.JoinType;
-
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -196,7 +196,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		}
 	}
 
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		doInNewTransaction(() -> {
 			ItemTag homerApprovedTag = itemTag("#homerApproved").build(em);
@@ -227,7 +227,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 	@Autowired
 	ItemTagRepository itemTagRepository;
 
-	@After
+	@AfterEach
 	public void cleanupDb() {
 		doInNewTransaction(() -> {
 			customerRepo.deleteAll();

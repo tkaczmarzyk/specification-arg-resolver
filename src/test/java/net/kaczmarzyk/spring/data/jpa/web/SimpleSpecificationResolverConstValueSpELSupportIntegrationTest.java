@@ -21,8 +21,8 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.MethodParameter;
@@ -45,7 +45,7 @@ public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest ext
 	
 	SimpleSpecificationResolver resolver;
 	
-	@Before
+	@BeforeEach
 	public void initializeResolver() {
 		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
 	}

@@ -20,13 +20,15 @@ import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static net.kaczmarzyk.spring.data.jpa.Gender.*;
+import static net.kaczmarzyk.spring.data.jpa.Gender.FEMALE;
+import static net.kaczmarzyk.spring.data.jpa.Gender.MALE;
+import static net.kaczmarzyk.spring.data.jpa.Gender.OTHER;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -38,7 +40,7 @@ public class NotEqualTest extends IntegrationTestBase {
 	protected Customer margeSimpson;
 	protected Customer joeQuimby;
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson")
 				.gender(Gender.MALE)
@@ -78,11 +80,7 @@ public class NotEqualTest extends IntegrationTestBase {
 	public void rejectsNotExistingEnumConstantName() {
 		NotEqual<Customer> genderRobot = notEqualSpec("gender", "ROBOT");
 
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		expectedException.expectCause(CoreMatchers.<IllegalArgumentException>instanceOf(IllegalArgumentException.class));
-		expectedException.expectMessage("could not find value ROBOT for enum class Gender");
-
-		customerRepo.findAll(genderRobot);
+		assertThrows(InvalidDataAccessApiUsageException.class, () -> customerRepo.findAll(genderRobot));
 	}
 
 	@Test

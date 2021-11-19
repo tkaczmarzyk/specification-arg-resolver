@@ -21,8 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -69,7 +69,7 @@ public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 	    }
 	}
 	
-	@Before
+	@BeforeEach
 	public void persistTestData() {
 		em.persist(new Movie("Bart's Not Dead",
 				asList(new Person("Bart Simpson"), new Person("Homer Simpson")),

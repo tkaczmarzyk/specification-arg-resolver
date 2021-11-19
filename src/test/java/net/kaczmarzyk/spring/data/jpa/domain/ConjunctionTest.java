@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.*;
 import java.text.ParseException;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -36,7 +36,7 @@ public class ConjunctionTest extends IntegrationTestBase {
     Customer moeSzyslak;
     Customer nedFlanders;
     
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 15).street("Evergreen Terrace").build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 20).street("Evergreen Terrace").build(em);

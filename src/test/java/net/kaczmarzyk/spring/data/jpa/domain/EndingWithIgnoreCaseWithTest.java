@@ -17,11 +17,12 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -35,7 +36,7 @@ public class EndingWithIgnoreCaseWithTest extends IntegrationTestBase {
 	Customer margeSimpson;
 	Customer moeSzyslak;
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
 		margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
@@ -66,13 +67,13 @@ public class EndingWithIgnoreCaseWithTest extends IntegrationTestBase {
 		assertThat(result).hasSize(0);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void rejectsMissingArgument() {
-		new EndingWithIgnoreCase<>(queryCtx, "path", new String[] {});
+		assertThrows(IllegalArgumentException.class, () -> new EndingWithIgnoreCase<>(queryCtx, "path", new String[] {}));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void rejectsInvalidNumberOfArguments() {
-		new EndingWithIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" });
+		assertThrows(IllegalArgumentException.class, () -> new EndingWithIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" }));
 	}
 }

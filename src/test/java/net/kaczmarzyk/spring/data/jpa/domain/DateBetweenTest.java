@@ -19,14 +19,15 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -38,7 +39,7 @@ public class DateBetweenTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer moeSzyslak;
     
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 07).build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 12).build(em);
@@ -73,13 +74,15 @@ public class DateBetweenTest extends IntegrationTestBase {
             .containsOnly(margeSimpson);
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsTooFewArguments() throws ParseException {
-        new DateBetween<>(queryCtx, "path", new String[] { "2014-03-10" }, defaultConverter);
+        assertThrows(IllegalArgumentException.class,
+                () -> new DateBetween<>(queryCtx, "path", new String[] { "2014-03-10" }, defaultConverter));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsTooManyArguments() throws ParseException {
-        new DateBetween<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
+        assertThrows(IllegalArgumentException.class,
+                () -> new DateBetween<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter));
     }
 }

@@ -102,13 +102,13 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 			if (Specification.class == parameter.getParameterType()) {
 				return firstSpecification;
 			} else {
-				return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), firstSpecification);
+				return EnhancerUtil.wrapWithInterfaceImplementation(parameter.getParameterType(), firstSpecification);
 			}
 		}
 
 		Specification<Object> spec = new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(specs);
 
-		return EnhancerUtil.wrapWithIfaceImplementation(parameter.getParameterType(), spec);
+		return EnhancerUtil.wrapWithInterfaceImplementation(parameter.getParameterType(), spec);
 	}
 
 	private List<Specification<Object>> resolveSpec(WebRequestProcessingContext context) throws Exception {

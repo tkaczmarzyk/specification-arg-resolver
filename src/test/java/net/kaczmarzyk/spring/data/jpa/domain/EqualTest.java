@@ -20,16 +20,15 @@ import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -43,7 +42,7 @@ public class EqualTest extends IntegrationTestBase {
     protected Customer moeSzyslak;
     protected Customer joeQuimby;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
         margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);
@@ -70,10 +69,7 @@ public class EqualTest extends IntegrationTestBase {
     @Test
     public void rejectsNotExistingEnumConstantName() {
         Equal<Customer> genderRobot = new Equal<>(queryCtx, "gender", new String[] { "ROBOT" }, defaultConverter);
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("could not find value ROBOT for enum class Gender");
-        customerRepo.findAll(genderRobot);
+        assertThrows(InvalidDataAccessApiUsageException.class, () ->customerRepo.findAll(genderRobot));
     }
     
     @Test
@@ -171,12 +167,5 @@ public class EqualTest extends IntegrationTestBase {
     	Equal<Customer> homerWeightDouble = new Equal<>(queryCtx, "weightDouble", new String[] { String.valueOf(homerSimpson.getWeightDouble()) }, defaultConverter);
     	assertFilterMembers(homerWeightDouble, homerSimpson);
     }
-    
-    @Ignore
-    @Test
-    // this test should work, but fails, probabaly because of how floats are compared by the underlying database.
-    public void filtersByFloat() {
-    	Equal<Customer> homerWeightFloat = new Equal<>(queryCtx, "weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) }, defaultConverter);
-    	assertFilterMembers(homerWeightFloat, homerSimpson);
-    }
+
 }

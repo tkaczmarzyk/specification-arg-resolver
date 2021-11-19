@@ -20,8 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
 import net.kaczmarzyk.spring.data.jpa.Order;
 import org.hibernate.Hibernate;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 
@@ -33,8 +33,8 @@ import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -46,7 +46,7 @@ public class JoinFetchTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer bartSimpson;
     
-    @Before
+    @BeforeEach
     public void initData() {
         ItemTag books = itemTag("Books").build(em);
 

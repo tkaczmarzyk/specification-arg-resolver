@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 
 import javax.persistence.criteria.JoinType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;

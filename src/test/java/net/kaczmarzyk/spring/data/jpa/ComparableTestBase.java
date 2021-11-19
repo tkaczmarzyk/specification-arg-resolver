@@ -16,10 +16,11 @@
 package net.kaczmarzyk.spring.data.jpa;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -42,7 +43,7 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	protected Customer moeSzyslak;
 	protected Customer joeQuimby;
 	
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
 		margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);
@@ -149,21 +150,16 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	
 	@Test
 	public void rejectsNotExistingEnumConstantName() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-		expectedException.expectMessage("could not find value ROBOT for enum class Gender");
-		customerRepo.findAll(makeUUT("gender", "ROBOT"));
+		assertThrows(InvalidDataAccessApiUsageException.class, () -> customerRepo.findAll(makeUUT("gender", "ROBOT")));
 	}
 	
 	@Test
 	public void rejectsNonIntegerArguments() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		assertFilterIsEmpty("weight", "1.1");
+		assertThrows(InvalidDataAccessApiUsageException.class, () -> assertFilterIsEmpty("weight", "1.1"));
 	}
 	
 	@Test
 	public void rejectsNonNumericArguments() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		assertFilterIsEmpty("weightDouble", "one");
+		assertThrows(InvalidDataAccessApiUsageException.class, () -> assertFilterIsEmpty("weightDouble", "one"));
 	}
 }

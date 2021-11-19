@@ -23,8 +23,8 @@ import java.util.List;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -35,7 +35,7 @@ public class IsNullTest extends IntegrationTestBase {
 	Customer bartSimpson;
     Customer lisaSimpson;
     
-    @Before
+    @BeforeEach
     public void initData() {
         bartSimpson = customer("Bart", "Simpson").nickName("El Barto").street("Evergreen Terrace").build(em);
         lisaSimpson = customer("Lisa", "Simpson").registrationDate(2014, 03, 20).street("Evergreen Terrace").build(em);

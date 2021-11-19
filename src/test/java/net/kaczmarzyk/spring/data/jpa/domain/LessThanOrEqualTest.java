@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;

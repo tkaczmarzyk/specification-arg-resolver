@@ -15,9 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.lang.reflect.Executable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Tomasz Kaczmarzyk
  */
 public class WebRequestProcessingContextTest {
-	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 	
 	@Test
 	public void throwsExceptionIfPathVariableDoesntExist() {
@@ -41,10 +37,7 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 		
-		thrown.expect(InvalidPathVariableRequestedException.class);
-		thrown.expectMessage("Requested path variable {notExisting} is not present in Controller request mapping annotations");
-		
-		context.getPathVariableValue("notExisting");
+		assertThrows(InvalidPathVariableRequestedException.class, () -> context.getPathVariableValue("notExisting"));
 	}
 	
 	@Test

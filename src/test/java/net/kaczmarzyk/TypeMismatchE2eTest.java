@@ -15,26 +15,6 @@
  */
 package net.kaczmarzyk;
 
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -42,14 +22,26 @@ import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.NestedServletException;
+
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Tomasz Kaczmarzyk
  */
 public class TypeMismatchE2eTest extends E2eTestBase {
-	
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
 	
 	@Controller
 	public static class TestController {
@@ -127,26 +119,11 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 	
 	@Test
 	public void throwsExceptionIfOneOfSpecifiedEnumValuesIsInvalid() throws Exception {
-		exception.expectCause(ofClass(InvalidDataAccessApiUsageException.class));
 		
-		mockMvc.perform(get("/poly/customers")
+		assertThrows(NestedServletException.class,
+				() -> mockMvc.perform(get("/poly/customers")
 				.param("genderException", "MALE", "FEMALE", "ALIEN")
-				.accept(MediaType.APPLICATION_JSON));
-	}
-	
-	private Matcher<? extends Throwable> ofClass(final Class<?> clazz) { // TODO
-		return new BaseMatcher<Throwable>() {
-
-			@Override
-			public boolean matches(Object item) {
-				return item.getClass() == clazz;
-			}
-
-			@Override
-			public void describeTo(Description desc) {
-				desc.appendText("exception of class " + clazz);
-			}
-		};
+				.accept(MediaType.APPLICATION_JSON)));
 	}
 
 	@Test

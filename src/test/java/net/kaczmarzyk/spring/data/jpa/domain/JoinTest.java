@@ -18,8 +18,8 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 
@@ -38,7 +38,7 @@ public class JoinTest extends IntegrationTestBase {
 	Customer margeSimpson;
 	Customer bartSimpson;
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		ItemTag books = itemTag("books").build(em);
 

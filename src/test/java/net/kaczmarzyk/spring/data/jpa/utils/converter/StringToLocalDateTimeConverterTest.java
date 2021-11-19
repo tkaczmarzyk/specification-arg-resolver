@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.utils.converter;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 

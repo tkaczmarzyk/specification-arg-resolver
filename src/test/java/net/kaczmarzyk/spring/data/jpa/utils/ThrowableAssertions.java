@@ -15,8 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-import junit.framework.AssertionFailedError;
 import org.assertj.core.api.Assertions;
+import org.opentest4j.AssertionFailedError;
 
 public class ThrowableAssertions {
 	

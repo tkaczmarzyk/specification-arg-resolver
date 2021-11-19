@@ -24,8 +24,8 @@ import java.util.List;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DisjunctionTest extends IntegrationTestBase {
 
@@ -35,7 +35,7 @@ public class DisjunctionTest extends IntegrationTestBase {
     Customer moeSzyslak;
     Customer nedFlanders;
     
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
         margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);

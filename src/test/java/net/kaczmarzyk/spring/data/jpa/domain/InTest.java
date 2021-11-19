@@ -21,8 +21,8 @@ import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class InTest extends IntegrationTestBase {
     private Customer moeSzyslak;
 	private Customer joeQuimby;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
         margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);
@@ -71,15 +71,6 @@ public class InTest extends IntegrationTestBase {
     	In<Customer> genderMaleOrFemale = new In<>(queryCtx, "gender", new String[] { "MALE", "FEMALE" }, defaultConverter);
         List<Customer> malesOrFemales = customerRepo.findAll(genderMaleOrFemale);
         assertThat(malesOrFemales).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
-    }
-
-//    @Test // TODO to be replaced with new tests...
-    public void rejectsNotExistingEnumConstantName() {
-        In<Customer> genderRobot = new In<>(queryCtx, "gender", new String[] { "ROBOT" }, defaultConverter);
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("rejected values [ROBOT] for class Gender");
-        customerRepo.findAll(genderRobot);
     }
     
     @Test

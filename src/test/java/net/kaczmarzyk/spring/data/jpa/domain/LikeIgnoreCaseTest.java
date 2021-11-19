@@ -17,14 +17,15 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * 
@@ -37,7 +38,7 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer moeSzyslak;
     
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
         margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
@@ -66,14 +67,14 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
         assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsMissingArgument() {
-        new LikeIgnoreCase<>(queryCtx, "path", new String[] {});
+        assertThrows(IllegalArgumentException.class, () -> new LikeIgnoreCase<>(queryCtx, "path", new String[] {}));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsInvalidNumberOfArguments() {
-        new LikeIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" });
+        assertThrows(IllegalArgumentException.class, () -> new LikeIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" }));
     }
 
 }

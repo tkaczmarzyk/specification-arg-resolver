@@ -17,11 +17,11 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -37,7 +37,7 @@ import java.util.List;
  * @author Tomasz Kaczmarzyk
  * @author TP Diffenbach
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { ApplicationWithConfiguredConversionService.class })
 @WebAppConfiguration
 @Transactional
@@ -59,7 +59,7 @@ public abstract class IntegrationTestBaseWithConfiguredConversionService {
 	@Autowired
 	List<HandlerMethodArgumentResolver> argumentResolvers;
 	
-	@Before
+	@BeforeEach
 	public void setupMockMvc() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}

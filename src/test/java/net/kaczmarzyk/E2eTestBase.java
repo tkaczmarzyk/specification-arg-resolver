@@ -18,7 +18,7 @@ package net.kaczmarzyk;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.utils.TestLogAppender;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
     protected Customer moeSzyslak;
     protected Customer nedFlanders;
 
-    @Before
+    @BeforeEach
     public void initialize() {
 
         homerSimpson = customer("Homer", "Simpson")

@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.utils.converter;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValueRejectedException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
 

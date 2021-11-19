@@ -1,0 +1,15 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            url "${artifactory_context_url}/${artifactory_plugins_repo_key}"
+            credentials {
+                username "${artifactory_user}"
+                password "${artifactory_password}"
+            }
+        }
+        mavenLocal()
+    }
+}
+
+rootProject.name = 'specification-arg-resolver'

@@ -19,13 +19,14 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -34,14 +35,14 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
     SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
-    @Test(expected = InvalidPathVariableRequestedException.class)
-    public void throwsExceptionIfPathVariableNotPresent() throws Exception {
+    @Test
+    public void throwsExceptionIfPathVariableNotPresent() {
     	 MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariable");
          MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-	    resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+	    assertThrows(InvalidPathVariableRequestedException.class, () -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)));
     }
 
     @Test
