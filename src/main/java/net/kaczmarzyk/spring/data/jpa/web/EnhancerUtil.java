@@ -15,12 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.reflect.Method;
-
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.lang.reflect.Method;
 
 
 /**
@@ -31,7 +31,7 @@ class EnhancerUtil {
     @SuppressWarnings("unchecked")
 	static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
     	Enhancer enhancer = new Enhancer();
-		enhancer.setInterfaces(new Class[] { iface });
+		enhancer.setSuperclass(iface);
 		enhancer.setCallback(new MethodInterceptor() {
             @Override
             public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
