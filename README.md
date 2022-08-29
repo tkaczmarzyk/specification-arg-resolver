@@ -1,5 +1,6 @@
 specification-arg-resolver
 ==========================
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=9GTMPKJ5X83US&no_recurring=1&item_name=Maintaining+specification-arg-resolver+library&currency_code=USD)
 
 An alternative API for filtering data with Spring MVC &amp; Spring Data JPA.
 
@@ -901,7 +902,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.6.2</version>
+    <version>2.6.3</version>
 </dependency>
 ```
 

@@ -1,3 +1,7 @@
+v2.6.3
+======
+* supporting JDK17 (previous version threw exceptions on illegal reflection operations)
+
 v2.6.2
 ======
 * fixed pagination support for multi-level joins

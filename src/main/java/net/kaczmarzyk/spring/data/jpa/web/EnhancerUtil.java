@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.reflect.Method;
-
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.data.jpa.domain.Specification;
 
 
@@ -31,16 +28,13 @@ class EnhancerUtil {
     @SuppressWarnings("unchecked")
 	static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
     	Enhancer enhancer = new Enhancer();
-		enhancer.setInterfaces(new Class[] { iface });
-		enhancer.setCallback(new MethodInterceptor() {
-            @Override
-            public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            	if ("toString".equals(method.getName())) {
-            		return iface.getSimpleName() + "[" + proxy.invoke(targetSpec, args) + "]";
-            	}
-            	return proxy.invoke(targetSpec, args);
-            }
-        });
+		enhancer.setSuperclass(iface);
+		enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+			if ("toString".equals(method.getName())) {
+				return iface.getSimpleName() + "[" + method.invoke(targetSpec, args) + "]";
+			}
+			return proxy.invoke(targetSpec, args);
+		});
 		
 		return (T) enhancer.create();
     }
