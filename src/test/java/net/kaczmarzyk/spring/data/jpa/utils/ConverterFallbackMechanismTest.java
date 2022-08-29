@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,28 +48,28 @@ public class ConverterFallbackMechanismTest {
 	public void shouldNotUseFallbackMechanismForEnumType() {
 		converter.convert("MALE", Gender.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForDateType() {
 		converter.convert("2015-03-01", Date.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForLocalDateType() {
 		converter.convert("2020-06-19", LocalDate.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForLocalDateTimeType() {
 		converter.convert("2020-06-19T16:50:49", LocalDateTime.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ public class ConverterFallbackMechanismTest {
 		converter.convert("true", Boolean.class);
 		converter.convert("false", Boolean.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
@@ -85,91 +85,91 @@ public class ConverterFallbackMechanismTest {
 		converter.convert("true", boolean.class);
 		converter.convert("false", boolean.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForIntegerType() {
 		converter.convert("1", Integer.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForIntegerPrimitiveType() {
 		converter.convert("1", int.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForLongType() {
 		converter.convert("1", Long.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForLongPrimitveType() {
 		converter.convert("1", long.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForFloatType() {
 		converter.convert("10", Float.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForFloatPrimitiveType() {
 		converter.convert("10.8", float.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForDoubleType() {
 		converter.convert("13.52", Double.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForDoublePrimitiveType() {
 		converter.convert("13.53", double.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForBigDecimalType() {
 		converter.convert("13.54", BigDecimal.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForUUIDType() {
 		converter.convert("2cdf7f82-2e32-4219-be0c-a5457e79c7b1", UUID.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForOffsetDateTimeType() {
 		converter.convert("2020-06-16T15:08:53.282+02:00", OffsetDateTime.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForInstantType() {
 		converter.convert("2020-06-16T15:08:53.282Z", Instant.class);
 		
-		verifyZeroInteractions(conversionService);
+		verifyNoInteractions(conversionService);
 	}
 	
 	@Test

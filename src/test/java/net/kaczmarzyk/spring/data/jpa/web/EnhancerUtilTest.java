@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.domain;
+package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * parameter bound with appended %: {@code "%" + args[0]}
- * 
- * @author Matt S.Y. Ho
- *
- * @param <T>
- */
-public class EndingWithIgnoreCase<T> extends LikeIgnoreCase<T> {
+import org.junit.Test;
 
-	private static final long serialVersionUID = 1L;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
 
-	public EndingWithIgnoreCase(QueryContext queryCtx, String path, String... args) {
-		super(queryCtx, path, args);
-		this.pattern = "%" + args[0];
+
+public class EnhancerUtilTest {
+
+	public static interface TestIface {
+	}
+	
+	@Test
+	public void createsObjectWithWorkingToString() {
+		
+		Like likeSpec = new Like(null, "firstName", "Homer");
+		
+		TestIface wrappedSpec = EnhancerUtil.<TestIface>wrapWithIfaceImplementation(TestIface.class, likeSpec);
+		
+		assertThat(wrappedSpec.toString()).isEqualTo("TestIface[Like [pattern=%Homer%]]");
 	}
 }
