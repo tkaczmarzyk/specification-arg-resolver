@@ -39,6 +39,8 @@ public @interface Spec {
     char paramSeparator() default 0;
 
     String[] pathVars() default {};
+
+    String[] headers() default {};
     
     String[] config() default {};
     

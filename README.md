@@ -767,6 +767,30 @@ public Object findById(
 }
 ```
 
+Request Header Support
+---------------------
+
+This is not a best practice for RESTful services but sometimes you may want to filter with request header's value. You
+can resolve request headers with Spring's `@RequestHeader` annotation. You can refer to them by using `headers` property
+of `@Spec` (instead of `params` property). For example:
+
+  ```java
+@RequestMapping(value = "/customers/reqHeaders")
+@ResponseBody
+public Object findCustomersByGenderAndNickName(
+    @RequestHeader(value = "customerGender", required = false) String gender,
+    @RequestHeader(value = "customerNickName", required = false) String nickName,
+    @And({
+            @Spec(path = "nickName", headers = "customerNickName", spec = Equal.class),
+            @Spec(path = "gender", headers = "customerGender", spec = Equal.class)
+    }) Specification<Customer> spec){
+    return customerRepo.findAll(spec);
+}
+  ```
+
+This will handle request `GET /customers/reqHeaders` as `select c from Customers c where c.gender = :gender AND c.nickName = :nickName`.
+
+
 Type conversions for HTTP parameters
 -------------------
 
