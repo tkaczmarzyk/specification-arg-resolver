@@ -28,6 +28,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
+   * [SpEL support](#spel-support) -- information about Spring Expression Language support
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
