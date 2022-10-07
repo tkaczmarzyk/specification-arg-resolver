@@ -1,3 +1,8 @@
+v2.7.0
+======
+* added support for resolving HTTP param name from a SpEL expression (via `@Spec.paramsInSpEL`)
+* added support for resolving query arguments from HTTP request headers (via `@Spec.headers`)
+
 v2.6.3
 ======
 * supporting JDK17 (previous version threw exceptions on illegal reflection operations)

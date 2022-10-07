@@ -205,6 +205,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		
 		if (specDef.params().length != 0) {
 			for (String webParamName : specDef.params()) {
+				if (embeddedValueResolver != null && specDef.paramsInSpEL()) {
+					webParamName = embeddedValueResolver.resolveStringValue(webParamName);
+				}
 				String[] parameterValues = context.getParameterValues(webParamName);
 				if(parameterValues != null) {
 					String[] httpParamValues = delimitationStrategy.extractSingularValues(parameterValues);

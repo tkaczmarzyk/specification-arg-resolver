@@ -904,6 +904,26 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
+SpEL support
+------------
+
+Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) can be enabled in following way:
+* Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+* Set attribute `valueInSpEL` value to `true`
+
+Configuration example:
+   ```java
+   @Autowired
+   AbstractApplicationContext applicationContext;
+
+   @Override
+   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
+   }
+   ```
+
+SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
+
 Compatibility notes
 -------------------
 
@@ -926,7 +946,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.6.3</version>
+    <version>2.7.0</version>
 </dependency>
 ```
 

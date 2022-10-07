@@ -67,6 +67,14 @@ public @interface Spec {
      * to get more information about enabling/disabling SpEL support.
      */
     boolean valueInSpEL() default false;
+    
+    /**
+     * Attribute determines that provided params value is in SpEL (Spring Expression Language) format. 
+     * 
+     * Attribute is ignored when SpEL support is disabled, see <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a>
+     * to get more information about enabling/disabling SpEL support.
+     */
+    boolean paramsInSpEL() default false;
 
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
     
