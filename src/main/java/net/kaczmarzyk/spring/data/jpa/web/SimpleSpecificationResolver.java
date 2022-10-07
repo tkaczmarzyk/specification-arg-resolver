@@ -137,6 +137,8 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			return resolveConstVal(specDef);
 		} else if (specDef.pathVars().length != 0) {
 			return resolveSpecArgumentsFromPathVariables(context, specDef);
+		} else if (specDef.headers().length != 0) {
+			return resolveSpecArgumentsFromRequestHeaders(context, specDef);
 		} else {
 			return resolveDefaultVal(context, specDef);
 		}
@@ -180,6 +182,18 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		Collection<String> args = new ArrayList<>();
 		for (String pathVar : specDef.pathVars()) {
 			args.add(context.getPathVariableValue(pathVar));
+		}
+		return args;
+	}
+
+	private Collection<String> resolveSpecArgumentsFromRequestHeaders(WebRequestProcessingContext context, Spec specDef) {
+		Collection<String> args = new ArrayList<>();
+		for (String headerKey : specDef.headers()) {
+			String headerValue = context.getRequestHeaderValue(headerKey);
+			boolean isHeaderValueEmpty = headerValue == null || headerValue == "";
+			if (!isHeaderValueEmpty) {
+				args.add(headerValue);
+			}
 		}
 		return args;
 	}
