@@ -1,3 +1,7 @@
+v2.8.0
+======
+* changed approach for resolving path variables when processing request
+
 v2.7.0
 ======
 * added support for resolving HTTP param name from a SpEL expression (via `@Spec.paramsInSpEL`)

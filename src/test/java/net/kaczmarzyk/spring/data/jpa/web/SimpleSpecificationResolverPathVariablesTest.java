@@ -25,6 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
+import static net.kaczmarzyk.spring.data.jpa.web.utils.PathVariablesUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -38,6 +39,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
     public void throwsExceptionIfPathVariableNotPresent() throws Exception {
     	 MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariable");
          MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
+		 setPathVariables(req, pathVariables(entry("customerId", "theCustomerIdValue"), entry("orderId", "theOrderIdValue")));
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
@@ -48,6 +50,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
     public void buildsTheSpecUsingPathVariableFromControllerClass() throws Exception {
         MethodParameter param = testMethodParameter("testMethodUsingPathVariableFromClass");
         MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
+	    setPathVariables(req, pathVariables(entry("customerId", "theCustomerIdValue"), entry("orderId", "theOrderIdValue")));
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
@@ -60,6 +63,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
     public void buildsTheSpecUsingPathVariableFromControllerMethod() throws Exception {
         MethodParameter param = testMethodParameter("testMethodUsingPathVariableFromMethod");
         MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
+	    setPathVariables(req, pathVariables(entry("customerId", "theCustomerIdValue"), entry("orderId", "theOrderIdValue")));
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
@@ -72,6 +76,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
     public void buildsTheSpecUsingMultiplePathVariables() throws Exception {
         MethodParameter param = testMethodParameter("testMethodUsingMultiplePathVariables");
         MockWebRequest req = new MockWebRequest("/customers/2019-01-25/orders/2019-01-27");
+	    setPathVariables(req, pathVariables(entry("customerId", "2019-01-25"), entry("orderId", "2019-01-27")));
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 

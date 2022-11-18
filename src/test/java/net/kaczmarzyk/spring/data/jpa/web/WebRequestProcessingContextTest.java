@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Executable;
 
+import static net.kaczmarzyk.spring.data.jpa.web.utils.PathVariablesUtil.*;
+import static net.kaczmarzyk.spring.data.jpa.web.utils.PathVariablesUtil.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -38,6 +40,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void throwsExceptionIfPathVariableDoesntExist() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 		
@@ -50,6 +54,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValue_requestMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 		
@@ -60,6 +66,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValueWithRegexp_requestMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_requestMapping_path", TestController.class), req);
 		
@@ -70,6 +78,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValue_requestMapping_value() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_value", TestController.class), req);
 		
@@ -80,6 +90,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValueWithRegexp_requestMapping_value() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_requestMapping_value", TestController.class), req);
 		
@@ -90,6 +102,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValue_getMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_getMapping_path", TestController.class), req);
 		
@@ -100,6 +114,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValueWithRegexp_getMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_getMapping_path", TestController.class), req);
 		
@@ -110,6 +126,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValue_getMapping_value() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_getMapping_value", TestController.class), req);
 		
@@ -120,6 +138,8 @@ public class WebRequestProcessingContextTest {
 	@Test
 	public void resolvesPathVariableValueWithRegexp_getMapping_value() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
+		setPathVariables(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
+
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_getMapping_value", TestController.class), req);
 		
