@@ -165,7 +165,7 @@ public class InTest extends IntegrationTestBase {
     }
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(In.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

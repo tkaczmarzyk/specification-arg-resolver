@@ -192,7 +192,7 @@ public class BetweenTest extends IntegrationTestBase {
     }
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(Between.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

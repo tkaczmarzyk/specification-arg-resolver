@@ -20,16 +20,12 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 
 /**
  * @author Tomasz Kaczmarzyk
  */
 class EnhancerUtil {
-
-	public interface GlibEnhancedObjectMarker {
-	}
 
 	@SuppressWarnings("unchecked")
 	static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
@@ -42,9 +38,11 @@ class EnhancerUtil {
 			if ("equals".equals(method.getName())) {
 				return EnhancerUtil.equals(iface, targetSpec, args);
 			}
-
-				return proxy.invoke(targetSpec, args);
-			});
+			if("hashCode".equals(method.getName())) {
+				return targetSpec.hashCode();
+			}
+			return proxy.invoke(targetSpec, args);
+		});
 		return (T) enhancer.create();
 	}
 
@@ -54,7 +52,7 @@ class EnhancerUtil {
 		}
 
 		// The argument is not equal to the actual object if it is not a glib enhanced object
-		if (!isAnObjectThatDirectImplementsGivenInterface(args[0], GlibEnhancedObjectMarker.class)) {
+		if (!Enhancer.isEnhanced(args[0].getClass())) {
 			return false;
 		}
 
@@ -63,7 +61,7 @@ class EnhancerUtil {
 			return false;
 		}
 
-		return ReflectionUtils.get(ReflectionUtils.get(args[0], "CGLIB$CALLBACK_0"), "val$targetSpec").equals(targetSpec);
+		return ReflectionUtils.get(ReflectionUtils.get(args[0], "CGLIB$CALLBACK_0"), "arg$2").equals(targetSpec);
 	}
 
 	private static boolean isAnObjectThatDirectImplementsGivenInterface(Object object, Class<?> expectedType) {

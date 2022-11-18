@@ -62,7 +62,7 @@ public class NullTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(Null.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

@@ -44,7 +44,7 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 	}
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(NotEqualIgnoreCase.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

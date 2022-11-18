@@ -22,7 +22,7 @@ import org.junit.Test;
 public class EqualIgnoreCaseTest {
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(EqualIgnoreCase.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

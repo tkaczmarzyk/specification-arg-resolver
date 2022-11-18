@@ -172,9 +172,7 @@ public class EqualIntegrationTest extends IntegrationTestBase {
     	assertFilterMembers(homerWeightDouble, homerSimpson);
     }
     
-    @Ignore
     @Test
-    // this test should work, but fails, probabaly because of how floats are compared by the underlying database.
     public void filtersByFloat() {
     	Equal<Customer> homerWeightFloat = new Equal<>(queryCtx, "weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) }, defaultConverter);
     	assertFilterMembers(homerWeightFloat, homerSimpson);

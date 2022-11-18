@@ -77,7 +77,7 @@ public class NotLikeTest extends IntegrationTestBase {
     }
 
     @Test
-    public void equalsContract() {
+    public void equalsAndHashCodeContract() {
         EqualsVerifier.forClass(NotLike.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)

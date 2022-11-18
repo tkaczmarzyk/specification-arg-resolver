@@ -1,6 +1,6 @@
 v2.8.0 - UNRELEASED
 ======
-* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html) support for specification interfaces.
+* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching) support for custom specification interfaces. From now on, specifications generated from specification interfaces with the same params are equal and have the same `hashCode` value.
 
 v2.7.0
 ======

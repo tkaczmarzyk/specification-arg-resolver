@@ -76,7 +76,7 @@ public class StartingWithTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(StartingWith.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

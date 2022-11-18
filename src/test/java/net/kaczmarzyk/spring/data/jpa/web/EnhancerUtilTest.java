@@ -62,6 +62,21 @@ public class EnhancerUtilTest {
 	}
 
 	@Test
+	public void test() {
+		Conjunction<Object> firstConjunction = new Conjunction<>(testSimpleSpecifications());
+
+		CustomSpecInterface firstConjunctionEnhanced =
+				EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstConjunction);
+
+		Specification<Object> secondConjunction = new Conjunction<>(testSimpleSpecifications());
+
+		CustomSpecInterface secondConjunctionEnhanced =
+				EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, secondConjunction);
+
+		Assertions.assertThat(firstConjunctionEnhanced).isEqualTo(firstConjunctionEnhanced);
+	}
+
+	@Test
 	public void equalsContract_conjunction() {
 		Conjunction<Object> firstConjunction = new Conjunction<>(testSimpleSpecifications());
 

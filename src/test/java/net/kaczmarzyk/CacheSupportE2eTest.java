@@ -34,10 +34,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +53,7 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 	}
 
 	@Controller
+	@RequestMapping("/cache-test")
 	public static class TestController {
 
 		@Autowired
@@ -58,15 +62,31 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 		@Autowired
 		CustomerRepository customerRepo;
 
-		@RequestMapping("/cache/simpsons")
+		@RequestMapping("/interface/simpsons")
 		@ResponseBody
-		public Object listSimpsonsUsingRepositoryWithCacheSupport(SimpsonSpec spec) {
+		public Object listSimpsonsUsingRepositoryWithCacheSupport_annotatedInterface(SimpsonSpec spec) {
+			return customerRepoWithCacheSupport.findAll(spec);
+		}
+
+		@RequestMapping("/interface/non-cache/simpsons")
+		@ResponseBody
+		public Object listSimpsons_annotatedInterface(SimpsonSpec spec) {
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping("/simpsons")
+		@ResponseBody
+		public Object listSimpsonsUsingRepositoryWithCacheSupport(
+				@Spec(path = "lastName", params = "lastName", spec = Equal.class)
+				@JoinFetch(paths = {"orders", "badges"}) Specification<Customer> spec) {
 			return customerRepoWithCacheSupport.findAll(spec);
 		}
 
 		@RequestMapping("/non-cache/simpsons")
 		@ResponseBody
-		public Object listSimpsons(SimpsonSpec spec) {
+		public Object listSimpsons(
+				@Spec(path = "lastName", params = "lastName", spec = Equal.class)
+				@JoinFetch(paths = {"orders", "badges"}) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
 
@@ -81,56 +101,148 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 	}
 
 	@Test
-	public void specificationSearchResultsShouldBeCached() throws Exception {
+	public void specificationSearchResultsShouldBeCached_annotatedInterface() throws Exception {
 
-		mockMvc.perform(post("/cache/simpsons")
+		mockMvc.perform(post("/cache-test/interface/simpsons")
 				.param("lastName", "Simpson"))
 				.andExpect(status().isOk());
 
-		Assertions.assertThat(cacheEntries().size()).isEqualTo(1);
+		assertThat(cacheEntries().size()).isEqualTo(1);
 
-		mockMvc.perform(post("/cache/simpsons")
+		mockMvc.perform(post("/cache-test/interface/simpsons")
 				.param("lastName", "Szyslak"))
 				.andExpect(status().isOk());
 
-		Assertions.assertThat(cacheEntries().size()).isEqualTo(2);
+		assertThat(cacheEntries().size()).isEqualTo(2);
 	}
 
 	@Test
-	public void specificationSearchResultsShouldBeReturnedFromCache() throws Exception {
-		Customer homer = customer("Homer", "Simpson").build(em);
+	public void specificationSearchResultsShouldBeCached() throws Exception {
 
-		mockMvc.perform(post("/cache/simpsons")
+		mockMvc.perform(post("/cache-test/simpsons")
+						.param("lastName", "Simpson"))
+				.andExpect(status().isOk());
+
+		assertThat(cacheEntries().size()).isEqualTo(1);
+
+		mockMvc.perform(post("/cache-test/simpsons")
+						.param("lastName", "Szyslak"))
+				.andExpect(status().isOk());
+
+		assertThat(cacheEntries().size()).isEqualTo(2);
+	}
+
+	@Test
+	public void specificationSearchResultsShouldBeReturnedFromCache_annotatedInterface() throws Exception {
+		Customer homer = customer("Homer", "Simpson").build(em);
+		Customer moe = customer("Moe", "Szyslak").build(em);
+
+		mockMvc.perform(post("/cache-test/interface/simpsons")
 				.param("lastName", "Simpson"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
 				.andExpect(jsonPath("$[1]").doesNotExist());
+		assertThat(cacheEntries().size()).isEqualTo(1);
+		assertThat(cachedResults()).containsExactlyInAnyOrder(singletonList(homer));
 
-		Assertions.assertThat(cacheEntries().size()).isEqualTo(1);
-		Assertions.assertThat(cachedResults()).containsExactly(homer);
+		mockMvc.perform(post("/cache-test/interface/simpsons")
+						.param("lastName", "Szyslak"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+
+		assertThat(cacheEntries().size())
+				.isEqualTo(2);
+		assertThat(cachedResults())
+				.containsExactlyInAnyOrder(singletonList(homer), singletonList(moe));
 
 		Customer marge = customer("Marge", "Simpson").build(em);
 
-		mockMvc.perform(post("/non-cache/simpsons")
+		mockMvc.perform(post("/cache-test/interface/non-cache/simpsons")
 				.param("lastName", "Simpson"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
 				.andExpect(jsonPath("$[2]").doesNotExist());
 
-		mockMvc.perform(post("/cache/simpsons")
+		assertThat(cacheEntries().size())
+				.isEqualTo(2);
+		assertThat(cachedResults())
+				.containsExactlyInAnyOrder(singletonList(homer), singletonList(moe));
+
+		mockMvc.perform(post("/cache-test/interface/simpsons")
 				.param("lastName", "Simpson"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
 				.andExpect(jsonPath("$[1]").doesNotExist());
 
-		Assertions.assertThat(cacheEntries().size()).isEqualTo(1);
-		Assertions.assertThat(cachedResults()).containsExactly(homer);
+		assertThat(cacheEntries().size())
+				.isEqualTo(2);
+		assertThat(cachedResults())
+				.containsExactlyInAnyOrder(singletonList(homer), singletonList(moe));
 
 	}
 
-	private List<Customer> cachedResults(){
-		return (List<Customer>) cacheEntries().values().iterator().next();
+	@Test
+	public void specificationSearchResultsShouldBeReturnedFromCache() throws Exception {
+		Customer homer = customer("Homer", "Simpson").build(em);
+		Customer moe = customer("Moe", "Szyslak").build(em);
+
+		mockMvc.perform(post("/cache-test/simpsons")
+						.param("lastName", "Simpson"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+		assertThat(cacheEntries().size()).isEqualTo(1);
+		assertThat(cachedResults()).containsExactlyInAnyOrder(singletonList(homer));
+
+		mockMvc.perform(post("/cache-test/simpsons")
+						.param("lastName", "Szyslak"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+
+		assertThat(cacheEntries().size())
+				.isEqualTo(2);
+		assertThat(cachedResults())
+				.containsExactlyInAnyOrder(singletonList(homer), singletonList(moe));
+
+		Customer marge = customer("Marge", "Simpson").build(em);
+
+		mockMvc.perform(post("/cache-test/non-cache/simpsons")
+						.param("lastName", "Simpson"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
+				.andExpect(jsonPath("$[2]").doesNotExist());
+
+		assertThat(cacheEntries().size())
+				.isEqualTo(2);
+		assertThat(cachedResults())
+				.containsExactlyInAnyOrder(singletonList(homer), singletonList(moe));
+
+		mockMvc.perform(post("/cache-test/simpsons")
+						.param("lastName", "Simpson"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+
+		assertThat(cacheEntries().size())
+				.isEqualTo(2);
+		assertThat(cachedResults())
+				.containsExactlyInAnyOrder(singletonList(homer), singletonList(moe));
+
+	}
+
+	private List<List<Customer>> cachedResults(){
+		List<List<Customer>> cachedResults = new ArrayList<>();
+
+		Iterator<Object> cachedResultsIterator = cacheEntries().values().iterator();
+		while (cachedResultsIterator.hasNext()) {
+			cachedResults.add((List<Customer>) cachedResultsIterator.next());
+		}
+
+		return cachedResults;
 	}
 
 	@SuppressWarnings("unchecked")

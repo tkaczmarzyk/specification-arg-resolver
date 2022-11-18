@@ -22,7 +22,7 @@ import org.junit.Test;
 public class EqualTest {
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(Equal.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

@@ -61,7 +61,7 @@ public class NotNullTest extends IntegrationTestBase {
     }
 
     @Test
-    public void equalsContract() {
+    public void equalsAndHashCodeContract() {
         EqualsVerifier.forClass(NotNull.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)

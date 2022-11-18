@@ -127,7 +127,7 @@ public class LessThanOrEqualTest extends ComparableTestBase {
     }
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(LessThanOrEqual.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

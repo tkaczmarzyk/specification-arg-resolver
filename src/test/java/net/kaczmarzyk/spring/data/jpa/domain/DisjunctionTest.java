@@ -58,7 +58,7 @@ public class DisjunctionTest extends IntegrationTestBase {
     }
 
     @Test
-    public void equalsContract() {
+    public void equalsAndHashCodeContract() {
         EqualsVerifier.forClass(Disjunction.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)

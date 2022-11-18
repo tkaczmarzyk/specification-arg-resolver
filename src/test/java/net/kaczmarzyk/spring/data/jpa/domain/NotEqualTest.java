@@ -157,7 +157,7 @@ public class NotEqualTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(NotEqual.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

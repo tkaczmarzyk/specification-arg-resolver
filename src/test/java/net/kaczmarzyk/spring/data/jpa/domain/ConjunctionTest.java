@@ -59,11 +59,11 @@ public class ConjunctionTest extends IntegrationTestBase {
     }
 
     @Test
-    public void equalsContract() {
+    public void equalsAndHashCodeContract() {
         EqualsVerifier.forClass(Conjunction.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)
-                .withIgnoredFields("fakesInitialized")
+                .withIgnoredFields("queriesWithInitializedFakes")
                 .verify();
     }
 }

@@ -81,7 +81,7 @@ public class StartingWithIgnoreCaseTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(StartingWithIgnoreCase.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

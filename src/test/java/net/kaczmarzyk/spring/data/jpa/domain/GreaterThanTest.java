@@ -124,7 +124,7 @@ public class GreaterThanTest extends ComparableTestBase {
     }
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(GreaterThan.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

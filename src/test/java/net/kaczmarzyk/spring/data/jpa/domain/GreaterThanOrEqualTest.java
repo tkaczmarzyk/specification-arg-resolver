@@ -130,7 +130,7 @@ public class GreaterThanOrEqualTest extends ComparableTestBase {
     }
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(GreaterThanOrEqual.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

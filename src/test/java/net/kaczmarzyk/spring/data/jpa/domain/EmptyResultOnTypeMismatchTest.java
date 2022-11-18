@@ -92,7 +92,7 @@ public class EmptyResultOnTypeMismatchTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(EmptyResultOnTypeMismatch.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)

@@ -358,7 +358,7 @@ public class JoinFetchTest extends IntegrationTestBase {
     }
 
     @Test
-    public void equalsContract() {
+    public void equalsAndHashCodeContract() {
         EqualsVerifier.forClass(JoinFetch.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)

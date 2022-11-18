@@ -78,7 +78,7 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
     }
 
     @Test
-    public void equalsContract() {
+    public void equalsAndHashCodeContract() {
         EqualsVerifier.forClass(LikeIgnoreCase.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)

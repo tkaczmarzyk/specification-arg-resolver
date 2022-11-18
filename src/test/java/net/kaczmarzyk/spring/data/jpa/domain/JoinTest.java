@@ -152,7 +152,7 @@ public class JoinTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void equalsContract() {
+	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(Join.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
