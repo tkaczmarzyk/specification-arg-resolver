@@ -28,7 +28,7 @@ public class ThrowableAssertions {
 			if (throwable.getClass().equals(ThrowableNotFoundException.class)) {
 				throw new AssertionFailedError("Expected " + expectedType + " to be thrown, but nothing was thrown.");
 			}
-			Assertions.assertThat(throwable).isInstanceOf(expectedType);
+			Assertions.assertThat(throwable).isExactlyInstanceOf(expectedType);
 			return throwable;
 		}
 	}

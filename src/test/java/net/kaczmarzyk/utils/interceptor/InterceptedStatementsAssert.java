@@ -15,10 +15,10 @@
  */
 package net.kaczmarzyk.utils.interceptor;
 
-import org.assertj.core.api.Assertions;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class InterceptedStatementsAssert {
 
@@ -37,7 +37,41 @@ public class InterceptedStatementsAssert {
 				.filter(statement -> statement.contains("SELECT") || statement.contains("select"))
 				.count();
 
-		Assertions.assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
+		assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
+
+		return this;
+	}
+
+	public InterceptedStatementsAssert hasJoins(int expectedNumberOfJoins) {
+		long joinsCount = logs.stream()
+				.map(statement -> countNumberOfSqlClauseInStatement(statement, "join"))
+				.reduce((i, joinCounter) -> joinCounter += i)
+				.orElse(0);
+
+		if (joinsCount != expectedNumberOfJoins) {
+			throw new AssertionError(
+					"Expected number of `join` clause: " + expectedNumberOfJoins + ", actual: " + joinsCount
+			);
+		}
+
+		return this;
+	}
+
+	public InterceptedStatementsAssert hasOneClause(String clause) {
+		return hasClause(clause, 1);
+	}
+
+	public InterceptedStatementsAssert hasClause(String clause, int expectedNumberOfClauseOccurrences) {
+		long clauseOccurrenceCount = logs.stream()
+				.map(statement -> countNumberOfSqlClauseInStatement(statement, clause))
+				.reduce((i, joinCounter) -> joinCounter += i)
+				.orElse(0);
+
+		if (clauseOccurrenceCount != expectedNumberOfClauseOccurrences) {
+			throw new AssertionError(
+					"Expected clause '" + clause + "' occurrences: " + expectedNumberOfClauseOccurrences + ", actual: " + clauseOccurrenceCount
+			);
+		}
 
 		return this;
 	}
@@ -50,7 +84,7 @@ public class InterceptedStatementsAssert {
 						return false;
 					}
 					int from = countNumberOfSqlClauseInStatement(statement, "from");
-					if(from != 1) {
+					if (from != 1) {
 						return false;
 					}
 
@@ -60,7 +94,7 @@ public class InterceptedStatementsAssert {
 				})
 				.count();
 
-		Assertions.assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
+		assertThat(selectCount).isEqualTo(expectedAmountOfSelects);
 
 		return this;
 	}
@@ -69,13 +103,13 @@ public class InterceptedStatementsAssert {
 		int index = statement.indexOf(sqlClause);
 		int count = 0;
 
-		if(index!=-1) {
+		if (index != -1) {
 			count++;
 		}
 
 		while (index >= 0) {
 			index = statement.indexOf(sqlClause, index + 1);
-			if(index!=-1) {
+			if (index != -1) {
 				count++;
 			}
 		}

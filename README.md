@@ -515,33 +515,71 @@ public class ItemTag {
 }
 ``` 
 
-If you want to find all customers and fetch additional nested attributes (entities) to avoid `SELECT N+1 Problem` you can do the following:
+If you want to find all customers who ordered item with given tag name and fetch additional nested attributes (entities) to avoid `SELECT N+1 Problem` you can do the following:
 ```java
-@RequestMapping(value = "/findCustomersByOrderedItemTag")
+@RequestMapping(value = "/findCustomersWhoOrderedItemWithGivenTag")
 @PostMapping
 public Object findCustomers(
 	    @JoinFetch(paths = "orders", alias = "o")
-	    @JoinFetch(paths = "o.tags") Specification<Customer> spec) {
-	return customerRepo.findAll(spec, Sort.by("id"));
+	    @JoinFetch(paths = "o.tags", alias = "t")
+	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec);
 }
 ```
 
 The same as in case of multi-level joins, annotations are processed sequentially, the order must be kept!
 
-__Join Fetch aliases exists only in context of join fetch and can't be used in another specs paths!__ 
-Following spec is invalid:
+  Please remember that:
+  * Join fetch path can use only aliases of another fetch joins. 
+  * Join path can use only aliases of another joins. 
 
-```java
-@RequestMapping(value = "/findCustomersByOrderedItemTag")
-@PostMapping
-public Object findCustomersByOrderedItemTag(
-		@JoinFetch(path = "orders", alias = "o")
-		@Spec(path = "o.itemName", params = "itemName", spec = Equal.class) Specification<Customer> spec) {
-	return customerRepo.findAll(spec, Sort.by("id"));
-}
-```
-
-If there is a need to refer to joined paths in other specs, then regular join (not fetch) should be used as described in the Join section.
+  Following combinations are forbidden:
+  
+   * join path which uses join fetch alias  
+  
+        ```java
+         @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+         @PostMapping
+         public Object findCustomers(
+         	    @JoinFetch(paths = "orders", alias = "o")
+        	    // Wrong, 'o' defined in join fetch tried to be used in a regular join
+         	    @Join(path = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+         	return repository.findAll(spec);
+         }
+        ```
+   * join fetch path which uses join alias
+    
+       ```java
+        @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+        @PostMapping
+        public Object findCustomers(
+        	    @Join(path = "orders", alias = "o")
+        	    // Wrong, 'o' defined in a join tried to be used in join fetch
+        	    @JoinFetch(paths = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+        	return repository.findAll(spec);
+        }
+       ```
+     
+      If the same alias is defined both for `@Join` and `@JoinFetch`, the join alias will be used during specification resolving.
+      
+       ```java
+        @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+        @PostMapping
+        public Object findCustomers(
+        	    @JoinFetch(paths = "orders", alias = "o")
+        	    @JoinFetch(paths = "o.tags", alias = "t")
+        	    @Join(path = "orders", alias = "o")
+        	    @Join(path = "o.tags", alias = "t")
+        	    //'t' refers to third join - @Join(path = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+         
+             return repository.findAll(spec);
+        }
+       ```
+     Using join and join fetch on the same path should be avoided, otherwise the same table will be joined twice (`orders` and `tags` in above example).
+     The above example is an anti-pattern and should never be followed in the production code.
 
 Advanced HTTP parameter handling
 --------------------------------
