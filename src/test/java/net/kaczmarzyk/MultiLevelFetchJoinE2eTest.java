@@ -17,6 +17,8 @@ package net.kaczmarzyk;
 
 import net.kaczmarzyk.spring.data.jpa.*;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.NotEqual;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
@@ -35,9 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.criteria.JoinType;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -45,6 +45,7 @@ import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
 import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,7 +87,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		public Object findAllWithoutFetchJoins(
 				@Spec(params = "ignoredParam", path = "notExistingAttribute", spec = Equal.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec).stream()
-					.map(this::mapToCustomerDto)
+					.map(CustomerDto::from)
 					.collect(toList());
 		}
 
@@ -112,6 +113,30 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			return customerRepo.findAll(spec, pageable);
 		}
 
+		@RequestMapping(value = "/findCustomersByOrderedItemTag_fetchOrdersWithTagsAndNotes")
+		@PostMapping
+		public Object findCustomersByOrderedItemTag(
+				@JoinFetch(paths = "orders", alias = "o")
+				@JoinFetch(paths = "o.tags", alias = "t")
+				@JoinFetch(paths = "o.note")
+				@Spec(path = "t.name", params = "tag", spec = Equal.class) Specification<Customer> spec) {
+			return customerRepo.findAll(spec, Sort.by("id")).stream()
+					.map(this::mapToCustomerWithOrdersWithTagsAndNotes)
+					.collect(toList());
+		}
+
+		@RequestMapping(value = "/findCustomersWithOrderedItemTaggedDifferentlyThan_fetchOrderWithTagsAndNotes")
+		@PostMapping
+		public Object findCustomersWithOrderedItemTaggedWithDifferentTagThan(
+				@JoinFetch(paths = "orders", alias = "o", joinType = JoinType.INNER)
+				@JoinFetch(paths = "o.tags", alias = "t", joinType = JoinType.INNER)
+				@JoinFetch(paths = "o.note")
+				@Spec(path = "t.name", params = "tag", spec = NotEqual.class) Specification<Customer> spec) {
+			return customerRepo.findAll(spec, Sort.by("id")).stream()
+					.map(this::mapToCustomerWithOrdersWithTagsAndNotes)
+					.collect(toList());
+		}
+
 		private CustomerDto mapToCustomerDto(Customer customer) {
 			String tagOfFirstOrderedItem = customer.getOrders().stream()
 					.flatMap(order -> order.getTags().stream())
@@ -133,24 +158,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 							order.getNote().getTitle()
 					)).sorted((o1, o2) -> StringUtils.compare(o1.itemName, o2.itemName)).collect(Collectors.toList())
 			);
-		}
-
-		class CustomerDto {
-			private String firstName;
-			private String tagOfFirstCustomerItem;
-
-			public CustomerDto(String firstName, String tagOfFirstCustomerItem) {
-				this.firstName = firstName;
-				this.tagOfFirstCustomerItem = tagOfFirstCustomerItem;
-			}
-
-			public String getFirstName() {
-				return firstName;
-			}
-
-			public String getTagOfFirstCustomerItem() {
-				return tagOfFirstCustomerItem;
-			}
 		}
 
 		class OrdersWithTagsAndNotes {
@@ -251,7 +258,12 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
-				.hasSelects(1);
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				.hasSelects(1)
+				.hasJoins(3)
+				.hasOneClause(" left outer join orders ")
+				.hasOneClause(" left outer join orders_tags ")
+				.hasOneClause(" left outer join item_tags ");
 	}
 
 	@Test
@@ -268,7 +280,12 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[3]").doesNotExist());
 
 		assertThatInterceptedStatements()
-				.hasSelects(1);
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				.hasSelects(1)
+				.hasJoins(3)
+				.hasOneClause(" inner join orders ")
+				.hasOneClause(" inner join orders_tags ")
+				.hasOneClause(" inner join item_tags ");
 	}
 
 	@Test
@@ -287,6 +304,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
+				// N+1 SELECT problem occurs because standard joins have been used
 				.hasSelects(10)
 				.hasSelectsFromSingleTableWithWhereClause(9);
 	}
@@ -301,7 +319,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[0].firstName").value("Homer"))
 				.andExpect(jsonPath("$[0].orders").isArray())
-
 				.andExpect(jsonPath("$[0].orders[0].itemName").value("Donuts"))
 				.andExpect(jsonPath("$[0].orders[0].tags").value("#homerApproved,#snacks"))
 				.andExpect(jsonPath("$[0].orders[0].notes").value("NoteDonuts"))
@@ -333,6 +350,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 				.andExpect(jsonPath("$[5]").doesNotExist());
 
 		assertThatInterceptedStatements()
+				// Verifying that all lazy collection is initialized due to join fetch usage.
 				.hasSelects(1);
 	}
 
@@ -356,5 +374,71 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 			.andExpect(jsonPath("$.content[1]").doesNotExist());
 	}
 
+
+	@Test
+	public void shouldFindCustomersByOrderedItemTag_withFetchedOrdersWithTagsAndNotes() throws Exception {
+		HibernateStatementInterceptor.clearInterceptedStatements();
+
+		mockMvc.perform(post("/multilevel-join-fetch/findCustomersByOrderedItemTag_fetchOrdersWithTagsAndNotes")
+				.param("tag", "#fruits"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+
+			.andExpect(jsonPath("$[0].firstName").value("Marge"))
+			.andExpect(jsonPath("$[0].orders").isArray())
+			.andExpect(jsonPath("$[0].orders[0].itemName").value("Apple"))
+			.andExpect(jsonPath("$[0].orders[0].tags").value("#fruits"))
+			.andExpect(jsonPath("$[0].orders[0].notes").value("NoteApple"))
+
+			.andExpect(jsonPath("$[1]").doesNotExist());
+
+		assertThatInterceptedStatements()
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				.hasSelects(1)
+				.hasJoins(4)
+				.hasOneClause(" left outer join orders ")
+				.hasOneClause(" left outer join orders_tags ")
+				.hasOneClause(" left outer join order_note ")
+				.hasOneClause(" left outer join item_tags ");
+	}
+
+	@Test
+	public void shouldFindCustomersByOrderedItemWithTagDifferentThan_withFetchedOrdersWithTagsAndNotes() throws Exception {
+		HibernateStatementInterceptor.clearInterceptedStatements();
+
+		mockMvc.perform(post("/multilevel-join-fetch/findCustomersWithOrderedItemTaggedDifferentlyThan_fetchOrderWithTagsAndNotes")
+				.param("tag", "#fruits"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+
+			.andExpect(jsonPath("$[0]").exists())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[0].orders").isArray())
+			.andExpect(jsonPath("$[0].orders[0].itemName").value("Donuts"))
+			.andExpect(jsonPath("$[0].orders[0].tags").value("#homerApproved,#snacks"))
+			.andExpect(jsonPath("$[0].orders[0].notes").value("NoteDonuts"))
+			.andExpect(jsonPath("$[0].orders[1].itemName").value("Duff Beer"))
+			.andExpect(jsonPath("$[0].orders[1].tags").value("#homerApproved,#snacks"))
+			.andExpect(jsonPath("$[0].orders[1].notes").value("NoteDuff Beer"))
+
+			.andExpect(jsonPath("$[1]").exists())
+			.andExpect(jsonPath("$[1].firstName").value("Bart"))
+			.andExpect(jsonPath("$[1].orders").isArray())
+			.andExpect(jsonPath("$[1].orders[0].itemName").value("Pizza"))
+			.andExpect(jsonPath("$[1].orders[0].tags").value("#snacks"))
+			.andExpect(jsonPath("$[1].orders[0].notes").value("NotePizza"))
+
+			.andExpect(jsonPath("$[2]").doesNotExist());
+
+		assertThatInterceptedStatements()
+				// Verifying that all lazy collection is initialized due to join fetch usage.
+				.hasSelects(1)
+				.hasJoins(4)
+				.hasOneClause(" inner join orders ")
+				.hasOneClause(" inner join orders_tags ")
+				.hasOneClause(" inner join item_tags ")
+				.hasOneClause(" left outer join order_note ");
+
+	}
 
 }
