@@ -1,8 +1,3 @@
-v2.6.4
-======
-* Added conversion support for `Calendar`
-* Fixed the bug with redundant joins
-
 v2.6.3
 ======
 * supporting JDK17 (previous version threw exceptions on illegal reflection operations)
