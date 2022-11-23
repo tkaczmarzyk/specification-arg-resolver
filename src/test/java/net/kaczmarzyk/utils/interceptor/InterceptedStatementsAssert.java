@@ -19,6 +19,7 @@ import org.assertj.core.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class InterceptedStatementsAssert {
 
@@ -82,5 +83,16 @@ public class InterceptedStatementsAssert {
 
 		return count;
 
+	}
+  
+  public InterceptedStatementsAssert hasSingleSelectWithNumberOfJoins(int expectedNumberOfJoins) {
+		assertThat(logs.size()).isEqualTo(1);
+
+		Integer numberOfJoins = countNumberOfSqlClauseInStatement(logs.get(0), "join");
+
+		assertThat(numberOfJoins)
+				.isEqualTo(expectedNumberOfJoins);
+
+		return this;
 	}
 }

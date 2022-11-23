@@ -21,20 +21,21 @@ import javax.persistence.criteria.Root;
 import java.util.function.Function;
 
 /**
- * Ugly way to share context between different specifications -- e.g. joins (see {@code JoinSpecificationResolver})
+ * Ugly way to share context between different specifications -- e.g. joins (see
+ * {@code JoinSpecificationResolver})
  *
  * @author Tomasz Kaczmarzyk
  */
 public interface QueryContext {
-    
-        boolean existsJoin(String key, Root<?> root);
 
-	Join<?, ?> getEvaluated(String key, Root<?> root);
-	
-	void putLazyVal(String key, Function<Root<?>, Join<?, ?>> value);
+    boolean existsJoin(String key, Root<?> root);
 
-	Fetch<?, ?> getEvaluatedJoinFetch(String key);
+    Join<?, ?> getEvaluated(String key, Root<?> root);
 
-	void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch);
+    void putLazyVal(String key, Function<Root<?>, Join<?, ?>> value);
+
+    Fetch<?, ?> getEvaluatedJoinFetch(String key);
+
+    void putEvaluatedJoinFetch(String key, Fetch<?, ?> fetch);
 
 }

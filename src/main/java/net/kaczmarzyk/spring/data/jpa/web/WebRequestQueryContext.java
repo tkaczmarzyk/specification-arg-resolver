@@ -65,17 +65,7 @@ public class WebRequestQueryContext implements QueryContext {
         @Override
         public boolean existsJoin(String key, Root<?> root) {
             Function<Root<?>, Join<?, ?>> value = contextMap.get(key);
-
-            if (value == null) {
-                    Optional<? extends Join<?, ?>> opJoin = root.getJoins().stream().filter(p -> p.getAlias() != null && p.getAlias().equals(key)).findFirst();
-                    if(opJoin.isPresent()){
-                        Join<?, ?> join = opJoin.get();
-                        putLazyVal(key, (r) -> join);
-                        return true;
-                    }
-                    return false;
-            }
-            return true;
+            return value != null;
         }
         
         
