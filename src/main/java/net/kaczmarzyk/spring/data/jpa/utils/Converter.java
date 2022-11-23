@@ -297,7 +297,7 @@ public class Converter {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
 			Date parsedDate = simpleDateFormat.parse(value);
 			return new Timestamp(parsedDate.getTime());
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat);
 		}
 	}
