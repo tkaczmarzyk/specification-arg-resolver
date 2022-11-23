@@ -17,6 +17,8 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,5 +58,13 @@ public class NotNullTest extends IntegrationTestBase {
         List<Customer> found = customerRepo.findAll(spec);
 
         assertThat(found).hasSize(1).containsOnly(lisaSimpson);
+    }
+
+    @Test
+    public void equalsAndHashCodeContract() {
+        EqualsVerifier.forClass(NotNull.class)
+                .usingGetClass()
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
     }
 }

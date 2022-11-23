@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
@@ -34,18 +38,26 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
  */
 @Configuration
 @ComponentScan(basePackages = "net.kaczmarzyk", excludeFilters = {
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithConfiguredConversionService.class }),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithSARConfiguredWithApplicationContext.class }),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithConfiguredCache.class })
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = Application.class),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithConfiguredConversionService.class),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithSARConfiguredWithApplicationContext.class)
 })
 @EnableJpaRepositories
 @EnableAutoConfiguration
 @EnableMBeanExport(registration = IGNORE_EXISTING)
-public class Application implements WebMvcConfigurer {
-	
+@EnableCaching
+public class ApplicationWithConfiguredCache implements WebMvcConfigurer {
+
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(new SpecificationArgumentResolver());
+		SpecificationArgumentResolver specificationArgumentResolver = new SpecificationArgumentResolver();
+		argumentResolvers.add(specificationArgumentResolver);
 	}
-	
+
+	@Bean
+	public CacheManager customersCacheManager() {
+		return new ConcurrentMapCacheManager("customers");
+	}
+
+
 }

@@ -1,5 +1,6 @@
 v2.8.0 - UNRELEASED
 ======
+* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching) support for custom specification interfaces. From now on, specifications generated from specification interfaces with the same params are equal and have the same `hashCode` value.
 * Added support for join fetch aliases in specification paths.
 
   For example:
@@ -19,7 +20,6 @@ v2.8.0 - UNRELEASED
 
   (see [README.md](README.md#join-fetch) for the details)
   
-
 v2.7.0
 ======
 * added support for resolving HTTP param name from a SpEL expression (via `@Spec.paramsInSpEL`)

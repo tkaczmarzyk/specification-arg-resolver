@@ -15,21 +15,22 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import java.util.List;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Matt S.Y. Ho
  */
-public class EndingWithIgnoreCaseWithTest extends IntegrationTestBase {
+public class EndingWithIgnoreCaseTest extends IntegrationTestBase {
 
 	Customer homerSimpson;
 	Customer margeSimpson;
@@ -75,4 +76,13 @@ public class EndingWithIgnoreCaseWithTest extends IntegrationTestBase {
 	public void rejectsInvalidNumberOfArguments() {
 		new EndingWithIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" });
 	}
+
+	@Test
+	public void equalsAndHashCodeContract() {
+		EqualsVerifier.forClass(EndingWithIgnoreCase.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
 }

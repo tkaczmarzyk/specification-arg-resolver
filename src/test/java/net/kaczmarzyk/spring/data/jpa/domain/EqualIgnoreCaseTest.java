@@ -15,48 +15,17 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
-import java.util.List;
+public class EqualIgnoreCaseTest {
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-/**
- * @author Ricardo Pardinho
- */
-public class EqualIgnoreCaseTest extends EqualTest {
-
-    @Test
-    public void filtersByStringCaseInsensitive() {
-        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "SIMpsOn" }, defaultConverter);
-        List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
-
-        assertThat(simpsonsFound).hasSize(2).containsOnly(homerSimpson, margeSimpson);
-
-
-        EqualIgnoreCase<Customer> lastNameS = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "s" }, defaultConverter);
-        List<Customer> found = customerRepo.findAll(lastNameS);
-
-        assertThat(found).isEmpty();
-
-
-        EqualIgnoreCase<Customer> firstName = new EqualIgnoreCase<>(queryCtx, "firstName", new String[] { "Moe" }, defaultConverter);
-        List<Customer> moeFound = customerRepo.findAll(firstName);
-
-        assertThat(moeFound).hasSize(1).containsOnly(moeSzyslak);
-    }
-
-    @Test
-    public void filtersByEnumCaseInsensitive() {
-        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "fEmAlE" }, defaultConverter);
-        List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
-        assertThat(simpsonsFound).hasSize(1).containsOnly(margeSimpson);
-
-
-        EqualIgnoreCase<Customer> firstName = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "mAlE" }, defaultConverter);
-        List<Customer> moeFound = customerRepo.findAll(firstName);
-        assertThat(moeFound).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
-    }
-
+	@Test
+	public void equalsAndHashCodeContract() {
+		EqualsVerifier.forClass(EqualIgnoreCase.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
 }
