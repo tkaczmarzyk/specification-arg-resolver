@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
 @Configuration
 @ComponentScan(basePackages = "net.kaczmarzyk", excludeFilters = {
 		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = Application.class),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithSARConfiguredWithApplicationContext.class)
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithSARConfiguredWithApplicationContext.class),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithConfiguredCache.class)
 })
 @EnableJpaRepositories
 @EnableAutoConfiguration

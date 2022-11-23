@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,10 @@ public class WebRequestProcessingContext {
 		} else {
 			throw new InvalidPathVariableRequestedException(pathVariableName);
 		}
+	}
+
+	public String getRequestHeaderValue(String headerKey) {
+		return webRequest.getHeader(headerKey);
 	}
 
 	private String pathPattern() {

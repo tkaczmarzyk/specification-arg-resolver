@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class ThrowableAssertions {
 			if (throwable.getClass().equals(ThrowableNotFoundException.class)) {
 				throw new AssertionFailedError("Expected " + expectedType + " to be thrown, but nothing was thrown.");
 			}
-			Assertions.assertThat(throwable).isInstanceOf(expectedType);
+			Assertions.assertThat(throwable).isExactlyInstanceOf(expectedType);
 			return throwable;
 		}
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,6 +137,8 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			return resolveConstVal(specDef);
 		} else if (specDef.pathVars().length != 0) {
 			return resolveSpecArgumentsFromPathVariables(context, specDef);
+		} else if (specDef.headers().length != 0) {
+			return resolveSpecArgumentsFromRequestHeaders(context, specDef);
 		} else {
 			return resolveDefaultVal(context, specDef);
 		}
@@ -183,6 +185,18 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 		return args;
 	}
+
+	private Collection<String> resolveSpecArgumentsFromRequestHeaders(WebRequestProcessingContext context, Spec specDef) {
+		Collection<String> args = new ArrayList<>();
+		for (String headerKey : specDef.headers()) {
+			String headerValue = context.getRequestHeaderValue(headerKey);
+			boolean isHeaderValueEmpty = headerValue == null || headerValue == "";
+			if (!isHeaderValueEmpty) {
+				args.add(headerValue);
+			}
+		}
+		return args;
+	}
 	
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
@@ -191,6 +205,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		
 		if (specDef.params().length != 0) {
 			for (String webParamName : specDef.params()) {
+				if (embeddedValueResolver != null && specDef.paramsInSpEL()) {
+					webParamName = embeddedValueResolver.resolveStringValue(webParamName);
+				}
 				String[] parameterValues = context.getParameterValues(webParamName);
 				if(parameterValues != null) {
 					String[] httpParamValues = delimitationStrategy.extractSingularValues(parameterValues);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,17 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import java.util.List;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Matt S.Y. Ho
@@ -72,5 +73,13 @@ public class StartingWithTest extends IntegrationTestBase {
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsInvalidNumberOfArguments() {
 		new StartingWith<>(queryCtx, "path", new String[] { "a", "b" });
+	}
+
+	@Test
+	public void equalsAndHashCodeContract() {
+		EqualsVerifier.forClass(StartingWith.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
 	}
 }
