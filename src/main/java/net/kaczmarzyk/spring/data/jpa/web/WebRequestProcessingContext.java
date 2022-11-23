@@ -75,6 +75,10 @@ public class WebRequestProcessingContext {
 		}
 	}
 
+	public String getRequestHeaderValue(String headerKey) {
+		return webRequest.getHeader(headerKey);
+	}
+
 	private String pathPattern() {
 		if (pathPattern != null) {
 			return pathPattern;

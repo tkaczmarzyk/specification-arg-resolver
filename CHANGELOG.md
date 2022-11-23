@@ -1,3 +1,30 @@
+v2.8.0
+======
+* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching) support for custom specification interfaces. From now on, specifications generated from specification interfaces with the same params are equal and have the same `hashCode` value.
+* Added support for join fetch aliases in specification paths.
+
+  For example:
+  ```java
+  @RequestMapping(value = "/customers", params = { "orderedItemName" })
+  @ResponseBody
+  public Object findCustomersByOrderedItemName(
+  		@JoinFetch(paths = "orders", alias = "o")
+  		@Spec(path = "o.itemName", params = "orderedItemName", spec = Like.class)) Specification<Customer> spec) {
+  	return customerRepository.findAll(spec, Sort.by("id"));
+  }
+  ```
+  
+  Please remember that:
+  * Join fetch path can use only aliases of another fetch joins. 
+  * Join path can use only aliases of another joins. 
+
+  (see [README.md](README.md#join-fetch) for the details)
+  
+v2.7.0
+======
+* added support for resolving HTTP param name from a SpEL expression (via `@Spec.paramsInSpEL`)
+* added support for resolving query arguments from HTTP request headers (via `@Spec.headers`)
+
 v2.6.3
 ======
 * supporting JDK17 (previous version threw exceptions on illegal reflection operations)

@@ -65,6 +65,8 @@ public class Customer {
 
     private int weightInt;
     private long weightLong;
+
+    @Column(columnDefinition = "NUMBER(6,2)")
     private float weightFloat;
     private Double weightDouble;
     private BigDecimal weightBigDecimal;

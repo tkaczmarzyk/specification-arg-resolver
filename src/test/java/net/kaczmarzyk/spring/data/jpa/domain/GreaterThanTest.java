@@ -15,12 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import org.junit.Test;
-import org.springframework.data.jpa.domain.Specification;
-
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+import org.junit.Test;
+import org.springframework.data.jpa.domain.Specification;
 
 
 /**
@@ -121,5 +122,13 @@ public class GreaterThanTest extends ComparableTestBase {
     	assertFilterContainsOnlyExpectedMembers("registrationDate", "01-03-2015", "dd-MM-yyyy",  moeSzyslak);
     	assertFilterIsEmpty("registrationDate", "02-03-2015", "dd-MM-yyyy");
     }
+
+	@Test
+	public void equalsAndHashCodeContract() {
+		EqualsVerifier.forClass(GreaterThan.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
     
 }

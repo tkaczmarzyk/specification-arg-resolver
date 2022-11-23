@@ -28,6 +28,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
+   * [SpEL support](#spel-support) -- information about Spring Expression Language support
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -514,33 +515,71 @@ public class ItemTag {
 }
 ``` 
 
-If you want to find all customers and fetch additional nested attributes (entities) to avoid `SELECT N+1 Problem` you can do the following:
+If you want to find all customers who ordered item with given tag name and fetch additional nested attributes (entities) to avoid `SELECT N+1 Problem` you can do the following:
 ```java
-@RequestMapping(value = "/findCustomersByOrderedItemTag")
+@RequestMapping(value = "/findCustomersWhoOrderedItemWithGivenTag")
 @PostMapping
 public Object findCustomers(
 	    @JoinFetch(paths = "orders", alias = "o")
-	    @JoinFetch(paths = "o.tags") Specification<Customer> spec) {
-	return customerRepo.findAll(spec, Sort.by("id"));
+	    @JoinFetch(paths = "o.tags", alias = "t")
+	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec);
 }
 ```
 
 The same as in case of multi-level joins, annotations are processed sequentially, the order must be kept!
 
-__Join Fetch aliases exists only in context of join fetch and can't be used in another specs paths!__ 
-Following spec is invalid:
+  Please remember that:
+  * Join fetch path can use only aliases of another fetch joins. 
+  * Join path can use only aliases of another joins. 
 
-```java
-@RequestMapping(value = "/findCustomersByOrderedItemTag")
-@PostMapping
-public Object findCustomersByOrderedItemTag(
-		@JoinFetch(path = "orders", alias = "o")
-		@Spec(path = "o.itemName", params = "itemName", spec = Equal.class) Specification<Customer> spec) {
-	return customerRepo.findAll(spec, Sort.by("id"));
-}
-```
-
-If there is a need to refer to joined paths in other specs, then regular join (not fetch) should be used as described in the Join section.
+  Following combinations are forbidden:
+  
+   * join path which uses join fetch alias  
+  
+        ```java
+         @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+         @PostMapping
+         public Object findCustomers(
+         	    @JoinFetch(paths = "orders", alias = "o")
+        	    // Wrong, 'o' defined in join fetch tried to be used in a regular join
+         	    @Join(path = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+         	return repository.findAll(spec);
+         }
+        ```
+   * join fetch path which uses join alias
+    
+       ```java
+        @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+        @PostMapping
+        public Object findCustomers(
+        	    @Join(path = "orders", alias = "o")
+        	    // Wrong, 'o' defined in a join tried to be used in join fetch
+        	    @JoinFetch(paths = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+        	return repository.findAll(spec);
+        }
+       ```
+     
+      If the same alias is defined both for `@Join` and `@JoinFetch`, the join alias will be used during specification resolving.
+      
+       ```java
+        @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+        @PostMapping
+        public Object findCustomers(
+        	    @JoinFetch(paths = "orders", alias = "o")
+        	    @JoinFetch(paths = "o.tags", alias = "t")
+        	    @Join(path = "orders", alias = "o")
+        	    @Join(path = "o.tags", alias = "t")
+        	    //'t' refers to third join - @Join(path = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+         
+             return repository.findAll(spec);
+        }
+       ```
+     Using join and join fetch on the same path should be avoided, otherwise the same table will be joined twice (`orders` and `tags` in above example).
+     The above example is an anti-pattern and should never be followed in the production code.
 
 Advanced HTTP parameter handling
 --------------------------------
@@ -767,6 +806,30 @@ public Object findById(
 }
 ```
 
+Request Header Support
+---------------------
+
+This is not a best practice for RESTful services but sometimes you may want to filter with request header's value. You
+can resolve request headers with Spring's `@RequestHeader` annotation. You can refer to them by using `headers` property
+of `@Spec` (instead of `params` property). For example:
+
+  ```java
+@RequestMapping(value = "/customers/reqHeaders")
+@ResponseBody
+public Object findCustomersByGenderAndNickName(
+    @RequestHeader(value = "customerGender", required = false) String gender,
+    @RequestHeader(value = "customerNickName", required = false) String nickName,
+    @And({
+            @Spec(path = "nickName", headers = "customerNickName", spec = Equal.class),
+            @Spec(path = "gender", headers = "customerGender", spec = Equal.class)
+    }) Specification<Customer> spec){
+    return customerRepo.findAll(spec);
+}
+  ```
+
+This will handle request `GET /customers/reqHeaders` as `select c from Customers c where c.gender = :gender AND c.nickName = :nickName`.
+
+
 Type conversions for HTTP parameters
 -------------------
 
@@ -881,6 +944,31 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
+SpEL support
+------------
+
+Support for [SpEL](https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/core.html#expressions) expression and [property placeholders]((https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/PropertySourcesPlaceholderConfigurer.html)) can be enabled in following way:
+* Configure `SpecificationArgumentResolver` by passing [AbstractApplicationContext](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/AbstractApplicationContext.html) in constructor
+* Set attribute `valueInSpEL` value to `true`
+
+Configuration example:
+   ```java
+   @Autowired
+   AbstractApplicationContext applicationContext;
+
+   @Override
+   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new SpecificationArgumentResolver(applicationContext));
+   }
+   ```
+
+SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
+
+Cache support
+------------
+
+Specification argument resolver supports [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching). Equals and HashCode contract is satisfied for generated specifications.
+
 Compatibility notes
 -------------------
 
@@ -888,7 +976,7 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.1`                                           |
+| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
 As far as the features supported in each version, please check the [CHANGELOG.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/CHANGELOG.md)
@@ -903,7 +991,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.6.3</version>
+    <version>2.8.0</version>
 </dependency>
 ```
 
