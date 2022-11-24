@@ -203,14 +203,14 @@ public class JoinE2eTest extends E2eTestBase {
 		HibernateStatementInterceptor.clearInterceptedStatements();
 
 		mockMvc.perform(get("/join/customers")
-						.param("order1", "Beer")
-						.param("order2", "Donuts")
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$[0].firstName").value("Homer"))
-				.andExpect(jsonPath("$[1].firstName").value("Moe"))
-				.andExpect(jsonPath("$[2]").doesNotExist());
+				.param("order1", "Beer")
+				.param("order2", "Donuts")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 
 		assertThatInterceptedStatements()
 				.hasSingleSelectWithNumberOfJoins(1);
