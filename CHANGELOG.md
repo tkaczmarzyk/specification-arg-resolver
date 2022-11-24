@@ -1,7 +1,7 @@
 v2.9.0
 ======
-* Added conversion support for `Calendar`
 * Fixed the bug with redundant joins
+* Added conversion support for `Calendar`
 
 v2.8.0
 ======
