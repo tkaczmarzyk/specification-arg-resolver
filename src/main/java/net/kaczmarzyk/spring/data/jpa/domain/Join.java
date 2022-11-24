@@ -68,13 +68,10 @@ public class Join<T> implements Specification<T>, Fake {
 			}
 
 			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
-            if (!queryContext.existsJoin(alias, root)) {
-
                 queryContext.putLazyVal(
                         alias,
                         (r) -> evaluated.join(extractedPathToJoin, joinType)
                 );
-            }
 		}
 		return null;
 	}

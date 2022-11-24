@@ -196,21 +196,21 @@ public class JoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$.totalElements").value(2))
 			.andExpect(jsonPath("$.size").value(1));
 	}
-  
-  @Test
+
+	@Test
 	public void reusesEvaluatedJoinForManySpecs() throws Exception {
 		em.flush();
 		HibernateStatementInterceptor.clearInterceptedStatements();
 
 		mockMvc.perform(get("/join/customers")
-                .param("order1", "Beer")
-                .param("order2", "Donuts")
-                .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$[0].firstName").value("Homer"))
-            .andExpect(jsonPath("$[1].firstName").value("Moe"))
-            .andExpect(jsonPath("$[2]").doesNotExist());
+				.param("order1", "Beer")
+				.param("order2", "Donuts")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Moe"))
+			.andExpect(jsonPath("$[2]").doesNotExist());
 
 		assertThatInterceptedStatements()
 				.hasSingleSelectWithNumberOfJoins(1);
