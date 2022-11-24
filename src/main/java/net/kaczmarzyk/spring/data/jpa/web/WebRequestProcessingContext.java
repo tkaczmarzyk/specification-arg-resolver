@@ -18,12 +18,17 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
+import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
 import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerMapping;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Provides information about Controller/method and WebRequest being processed.
@@ -36,6 +41,7 @@ public class WebRequestProcessingContext {
 
 	private final MethodParameter methodParameter;
 	private final NativeWebRequest webRequest;
+	private String pathPattern;
 
 	private Map<String, String> resolvedPathVariables;
 	
@@ -61,15 +67,64 @@ public class WebRequestProcessingContext {
 	}
 
 	public String getPathVariableValue(String pathVariableName) {
-		if(resolvedPathVariables == null) {
+		if (resolvedPathVariables == null) {
 			resolvedPathVariables = (Map) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, WebRequest.SCOPE_REQUEST);
 		}
+		//if first method returns null then try alternate path variable resolving method
+		if (resolvedPathVariables == null) {
+			resolvedPathVariables = PathVariableResolver.resolvePathVariables(pathPattern(), actualWebPath());
+		}
 
-		if (resolvedPathVariables != null && resolvedPathVariables.get(pathVariableName) != null) {
-			return resolvedPathVariables.get(pathVariableName);
+		String value = resolvedPathVariables.get(pathVariableName);
+		if (value != null) {
+			return value;
 		} else {
 			throw new InvalidPathVariableRequestedException(pathVariableName);
 		}
+	}
+
+	private String pathPattern() {
+		if (pathPattern != null) {
+			return pathPattern;
+		} else {
+			Class<?> controllerClass = methodParameter.getContainingClass();
+			if (controllerClass.getAnnotation(RequestMapping.class) != null) {
+				RequestMapping controllerMapping = controllerClass.getAnnotation(RequestMapping.class);
+				pathPattern = firstOf(controllerMapping.value(), controllerMapping.path());
+			}
+
+			String methodPathPattern = null;
+
+			if (methodParameter.hasMethodAnnotation(RequestMapping.class)) {
+				RequestMapping methodMapping = methodParameter.getMethodAnnotation(RequestMapping.class);
+				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
+			} else if (methodParameter.hasMethodAnnotation(GetMapping.class)) {
+				GetMapping methodMapping = methodParameter.getMethodAnnotation(GetMapping.class);
+				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
+			}
+
+			if (methodPathPattern != null) {
+				pathPattern = pathPattern != null ? pathPattern + methodPathPattern : methodPathPattern;
+			}
+		}
+		if (pathPattern == null) {
+			throw new IllegalStateException("path pattern could not be resolved (searched for @RequestMapping or @GetMapping)");
+		}
+		return pathPattern;
+	}
+
+	private String firstOf(String[] array1, String[] array2) {
+		if (array1.length > 0) {
+			return array1[0];
+		} else if (array2.length > 0) {
+			return array2[0];
+		}
+		return null;
+	}
+
+	private String actualWebPath() {
+		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+		return request.getPathInfo() != null ? request.getPathInfo() : request.getRequestURI().substring(request.getContextPath().length());
 	}
 
 	public String getRequestHeaderValue(String headerKey) {
