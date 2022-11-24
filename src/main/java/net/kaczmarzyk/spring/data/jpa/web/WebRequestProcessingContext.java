@@ -70,7 +70,7 @@ public class WebRequestProcessingContext {
 		if (resolvedPathVariables == null) {
 			resolvedPathVariables = (Map) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, WebRequest.SCOPE_REQUEST);
 		}
-		//if first method returns null then try alternate path variable resolving method
+		//if first method returns null then try alternative path variables resolving method
 		if (resolvedPathVariables == null) {
 			resolvedPathVariables = PathVariableResolver.resolvePathVariables(pathPattern(), actualWebPath());
 		}
