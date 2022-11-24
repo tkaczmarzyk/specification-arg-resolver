@@ -19,6 +19,8 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
 import net.kaczmarzyk.spring.data.jpa.Order;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +74,7 @@ public class JoinFetchTest extends IntegrationTestBase {
         assertThat(customers)
                 .extracting(Customer::getFirstName)
                 .containsExactly("Homer", "Marge", "Bart");
-        
+
         for (Customer customer : customers) {
             assertTrue(Hibernate.isInitialized(customer.getOrders()));
         }
@@ -125,15 +127,15 @@ public class JoinFetchTest extends IntegrationTestBase {
     public void performsTwoFetchesUsingTwoJoinFetchDefinition() {
     	JoinFetch<Customer> spec1 = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
     	JoinFetch<Customer> spec2 = new JoinFetch<Customer>(queryCtx, new String[] { "orders2" }, "o", JoinType.INNER, true);
-        
+
     	Conjunction<Customer> spec = new Conjunction<Customer>(spec1, spec2);
-    	
+
         List<Customer> customers = customerRepo.findAll(spec, Sort.by("id"));
 
         assertThat(customers)
                 .extracting(Customer::getFirstName)
                 .containsExactly("Homer", "Bart");
-        
+
         for (Customer customer : customers) {
         	assertTrue(Hibernate.isInitialized(customer.getOrders()));
         	assertTrue(Hibernate.isInitialized(customer.getOrders2()));
@@ -353,6 +355,14 @@ public class JoinFetchTest extends IntegrationTestBase {
                 .hasSize(3)
                 .extracting(Customer::getFirstName)
                 .containsExactlyInAnyOrder("Bart", "Homer", "Marge");
+    }
+
+    @Test
+    public void equalsAndHashCodeContract() {
+        EqualsVerifier.forClass(JoinFetch.class)
+                .usingGetClass()
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
     }
 
 }

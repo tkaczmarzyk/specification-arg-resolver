@@ -51,7 +51,9 @@ public class Join<T> implements Specification<T>, Fake {
 		query.distinct(distinctQuery);
 
 		if (!pathToJoinContainsAlias(pathToJoinOn)) {
-			queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+                        if(!queryContext.existsJoin(alias, root)) {
+                            queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+                        }
 		} else {
 			String[] pathToJoinOnSplittedByDot = pathToJoinSplittedByDot(pathToJoinOn);
 
@@ -66,11 +68,10 @@ public class Join<T> implements Specification<T>, Fake {
 			}
 
 			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
-
-			queryContext.putLazyVal(
-					alias,
-					(r) -> evaluated.join(extractedPathToJoin, joinType)
-			);
+                queryContext.putLazyVal(
+                        alias,
+                        (r) -> evaluated.join(extractedPathToJoin, joinType)
+                );
 		}
 		return null;
 	}

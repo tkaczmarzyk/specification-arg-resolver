@@ -1,7 +1,34 @@
+v2.10.0
+======
+* Changed approach for resolving path variables when processing request
+
+v2.9.0
+======
+* Fixed the bug with redundant joins
+* Added conversion support for `Calendar`
+
 v2.8.0
 ======
-* changed approach for resolving path variables when processing request
+* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching) support for custom specification interfaces. From now on, specifications generated from specification interfaces with the same params are equal and have the same `hashCode` value.
+* Added support for join fetch aliases in specification paths.
 
+  For example:
+  ```java
+  @RequestMapping(value = "/customers", params = { "orderedItemName" })
+  @ResponseBody
+  public Object findCustomersByOrderedItemName(
+  		@JoinFetch(paths = "orders", alias = "o")
+  		@Spec(path = "o.itemName", params = "orderedItemName", spec = Like.class)) Specification<Customer> spec) {
+  	return customerRepository.findAll(spec, Sort.by("id"));
+  }
+  ```
+  
+  Please remember that:
+  * Join fetch path can use only aliases of another fetch joins. 
+  * Join path can use only aliases of another joins. 
+
+  (see [README.md](README.md#join-fetch) for the details)
+  
 v2.7.0
 ======
 * added support for resolving HTTP param name from a SpEL expression (via `@Spec.paramsInSpEL`)

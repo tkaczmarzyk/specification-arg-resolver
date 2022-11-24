@@ -515,33 +515,71 @@ public class ItemTag {
 }
 ``` 
 
-If you want to find all customers and fetch additional nested attributes (entities) to avoid `SELECT N+1 Problem` you can do the following:
+If you want to find all customers who ordered item with given tag name and fetch additional nested attributes (entities) to avoid `SELECT N+1 Problem` you can do the following:
 ```java
-@RequestMapping(value = "/findCustomersByOrderedItemTag")
+@RequestMapping(value = "/findCustomersWhoOrderedItemWithGivenTag")
 @PostMapping
 public Object findCustomers(
 	    @JoinFetch(paths = "orders", alias = "o")
-	    @JoinFetch(paths = "o.tags") Specification<Customer> spec) {
-	return customerRepo.findAll(spec, Sort.by("id"));
+	    @JoinFetch(paths = "o.tags", alias = "t")
+	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+	return customerRepo.findAll(spec);
 }
 ```
 
 The same as in case of multi-level joins, annotations are processed sequentially, the order must be kept!
 
-__Join Fetch aliases exists only in context of join fetch and can't be used in another specs paths!__ 
-Following spec is invalid:
+  Please remember that:
+  * Join fetch path can use only aliases of another fetch joins. 
+  * Join path can use only aliases of another joins. 
 
-```java
-@RequestMapping(value = "/findCustomersByOrderedItemTag")
-@PostMapping
-public Object findCustomersByOrderedItemTag(
-		@JoinFetch(path = "orders", alias = "o")
-		@Spec(path = "o.itemName", params = "itemName", spec = Equal.class) Specification<Customer> spec) {
-	return customerRepo.findAll(spec, Sort.by("id"));
-}
-```
-
-If there is a need to refer to joined paths in other specs, then regular join (not fetch) should be used as described in the Join section.
+  Following combinations are forbidden:
+  
+   * join path which uses join fetch alias  
+  
+        ```java
+         @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+         @PostMapping
+         public Object findCustomers(
+         	    @JoinFetch(paths = "orders", alias = "o")
+        	    // Wrong, 'o' defined in join fetch tried to be used in a regular join
+         	    @Join(path = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+         	return repository.findAll(spec);
+         }
+        ```
+   * join fetch path which uses join alias
+    
+       ```java
+        @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+        @PostMapping
+        public Object findCustomers(
+        	    @Join(path = "orders", alias = "o")
+        	    // Wrong, 'o' defined in a join tried to be used in join fetch
+        	    @JoinFetch(paths = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+        	return repository.findAll(spec);
+        }
+       ```
+     
+      If the same alias is defined both for `@Join` and `@JoinFetch`, the join alias will be used during specification resolving.
+      
+       ```java
+        @RequestMapping(value = "/findCustomersByOrderedItemTag", params = { "tagName" })
+        @PostMapping
+        public Object findCustomers(
+        	    @JoinFetch(paths = "orders", alias = "o")
+        	    @JoinFetch(paths = "o.tags", alias = "t")
+        	    @Join(path = "orders", alias = "o")
+        	    @Join(path = "o.tags", alias = "t")
+        	    //'t' refers to third join - @Join(path = "o.tags", alias = "t")
+        	    @Spec(path = "t.name", params = "tagName", spec = Equal.class) Specification<Customer> spec) {
+         
+             return repository.findAll(spec);
+        }
+       ```
+     Using join and join fetch on the same path should be avoided, otherwise the same table will be joined twice (`orders` and `tags` in above example).
+     The above example is an anti-pattern and should never be followed in the production code.
 
 Advanced HTTP parameter handling
 --------------------------------
@@ -849,6 +887,7 @@ List of supported conversions:
   * `String -> Double`
   * `String -> BigDecimal`
   * `String -> Date` (default format: `yyyy-MM-dd`)
+  * `String -> Calendar` (default format: `yyyy-MM-dd`)
   * `String -> LocalDate` (default format: `yyyy-MM-dd`)
   * `String -> LocalDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss`)
   * `String -> OffsetDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
@@ -925,6 +964,11 @@ Configuration example:
 
 SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
 
+Cache support
+------------
+
+Specification argument resolver supports [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching). Equals and HashCode contract is satisfied for generated specifications.
+
 Compatibility notes
 -------------------
 
@@ -932,7 +976,7 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.1`                                           |
+| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
 As far as the features supported in each version, please check the [CHANGELOG.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/CHANGELOG.md)
@@ -947,7 +991,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.7.0</version>
+    <version>2.9.0</version>
 </dependency>
 ```
 
