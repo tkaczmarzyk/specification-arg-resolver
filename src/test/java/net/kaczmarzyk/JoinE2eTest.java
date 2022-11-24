@@ -22,6 +22,8 @@ import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
+import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -193,6 +195,25 @@ public class JoinE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$.totalPages").value(2))
 			.andExpect(jsonPath("$.totalElements").value(2))
 			.andExpect(jsonPath("$.size").value(1));
+	}
+  
+  @Test
+	public void reusesEvaluatedJoinForManySpecs() throws Exception {
+		em.flush();
+		HibernateStatementInterceptor.clearInterceptedStatements();
+
+		mockMvc.perform(get("/join/customers")
+                .param("order1", "Beer")
+                .param("order2", "Donuts")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$[0].firstName").value("Homer"))
+            .andExpect(jsonPath("$[1].firstName").value("Moe"))
+            .andExpect(jsonPath("$[2]").doesNotExist());
+
+		assertThatInterceptedStatements()
+				.hasSingleSelectWithNumberOfJoins(1);
 	}
 
 }

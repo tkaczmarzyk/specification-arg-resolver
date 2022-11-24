@@ -1,3 +1,6 @@
+* Added conversion support for `Calendar`
+* Fixed the bug with redundant joins
+
 v2.8.0
 ======
 * Added [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching) support for custom specification interfaces. From now on, specifications generated from specification interfaces with the same params are equal and have the same `hashCode` value.

@@ -887,6 +887,7 @@ List of supported conversions:
   * `String -> Double`
   * `String -> BigDecimal`
   * `String -> Date` (default format: `yyyy-MM-dd`)
+  * `String -> Calendar` (default format: `yyyy-MM-dd`)
   * `String -> LocalDate` (default format: `yyyy-MM-dd`)
   * `String -> LocalDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss`)
   * `String -> OffsetDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)

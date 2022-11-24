@@ -29,12 +29,14 @@ import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 
 public class ConverterTest {
@@ -71,6 +73,13 @@ public class ConverterTest {
 			.isWithinMonth(4)
 			.isWithinDayOfMonth(2)
 			.isWithinYear(2015);
+	}
+    
+    @Test
+	public void convertsToCalendar() {
+		Calendar converted = converter.convert("2015-03-01", Calendar.class);
+		Date convertedDate = converter.convert("2015-03-01", Date.class);
+		assertEquals(converted.getTimeInMillis(), convertedDate.getTime());
 	}
 	
 	@Test

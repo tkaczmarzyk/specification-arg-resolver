@@ -24,6 +24,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -33,11 +34,12 @@ public class WebRequestQueryContext implements QueryContext {
 
 	private static final String ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY";
 	private static final String JOIN_FETCH_ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY_JOIN_FETCH";
+        private static final String ROOT_CACHE_ATTRIBUTE_KEY = WebRequestQueryContext.class.getName() + ".ATTRIBUTE_KEY_ROOT_CACHE";
 
 	private HashMap<String, Function<Root<?>, Join<?, ?>>> contextMap;
 	private HashMap<String, Fetch<?, ?>> evaluatedJoinFetch;
 
-	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache = new HashMap<>();
+	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache;
 
 	public WebRequestQueryContext(NativeWebRequest request) {
 		this.contextMap = (HashMap<String, Function<Root<?>, Join<?, ?>>>) request.getAttribute(ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
@@ -51,13 +53,34 @@ public class WebRequestQueryContext implements QueryContext {
 			this.evaluatedJoinFetch = new HashMap<>();
 			request.setAttribute(JOIN_FETCH_ATTRIBUTE_KEY, evaluatedJoinFetch, NativeWebRequest.SCOPE_REQUEST);
 		}
+                
+                this.rootCache = (Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>>) request.getAttribute(ROOT_CACHE_ATTRIBUTE_KEY, NativeWebRequest.SCOPE_REQUEST);
+
+		if (this.rootCache == null) {
+			this.rootCache = new HashMap<>();
+			request.setAttribute(ROOT_CACHE_ATTRIBUTE_KEY, rootCache, NativeWebRequest.SCOPE_REQUEST);
+		}
 	}
+
+        @Override
+        public boolean existsJoin(String key, Root<?> root) {
+            Function<Root<?>, Join<?, ?>> value = contextMap.get(key);
+            return value != null;
+        }
+        
+        
 
 	@Override
 	public Join<?, ?> getEvaluated(String key, Root<?> root) {
 		Function<Root<?>, Join<?, ?>> value = contextMap.get(key);
 
 		if (value == null) {
+                        Optional<? extends Join<?, ?>> opJoin = root.getJoins().stream().filter(p -> p.getAlias() != null && p.getAlias().equals(key)).findFirst();
+                        if(opJoin.isPresent()){
+                            Join<?, ?> join = opJoin.get();
+                            putLazyVal(key, (r) -> join);
+                            return join;
+                        }
 			return null;
 		}
 
