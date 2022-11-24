@@ -1,3 +1,7 @@
+v2.9.1
+======
+* Added conversion tests for `Calendar` format (`String` -> `Calendar`)
+
 v2.9.0
 ======
 * Fixed the bug with redundant joins
