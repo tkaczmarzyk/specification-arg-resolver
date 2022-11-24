@@ -136,7 +136,7 @@ public class Converter {
 			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass, ignoreCase);
 		} else if (expectedClass.isAssignableFrom(Date.class)) {
 			return (T) convertToDate(value);
-    } else if (expectedClass.isAssignableFrom(Calendar.class)) {
+		} else if (expectedClass.isAssignableFrom(Calendar.class)) {
 			return (T) convertToCalendar(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
 			return (T) convertToBoolean(value);
@@ -244,12 +244,12 @@ public class Converter {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
 		}
 	}
-        
-    public Calendar convertToCalendar(String value) {
+
+	public Calendar convertToCalendar(String value) {
 		String dateFormat = getDateFormat(Date.class);
 		try {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
 			return cal;
 		} catch (ParseException e) {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
