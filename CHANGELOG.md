@@ -1,3 +1,7 @@
+v2.10.0 - not released yet
+=======
+* added conversion support for `Timestamp`
+
 v2.9.0
 ======
 * Fixed the bug with redundant joins
