@@ -99,6 +99,9 @@ public class JoinFetch<T> implements Specification<T>, Fake {
 					root.fetch(path, joinType);
 				}
 			}
+		} else {
+			// PoC / WIP
+			return new Join<>(context, pathsToFetch.iterator().next(), alias, joinType, distinct).toPredicate((Root) root, query, cb);
 		}
 		return null;
 	}
