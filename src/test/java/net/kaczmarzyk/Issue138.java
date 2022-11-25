@@ -35,6 +35,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @author Jakub Radlica
+ * @author Tomasz Kaczmarzyk
+ */
 public class Issue138 extends E2eTestBase {
 
 	@RestController

@@ -69,7 +69,7 @@ public class JoinFetch<T> implements Specification<T>, Fake {
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		query.distinct(distinct);
-		if (!Number.class.isAssignableFrom(query.getResultType())) { // do not join in count queries
+		if (!Number.class.isAssignableFrom(query.getResultType())) { // if it's not a count query, then just execute the fetch
 			if (pathsToFetch.size() == 1) {
 				String pathToFetch = pathsToFetch.get(0);
 				if (pathToJoinContainsAlias(pathToFetch)) {
@@ -99,9 +99,18 @@ public class JoinFetch<T> implements Specification<T>, Fake {
 					root.fetch(path, joinType);
 				}
 			}
-		} else {
-			// PoC / WIP
-			return new Join<>(context, pathsToFetch.iterator().next(), alias, joinType, distinct).toPredicate((Root) root, query, cb);
+		} else { // count query -- join fetch can be skipped unless it is used not only for fetching but for filtering as well
+			if (!alias.isEmpty()) { // assumption: presence of a non-empty alias means that join fetch is used for filtering as well
+									//  unfortunately, Hibernate disallows adding join fetches to count queries 
+									//  (or more specifcally, does not allow fetching if fetch-root is not present in the query result)
+									//  so we need to convert the join fetch into a regular join
+				
+				String pathToJoin = pathsToFetch.iterator().next(); // see the constructor, if alias is used, then pathsToFetch must have size 1
+				
+				Join<T> regularJoin = new Join<T>(context, pathToJoin, alias, joinType, distinct);
+				
+				return regularJoin.toPredicate(root, query, cb);				
+			}
 		}
 		return null;
 	}
