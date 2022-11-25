@@ -892,6 +892,7 @@ List of supported conversions:
   * `String -> LocalDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss`)
   * `String -> OffsetDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
   * `String -> Instant` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
+  * `String -> Timestamp` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`)
   * `String -> UUID` 
 
 To use a custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
