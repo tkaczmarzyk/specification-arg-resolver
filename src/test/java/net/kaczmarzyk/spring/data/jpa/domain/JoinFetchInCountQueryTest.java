@@ -102,6 +102,20 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     
     @Test
     public void doesNotJoinLazyCollectionWhenExecutedInContextOfACountQueryAndNoFilteringOnFetchedPart_aliasExistsButNoFiltering() {
+    	JoinFetch<Customer> fetchSpec = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true); // there is an alias for the join
+    																															// but it is not used for filtering
+        Number customerCount = customerRepo.count(fetchSpec); 
+
+        assertThat(customerCount.intValue())
+                .isEqualTo(3);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
+    }
+    
+    @Test
+    public void doesNotJoinLazyCollectionWhenExecutedInContextOfACountQueryAndNoFilteringOnFetchedPart_aliasExistsButNoFiltering_butIsUsedForNestedFetch() {
     	fail("todo");
     }
 
