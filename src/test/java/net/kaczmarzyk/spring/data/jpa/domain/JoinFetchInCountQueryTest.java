@@ -18,6 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
+import static net.kaczmarzyk.utils.LoggedQueryAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +32,7 @@ import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -68,11 +70,38 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     
     @Test
     public void doesNotJoinLazyCollectionWhenExecutedInContextOfACountQueryAndNoFilteringOnFetchedPart() {
-    	fail("todo");
+    	JoinFetch<Customer> spec = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "", JoinType.LEFT, true); // empty alias = for sure no filtering
+        
+        Number customerCount = customerRepo.count(spec);
+
+        assertThat(customerCount.intValue())
+                .isEqualTo(3);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
     }
     
     @Test
     public void executesJoinOnLazyCollectionWhenExecutedInContextOfACountQueryButThereIsFilteringOnFetchedPart() {
+    	JoinFetch<Customer> fetchSpec = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
+    	
+    	Specification<Customer> orderForMoreDuff = new Like<>(queryCtx, "o.itemName", "Duff");
+    	
+    	Specification<Customer> specWithFilterOnJoin = Specification.where(fetchSpec).and(orderForMoreDuff);
+        
+        Number customerCount = customerRepo.count(specWithFilterOnJoin);
+
+        assertThat(customerCount.intValue())
+                .isEqualTo(1);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(1);
+    }
+    
+    @Test
+    public void doesNotJoinLazyCollectionWhenExecutedInContextOfACountQueryAndNoFilteringOnFetchedPart_aliasExistsButNoFiltering() {
     	fail("todo");
     }
 

@@ -54,6 +54,11 @@ public class LoggedQueryAssertions {
 		return this;
 	}
 	
+	public LoggedQueryAssertions theOnlyOneQueryThatWasExecuted() {
+		return numberOfPerformedHqlQueriesIs(1)
+				.andQueryWithIndex(0);
+	}
+	
 	public LoggedQueryAssertions numberOfPerformedHqlQueriesIs(int expectedCount) {
 		Assertions.assertThat(loggedQueries()).hasSize(expectedCount);
 		return this;
