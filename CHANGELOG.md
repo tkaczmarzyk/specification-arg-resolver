@@ -1,5 +1,6 @@
-v2.9.1
-======
+v2.10.0 - not released yet
+=======
+* added conversion support for `Timestamp`
 * Added strict date format validation for `Date` and `Calendar` in `Converter` component
 
 v2.9.0
