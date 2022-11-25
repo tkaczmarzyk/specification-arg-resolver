@@ -19,6 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.springframework.core.convert.ConversionService;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -239,7 +240,7 @@ public class Converter {
 	public Date convertToDate(String value) {
 		String dateFormat = getDateFormat(Date.class);
 		try {
-			return new SimpleDateFormat(dateFormat).parse(value);
+			return simpleDateFormatWithStrictParsing(dateFormat).parse(value);
 		} catch (ParseException e) {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
 		}
@@ -249,7 +250,7 @@ public class Converter {
 		String dateFormat = getDateFormat(Date.class);
 		try {
 			Calendar cal = Calendar.getInstance();
-			cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
+			cal.setTime(simpleDateFormatWithStrictParsing(dateFormat).parse(value));
 			return cal;
 		} catch (ParseException e) {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
@@ -298,6 +299,12 @@ public class Converter {
 			}
 		}
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
+	}
+
+	private DateFormat simpleDateFormatWithStrictParsing(String dateFormatPattern) {
+		DateFormat simpleDateFormat = new SimpleDateFormat(dateFormatPattern);
+		simpleDateFormat.setLenient(false);
+		return simpleDateFormat;
 	}
 
 	@Override

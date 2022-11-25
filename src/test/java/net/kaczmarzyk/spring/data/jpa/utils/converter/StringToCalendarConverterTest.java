@@ -37,7 +37,7 @@ public class StringToCalendarConverterTest {
 		//when + then
 		assertThrows(
 				Converter.ValueRejectedException.class,
-				() -> converterWithDefaultFormats.convert("24.11.2022", Calendar.class),
+				() -> converterWithDefaultFormats.convert("24-11-2022", Calendar.class),
 				"Date format exception, expected format: yyyy-MM-dd"
 		);
 	}
@@ -64,7 +64,7 @@ public class StringToCalendarConverterTest {
 		//when + then
 		assertThrows(
 				Converter.ValueRejectedException.class,
-				() -> converterWithCustomFormat.convert("2022.11.24", Calendar.class),
+				() -> converterWithCustomFormat.convert("2022-11-24", Calendar.class),
 				"Date format exception, expected format: MM-yyyy-dd"
 		);
 

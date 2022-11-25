@@ -46,34 +46,6 @@ public class ConverterTest {
 	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 	
 	@Test
-	public void convertsToDate() {
-		Date converted = converter.convert("2015-03-01", Date.class);
-		
-		assertThat(converted)
-			.isWithinMonth(3)
-			.isWithinDayOfMonth(1)
-			.isWithinYear(2015);
-	}
-	
-	@Test
-	public void convertsToMultipleDates() {
-		List<Date> converted = converter.convert(Arrays.asList("2015-03-01", "2015-04-02"), Date.class);
-		
-		assertThat(converted)
-			.hasSize(2);
-		
-		assertThat(converted.get(0))
-			.isWithinMonth(3)
-			.isWithinDayOfMonth(1)
-			.isWithinYear(2015);
-		
-		assertThat(converted.get(1))
-			.isWithinMonth(4)
-			.isWithinDayOfMonth(2)
-			.isWithinYear(2015);
-	}
-	
-	@Test
 	public void stringIsPassedThrough() {
 		assertThat(converter.convert("143", String.class)).isEqualTo("143");
 	}
