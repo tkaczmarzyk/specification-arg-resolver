@@ -104,6 +104,7 @@ public class JoinFetch<T> implements Specification<T>, Fake {
 									//  unfortunately, Hibernate disallows adding join fetches to count queries 
 									//  (or more specifcally, does not allow fetching if fetch-root is not present in the query result)
 									//  so we need to convert the join fetch into a regular join
+									//  TODO this might be not enough in case of a multi join fetch -- alias might be added not for filtering, but only for multi-level fetching 
 				
 				String pathToJoin = pathsToFetch.iterator().next(); // see the constructor, if alias is used, then pathsToFetch must have size 1
 				

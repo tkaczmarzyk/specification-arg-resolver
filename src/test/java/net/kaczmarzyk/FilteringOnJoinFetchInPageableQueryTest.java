@@ -15,13 +15,10 @@
  */
 package net.kaczmarzyk;
 
-import net.kaczmarzyk.E2eTestBase;
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.In;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -31,15 +28,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.domain.In;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 /**
+ * See: https://github.com/tkaczmarzyk/specification-arg-resolver/issues/138
+ * 
  * @author Jakub Radlica
  * @author Tomasz Kaczmarzyk
  */
-public class Issue138 extends E2eTestBase {
+public class FilteringOnJoinFetchInPageableQueryTest extends E2eTestBase {
 
 	@RestController
 	public static class TestControllerIssue138 {
