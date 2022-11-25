@@ -96,7 +96,7 @@ public class StringToDateConverterTest {
 		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
 
 		//when
-		List<Date> converted = converterWithCustomFormat.convert(Arrays.asList("05-13-2022", "2022-11-24"), Date.class);
+		List<Date> converted = converterWithCustomFormat.convert(Arrays.asList("05-13-2022", "2022-11-16-invalid-format", "2022-11-24"), Date.class);
 
 		//then
 		assertThat(converted)
@@ -109,17 +109,53 @@ public class StringToDateConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableDate() {
+	public void throwsValuesRejectedExceptionForConverterWithExceptionOnTypeMismatchIfOneOfMultipleDatesIsInUnparsableFormat_differentThanExpectedDateFormat() {
+		//given
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EXCEPTION, null);
+
+		//when + then
+		assertThrows(
+				Converter.ValuesRejectedException.class,
+				() -> converterWithCustomFormat.convert(Arrays.asList("2022-11-24", "05-13-2022"), Date.class),
+				"invalid values present in the HTTP param"
+		);
+	}
+
+	@Test
+	public void throwsValuesRejectedExceptionForConverterWithExceptionOnTypeMismatchIfOneOfMultipleDatesIsInUnparsableFormat_invalidDateFormat() {
+		//given
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EXCEPTION, null);
+
+		//when + then
+		assertThrows(
+				Converter.ValuesRejectedException.class,
+				() -> converterWithCustomFormat.convert(Arrays.asList("2022-11-24", "2022-11-24-invalid-format"), Date.class),
+				"invalid values present in the HTTP param"
+		);
+	}
+
+	@Test
+	public void throwsValueRejectedExceptionForUnparseableDate_differentThanExpectedDateFormat() {
 		//when + then
 		assertThrows(
 				Converter.ValueRejectedException.class,
-				() -> converterWithDefaultFormats.convert("11-2022-24", Date.class),
+				() -> converterWithDefaultFormats.convert("21-2022-24", Date.class),
 				"Date format exception, expected format: yyyy-MM-dd"
 		);
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableDateAndCustomFormat() {
+	public void throwsValueRejectedExceptionForUnparseableDate_invalidDateFormat() {
+		//when + then
+		assertThrows(
+				Converter.ValueRejectedException.class,
+				() -> converterWithDefaultFormats.convert("2022-11-24-invalid-format", Date.class),
+				"Date format exception, expected format: yyyy-MM-dd"
+		);
+	}
+
+	@Test
+	public void throwsValueRejectedExceptionForUnparseableDateAndCustomFormat_differentThanExpectedDateFormat() {
 		//given
 		Converter converterWithCustomFormat = Converter.withDateFormat("MM-yyyy-dd", EMPTY_RESULT, null);
 
@@ -132,15 +168,15 @@ public class StringToDateConverterTest {
 	}
 
 	@Test
-	public void throwsValuesRejectedExceptionForConverterWithExceptionOnTypeMismatchIfOneOfMultipleDatesIsInUnparsableFormat() {
+	public void throwsValueRejectedExceptionForUnparseableDateAndCustomFormat_invalidDateFormat() {
 		//given
-		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EXCEPTION, null);
+		Converter converterWithCustomFormat = Converter.withDateFormat("MM-yyyy-dd", EMPTY_RESULT, null);
 
 		//when + then
 		assertThrows(
-				Converter.ValuesRejectedException.class,
-				() -> converterWithCustomFormat.convert(Arrays.asList("2022-11-24", "05-13-2022"), Date.class),
-				"invalid values present in the HTTP param"
+				Converter.ValueRejectedException.class,
+				() -> converterWithCustomFormat.convert("11-2022-24-invalid-format", Date.class),
+				"Date format exception, expected format: MM-yyyy-dd"
 		);
 	}
 }

@@ -37,10 +37,19 @@ public class StringToLocalDateTimeConverterTest {
 	}
 	
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableLocalDateTime() {
+	public void throwsValueRejectedExceptionForUnparseableLocalDateTime_differentThanExpectedDateFormat() {
 		assertThrows(
 				Converter.ValueRejectedException.class,
-				() -> converterWithDefaultFormats.convert("2020-06-19T16:50:49T", LocalDateTime.class),
+				() -> converterWithDefaultFormats.convert("06-2020-19T16:50:49", LocalDateTime.class),
+				"LocalDateTime format exception, expected format:yyyy-MM-dd'T'HH:mm:ss"
+		);
+	}
+
+	@Test
+	public void throwsValueRejectedExceptionForUnparseableLocalDateTime_invalidDateFormat() {
+		assertThrows(
+				Converter.ValueRejectedException.class,
+				() -> converterWithDefaultFormats.convert("2020-06-19T16:50:49-invalid-format", LocalDateTime.class),
 				"LocalDateTime format exception, expected format:yyyy-MM-dd'T'HH:mm:ss"
 		);
 	}
@@ -55,16 +64,27 @@ public class StringToLocalDateTimeConverterTest {
 	}
 	
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableLocalDateTimeAndCustomFormat() {
+	public void throwsValueRejectedExceptionForUnparseableLocalDateTimeAndCustomFormat_differentThanExpectedDateFormat() {
 		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd 'T' HH:mm:ss", EMPTY_RESULT, null);
 		
 		assertThrows(
 				Converter.ValueRejectedException.class,
-				() -> converterWithCustomFormat.convert("2020-06-19T16:50:49", LocalDateTime.class),
+				() -> converterWithCustomFormat.convert("06-2020-19 T 16:56:49", LocalDateTime.class),
 				"LocalDateTime format exception, expected format:yyyy-MM-dd 'T' HH:mm:ss"
 		);
 		
 	}
-	
-	
+
+	@Test
+	public void throwsValueRejectedExceptionForUnparseableLocalDateTimeAndCustomFormat_invalidDateFormat() {
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd 'T' HH:mm:ss", EMPTY_RESULT, null);
+
+		assertThrows(
+				Converter.ValueRejectedException.class,
+				() -> converterWithCustomFormat.convert("2020-06-19 T 16:56:49-invalid-format", LocalDateTime.class),
+				"LocalDateTime format exception, expected format:yyyy-MM-dd 'T' HH:mm:ss"
+		);
+
+	}
+
 }

@@ -1,3 +1,7 @@
+v2.9.1
+======
+* Added strict date format validation for `Date` and `Calendar` in `Converter` component
+
 v2.9.0
 ======
 * Fixed the bug with redundant joins

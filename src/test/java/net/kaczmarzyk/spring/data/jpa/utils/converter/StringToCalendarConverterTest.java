@@ -33,11 +33,21 @@ public class StringToCalendarConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableCalendar() {
+	public void throwsValueRejectedExceptionForUnparseableCalendar_differentThanExpectedDateFormat() {
 		//when + then
 		assertThrows(
 				Converter.ValueRejectedException.class,
 				() -> converterWithDefaultFormats.convert("24-11-2022", Calendar.class),
+				"Date format exception, expected format: yyyy-MM-dd"
+		);
+	}
+
+	@Test
+	public void throwsValueRejectedExceptionForUnparseableCalendar_invalidDateFormat() {
+		//when + then
+		assertThrows(
+				Converter.ValueRejectedException.class,
+				() -> converterWithDefaultFormats.convert("2022-11-24-invalid-format", Calendar.class),
 				"Date format exception, expected format: yyyy-MM-dd"
 		);
 	}
@@ -57,7 +67,7 @@ public class StringToCalendarConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableCalendarAndCustomFormat() {
+	public void throwsValueRejectedExceptionForUnparseableCalendarAndCustomFormat_differentThanExpectedDateFormat() {
 		//given
 		Converter converterWithCustomFormat = Converter.withDateFormat("MM-yyyy-dd", EMPTY_RESULT, null);
 
@@ -67,7 +77,19 @@ public class StringToCalendarConverterTest {
 				() -> converterWithCustomFormat.convert("2022-11-24", Calendar.class),
 				"Date format exception, expected format: MM-yyyy-dd"
 		);
+	}
 
+	@Test
+	public void throwsValueRejectedExceptionForUnparseableCalendarAndCustomFormat_invalidDateFormat() {
+		//given
+		Converter converterWithCustomFormat = Converter.withDateFormat("MM-yyyy-dd", EMPTY_RESULT, null);
+
+		//when + then
+		assertThrows(
+				Converter.ValueRejectedException.class,
+				() -> converterWithCustomFormat.convert("11-2022-24-invalid-format", Calendar.class),
+				"Date format exception, expected format: MM-yyyy-dd"
+		);
 	}
 
 	private Calendar convertLocalDateToCalendar(LocalDate localDate) {
