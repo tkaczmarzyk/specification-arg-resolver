@@ -60,7 +60,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		return Spec.class;
 	}
 	
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Spec def) {
+	public Specification<Object> buildSpecification(ProcessingContext context, Spec def) {
 		try {
 			Collection<String> args = resolveSpecArguments(context, def);
 			if (args.isEmpty() && !isZeroArgSpec(def)) {
@@ -88,7 +88,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Specification<Object> newSpecification(Spec def, String[] argsArray, WebRequestProcessingContext context) throws InstantiationException, IllegalAccessException,
+	private Specification<Object> newSpecification(Spec def, String[] argsArray, ProcessingContext context) throws InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException {
 		
 		QueryContext queryCtx = context.queryContext();
@@ -132,7 +132,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}
 	
-	private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
+	private Collection<String> resolveSpecArguments(ProcessingContext context, Spec specDef) {
 		if (specDef.constVal().length != 0) {
 			return resolveConstVal(specDef);
 		} else if (specDef.pathVars().length != 0) {
@@ -156,7 +156,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 	}
 
-	private Collection<String> resolveDefaultVal(WebRequestProcessingContext context, Spec specDef) {
+	private Collection<String> resolveDefaultVal(ProcessingContext context, Spec specDef) {
 		Collection<String> resolved = resolveSpecArgumentsFromHttpParameters(context, specDef);
 		if (resolved.isEmpty() && specDef.defaultVal().length != 0) {
 			if (embeddedValueResolver != null && specDef.valueInSpEL()) {
@@ -178,7 +178,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 	}
 	
-	private Collection<String> resolveSpecArgumentsFromPathVariables(WebRequestProcessingContext context, Spec specDef) {
+	private Collection<String> resolveSpecArgumentsFromPathVariables(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<>();
 		for (String pathVar : specDef.pathVars()) {
 			args.add(context.getPathVariableValue(pathVar));
@@ -186,7 +186,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		return args;
 	}
 
-	private Collection<String> resolveSpecArgumentsFromRequestHeaders(WebRequestProcessingContext context, Spec specDef) {
+	private Collection<String> resolveSpecArgumentsFromRequestHeaders(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<>();
 		for (String headerKey : specDef.headers()) {
 			String headerValue = context.getRequestHeaderValue(headerKey);
@@ -198,7 +198,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		return args;
 	}
 	
-	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
+	private Collection<String> resolveSpecArgumentsFromHttpParameters(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
 		
 		DelimitationStrategy delimitationStrategy = DelimitationStrategy.of(specDef.paramSeparator());

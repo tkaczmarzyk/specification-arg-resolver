@@ -28,41 +28,51 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static java.util.Objects.isNull;
+
 /**
  * Provides information about Controller/method and WebRequest being processed.
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class WebRequestProcessingContext {
+public class WebRequestProcessingContext implements ProcessingContext {
 
 	private final MethodParameter methodParameter;
 	private final NativeWebRequest webRequest;
 	private String pathPattern;
 
 	private Map<String, String> resolvedPathVariables;
+
+	private QueryContext queryContext;
 	
 	public WebRequestProcessingContext(MethodParameter methodParameter, NativeWebRequest webRequest) {
 		this.methodParameter = methodParameter;
 		this.webRequest = webRequest;
+		this.queryContext = new DefaultQueryContext();
 	}
 
+	@Override
 	public Class<?> getParameterType() {
 		return methodParameter.getParameterType();
 	}
 
+	@Override
 	public Annotation[] getParameterAnnotations() {
 		return methodParameter.getParameterAnnotations();
 	}
 
+	@Override
 	public String[] getParameterValues(String webParamName) {
 		return webRequest.getParameterValues(webParamName);
 	}
 
+	@Override
 	public QueryContext queryContext() {
-		return new WebRequestQueryContext(webRequest);
+		return queryContext;
 	}
 
+	@Override
 	public String getPathVariableValue(String pathVariableName) {
 		if(resolvedPathVariables == null) {
 			resolvedPathVariables = PathVariableResolver.resolvePathVariables(pathPattern(), actualWebPath());
@@ -75,6 +85,7 @@ public class WebRequestProcessingContext {
 		}
 	}
 
+	@Override
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
 	}

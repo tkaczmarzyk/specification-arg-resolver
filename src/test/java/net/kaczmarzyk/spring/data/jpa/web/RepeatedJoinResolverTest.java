@@ -40,7 +40,7 @@ public class RepeatedJoinResolverTest extends ResolverTestBase {
 	public void resolvesRepeatedJoin() {
 		MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
 		NativeWebRequest req = mock(NativeWebRequest.class);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 

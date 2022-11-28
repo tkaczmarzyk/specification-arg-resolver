@@ -970,6 +970,35 @@ Cache support
 
 Specification argument resolver supports [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching). Equals and HashCode contract is satisfied for generated specifications.
 
+Specification building apart from web layer
+------------------------------------------
+
+Specification argument resolver supports creating specifications apart from web layer.
+To build specification outside the web-layer the `SpecificationBuilder` should be used:
+
+* Let's assume following specification:
+    ```java
+    @Join(path = "orders", alias = "o")
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    public interface CustomerByOrdersSpec implements Specification<Customer> {
+    }
+    ```
+* Specification could be build as follows:
+    ```java
+    Specification<Customer> spec = specification(CustomerByOrdersSpec.class)
+        .withParams("orderItem", "Pizza")
+        .build();            
+    ```
+* By default, the specification builder does not support SPeL and does not use spring conversion service. To build specification with SPeL support and spring conversion service you should:
+    ```java
+    Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class)
+        .withSpecificationFactory(new SpecificationFactory(conversionService, abstractApplicationContext))
+        .withParams("orderItem", "Pizza")
+        .build();
+	```
+
+  Note: There is additional method `withArg(<argName>, <values...>)` that store values used as fallback in case of missing path/header/query param value.
+
 Compatibility notes
 -------------------
 
