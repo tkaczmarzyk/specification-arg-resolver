@@ -1,7 +1,14 @@
 v2.10.0 - not released yet
 =======
 * Added conversion support for `Timestamp`
-* Added strict date format validation for `Date` and `Calendar` in `Converter` component
+* Added strict date format validation for `Date`, `Calendar` and `Timestamp` in `Converter` component.
+  
+  Before introduced changes the following formats were considered as valid (let's assume that expected date format was `yyyy-MM-dd` e.g. `2022-11-28`):
+  * `2022-11-28-unnecesarry-additional-characters` - if the date format was satisfied (checking from left to right) the next additional characters were ignored
+  * `1-1-1` - length of specific parts of date (year, month, day) was not validated
+  * `28-11-2022` - order of specific parts of date was not validated
+
+  From now on strict policy of date format validation is introduced. The Date has to be in specific format and of specific length.
 
 v2.9.0
 ======
