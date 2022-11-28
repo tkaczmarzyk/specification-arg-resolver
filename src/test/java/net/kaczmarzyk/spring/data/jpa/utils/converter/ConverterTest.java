@@ -29,14 +29,12 @@ import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 
 public class ConverterTest {
@@ -46,41 +44,6 @@ public class ConverterTest {
 	
 	private static Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
 	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
-	
-	@Test
-	public void convertsToDate() {
-		Date converted = converter.convert("2015-03-01", Date.class);
-		
-		assertThat(converted)
-			.isWithinMonth(3)
-			.isWithinDayOfMonth(1)
-			.isWithinYear(2015);
-	}
-	
-	@Test
-	public void convertsToMultipleDates() {
-		List<Date> converted = converter.convert(Arrays.asList("2015-03-01", "2015-04-02"), Date.class);
-		
-		assertThat(converted)
-			.hasSize(2);
-		
-		assertThat(converted.get(0))
-			.isWithinMonth(3)
-			.isWithinDayOfMonth(1)
-			.isWithinYear(2015);
-		
-		assertThat(converted.get(1))
-			.isWithinMonth(4)
-			.isWithinDayOfMonth(2)
-			.isWithinYear(2015);
-	}
-    
-    @Test
-	public void convertsToCalendar() {
-		Calendar converted = converter.convert("2015-03-01", Calendar.class);
-		Date convertedDate = converter.convert("2015-03-01", Date.class);
-		assertEquals(converted.getTimeInMillis(), convertedDate.getTime());
-	}
 	
 	@Test
 	public void stringIsPassedThrough() {
