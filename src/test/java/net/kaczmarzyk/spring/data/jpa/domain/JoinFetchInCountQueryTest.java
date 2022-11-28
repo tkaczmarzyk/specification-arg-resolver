@@ -25,10 +25,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.persistence.criteria.JoinType;
 
 import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.cfg.Environment;
+import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
@@ -38,6 +42,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
 import net.kaczmarzyk.spring.data.jpa.Order;
+import net.kaczmarzyk.utils.TestLogAppender;
 
 
 /**
@@ -47,7 +52,9 @@ import net.kaczmarzyk.spring.data.jpa.Order;
  */
 public class JoinFetchInCountQueryTest extends IntegrationTestBase {
 
-    Customer homerSimpson;
+    private static final String BLACK_FRIDAY_TAG = "BlackFridayOffer";
+    
+	Customer homerSimpson;
     Customer margeSimpson;
     Customer bartSimpson;
     
@@ -57,6 +64,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
 
         homerSimpson = customer("Homer", "Simpson")
                 .orders("Duff Beer", "Donuts")
+                .orders(order("Duff MegaPack").withTags(BLACK_FRIDAY_TAG))
                 .build(em);
         margeSimpson = customer("Marge", "Simpson")
                 .build(em);
@@ -66,6 +74,11 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         
         em.flush();
         em.clear();
+        
+        TestLogAppender.clearInterceptedLogs();
+        Properties p = Environment.getProperties();
+        System.out.println(p.getProperty(Environment.QUERY_PLAN_CACHE_MAX_SIZE));
+        System.out.println();
     }
     
     @Test
@@ -115,65 +128,118 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     }
     
     @Test
-    public void doesNotJoinLazyCollectionWhenExecutedInContextOfACountQueryAndNoFilteringOnFetchedPart_aliasExistsButNoFiltering_butIsUsedForNestedFetch() {
-    	fail("todo");
+    public void doesNotJoinLazyCollectionWhenExecutedInContextOfACountQueryAndNoFilteringOnFetchedPart_aliasExistsButNotNotUsedforFiltering_butIsUsedForNestedFetch() {
+    	JoinFetch<Customer> ordersFetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
+    	JoinFetch<Customer> tagsFetch = new JoinFetch<Customer>(queryCtx, new String[] { "o.tags" }, "t", JoinType.LEFT, true);
+    	Specification<Customer> fullSpec = Specification.where(ordersFetch).and(tagsFetch);
+    	
+    	Number customerCount = customerRepo.count(fullSpec);
+    	
+    	assertThat(customerCount.intValue())
+        	.isEqualTo(3);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
+    }
+    
+    @Test
+    public void executesNestedJoinInCountQueryWhenUsedForFiltering() {
+    	JoinFetch<Customer> ordersFetch = new JoinFetch<>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
+    	JoinFetch<Customer> tagsFetch = new JoinFetch<>(queryCtx, new String[] { "o.tags" }, "t", JoinType.LEFT, true);
+    	Specification<Customer> tagsFilter = new Like<>(queryCtx, "t.name", BLACK_FRIDAY_TAG);
+    	Specification<Customer> fullSpec = Specification.where(ordersFetch).and(tagsFetch).and(tagsFilter);
+    	
+    	Number customerCount = customerRepo.count(fullSpec);
+    	
+    	assertThat(customerCount.intValue())
+        	.isEqualTo(1);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(2);
     }
 
     @Test
-    public void performsTwoFetchesUsingSingleLeftJoinFetchDefinition() {
+    public void countQueryIgnoresTwoLeftJoinFetchesInSingleLeftDefinition() {
         JoinFetch<Customer> joinFetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders", "orders2" }, JoinType.LEFT, true);
 
-        List<Customer> customers = customerRepo.findAll(joinFetch, Sort.by("id"));
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Marge", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            assertTrue(Hibernate.isInitialized(customer.getOrders2()));
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
+        Number customerCount = customerRepo.count(joinFetch);
+    	
+    	assertThat(customerCount.intValue())
+        	.isEqualTo(3);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
     }
 
     @Test
-    public void performsTwoFetchesUsingSingleInnerJoinFetchDefinition() {
+    public void countQueryIgnoresTwoFetchesUsingSingleInnerJoinFetchDefinition() {
         JoinFetch<Customer> joinFetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders", "orders2" }, JoinType.INNER, true);
 
-        List<Customer> customers = customerRepo.findAll(joinFetch, Sort.by("id"));
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            assertTrue(Hibernate.isInitialized(customer.getOrders2()));
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
+        Number customerCount = customerRepo.count(joinFetch);
+    	
+    	assertThat(customerCount.intValue())
+        	.isEqualTo(3);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
     }
   
     @Test
-    public void performsTwoFetchesUsingTwoJoinFetchDefinition() {
+    public void countQueryIgnoresTwoFetchesUsingTwoJoinFetchDefinition() {
     	JoinFetch<Customer> spec1 = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
     	JoinFetch<Customer> spec2 = new JoinFetch<Customer>(queryCtx, new String[] { "orders2" }, "o", JoinType.INNER, true);
 
     	Conjunction<Customer> spec = new Conjunction<Customer>(spec1, spec2);
 
-        List<Customer> customers = customerRepo.findAll(spec, Sort.by("id"));
+    	Number customerCount = customerRepo.count(spec);
+    	
+    	assertThat(customerCount.intValue())
+        	.isEqualTo(3);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
+    }
+    
+    @Test
+    public void countQueryExecutesTwoJoinsUsingTwoJoinFetchDefinitionWhenTheyAreUsedForFiltering() {
+    	JoinFetch<Customer> fetch1 = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o1", JoinType.LEFT, true);
+    	Specification<Customer> filter1 = new Like<>(queryCtx, "o1.itemName", "Duff");
+    	JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[] { "orders2" }, "o2", JoinType.INNER, true);
+    	Specification<Customer> filter2 = new Like<>(queryCtx, "o2.itemName", "Comic");
+    	
+    	Specification<Customer> fullSpec = Specification.where(fetch1).and(fetch2).and(Specification.where(filter1).or(filter2));
 
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Bart");
+    	Number customerCount = customerRepo.count(fullSpec);
+    	
+    	assertThat(customerCount.intValue())
+        	.isEqualTo(2);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(2);
+    }
+    
+    @Test
+    public void skipsJoinNotUsedForFilteringButExecutesTheOneUsedForFiltering() {
+    	JoinFetch<Customer> fetch1 = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o1", JoinType.LEFT, true);
+    	Specification<Customer> filter1 = new Like<>(queryCtx, "o1.itemName", "Duff");
+    	JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[] { "orders2" }, "o2", JoinType.INNER, true);
+    	
+    	Specification<Customer> fullSpec = Specification.where(fetch1).and(fetch2).and(filter1);
 
-        for (Customer customer : customers) {
-        	assertTrue(Hibernate.isInitialized(customer.getOrders()));
-        	assertTrue(Hibernate.isInitialized(customer.getOrders2()));
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
+    	Number customerCount = customerRepo.count(fullSpec);
+    	
+    	assertThat(customerCount.intValue())
+        	.isEqualTo(1);
+    	
+    	assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(1);
     }
 
     @Test

@@ -16,10 +16,18 @@
 package net.kaczmarzyk.spring.data.jpa;
 
 import javax.persistence.EntityManager;
+
+import org.assertj.core.util.Sets;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
