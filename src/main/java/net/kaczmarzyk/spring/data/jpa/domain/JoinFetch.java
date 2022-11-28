@@ -105,7 +105,7 @@ public class JoinFetch<T> implements Specification<T>, Fake {
 									//  (or more specifcally, does not allow fetching if fetch-root is not present in the query result)
 									//  so we need to convert the join fetch into a regular join.
 									//  In case that an alias exist, but is not used, then join won't be applied (as joins are lazily evaluated by the lib)
-									//  so theoretically we could skip this if and let Join logic just work, but skipping it can hopefully reduce potential for hard-to-debug errors
+									//  so theoretically we could skip this if and let Join logic just work, but keeping it can hopefully reduce potential for hard-to-debug errors
 				
 				String pathToJoin = pathsToFetch.iterator().next(); // see the constructor, if alias is used, then pathsToFetch must have size 1
 				
