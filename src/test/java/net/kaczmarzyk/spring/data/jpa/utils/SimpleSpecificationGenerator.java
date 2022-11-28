@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Constructor;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ public class SimpleSpecificationGenerator {
 	private static Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 	private static WebRequestQueryContext queryCtx = new WebRequestQueryContext(nativeWebRequest().build());
 
+	private static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 	private static LocalDateTime GENERATOR_LOCAL_BASE_DATE_TIME = LocalDateTime.now();
 
 	/**
@@ -102,9 +104,13 @@ public class SimpleSpecificationGenerator {
 	private static String[] getArgs(Integer argsNumber, Integer seed) {
 		String[] args = new String[argsNumber];
 		for (int i = 0; i < argsNumber; i++) {
-			args[i] = GENERATOR_LOCAL_BASE_DATE_TIME.plusSeconds(seed).toString();
+			args[i] = formatLocalDateTime(GENERATOR_LOCAL_BASE_DATE_TIME.plusDays(seed), DEFAULT_DATE_FORMAT);
 		}
 		return args;
 	}
 
+	private static String formatLocalDateTime(LocalDateTime date, String dateFormatPattern) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormatPattern);
+		return date.format(formatter);
+	}
 }

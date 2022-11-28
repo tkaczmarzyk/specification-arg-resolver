@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -243,8 +244,9 @@ public class Converter {
 	public Date convertToDate(String value) {
 		String dateFormat = getDateFormat(Date.class);
 		try {
+			validateDateFormat(dateFormat, value);
 			return new SimpleDateFormat(dateFormat).parse(value);
-		} catch (ParseException e) {
+		} catch (ParseException | DateTimeParseException e) {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
 		}
 	}
@@ -252,10 +254,11 @@ public class Converter {
 	public Calendar convertToCalendar(String value) {
 		String dateFormat = getDateFormat(Date.class);
 		try {
+			validateDateFormat(dateFormat, value);
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
 			return cal;
-		} catch (ParseException e) {
+		} catch (ParseException | DateTimeParseException e) {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
 		}
 	}
@@ -307,12 +310,19 @@ public class Converter {
 	private Timestamp convertToTimestamp(String value) {
 		String dateFormat = getDateFormat(Timestamp.class);
 		try {
+			validateDateFormat(dateFormat, value);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
 			Date parsedDate = simpleDateFormat.parse(value);
 			return new Timestamp(parsedDate.getTime());
 		} catch (Exception e) {
 			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat);
 		}
+	}
+
+	private void validateDateFormat(String expectedDateFormatPattern, String date) throws DateTimeParseException {
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(expectedDateFormatPattern)
+				.withResolverStyle(ResolverStyle.STRICT);
+		dateFormatter.parse(date);
 	}
 
 	@Override
