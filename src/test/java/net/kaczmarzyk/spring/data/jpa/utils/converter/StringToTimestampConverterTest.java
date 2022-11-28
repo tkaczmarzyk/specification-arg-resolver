@@ -47,10 +47,19 @@ public class StringToTimestampConverterTest {
     }
 
     @Test
-    public void throwsValueRejectedExceptionForUnparseableTimestamp() {
+    public void throwsValueRejectedExceptionForUnparseableTimestamp_differentThanExpectedDateFormat() {
         assertThrows(
                 ValueRejectedException.class,
-                () -> converterWithDefaultFormats.convert("2020-15:08:53.282+02:0006-16T", Timestamp.class),
+                () -> converterWithDefaultFormats.convert("11-2022-21T15:08:53.282Z", Timestamp.class),
+                "Timestamp format exception, expected format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        );
+    }
+
+    @Test
+    public void throwsValueRejectedExceptionForUnparseableTimestamp_invalidDateFormat() {
+        assertThrows(
+                ValueRejectedException.class,
+                () -> converterWithDefaultFormats.convert("2022-11-21T15:08:53.282Z-invalid-format", Timestamp.class),
                 "Timestamp format exception, expected format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         );
     }
@@ -71,13 +80,25 @@ public class StringToTimestampConverterTest {
     }
 
     @Test
-    public void throwsValueRejectedExceptionForUnparseableTimestampAndCustomFormat() {
-        Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-invalid-format-HH:mm:ss", EMPTY_RESULT, null);
+    public void throwsValueRejectedExceptionForUnparseableTimestampAndCustomFormat_differentThanExpectedDateFormat() {
+        Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSMM-dd'T'", EMPTY_RESULT, null);
 
         assertThrows(
                 ValueRejectedException.class,
-                () -> converterWithCustomFormat.convert("2020-15:08:53.282+02:0006-16T", Timestamp.class),
-                "Timestamp format exception, expected format: yyyy-invalid-format-HH:mm:ss"
+                () -> converterWithCustomFormat.convert("15-2022:08:53.28206-16T", Timestamp.class),
+                "Timestamp format exception, expected format: yyyy-HH:mm:ss.SSSMM-dd'T'"
+        );
+
+    }
+
+    @Test
+    public void throwsValueRejectedExceptionForUnparseableTimestampAndCustomFormat_invalidDateFormat() {
+        Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSMM-dd'T'", EMPTY_RESULT, null);
+
+        assertThrows(
+                ValueRejectedException.class,
+                () -> converterWithCustomFormat.convert("2020-15:08:53.28206-16T-invalid-format", Timestamp.class),
+                "Timestamp format exception, expected format: yyyy-HH:mm:ss.SSSMM-dd'T'"
         );
 
     }

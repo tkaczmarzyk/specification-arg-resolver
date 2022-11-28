@@ -307,21 +307,22 @@ public class Converter {
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
 	}
 
-	private void validateDateFormat(String expectedDateFormatPattern, String date) throws DateTimeParseException {
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(expectedDateFormatPattern)
-				.withResolverStyle(ResolverStyle.STRICT);
-		dateFormatter.parse(date);
-	}
-
 	private Timestamp convertToTimestamp(String value) {
 		String dateFormat = getDateFormat(Timestamp.class);
 		try {
+			validateDateFormat(dateFormat, value);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
 			Date parsedDate = simpleDateFormat.parse(value);
 			return new Timestamp(parsedDate.getTime());
 		} catch (Exception e) {
 			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat);
 		}
+	}
+
+	private void validateDateFormat(String expectedDateFormatPattern, String date) throws DateTimeParseException {
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(expectedDateFormatPattern)
+				.withResolverStyle(ResolverStyle.STRICT);
+		dateFormatter.parse(date);
 	}
 
 	@Override
