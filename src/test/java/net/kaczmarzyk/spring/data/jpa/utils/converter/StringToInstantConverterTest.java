@@ -47,7 +47,7 @@ public class StringToInstantConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableInstant_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableInstant_unnecessaryAdditionalCharacters() {
 		assertThrows(
 				ValueRejectedException.class,
 				() -> converterWithDefaultFormats.convert("2020-06-16T15:08:53.282Z-invalid-format", Instant.class),
@@ -76,7 +76,7 @@ public class StringToInstantConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableInstantAndCustomFormat_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableInstantAndCustomFormat_unnecessaryAdditionalCharacters() {
 		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd\'T\' HH:mm:ss.SSS XXX", EMPTY_RESULT, null);
 
 		assertThrows(

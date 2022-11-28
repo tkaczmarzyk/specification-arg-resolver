@@ -122,7 +122,7 @@ public class StringToDateConverterTest {
 	}
 
 	@Test
-	public void throwsValuesRejectedExceptionForConverterWithExceptionOnTypeMismatchIfOneOfMultipleDatesIsInUnparsableFormat_invalidDateFormat() {
+	public void throwsValuesRejectedExceptionForConverterWithExceptionOnTypeMismatchIfOneOfMultipleDatesIsInUnparsableFormat_unnecessaryAdditionalCharacters() {
 		//given
 		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EXCEPTION, null);
 
@@ -145,7 +145,7 @@ public class StringToDateConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableDate_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableDate_unnecessaryAdditionalCharacters() {
 		//when + then
 		assertThrows(
 				Converter.ValueRejectedException.class,
@@ -168,7 +168,7 @@ public class StringToDateConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableDateAndCustomFormat_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableDateAndCustomFormat_unnecessaryAdditionalCharacters() {
 		//given
 		Converter converterWithCustomFormat = Converter.withDateFormat("MM-yyyy-dd", EMPTY_RESULT, null);
 

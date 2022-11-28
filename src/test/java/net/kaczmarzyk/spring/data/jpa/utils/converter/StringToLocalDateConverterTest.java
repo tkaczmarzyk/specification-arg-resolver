@@ -46,7 +46,7 @@ public class StringToLocalDateConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableLocalDateTime_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableLocalDateTime_unnecessaryAdditionalCharacters() {
 		assertThrows(
 				Converter.ValueRejectedException.class,
 				() -> converterWithDefaultFormats.convert("2020-06-19-invalid-format", LocalDate.class),
@@ -76,7 +76,7 @@ public class StringToLocalDateConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableLocalDateTimeAndCustomFormat_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableLocalDateTimeAndCustomFormat_unnecessaryAdditionalCharacters() {
 		Converter converterWithCustomFormat = Converter.withDateFormat("MM-yyyy-dd", EMPTY_RESULT, null);
 
 		assertThrows(

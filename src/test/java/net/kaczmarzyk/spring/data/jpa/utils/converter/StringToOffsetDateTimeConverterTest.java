@@ -47,7 +47,7 @@ public class StringToOffsetDateTimeConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableOffsetDateTime_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableOffsetDateTime_unnecessaryAdditionalCharacters() {
 		assertThrows(
 				ValueRejectedException.class,
 				() -> converterWithDefaultFormats.convert("2020-06-16T15:08:53.282+02:00-invalid-format", OffsetDateTime.class),
@@ -78,7 +78,7 @@ public class StringToOffsetDateTimeConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableOffsetDateTimeAndCustomFormat_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableOffsetDateTimeAndCustomFormat_unnecessaryAdditionalCharacters() {
 		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSXXXMM-dd\'T\'", EMPTY_RESULT, null);
 
 		assertThrows(

@@ -56,7 +56,7 @@ public class StringToTimestampConverterTest {
     }
 
     @Test
-    public void throwsValueRejectedExceptionForUnparseableTimestamp_invalidDateFormat() {
+    public void throwsValueRejectedExceptionForUnparseableTimestamp_unnecessaryAdditionalCharacters() {
         assertThrows(
                 ValueRejectedException.class,
                 () -> converterWithDefaultFormats.convert("2022-11-21T15:08:53.282Z-invalid-format", Timestamp.class),
@@ -92,7 +92,7 @@ public class StringToTimestampConverterTest {
     }
 
     @Test
-    public void throwsValueRejectedExceptionForUnparseableTimestampAndCustomFormat_invalidDateFormat() {
+    public void throwsValueRejectedExceptionForUnparseableTimestampAndCustomFormat_unnecessaryAdditionalCharacters() {
         Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSMM-dd'T'", EMPTY_RESULT, null);
 
         assertThrows(

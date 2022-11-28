@@ -43,7 +43,7 @@ public class StringToCalendarConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableCalendar_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableCalendar_unnecessaryAdditionalCharacters() {
 		//when + then
 		assertThrows(
 				Converter.ValueRejectedException.class,
@@ -80,7 +80,7 @@ public class StringToCalendarConverterTest {
 	}
 
 	@Test
-	public void throwsValueRejectedExceptionForUnparseableCalendarAndCustomFormat_invalidDateFormat() {
+	public void throwsValueRejectedExceptionForUnparseableCalendarAndCustomFormat_unnecessaryAdditionalCharacters() {
 		//given
 		Converter converterWithCustomFormat = Converter.withDateFormat("MM-yyyy-dd", EMPTY_RESULT, null);
 

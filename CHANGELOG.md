@@ -2,13 +2,13 @@ v2.10.0 - not released yet
 =======
 * Added conversion support for `Timestamp`
 * Added strict date format validation for `Date`, `Calendar` and `Timestamp` in `Converter` component.
-  
-  Before introduced changes the following formats were considered as valid (let's assume that expected date format was `yyyy-MM-dd` e.g. `2022-11-28`):
-  * `2022-11-28-unnecesarry-additional-characters` - if the date format was satisfied (checking from left to right) the next additional characters were ignored
-  * `1-1-1` - length of specific parts of date (year, month, day) was not validated
-  * `28-11-2022` - order of specific parts of date was not validated
-
-  From now on strict policy of date format validation is introduced. The Date has to be in specific format and of specific length.
+  * Let's assume following specification definition:
+    `@Spec(path = "startDate", params = "periodStart", spec = Equal.class, config = "yyyy-MM-dd")`
+    * Previously, the request parameter values was parsed as follows:
+      * `2022-11-28-unnecessary-additional-characters` was parsed to `2022-11-28` (if the date format was satisfied (checking from left to right) the next additional characters were ignored)
+      * `28-11-2022` was parsed to different date (using lenient interpretation), order of specific parts of date was not validated.
+      * `1-1-1` was parsed to `0001-01-01` (length of specific parts of date (year, month, day) was not validated)
+    * From now on strict policy of date format validation is introduced. The Date has to be in specific format and of specific length.
 
 v2.9.0
 ======
