@@ -19,6 +19,8 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+import javax.persistence.criteria.JoinType;
+
 import org.assertj.core.api.Assertions;
 
 /**
@@ -40,6 +42,12 @@ public class LoggedQueryAssertions {
 	public LoggedQueryAssertions hasNumberOfJoins(int expectedCount) {
 		assertQueryContextExists();
 		Assertions.assertThat(assertedQuery.countJoins()).isEqualTo(expectedCount);
+		return this;
+	}
+	
+	public LoggedQueryAssertions hasNumberOfJoins(int expectedCount, JoinType joinType) {
+		assertQueryContextExists();
+		Assertions.assertThat(assertedQuery.countJoins(joinType)).isEqualTo(expectedCount);
 		return this;
 	}
 

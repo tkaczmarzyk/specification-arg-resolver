@@ -59,7 +59,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         ItemTag books = itemTag("Books").build(em);
 
         homerSimpson = customer("Homer", "Simpson")
-                .orders("Duff Beer", "Donuts")
+                .orders("Duff Beer", "Donuts", "More Donuts")
                 .orders(order("Duff MegaPack").withTags(BLACK_FRIDAY_TAG))
                 .build(em);
         margeSimpson = customer("Marge", "Simpson")
@@ -68,6 +68,8 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
                 .orders(order("Comic Books").withTags(books))
                 .build(em);
         
+        
+        em.createQuery("select o from Order o where o.id > 1"); // dummy query to fill Hibernate Query Plan so that LoggedQueryAssertions can track all queries in the test
         em.flush();
         em.clear();
         
@@ -236,220 +238,56 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     }
 
     @Test
-    public void performsMultilevelJoinFetchOfTypeLeft() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tags" }, JoinType.LEFT, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec, Sort.by("id"));
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Marge", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getTags()));
-            }
-        }
+    public void usesNotDistinctQueryInCountWhenDistinctSetToFalse() {
+        JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, false);
+        Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o"); // Homer's Donuts (x2) and Bart's Comic Book
         
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsMultilevelJoinFetchOfTypeLeftAndInner() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tags" }, JoinType.INNER, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec);
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getTags()));
-            }
-        }
+        Specification<Customer> spec = Specification.where(fetch).and(filter);
         
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsMultilevelJoinFetchOfTypeInnerAndLeft() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.INNER, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tags" }, JoinType.LEFT, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec);
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getTags()));
-            }
-        }
+        Number count = customerRepo.count(spec);
         
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsMultilevelJoinFetchOfTypeInner() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.INNER, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tags" }, JoinType.INNER, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec);
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getTags()));
-            }
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsMultilevelFetchWithAttributeOfTypeSet() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tags" }, JoinType.LEFT, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec, Sort.by("id"));
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Marge", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getTags()));
-                assertFalse(Hibernate.isInitialized(order.getTagsCollection()));
-                assertFalse(Hibernate.isInitialized(order.getTagsList()));
-            }
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsMultilevelFetchWithAttributeOfTypeList() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tagsList" }, JoinType.LEFT, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec, Sort.by("id"));
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Marge", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getTagsList()));
-                assertFalse(Hibernate.isInitialized(order.getTagsCollection()));
-                assertFalse(Hibernate.isInitialized(order.getTags()));
-            }
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsMultilevelFetchWithAttributeOfTypeCollection() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.tagsCollection" }, JoinType.LEFT, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec, Sort.by("id"));
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Marge", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getTagsCollection()));
-                assertFalse(Hibernate.isInitialized(order.getTagsList()));
-                assertFalse(Hibernate.isInitialized(order.getTags()));
-            }
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsMultilevelFetchWithSimpleEntityAttribute() {
-        JoinFetch<Customer> orders = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
-        JoinFetch<Customer> tags = new JoinFetch<Customer>(queryCtx, new String[] { "o.note" }, JoinType.LEFT, true);
-
-        Conjunction<Customer> spec = new Conjunction<Customer>(orders, tags);
-
-        List<Customer> customers = customerRepo.findAll(spec, Sort.by("id"));
-
-        assertThat(customers)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Marge", "Bart");
-
-        for (Customer customer : customers) {
-            assertTrue(Hibernate.isInitialized(customer.getOrders()));
-            for(Order order: customer.getOrders()) {
-                assertTrue(Hibernate.isInitialized(order.getNote()));
-            }
-        }
-        
-        fail("think about how what are corresponding scenarios for count query context");
-    }
-
-    @Test
-    public void performsNotDistinctFetchWhenDistinctParamIsSetToFalse() {
-        JoinFetch<Customer> spec = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, false);
-    
-        List<Customer> customers = customerRepo.findAll(spec);
-        
-        assertThat(customers)
-                .hasSize(4)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Homer", "Marge", "Bart");
-        
-        fail("think about how what are corresponding scenarios for count query context");
+        assertThat(count.intValue())
+                .isEqualTo(3); // Homer is counted twice (2 orders and no distinct in query)
     }
     
     @Test
-    public void performsDistinctFetchWhenDistinctParamIsSetToTrue() {
-        JoinFetch<Customer> spec = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
-    
-        List<Customer> customers = customerRepo.findAll(spec);
-    
-        assertThat(customers)
-                .hasSize(3)
-                .extracting(Customer::getFirstName)
-                .containsExactlyInAnyOrder("Bart", "Homer", "Marge");
+    public void usesDistinctQueryInCountWhenDistinctSetToTrue() {
+    	JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
+        Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o"); // Homer's Donuts (x2) and Bart's Comic Book
         
-        fail("think about how what are corresponding scenarios for count query context");
+        Specification<Customer> spec = Specification.where(fetch).and(filter);
+        
+        Number count = customerRepo.count(spec);
+        
+        assertThat(count.intValue())
+                .isEqualTo(2);
+    }
+    
+    @Test
+    public void preservesJoinTypeWhenConvertingJoinFetchForCountQuery_innerJoin() {
+		JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.INNER, true);
+        Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o");
+        Specification<Customer> spec = Specification.where(fetch).and(filter);
+        customerRepo.count(spec);
+        
+        assertThat()
+        	.theOnlyOneQueryThatWasExecuted()
+        	.hasNumberOfJoins(1, JoinType.INNER);
+        
+        TestLogAppender.clearInterceptedLogs();
+    }
+    
+    @Test
+    public void preservesJoinTypeWhenConvertingJoinFetchForCountQuery_leftJoin() {
+		JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);
+        Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o");
+        Specification<Customer> spec = Specification.where(fetch).and(filter);
+        customerRepo.count(spec);
+        
+        assertThat()
+        	.theOnlyOneQueryThatWasExecuted()
+        	.hasNumberOfJoins(1, JoinType.LEFT);
+        
+        TestLogAppender.clearInterceptedLogs();
     }
 }
