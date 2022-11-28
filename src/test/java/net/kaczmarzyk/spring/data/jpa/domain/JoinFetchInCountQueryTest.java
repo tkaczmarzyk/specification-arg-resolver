@@ -25,14 +25,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
-import java.util.Properties;
 
 import javax.persistence.criteria.JoinType;
 
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.cfg.Environment;
-import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
