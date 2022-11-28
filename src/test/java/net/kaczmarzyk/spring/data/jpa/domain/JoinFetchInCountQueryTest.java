@@ -76,9 +76,6 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         em.clear();
         
         TestLogAppender.clearInterceptedLogs();
-        Properties p = Environment.getProperties();
-        System.out.println(p.getProperty(Environment.QUERY_PLAN_CACHE_MAX_SIZE));
-        System.out.println();
     }
     
     @Test
