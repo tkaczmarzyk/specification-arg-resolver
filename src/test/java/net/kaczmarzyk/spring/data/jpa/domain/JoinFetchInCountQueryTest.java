@@ -20,24 +20,16 @@ import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
 import static net.kaczmarzyk.utils.LoggedQueryAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.List;
 
 import javax.persistence.criteria.JoinType;
 
-import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
-import net.kaczmarzyk.spring.data.jpa.Order;
 import net.kaczmarzyk.utils.TestLogAppender;
 
 
