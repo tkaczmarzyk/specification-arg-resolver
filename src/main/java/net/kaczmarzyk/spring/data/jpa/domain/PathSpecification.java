@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,14 @@ public abstract class PathSpecification<T> implements Specification<T> {
     	this.queryContext = queryContext;
         this.path = path;
     }
-    
+
     @SuppressWarnings("unchecked")
     protected <F> Path<F> path(Root<T> root) {
         Path<?> expr = null;
         for (String field : path.split("\\.")) {
             if (expr == null) {
-            	if (queryContext != null && queryContext.getEvaluated(field, root) != null) {
-            		expr = (Path<T>) queryContext.getEvaluated(field, root);
+            	if (queryContext != null && getEvaluatedPath(field, root) != null) {
+            		expr = (Path<T>) getEvaluatedPath(field, root);
             	} else {
             		expr = root.get(field);
             	}
@@ -55,6 +55,29 @@ public abstract class PathSpecification<T> implements Specification<T> {
         }
         return (Path<F>) expr;
     }
+
+	private Path<T> getEvaluatedPath(String field, Root<T> root) {
+		Path<T> evaluated = (Path<T>) queryContext.getEvaluated(field, root);
+
+		/**
+		 * When evaluated variable has null value, it means that 'field' variable contain value of some join alias.
+		 * In such situation, the evaluated path should be fetched from "evaluated join fetch context".
+		 *
+		 * Example spec:
+		 *     @JoinFetch(paths = "orders", alias = "o")
+		 *     @Spec(path = "o.itemName", params = "itemName", spec = Equal.class)
+		 *     interface CustomersWithOrderedItemSpecification { }
+		 *
+		 * When @Spec(path="o.itemName") will be processed, there will be no evaluated path under path "o" in evaluated context,
+		 * it will be in the evaluated "join fetch context".
+ 		 */
+
+		if(evaluated == null) {
+			return (Path<T>) queryContext.getEvaluatedJoinFetch(field);
+		}
+
+		return evaluated;
+	}
 
 	@Override
 	public int hashCode() {

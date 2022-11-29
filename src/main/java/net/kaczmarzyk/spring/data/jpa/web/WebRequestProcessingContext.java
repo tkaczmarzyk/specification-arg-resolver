@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,7 @@ public class WebRequestProcessingContext {
 		}
 	}
 
+//<<<<<<< master // TODO deferring conflict resolution
     public String getRequestBody() {
 		try {
 			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
@@ -91,6 +92,10 @@ public class WebRequestProcessingContext {
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
 		}
+//======
+	public String getRequestHeaderValue(String headerKey) {
+		return webRequest.getHeader(headerKey);
+//>>>>>>> json_support
 	}
 
 	private String pathPattern() {

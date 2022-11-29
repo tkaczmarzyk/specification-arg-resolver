@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -161,4 +163,12 @@ public class InTest extends IntegrationTestBase {
     	
     	assertThat(found).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
+
+	@Test
+	public void equalsAndHashCodeContract() {
+		EqualsVerifier.forClass(In.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
 }

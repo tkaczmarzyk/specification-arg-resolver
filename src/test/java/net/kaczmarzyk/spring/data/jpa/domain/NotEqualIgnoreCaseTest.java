@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
 /**
@@ -39,6 +41,14 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 
 		NotEqualIgnoreCase<Customer> notFemale = notEqualIgnoreCaseSpec("gender", "fEmALE");
 		assertFilterMembers(notFemale, homerSimpson);
+	}
+
+	@Test
+	public void equalsAndHashCodeContract() {
+		EqualsVerifier.forClass(NotEqualIgnoreCase.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
 	}
 
 	private <T> NotEqualIgnoreCase<T> notEqualIgnoreCaseSpec(String path, Object expectedValue) {

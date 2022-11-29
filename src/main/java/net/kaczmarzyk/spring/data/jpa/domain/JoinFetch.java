@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplit
  * @author Gerald Humphries
  * @author Jakub Radlica
  */
-public class JoinFetch<T> implements Specification<T> {
+public class JoinFetch<T> implements Specification<T>, Fake {
 
 	private static final long serialVersionUID = 1L;
 
@@ -69,7 +69,7 @@ public class JoinFetch<T> implements Specification<T> {
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		query.distinct(distinct);
-		if (!Number.class.isAssignableFrom(query.getResultType())) { // do not join in count queries
+		if (!Number.class.isAssignableFrom(query.getResultType())) { // if it's not a count query, then just execute the fetch
 			if (pathsToFetch.size() == 1) {
 				String pathToFetch = pathsToFetch.get(0);
 				if (pathToJoinContainsAlias(pathToFetch)) {
@@ -98,6 +98,20 @@ public class JoinFetch<T> implements Specification<T> {
 				for (String path : pathsToFetch) {
 					root.fetch(path, joinType);
 				}
+			}
+		} else { // count query -- join fetch can be skipped unless it is used not only for fetching but for filtering as well
+			if (!alias.isEmpty()) { // assumption: presence of a non-empty alias means that join fetch is used for filtering as well
+									//  unfortunately, Hibernate disallows adding join fetches to count queries 
+									//  (or more specifcally, does not allow fetching if fetch-root is not present in the query result)
+									//  so we need to convert the join fetch into a regular join.
+									//  In case that an alias exist, but is not used, then join won't be applied (as joins are lazily evaluated by the lib)
+									//  so theoretically we could skip this if and let Join logic just work, but keeping it can hopefully reduce potential for hard-to-debug errors
+				
+				String pathToJoin = pathsToFetch.iterator().next(); // see the constructor, if alias is used, then pathsToFetch must have size 1
+				
+				Join<T> regularJoin = new Join<T>(context, pathToJoin, alias, joinType, distinct);
+				
+				return regularJoin.toPredicate(root, query, cb);				
 			}
 		}
 		return null;

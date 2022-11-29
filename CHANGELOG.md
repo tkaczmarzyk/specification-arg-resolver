@@ -1,3 +1,52 @@
+v2.10.0
+=======
+* fixed bug with not evaluated join fetches in count queries (e.g. during pagination) -- from now on, join fetches in count queries are either skipped (if they are used solely for initialization of lazy collections) or converted to regular joins (if there is any filtering applied on the fetched part). See [issue 138](https://github.com/tkaczmarzyk/specification-arg-resolver/issues/138) for more details.
+* added conversion support for `Timestamp`
+* Added strict date format validation for `Date`, `Calendar` and `Timestamp` in `Converter` component.
+  * Let's assume following specification definition:
+    `@Spec(path = "startDate", params = "periodStart", spec = Equal.class, config = "yyyy-MM-dd")`
+    * Previously, the request parameter values was parsed as follows:
+      * `2022-11-28-unnecessary-additional-characters` was parsed to `2022-11-28` (if the date format was satisfied (checking from left to right) the next additional characters were ignored)
+      * `28-11-2022` was parsed to invalid date (different from `2022-11-28`), order of specific parts of date was not validated.
+      * `1-1-1` was parsed to invalid date (length of specific parts of date (year, month, day) was not validated)
+    * From now on strict policy of date format validation is introduced. The Date has to be in specific format and of specific length.
+
+v2.9.0
+======
+* Fixed the bug with redundant joins
+* Added conversion support for `Calendar`
+
+v2.8.0
+======
+* Added [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching) support for custom specification interfaces. From now on, specifications generated from specification interfaces with the same params are equal and have the same `hashCode` value.
+* Added support for join fetch aliases in specification paths.
+
+  For example:
+  ```java
+  @RequestMapping(value = "/customers", params = { "orderedItemName" })
+  @ResponseBody
+  public Object findCustomersByOrderedItemName(
+  		@JoinFetch(paths = "orders", alias = "o")
+  		@Spec(path = "o.itemName", params = "orderedItemName", spec = Like.class)) Specification<Customer> spec) {
+  	return customerRepository.findAll(spec, Sort.by("id"));
+  }
+  ```
+  
+  Please remember that:
+  * Join fetch path can use only aliases of another fetch joins. 
+  * Join path can use only aliases of another joins. 
+
+  (see [README.md](README.md#join-fetch) for the details)
+  
+v2.7.0
+======
+* added support for resolving HTTP param name from a SpEL expression (via `@Spec.paramsInSpEL`)
+* added support for resolving query arguments from HTTP request headers (via `@Spec.headers`)
+
+v2.6.3
+======
+* supporting JDK17 (previous version threw exceptions on illegal reflection operations)
+
 v2.6.2
 ======
 * fixed pagination support for multi-level joins

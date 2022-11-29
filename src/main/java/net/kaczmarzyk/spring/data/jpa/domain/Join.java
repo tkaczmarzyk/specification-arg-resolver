@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,14 +51,15 @@ public class Join<T> implements Specification<T>, Fake {
 		query.distinct(distinctQuery);
 
 		if (!pathToJoinContainsAlias(pathToJoinOn)) {
-			queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+                        if(!queryContext.existsJoin(alias, root)) {
+                            queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+                        }
 		} else {
 			String[] pathToJoinOnSplittedByDot = pathToJoinSplittedByDot(pathToJoinOn);
 
 			String extractedAlias = pathToJoinOnSplittedByDot[0];
-			javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
-
-			if (evaluated == null) {
+			
+			if (!queryContext.existsJoin(extractedAlias, root)) {
 				throw new IllegalArgumentException(
 						"Join definition with alias: '" + extractedAlias + "' not found! " +
 								"Make sure that join with the alias '" + extractedAlias +"' is defined before the join with path: '" + pathToJoinOn + "'"
@@ -66,11 +67,13 @@ public class Join<T> implements Specification<T>, Fake {
 			}
 
 			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
-
-			queryContext.putLazyVal(
-					alias,
-					(r) -> evaluated.join(extractedPathToJoin, joinType)
-			);
+                queryContext.putLazyVal(
+                        alias,
+                        (r) -> {
+                        	javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
+                        	return evaluated.join(extractedPathToJoin, joinType);
+                        }
+                );
 		}
 		return null;
 	}

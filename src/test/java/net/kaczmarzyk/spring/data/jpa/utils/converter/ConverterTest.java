@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,34 +44,6 @@ public class ConverterTest {
 	
 	private static Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
 	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
-	
-	@Test
-	public void convertsToDate() {
-		Date converted = converter.convert("2015-03-01", Date.class);
-		
-		assertThat(converted)
-			.isWithinMonth(3)
-			.isWithinDayOfMonth(1)
-			.isWithinYear(2015);
-	}
-	
-	@Test
-	public void convertsToMultipleDates() {
-		List<Date> converted = converter.convert(Arrays.asList("2015-03-01", "2015-04-02"), Date.class);
-		
-		assertThat(converted)
-			.hasSize(2);
-		
-		assertThat(converted.get(0))
-			.isWithinMonth(3)
-			.isWithinDayOfMonth(1)
-			.isWithinYear(2015);
-		
-		assertThat(converted.get(1))
-			.isWithinMonth(4)
-			.isWithinDayOfMonth(2)
-			.isWithinYear(2015);
-	}
 	
 	@Test
 	public void stringIsPassedThrough() {

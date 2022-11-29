@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class OrderBuilder {
 
@@ -35,8 +39,17 @@ public class OrderBuilder {
 	}
 
 	public OrderBuilder withTags(ItemTag... tags) {
-		this.tags.addAll(Arrays.asList(tags));
+		return withTags(Arrays.asList(tags));
+	}
+	
+	public OrderBuilder withTags(Collection<ItemTag> tags) {
+		this.tags.addAll(tags);
 		return this;
+	}
+	
+	public OrderBuilder withTags(String... tagNames) {
+		Collection<ItemTag> newTags = Stream.of(tagNames).map(ItemTag::new).collect(toList());
+		return withTags(newTags);
 	}
 
 	public Order build(Customer customer) {

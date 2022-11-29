@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import org.junit.Test;
-import org.springframework.data.jpa.domain.Specification;
-
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+import org.junit.Test;
+import org.springframework.data.jpa.domain.Specification;
 
 
 /**
@@ -127,5 +128,13 @@ public class GreaterThanOrEqualTest extends ComparableTestBase {
     	assertFilterContainsOnlyExpectedMembers("registrationDate", "01-03-2015", "dd-MM-yyyy", homerSimpson, margeSimpson, moeSzyslak);
     	assertFilterIsEmpty("registrationDate", "03-03-2015", "dd-MM-yyyy");
     }
+
+	@Test
+	public void equalsAndHashCodeContract() {
+		EqualsVerifier.forClass(GreaterThanOrEqual.class)
+				.usingGetClass()
+				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
     
 }
