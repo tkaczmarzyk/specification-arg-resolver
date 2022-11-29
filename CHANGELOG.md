@@ -1,6 +1,7 @@
 v2.10.0 - not released yet
 =======
-* Added conversion support for `Timestamp`
+* fixed bug with not evaluated join fetches in count queries (e.g. during pagination) -- from now on, join fetches in count queries are either skipped (if they are used solely for initialization of lazy collections) or converted to regular joins (if there is any filtering applied on the fetched part). See [issue 138](https://github.com/tkaczmarzyk/specification-arg-resolver/issues/138) for more details.
+* added conversion support for `Timestamp`
 * Added strict date format validation for `Date`, `Calendar` and `Timestamp` in `Converter` component.
   * Let's assume following specification definition:
     `@Spec(path = "startDate", params = "periodStart", spec = Equal.class, config = "yyyy-MM-dd")`

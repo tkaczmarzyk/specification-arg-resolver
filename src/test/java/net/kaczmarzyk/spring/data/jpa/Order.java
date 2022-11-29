@@ -34,7 +34,7 @@ public class Order {
 
     private String itemName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = PERSIST)
     private Set<ItemTag> tags;
 
     @ManyToMany(fetch = FetchType.LAZY)

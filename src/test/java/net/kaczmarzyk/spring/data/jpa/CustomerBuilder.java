@@ -15,12 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.UUID;
+
+import javax.persistence.EntityManager;
 
 /**
  * Helper class for building test data

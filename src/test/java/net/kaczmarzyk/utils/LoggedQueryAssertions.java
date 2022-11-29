@@ -19,6 +19,8 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+import javax.persistence.criteria.JoinType;
+
 import org.assertj.core.api.Assertions;
 
 /**
@@ -42,6 +44,12 @@ public class LoggedQueryAssertions {
 		Assertions.assertThat(assertedQuery.countJoins()).isEqualTo(expectedCount);
 		return this;
 	}
+	
+	public LoggedQueryAssertions hasNumberOfJoins(int expectedCount, JoinType joinType) {
+		assertQueryContextExists();
+		Assertions.assertThat(assertedQuery.countJoins(joinType)).isEqualTo(expectedCount);
+		return this;
+	}
 
 	private void assertQueryContextExists() throws AssertionError {
 		if (assertedQuery == null) {
@@ -52,6 +60,11 @@ public class LoggedQueryAssertions {
 	public LoggedQueryAssertions andQueryWithIndex(int index) {
 		this.assertedQuery = loggedQueries().get(index);
 		return this;
+	}
+	
+	public LoggedQueryAssertions theOnlyOneQueryThatWasExecuted() {
+		return numberOfPerformedHqlQueriesIs(1)
+				.andQueryWithIndex(0);
 	}
 	
 	public LoggedQueryAssertions numberOfPerformedHqlQueriesIs(int expectedCount) {
