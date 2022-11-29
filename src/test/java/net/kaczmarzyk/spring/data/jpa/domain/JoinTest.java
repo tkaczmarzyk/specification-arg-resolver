@@ -15,25 +15,35 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.spring.data.jpa.ItemTag;
-import nl.jqno.equalsverifier.EqualsVerifier;
-import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Sort;
-
-import java.util.List;
-
+import static javax.persistence.criteria.JoinType.INNER;
 import static javax.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
+import static net.kaczmarzyk.utils.LoggedQueryAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.ItemTag;
+import net.kaczmarzyk.utils.TestLogAppender;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+
+/**
+ * @author Jakub Radlica
+ * @author Tomasz Kaczmarzyk
+ */
 public class JoinTest extends IntegrationTestBase {
 
 	Customer homerSimpson;
@@ -55,8 +65,11 @@ public class JoinTest extends IntegrationTestBase {
 				.orders(order("Comic Books").withTags(books))
 				.build(em);
 
-		em.flush();
-		em.clear();
+		em.createQuery("select o from Order o where o.id > 1"); // dummy query to fill Hibernate Query Plan so that LoggedQueryAssertions can track all queries in the test
+        em.flush();
+        em.clear();
+        
+        TestLogAppender.clearInterceptedLogs();
 	}
 
 	@Test
@@ -149,6 +162,111 @@ public class JoinTest extends IntegrationTestBase {
 						"nested exception is java.lang.IllegalArgumentException: " +
 						"Join definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
 		);
+	}
+	
+	@Test
+	public void innerJoinIsEvaluatedEvenIfNoFilteringIsAppliedOnTheJoinedPart() {
+		Join<Customer> innerJoinOrders = new Join<>(queryCtx, "orders", "", INNER, true);
+		
+		
+		List<Customer> found = customerRepo.findAll(innerJoinOrders);
+		
+		assertThat(found)
+			.hasSize(2)
+			.extracting(Customer::getFirstName)
+			.containsOnly("Bart", "Homer");
+		
+		assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(1);
+	}
+	
+	@Test
+	public void innerJoinIsEvaluatedEvenIfNoFilteringIsAppliedOnTheJoinedPart_multiLevelJoin() {
+		Join<Customer> leftJoinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
+		Join<Customer> innerJoinTags = new Join<>(queryCtx, "o.tags", "", INNER, true);
+		
+		List<Customer> found = customerRepo.findAll(Specification.where(leftJoinOrders).and(innerJoinTags));
+		
+		assertThat(found)
+			.hasSize(1)
+			.extracting(Customer::getFirstName)
+			.containsOnly("Bart");
+		
+		assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(2)
+			.hasNumberOfJoins(1, LEFT)
+			.hasNumberOfJoins(1, INNER);
+	}
+	
+	@Test
+	public void leftJoinIsEvaluatedEvenIfNoFilteringIsAppliedOnTheJoinedPartButQueryIsNotDistinct() {
+		Join<Customer> joinOrders = new Join<>(queryCtx, "orders", "", LEFT, false);
+		
+		
+		List<Customer> found = customerRepo.findAll(joinOrders);
+		
+		assertThat(found)
+			.hasSize(4)
+			.extracting(Customer::getFirstName)
+			.containsOnly("Bart", "Homer", "Homer", "Marge");
+		
+		assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(1);
+	}
+	
+	@Test
+	public void leftJoinIsEvaluatedEvenIfNoFilteringIsAppliedOnTheJoinedPartButQueryIsNotDistinct_multiLevelJoin() {
+		Join<Customer> leftJoinOrders = new Join<>(queryCtx, "orders", "o", LEFT, false);
+		Join<Customer> innerJoinTags = new Join<>(queryCtx, "o.tags", "", LEFT, false);
+		
+		List<Customer> found = customerRepo.findAll(Specification.where(leftJoinOrders).and(innerJoinTags));
+		
+		assertThat(found)
+			.hasSize(4)
+			.extracting(Customer::getFirstName)
+			.containsOnly("Bart", "Homer", "Homer", "Marge");
+		
+		assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(2)
+			.hasNumberOfJoins(2, LEFT);
+	}
+	
+	@Test
+	public void leftJoinIsNotEvaluatedIfNoFilteringIsAppliedOnTheJoinedPartAndQueryIsDistinct() {
+		Join<Customer> joinOrders = new Join<>(queryCtx, "orders", "", LEFT, true);
+		
+		
+		List<Customer> found = customerRepo.findAll(joinOrders);
+		
+		assertThat(found)
+			.hasSize(3)
+			.extracting(Customer::getFirstName)
+			.containsOnly("Bart", "Homer", "Marge");
+		
+		assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
+	}
+	
+	@Test
+	public void leftJoinIsNotEvaluatedIfNoFilteringIsAppliedOnTheJoinedPartAndQueryIsDistinct_multiLevelJoin() {
+		Join<Customer> leftJoinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
+		Join<Customer> innerJoinTags = new Join<>(queryCtx, "o.tags", "", LEFT, true);
+		
+		List<Customer> found = customerRepo.findAll(Specification.where(leftJoinOrders).and(innerJoinTags));
+		
+		assertThat(found)
+			.hasSize(3)
+			.extracting(Customer::getFirstName)
+			.containsOnly("Bart", "Homer", "Marge");
+		
+		assertThat()
+			.theOnlyOneQueryThatWasExecuted()
+			.hasNumberOfJoins(0);
 	}
 
 	@Test
