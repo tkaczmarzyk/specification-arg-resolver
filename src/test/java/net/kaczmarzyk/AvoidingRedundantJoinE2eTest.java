@@ -21,6 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import javax.persistence.criteria.JoinType;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +49,8 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 
 	@Joins({
-	        @Join(path = "stars", alias = "s"),
-	        @Join(path = "directors", alias = "d")
+	        @Join(path = "stars", alias = "s", type = JoinType.LEFT),
+	        @Join(path = "directors", alias = "d", type = JoinType.LEFT)
 	})
 	@And({
 	        @Spec(path = "name", params = "name", spec = Like.class),

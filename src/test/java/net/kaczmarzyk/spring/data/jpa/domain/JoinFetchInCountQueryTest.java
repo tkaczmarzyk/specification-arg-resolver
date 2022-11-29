@@ -215,7 +215,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     public void skipsJoinNotUsedForFilteringButExecutesTheOneUsedForFiltering() {
     	JoinFetch<Customer> fetch1 = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o1", JoinType.LEFT, true);
     	Specification<Customer> filter1 = new Like<>(queryCtx, "o1.itemName", "Duff");
-    	JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[] { "orders2" }, "o2", JoinType.INNER, true);
+    	JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[] { "orders2" }, "o2", JoinType.LEFT, true);
     	
     	Specification<Customer> fullSpec = Specification.where(fetch1).and(fetch2).and(filter1);
 
