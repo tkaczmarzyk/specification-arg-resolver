@@ -42,7 +42,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
 
     private static final String BLACK_FRIDAY_TAG = "BlackFridayOffer";
     
-	Customer homerSimpson;
+    Customer homerSimpson;
     Customer margeSimpson;
     Customer bartSimpson;
     
