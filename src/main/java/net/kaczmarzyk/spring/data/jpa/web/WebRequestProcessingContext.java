@@ -15,18 +15,24 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import net.kaczmarzyk.spring.data.jpa.utils.IOUtils;
+import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides information about Controller/method and WebRequest being processed.
@@ -75,8 +81,21 @@ public class WebRequestProcessingContext {
 		}
 	}
 
+//<<<<<<< master // TODO deferring conflict resolution
+    public String getRequestBody() {
+		try {
+			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+			if (request == null) {
+				throw new IllegalStateException("Request body not present");
+			}
+			return IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
+		} catch (IOException ex) {
+			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
+		}
+//======
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
+//>>>>>>> json_support
 	}
 
 	private String pathPattern() {

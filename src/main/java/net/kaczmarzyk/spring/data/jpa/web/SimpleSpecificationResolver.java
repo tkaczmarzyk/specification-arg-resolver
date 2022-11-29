@@ -15,8 +15,10 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.JsonUtils;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.apache.commons.lang3.StringUtils;
@@ -27,11 +29,14 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.expression.ParseException;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -42,8 +47,8 @@ import static java.util.Arrays.asList;
  */
 class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
-	private final ConversionService conversionService;
-	private final EmbeddedValueResolver embeddedValueResolver;
+    private final ConversionService conversionService;
+    private final EmbeddedValueResolver embeddedValueResolver;
 
 	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext) {
 		this.conversionService = conversionService;
@@ -131,6 +136,20 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}
+//<<<<<<< master //  TODO deferring conflict resolution
+
+    private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
+        if (specDef.constVal().length != 0) {
+            return resolveConstVal(specDef);
+        } else if (specDef.pathVars().length != 0 || specDef.paramType() == ParamType.PATH) {
+            return resolveSpecArgumentsFromPathVariables(context, specDef);
+        } else if (specDef.paramType() == ParamType.BODY) {
+            return resolveSpecArgumentsFromBody(context, specDef);
+        } else {
+            return resolveDefaultVal(context, specDef);
+        }
+    }
+//=======
 	
 	private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
 		if (specDef.constVal().length != 0) {
@@ -143,6 +162,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			return resolveDefaultVal(context, specDef);
 		}
 	}
+//>>>>>>> json_support
 
 	private Collection<String> resolveConstVal(Spec specDef) {
 		if (embeddedValueResolver != null && specDef.valueInSpEL()) {
@@ -177,6 +197,25 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			throw new IllegalArgumentException("Invalid SpEL expression: '" + rawSpELValue + "'");
 		}
 	}
+//<<<<<<< master // TODO deferring conflict resolution
+
+    private Collection<String> resolveSpecArgumentsFromPathVariables(WebRequestProcessingContext context, Spec specDef) {
+        String[] params = specDef.paramType() == ParamType.PATH ? specDef.params() : specDef.pathVars();
+        return Arrays.stream(params)
+            .map(context::getPathVariableValue)
+            .collect(Collectors.toList());
+    }
+
+    private Collection<String> resolveSpecArgumentsFromBody(WebRequestProcessingContext context, Spec specDef) {
+        String[] params = specDef.params().length != 0 ? specDef.params() : new String[]{specDef.path()};
+        String requestBody = context.getRequestBody();
+        return Arrays.stream(params)
+            .flatMap(param -> JsonUtils.getValuesFromJson(requestBody, param).stream())
+            .collect(Collectors.toList());
+    }
+
+    private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
+//=======
 	
 	private Collection<String> resolveSpecArgumentsFromPathVariables(WebRequestProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<>();
@@ -199,6 +238,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	}
 	
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(WebRequestProcessingContext context, Spec specDef) {
+//>>>>>>> json_support
 		Collection<String> args = new ArrayList<String>();
 		
 		DelimitationStrategy delimitationStrategy = DelimitationStrategy.of(specDef.paramSeparator());
