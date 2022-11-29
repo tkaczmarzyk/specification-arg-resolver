@@ -219,6 +219,7 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-common</artifactId>
 			<version>1.6.13</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

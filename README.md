@@ -29,6 +29,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
+   * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -964,6 +965,27 @@ Configuration example:
    ```
 
 SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
+
+Swagger support
+------------
+
+Right now specification argument resolver supports only one library -> `Springdoc-openapi`. 
+There are two steps in order to enable support for `Springdoc-openapi` library:
+* Add following dependency from `Springdoc-openapi`:
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-common</artifactId>
+</dependency>
+```
+
+* Create `@Bean` of type `SpecificationArgResolverSpringdocOperationCustomizer` in your app configuration:
+```java
+   @Bean
+   public SpecificationArgResolverSpringdocOperationCustomizer specificationArgResolverSpringdocOperationCustomizer() {
+        return new SpecificationArgResolverSpringdocOperationCustomizer();
+   }
+```
 
 Cache support
 ------------
