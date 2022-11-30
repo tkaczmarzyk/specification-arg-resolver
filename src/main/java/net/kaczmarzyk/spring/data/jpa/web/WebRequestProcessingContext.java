@@ -15,9 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import net.kaczmarzyk.spring.data.jpa.utils.IOUtils;
 import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
@@ -30,8 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,7 +76,6 @@ public class WebRequestProcessingContext {
 		}
 	}
 
-//<<<<<<< master // TODO deferring conflict resolution
     public String getRequestBody() {
 		try {
 			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
@@ -92,10 +86,10 @@ public class WebRequestProcessingContext {
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
 		}
-//======
+	}
+
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
-//>>>>>>> json_support
 	}
 
 	private String pathPattern() {
