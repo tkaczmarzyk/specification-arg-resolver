@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
@@ -194,8 +196,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
     private Collection<String> resolveSpecArgumentsFromBody(WebRequestProcessingContext context, Spec specDef) {
         String[] params = specDef.params().length != 0 ? specDef.params() : new String[]{specDef.path()};
         String requestBody = context.getRequestBody();
+		JsonElement requestBodyJson = JsonParser.parseString(requestBody);
         return Arrays.stream(params)
-            .flatMap(param -> JsonUtils.getValuesFromJson(requestBody, param).stream())
+            .flatMap(param -> JsonUtils.getValuesFromJson(requestBodyJson, param).stream())
             .collect(Collectors.toList());
     }
 

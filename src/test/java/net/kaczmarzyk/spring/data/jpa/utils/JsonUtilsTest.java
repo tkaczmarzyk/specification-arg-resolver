@@ -15,7 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -32,7 +34,9 @@ public class JsonUtilsTest {
     @Test
     public void getSingleValueByNotCompositeKeyWhenValueIsString() {
         String json = "{ \"key\": \"value\" }";
-        Collection<String> result = JsonUtils.getValuesFromJson(json, "key");
+        JsonElement requestBodyJson = JsonParser.parseString(json);
+
+        Collection<String> result = JsonUtils.getValuesFromJson(requestBodyJson, "key");
 
         Assertions.assertThat(result).containsExactly("value");
     }
@@ -40,8 +44,9 @@ public class JsonUtilsTest {
     @Test
     public void getSingleValueByNotCompositeKeyWhenValueIsNumber() {
         String json = "{ \"key\": 2 }";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
-        Collection<String> result = JsonUtils.getValuesFromJson(json, "key");
+        Collection<String> result = JsonUtils.getValuesFromJson(requestBodyJson, "key");
 
         Assertions.assertThat(result).containsExactly("2");
     }
@@ -49,8 +54,9 @@ public class JsonUtilsTest {
     @Test
     public void getSingleValueByNotCompositeKeyWhenValueIsBoolean() {
         String json = "{ \"key\": true }";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
-        Collection<String> result = JsonUtils.getValuesFromJson(json, "key");
+        Collection<String> result = JsonUtils.getValuesFromJson(requestBodyJson, "key");
 
         Assertions.assertThat(result).containsExactly("true");
     }
@@ -58,8 +64,9 @@ public class JsonUtilsTest {
     @Test
     public void getSingleValueByNotCompositeKeyWhenValueIsNull() {
         String json = "{ \"key\": null }";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
-        Collection<String> result = JsonUtils.getValuesFromJson(json, "key");
+        Collection<String> result = JsonUtils.getValuesFromJson(requestBodyJson, "key");
 
         Assert.assertTrue(result.isEmpty());
     }
@@ -67,18 +74,20 @@ public class JsonUtilsTest {
     @Test
     public void getSingleValueWhenValueIsObject() {
         String json = "{ \"key\": { \"innerKey\": \"value\"}}";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
         exceptionRule.expect(JsonParseException.class);
         exceptionRule.expectMessage("Value by key should be primitive or array primitives");
 
-        JsonUtils.getValuesFromJson(json, "key");
+        JsonUtils.getValuesFromJson(requestBodyJson, "key");
     }
 
     @Test
     public void getMultipleValuesByNotCompositeKey() {
         String json = "{ \"array\": [\"value1\", \"value2\"] }";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
-        Collection<String> result = JsonUtils.getValuesFromJson(json, "array");
+        Collection<String> result = JsonUtils.getValuesFromJson(requestBodyJson, "array");
 
         Assertions.assertThat(result).containsExactly("value1", "value2");
     }
@@ -86,8 +95,9 @@ public class JsonUtilsTest {
     @Test
     public void getSingleValueByCompositeKey() {
         String json = "{ \"key1\": { \"key2\": \"value\" }}";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
-        Collection<String> result = JsonUtils.getValuesFromJson(json, "key1.key2");
+        Collection<String> result = JsonUtils.getValuesFromJson(requestBodyJson, "key1.key2");
 
         Assertions.assertThat(result).containsExactly("value");
     }
@@ -95,29 +105,32 @@ public class JsonUtilsTest {
     @Test
     public void getValueFromJsonWhenKeyNotPresent() {
         String json = "{ \"key1\": { \"key2\": \"value\" }}";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
-        Collection<String> result = JsonUtils.getValuesFromJson(json, "key1.innerKey");
+        Collection<String> result = JsonUtils.getValuesFromJson(requestBodyJson, "key1.innerKey");
 
         Assert.assertTrue(result.isEmpty());
     }
 
     @Test
-    public void getValueFromJsonWhenMiddleNodeIsArray() {
+    public void throwsIllegalArgumentExceptionWhenTryingToGetValueFromJsonWhenMiddleNodeIsArray() {
         String json = "{ \"key\": { \"array\": [{ \"object1\": \"value1\" }, { \"object2\": \"value2\" }]}}";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
         exceptionRule.expect(JsonParseException.class);
         exceptionRule.expectMessage("Should be JSON object");
 
-        JsonUtils.getValuesFromJson(json, "key.array.object1");
+        JsonUtils.getValuesFromJson(requestBodyJson, "key.array.object1");
     }
 
     @Test
     public void getValueFromJsonWhenResultArrayContainsObjects() {
         String json = "{ \"key\": { \"array\": [{ \"object1\": \"value1\" }, { \"object2\": \"value2\" }]}}";
+        JsonElement requestBodyJson = JsonParser.parseString(json);
 
         exceptionRule.expect(IllegalArgumentException.class);
         exceptionRule.expectMessage("Array by key contains not primitives");
 
-        JsonUtils.getValuesFromJson(json, "key.array");
+        JsonUtils.getValuesFromJson(requestBodyJson, "key.array");
     }
 }

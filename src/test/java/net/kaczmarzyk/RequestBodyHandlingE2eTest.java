@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk;
 
+import com.google.gson.JsonParseException;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -25,9 +26,9 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @author Tomasz Kaczmarzyk
+ * @author Andrei Shakarov
  */
 public class RequestBodyHandlingE2eTest extends E2eTestBase {
 
@@ -51,6 +52,18 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
             @Spec(path = "id", params = "customerId", paramType = ParamType.BODY, spec = Equal.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
+        }
+
+        @PostMapping(value = "/customers/search/firstName")
+        public List<Customer> findByLastNameInBody(
+                @Spec(path = "firstName", params = "filters.firstName.nameValue", paramType = ParamType.BODY, spec = Equal.class) Specification<Customer> spec) {
+
+            return customerRepo.findAll(spec);
+        }
+
+        @ExceptionHandler(JsonParseException.class)
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        public void handleJsonParsingException() {
         }
 
         @PostMapping(value = "/customers/search/firstNames")
@@ -82,6 +95,15 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
+    }
+
+    @Test
+    public void returnsBadRequestWhenContentBodyContainsArrayJsonNode() throws Exception {
+        mockMvc.perform(post("/customers/search/firstName")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"filters\": { \"firstName\": [{ \"nameValue\": \"" + homerSimpson.getFirstName() + "\" }, { \"nameValue2\": \"" + lisaSimpson.getFirstName() + "\" }]}}"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

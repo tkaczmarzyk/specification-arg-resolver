@@ -19,7 +19,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,9 +34,8 @@ public class JsonUtils {
     private JsonUtils() {
     }
 
-    public static Collection<String> getValuesFromJson(String json, String key) {
-        JsonElement jsonTree = JsonParser.parseString(json);
-        JsonElement value = getElementByKey(jsonTree, key);
+    public static Collection<String> getValuesFromJson(JsonElement json, String key) {
+        JsonElement value = getElementByKey(json, key);
         return value != null ? getJsonElementValues(value) : Collections.emptyList();
     }
 
@@ -49,8 +47,8 @@ public class JsonUtils {
         }
 
         boolean isLastKey = keyParts.length == 1;
-        JsonElement childElement = rootElement.getAsJsonObject().get(keyParts[0]);
-        return isLastKey ? childElement : getElementByKey(childElement, keyParts[1]);
+        JsonElement parentElement = rootElement.getAsJsonObject().get(keyParts[0]);
+        return isLastKey ? parentElement : getElementByKey(parentElement, keyParts[1]);
     }
 
     private static Collection<String> getJsonElementValues(JsonElement jsonElement) {
