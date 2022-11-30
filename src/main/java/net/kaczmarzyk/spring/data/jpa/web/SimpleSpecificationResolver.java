@@ -143,6 +143,8 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
             return resolveSpecArgumentsFromPathVariables(context, specDef);
         } else if (specDef.paramType() == ParamType.BODY) {
             return resolveSpecArgumentsFromBody(context, specDef);
+		} else if (specDef.headers().length != 0) {
+			return resolveSpecArgumentsFromRequestHeaders(context, specDef);
         } else {
             return resolveDefaultVal(context, specDef);
         }
