@@ -18,22 +18,27 @@ import java.util.function.Function;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public class SpecificationArgResolverSpringdocOperationCustomizer implements OperationCustomizer {
 
-	// Code below is necessary to ignore parameters of Specification type in controller method
+	private static final String DEFAULT_PARAMETER_TYPE = "string";
+
+	// Static code block below is necessary to ignore parameters of Specification type in controller method
 	static {
 		SpringDocUtils.getConfig().addRequestWrapperToIgnore(Specification.class);
 	}
 
 	private final Map<Class<?>, Function<Annotation, List<Spec>>> nestedSpecAnnotationSuppliers = Map.of(
-			And.class, annotation -> extractSpecificationsFromAnd((And) annotation),
-			Or.class, annotation -> extractSpecificationsFromOr((Or) annotation),
-			Conjunction.class, annotation -> extractSpecificationsFromConjunction((Conjunction) annotation),
-			Disjunction.class, annotation -> extractSpecificationsFromDisjunction((Disjunction) annotation)
+			Spec.class, annotation -> singletonList((Spec) annotation),
+			And.class, annotation -> extractSpecsFromAnd((And) annotation),
+			Or.class, annotation -> extractSpecsFromOr((Or) annotation),
+			Conjunction.class, annotation -> extractSpecsFromConjunction((Conjunction) annotation),
+			Disjunction.class, annotation -> extractSpecsFromDisjunction((Disjunction) annotation)
 	);
 
 	@Override
@@ -42,95 +47,15 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 
 		List<String> requiredParameters = extractRequiredParametersFromHandlerMethod(handlerMethod);
 
-		List<Annotation> annotationsWithNestedSpec = stream(handlerMethod.getMethodParameters())
-				.map(MethodParameter::getParameterType)
-				.filter(this::methodParameterTypeIsSpecification)
-				.map(Class::getAnnotations)
-				.map(Arrays::asList)
+		stream(handlerMethod.getMethodParameters())
+				.map(this::extractAnnotationsWithSpecFromMethodParameter)
+				.map(this::extractNestedSpecificationsFromAnnotations)
+				.map(specs -> createParametersFromSpecs(specs, requiredParameters))
 				.flatMap(Collection::stream)
-				.collect(toList());
-
-		annotationsWithNestedSpec.stream()
-				.map(this::extractNestedSpecificationsFromAnnotation)
-				.map(this::deduplicateSpecificationsByParameterName)
-				.flatMap(Collection::stream)
-				.map(spec -> createParameters(spec, requiredParameters))
-				.flatMap(Collection::stream)
+				.collect(toSet())
 				.forEach(operation::addParametersItem);
 
 		return operation;
-	}
-
-	private boolean methodParameterTypeIsSpecification(Class<?> methodParameterType) {
-		return stream(methodParameterType.getInterfaces())
-				.anyMatch(parameterTypeInterface -> parameterTypeInterface == Specification.class);
-	}
-
-	private Collection<Spec> deduplicateSpecificationsByParameterName(List<Spec> specifications) {
-		Map<String, Spec> specificationByParameterName = new HashMap<>();
-		specifications.forEach(specification ->
-				stream(specification.params())
-						.forEach(param -> specificationByParameterName.putIfAbsent(param, specification)));
-
-		return specificationByParameterName.values();
-	}
-
-	private List<Spec> extractNestedSpecificationsFromAnnotation(Annotation annotation) {
-		if (!nestedSpecAnnotationSuppliers.containsKey(annotation.annotationType())) {
-			return emptyList();
-		}
-
-		return nestedSpecAnnotationSuppliers.get(annotation.annotationType())
-				.apply(annotation);
-	}
-
-	private List<Spec> extractSpecificationsFromOr(Or or) {
-		return asList(or.value());
-	}
-
-	private List<Spec> extractSpecificationsFromAnd(And and) {
-		return asList(and.value());
-	}
-
-	private List<Spec> extractSpecificationsFromConjunction(Conjunction conjunction) {
-		List<Spec> conjunctionSpecifications = new ArrayList<>(asList(conjunction.and()));
-
-		stream(conjunction.value())
-				.map(Or::value)
-				.map(Arrays::asList)
-				.flatMap(Collection::stream)
-				.forEach(conjunctionSpecifications::add);
-
-		return conjunctionSpecifications;
-	}
-
-	private List<Spec> extractSpecificationsFromDisjunction(Disjunction conjunction) {
-		List<Spec> disjunctionSpecifications = new ArrayList<>(asList(conjunction.or()));
-
-		stream(conjunction.value())
-				.map(And::value)
-				.map(Arrays::asList)
-				.flatMap(Collection::stream)
-				.forEach(disjunctionSpecifications::add);
-
-		return disjunctionSpecifications;
-	}
-
-	private List<Parameter> createParameters(Spec spec, List<String> requiredParameters) {
-		Schema<String> defaultParamSchema = new Schema<>();
-		defaultParamSchema.setType("string");
-
-		return stream(spec.params())
-				.map(parameterName -> {
-					Parameter specificationParam = new Parameter();
-					specificationParam.setName(parameterName);
-					specificationParam.setRequired(requiredParameters.contains(spec.path()));
-					specificationParam.setIn("query");
-					specificationParam.setSchema(defaultParamSchema);
-
-					return specificationParam;
-				})
-				.collect(toList());
 	}
 
 	private List<String> extractRequiredParametersFromHandlerMethod(HandlerMethod handlerMethod) {
@@ -139,4 +64,70 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 				.map(Arrays::asList)
 				.orElse(emptyList());
 	}
+
+	private List<Annotation> extractAnnotationsWithSpecFromMethodParameter(MethodParameter methodParameter) {
+		return stream(methodParameter.getParameterType().getAnnotations())
+				.filter(annotation -> nestedSpecAnnotationSuppliers.containsKey(annotation.annotationType()))
+				.collect(toList());
+	}
+
+	private List<Spec> extractNestedSpecificationsFromAnnotations(List<Annotation> annotations) {
+
+		return annotations.stream()
+				.filter(annotation -> nestedSpecAnnotationSuppliers.containsKey(annotation.annotationType()))
+				.map(annotation -> nestedSpecAnnotationSuppliers.get(annotation.annotationType())
+						.apply(annotation))
+				.flatMap(Collection::stream)
+				.collect(toList());
+	}
+
+	private List<Spec> extractSpecsFromOr(Or or) {
+		return asList(or.value());
+	}
+
+	private List<Spec> extractSpecsFromAnd(And and) {
+		return asList(and.value());
+	}
+
+	private List<Spec> extractSpecsFromConjunction(Conjunction conjunction) {
+		List<Spec> conjunctionSpecs = new ArrayList<>(asList(conjunction.and()));
+
+		stream(conjunction.value())
+				.map(Or::value)
+				.flatMap(Arrays::stream)
+				.forEach(conjunctionSpecs::add);
+
+		return conjunctionSpecs;
+	}
+
+	private List<Spec> extractSpecsFromDisjunction(Disjunction conjunction) {
+		List<Spec> disjunctionSpecs = new ArrayList<>(asList(conjunction.or()));
+
+		stream(conjunction.value())
+				.map(And::value)
+				.flatMap(Arrays::stream)
+				.forEach(disjunctionSpecs::add);
+
+		return disjunctionSpecs;
+	}
+
+	private List<Parameter> createParametersFromSpecs(List<Spec> specs, List<String> requiredParameters) {
+		Schema<String> defaultParamSchema = new Schema<>();
+		defaultParamSchema.setType(DEFAULT_PARAMETER_TYPE);
+
+		return specs.stream()
+				.map(Spec::params)
+				.flatMap(Arrays::stream)
+				.map(parameterName -> {
+					Parameter specParam = new Parameter();
+					specParam.setName(parameterName);
+					specParam.setRequired(requiredParameters.contains(parameterName));
+					specParam.setIn("query");
+					specParam.setSchema(defaultParamSchema);
+
+					return specParam;
+				})
+				.collect(toList());
+	}
+
 }
