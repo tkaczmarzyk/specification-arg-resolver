@@ -24,6 +24,9 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+/**
+ * @author Konrad Hajduga (Tratif sp. z o.o.)
+ */
 public class SpecificationArgResolverSpringdocOperationCustomizer implements OperationCustomizer {
 
 	private static final String DEFAULT_PARAMETER_TYPE = "string";
@@ -33,13 +36,15 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		SpringDocUtils.getConfig().addRequestWrapperToIgnore(Specification.class);
 	}
 
-	private final Map<Class<?>, Function<Annotation, List<Spec>>> nestedSpecAnnotationSuppliers = Map.of(
-			Spec.class, annotation -> singletonList((Spec) annotation),
-			And.class, annotation -> extractSpecsFromAnd((And) annotation),
-			Or.class, annotation -> extractSpecsFromOr((Or) annotation),
-			Conjunction.class, annotation -> extractSpecsFromConjunction((Conjunction) annotation),
-			Disjunction.class, annotation -> extractSpecsFromDisjunction((Disjunction) annotation)
-	);
+	private final Map<Class<?>, Function<Annotation, List<Spec>>> nestedSpecAnnotationSuppliers = new HashMap<>();
+
+	{
+		nestedSpecAnnotationSuppliers.put(Spec.class, annotation -> singletonList((Spec) annotation));
+		nestedSpecAnnotationSuppliers.put(And.class, annotation -> extractSpecsFromAnd((And) annotation));
+		nestedSpecAnnotationSuppliers.put(Or.class, annotation -> extractSpecsFromOr((Or) annotation));
+		nestedSpecAnnotationSuppliers.put(Conjunction.class, annotation -> extractSpecsFromConjunction((Conjunction) annotation));
+		nestedSpecAnnotationSuppliers.put(Disjunction.class, annotation -> extractSpecsFromDisjunction((Disjunction) annotation));
+	}
 
 	@Override
 	public Operation customize(Operation operation, HandlerMethod handlerMethod) {
@@ -48,7 +53,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		List<String> requiredParameters = extractRequiredParametersFromHandlerMethod(handlerMethod);
 
 		stream(handlerMethod.getMethodParameters())
-				.map(this::extractAnnotationsWithSpecFromMethodParameter)
+				.map(this::extractAnnotationsFromMethodParameter)
 				.map(this::extractNestedSpecificationsFromAnnotations)
 				.map(specs -> createParametersFromSpecs(specs, requiredParameters))
 				.flatMap(Collection::stream)
@@ -65,8 +70,13 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 				.orElse(emptyList());
 	}
 
-	private List<Annotation> extractAnnotationsWithSpecFromMethodParameter(MethodParameter methodParameter) {
-		return stream(methodParameter.getParameterType().getAnnotations())
+	private List<Annotation> extractAnnotationsFromMethodParameter(MethodParameter methodParameter) {
+
+		Annotation[] annotations = methodParameter.getParameterType() == Specification.class
+				? methodParameter.getParameterAnnotations()
+				: methodParameter.getParameterType().getAnnotations();
+
+		return stream(annotations)
 				.filter(annotation -> nestedSpecAnnotationSuppliers.containsKey(annotation.annotationType()))
 				.collect(toList());
 	}
