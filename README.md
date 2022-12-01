@@ -109,7 +109,7 @@ For example the following controller method:
 @RequestMapping(value = "/customers", params = "genderIn")
 @ResponseBody
 public Object findCustomersByGender(
-	@Spec(path = "gender", params = "genderIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
+	@Spec(path = "gender", params = "genderIn", paramSeparator = ',', spec = In.class) Specification<Customer> spec) {
 	return customerRepo.findAll(spec);
 }
 ```
