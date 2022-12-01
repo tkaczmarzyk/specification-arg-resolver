@@ -27,41 +27,50 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Executable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
-import static net.kaczmarzyk.spring.data.jpa.web.utils.PathVariablesUtil.*;
+import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.pathVariables;
+import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariables;
+import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Test file is parameterized in order to run it both for new and fallback approach in path variable resolving
+ *
  * @author Tomasz Kaczmarzyk
  * @author Jakub Radlica
  */
 @RunWith(Parameterized.class)
 public class WebRequestProcessingContextPathVariableResolverTest {
+
+	private final static Boolean REQUEST_ATTRIBUTES_WITH_PATH_VARIABLES = Boolean.TRUE;
+	private final static Boolean REQUEST_ATTRIBUTES_WITHOUT_PATH_VARIABLES = Boolean.FALSE;
 	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
+
 	@Parameters(name = "TestController: {0}")
 	public static Collection testController() {
 		return Arrays.asList(
-				new Object[] { TestControllerWithClassLevelRequestMappingWithValue.class, Boolean.TRUE },
-				new Object[] { TestControllerWithClassLevelRequestMappingWithValueAndPathVarWithRegexp.class, Boolean.TRUE },
-				new Object[] { TestControllerWithClassLevelRequestMappingWithPath.class, Boolean.TRUE },
-				new Object[] { TestControllerWithClassLevelRequestMappingWithPathAndPathVarWithRegexp.class, Boolean.TRUE },
-				new Object[] { TestControllerWithClassLevelRequestMappingWithValue.class, Boolean.FALSE },
-				new Object[] { TestControllerWithClassLevelRequestMappingWithValueAndPathVarWithRegexp.class, Boolean.FALSE },
-				new Object[] { TestControllerWithClassLevelRequestMappingWithPath.class, Boolean.FALSE },
-				new Object[] { TestControllerWithClassLevelRequestMappingWithPathAndPathVarWithRegexp.class, Boolean.FALSE }
+				new Object[] { TestControllerWithClassLevelRequestMappingWithValue.class, REQUEST_ATTRIBUTES_WITH_PATH_VARIABLES },
+				new Object[] { TestControllerWithClassLevelRequestMappingWithValueAndPathVarWithRegexp.class, REQUEST_ATTRIBUTES_WITH_PATH_VARIABLES },
+				new Object[] { TestControllerWithClassLevelRequestMappingWithPath.class, REQUEST_ATTRIBUTES_WITH_PATH_VARIABLES },
+				new Object[] { TestControllerWithClassLevelRequestMappingWithPathAndPathVarWithRegexp.class, REQUEST_ATTRIBUTES_WITH_PATH_VARIABLES },
+				new Object[] { TestControllerWithClassLevelRequestMappingWithValue.class, REQUEST_ATTRIBUTES_WITHOUT_PATH_VARIABLES },
+				new Object[] { TestControllerWithClassLevelRequestMappingWithValueAndPathVarWithRegexp.class, REQUEST_ATTRIBUTES_WITHOUT_PATH_VARIABLES },
+				new Object[] { TestControllerWithClassLevelRequestMappingWithPath.class, REQUEST_ATTRIBUTES_WITHOUT_PATH_VARIABLES },
+				new Object[] { TestControllerWithClassLevelRequestMappingWithPathAndPathVarWithRegexp.class, REQUEST_ATTRIBUTES_WITHOUT_PATH_VARIABLES }
 		);
 	}
 
 	private Class<?> testController;
-	private Boolean getAttributes;
+	private Boolean webRequestAttributesWithExtractedPathVariables;
 	
-	public WebRequestProcessingContextPathVariableResolverTest(Class<?> testController, Boolean getAttributes) {
+	public WebRequestProcessingContextPathVariableResolverTest(Class<?> testController, Boolean webRequestAttributesWithExtractedPathVariables) {
 		this.testController = testController;
-		this.getAttributes = getAttributes;
+		this.webRequestAttributesWithExtractedPathVariables = webRequestAttributesWithExtractedPathVariables;
 	}
 	
 	@Test
@@ -372,7 +381,7 @@ public class WebRequestProcessingContextPathVariableResolverTest {
 	}
 
 	private void setPathVariableAttributes(MockWebRequest req, Map<String, String> pathVariables) {
-		if (getAttributes) {
+		if (webRequestAttributesWithExtractedPathVariables) {
 			setPathVariables(req, pathVariables);
 		}
 	}

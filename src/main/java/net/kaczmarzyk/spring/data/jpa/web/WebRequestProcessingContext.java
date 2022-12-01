@@ -31,11 +31,25 @@ import org.springframework.web.servlet.HandlerMapping;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * <p>
  * Provides information about Controller/method and WebRequest being processed.
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
- * 
+ * When the request attributes don't contain information about extracted path variables,
+ * the path variables are extracted using a fallback approach (which has some limitations, eg. it does not support global prefixes).
+ * </p>
+ * <br>
+ * Old approach takes only controllers mapping and tries to match it against request URI.
+ * As it requires paths to be exact the same it fails and throws exception
+ * <p>
+ * example controllers mapping: <br>
+ * /user/{userId} <br>
+ *
+ * example request URI with global api prefix that would fail for old approach: <br>
+ * /api/v1/user/12
+ * </p>
+ *
  * @author Tomasz Kaczmarzyk
- * @author Robert Dworak
+ * @author Robert Dworak, Tratif sp. z o.o.
  */
 public class WebRequestProcessingContext {
 

@@ -1,6 +1,20 @@
 v2.10.0
 ======
 * Changed approach for resolving path variables when processing request
+* From now on path variable resolving for controllers with path prefixes should work properly.
+For example path variables for controllers that set global prefixes using PathMatchConfigurer are now handled.
+As new resolving method can return null map, old one is set as fallback. However old approach doesn't handle URI global
+prefixes and causes exceptions when trying to handle URIs containing them.
+
+Old approach takes only controllers mapping and tries to match it against request URI. As it requires paths to be exact the same it fails and throws exception:
+```
+example controllers mapping:
+/user/{userId}
+
+example request URI with global api prefix that would fail for old approach:
+/api/v1/user/12
+```
+
 
 v2.9.0
 ======

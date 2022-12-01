@@ -23,7 +23,12 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PathVariablesUtil {
+/**
+ * Util for setting path variables in request's attributes
+ * It's used in tests that should work with new request path variable resolving approach in {@link net.kaczmarzyk.spring.data.jpa.web.WebRequestProcessingContext WebRequestProcessingContext}
+ * If path variable attributes aren't set then old path resolving approach is used
+ */
+public class RequestAttributesWithPathVariablesUtil {
 
 	public static void setPathVariables(MockWebRequest req, Map<String, String> pathVariables) {
 		req.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, pathVariables, RequestAttributes.SCOPE_REQUEST);
