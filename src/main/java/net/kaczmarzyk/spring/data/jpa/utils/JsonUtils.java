@@ -15,10 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,9 +26,11 @@ import java.util.List;
  * @author Andrei Shakarov
  */
 public class JsonUtils {
+
     private static final String DOT_DELIMITER = "\\.";
 
-    private JsonUtils() {
+    public static JsonElement parseRequestToJson(String requestBody) {
+        return JsonParser.parseString(requestBody);
     }
 
     public static Collection<String> getValuesFromJson(JsonElement json, String key) {

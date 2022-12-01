@@ -18,6 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -30,6 +31,25 @@ public class JsonUtilsTest {
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Test
+    public void parsesRequestBodyToJson() {
+        String requestBody = "{ \"key\": { \"array\": [{ \"object1\": \"value1\" }, { \"object2\": \"value2\" }]}}";
+
+        JsonElement requestBodyJson = JsonUtils.parseRequestToJson(requestBody);
+
+        Assertions.assertThat(requestBodyJson.toString())
+                .isEqualTo(removeWhitespacesFrom(requestBody));
+    }
+
+    @Test
+    public void throwsJsonSyntaxExceptionWhileParsingInvalidJson() {
+        String requestBody = "{\"invalidJson: ";
+
+        exceptionRule.expect(JsonSyntaxException.class);
+
+        JsonUtils.parseRequestToJson(requestBody);
+    }
 
     @Test
     public void getSingleValueByNotCompositeKeyWhenValueIsString() {
@@ -132,5 +152,9 @@ public class JsonUtilsTest {
         exceptionRule.expectMessage("Array by key contains not primitives");
 
         JsonUtils.getValuesFromJson(requestBodyJson, "key.array");
+    }
+
+    private static String removeWhitespacesFrom(String jsonWithWhitespaces) {
+        return jsonWithWhitespaces.replaceAll("\\s+","");
     }
 }

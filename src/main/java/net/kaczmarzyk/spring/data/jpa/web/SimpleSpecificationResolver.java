@@ -16,11 +16,9 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import net.kaczmarzyk.spring.data.jpa.utils.JsonUtils;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +38,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-
+import static net.kaczmarzyk.spring.data.jpa.utils.JsonUtils.getValuesFromJson;
+import static net.kaczmarzyk.spring.data.jpa.utils.JsonUtils.parseRequestToJson;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -196,9 +195,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
     private Collection<String> resolveSpecArgumentsFromBody(WebRequestProcessingContext context, Spec specDef) {
         String[] params = specDef.params().length != 0 ? specDef.params() : new String[]{specDef.path()};
         String requestBody = context.getRequestBody();
-		JsonElement requestBodyJson = JsonParser.parseString(requestBody);
+		JsonElement requestBodyJson = parseRequestToJson(requestBody);
         return Arrays.stream(params)
-            .flatMap(param -> JsonUtils.getValuesFromJson(requestBodyJson, param).stream())
+            .flatMap(param -> getValuesFromJson(requestBodyJson, param).stream())
             .collect(Collectors.toList());
     }
 
