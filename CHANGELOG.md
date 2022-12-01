@@ -21,21 +21,21 @@ v2.10.0 - not released yet
     ```
   * To create specifications outside the web layer, you can use the specification builder as follows:
     ```java
-    Specification<Customer> spec = specification(CustomerByOrdersSpec.class)
+    Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
           .withParams("orderItem", "Pizza")
           .build();            
     ```
-  * It is recommended to use builder methods that corresponding to the type of argument type passed to specification interface, e.g.:
+  * It is recommended to use builder methods that corresponding to the type of argument passed to specification interface, e.g.:
     * For:
     ```java
     @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
     ``` 
-    you should use `withparams(<argName>, <values...>)` method. Argument types corresponds analogically to the method:
+    you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
     * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
     * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
     * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
 
-  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value.
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
 v2.9.0
 ======
 * Fixed the bug with redundant joins

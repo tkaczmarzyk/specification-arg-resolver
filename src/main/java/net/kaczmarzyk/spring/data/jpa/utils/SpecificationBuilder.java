@@ -24,7 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Kacper Leśniak
+ * @author Jakub Radlica
+ * @author Kacper Leśniak (Tratif sp. z o.o.)
+ * SpecificationBuilder allows creating specification apart from web layer.
+ * It is recommended to use builder methods that corresponding to the type of argument passed to sepcification.
+ * params = <args> => withParams(<argName>, <values...>), single param argument can provide multiple values
+ * pathVars = <args> => withPathVar(<argName>, <value>), single pathVar argument can provide single value
+ * headers = <args> => withHeader(<argName>, <value>), single header argument can provide single value
  */
 public class SpecificationBuilder<T extends Specification> {
 
@@ -50,6 +56,10 @@ public class SpecificationBuilder<T extends Specification> {
 		return this;
 	}
 
+	/**
+	 * The direct methods for params/headers/pathVars should be used instead.
+	 */
+	@SuppressWarnings("unckecked")
 	public SpecificationBuilder<T> withArg(String arg, String... values) {
 		this.fallbackSpecificationParamValues.put(arg, values);
 		return this;

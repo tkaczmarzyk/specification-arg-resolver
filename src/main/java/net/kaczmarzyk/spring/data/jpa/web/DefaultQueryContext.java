@@ -23,7 +23,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**

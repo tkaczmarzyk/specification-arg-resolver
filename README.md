@@ -29,6 +29,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
+   * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -970,34 +971,36 @@ Cache support
 
 Specification argument resolver supports [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching). Equals and HashCode contract is satisfied for generated specifications.
 
-Specification building apart from web layer
+Building specifications outside the web layer
 ------------------------------------------
 
 Specification argument resolver supports creating specifications apart from web layer.
 To build specification outside the web-layer the `SpecificationBuilder` should be used:
 
-* Let's assume following specification:
+* Let's assume the following specification:
     ```java
     @Join(path = "orders", alias = "o")
     @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
     public interface CustomerByOrdersSpec implements Specification<Customer> {
     }
     ```
-* Specification could be build as follows:
-    ```java
-    Specification<Customer> spec = specification(CustomerByOrdersSpec.class)
-        .withParams("orderItem", "Pizza")
-        .build();            
-    ```
-* By default, the specification builder does not support SPeL and does not use spring conversion service. To build specification with SPeL support and spring conversion service you should:
-    ```java
-    Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class)
-        .withSpecificationFactory(new SpecificationFactory(conversionService, abstractApplicationContext))
-        .withParams("orderItem", "Pizza")
-        .build();
-	```
+    * To create specifications outside the web layer, you can use the specification builder as follows:
+      ```java
+      Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
+            .withParams("orderItem", "Pizza")
+            .build();            
+      ```
+    * It is recommended to use builder methods that corresponding to the type of argument type passed to specification interface, e.g.:
+        * For:
+      ```java
+      @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+      ``` 
+      you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+        * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+        * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
+        * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
 
-  Note: There is additional method `withArg(<argName>, <values...>)` that store values used as fallback in case of missing path/header/query param value.
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
 
 Compatibility notes
 -------------------

@@ -29,7 +29,8 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * @author Kacper Leśniak
+ * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
  */
 public class SpecificationFactory {
 
@@ -85,7 +86,7 @@ public class SpecificationFactory {
 
 		resolveSpecFromInterfaceAnnotations(context, specAccumulator);
 		resolveSpecFromParameterAnnotations(context, specAccumulator);
-		System.out.println();
+
 		return specAccumulator;
 	}
 
