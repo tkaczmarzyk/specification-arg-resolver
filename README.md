@@ -971,7 +971,7 @@ Swagger support
 
 Right now specification argument resolver supports only one library -> `Springdoc-openapi`. 
 There are two steps in order to enable support for `Springdoc-openapi` library:
-* Add following dependency from `Springdoc-openapi`:
+* Add following dependency from `Springdoc-openapi` (tested with `1.6.13` version):
 ```xml
 <dependency>
     <groupId>org.springdoc</groupId>
@@ -981,10 +981,10 @@ There are two steps in order to enable support for `Springdoc-openapi` library:
 
 * Create `@Bean` of type `SpecificationArgResolverSpringdocOperationCustomizer` in your app configuration:
 ```java
-   @Bean
-   public SpecificationArgResolverSpringdocOperationCustomizer specificationArgResolverSpringdocOperationCustomizer() {
-        return new SpecificationArgResolverSpringdocOperationCustomizer();
-   }
+@Bean
+public SpecificationArgResolverSpringdocOperationCustomizer specificationArgResolverSpringdocOperationCustomizer() {
+    return new SpecificationArgResolverSpringdocOperationCustomizer();
+}
 ```
 
 Cache support
