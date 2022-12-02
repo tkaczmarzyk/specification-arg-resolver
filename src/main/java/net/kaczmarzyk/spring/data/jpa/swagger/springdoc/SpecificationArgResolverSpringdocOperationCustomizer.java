@@ -22,7 +22,6 @@ import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Konrad Hajduga (Tratif sp. z o.o.)
@@ -57,7 +56,8 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 				.map(this::extractNestedSpecificationsFromAnnotations)
 				.map(specs -> createParametersFromSpecs(specs, requiredParameters))
 				.flatMap(Collection::stream)
-				.collect(toSet())
+				.distinct()
+				.collect(toList())
 				.forEach(operation::addParametersItem);
 
 		return operation;
