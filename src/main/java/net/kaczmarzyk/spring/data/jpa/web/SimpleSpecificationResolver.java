@@ -71,7 +71,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 				return def.onTypeMismatch().wrap(spec);
 			}
 		} catch (NoSuchMethodException e) {
-			throw new IllegalStateException("Does the specification class expose at least one of the supported constuctors?\n"
+			throw new IllegalStateException("Does the specification class expose at least one of the supported constructors?\n"
 					+ "It can be either:\n"
 					+ "  3-arg (QueryContext queryCtx, String path, String[] args)\n"
 					+ "  4-arg (QueryContext queryCtx, String path, String[] args, Converter converter)\n"

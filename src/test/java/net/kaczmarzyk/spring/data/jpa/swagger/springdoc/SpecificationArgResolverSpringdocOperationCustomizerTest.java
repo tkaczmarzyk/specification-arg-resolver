@@ -9,9 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
@@ -34,7 +32,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	@Test
 	public void shouldCorrectlyEnrichOperationWithSpecParametersForDisjunction() throws NoSuchMethodException {
 		// given
-		HandlerMethod handlerMethod = handlerMethodForControllerMethod("disjunctionTestMethod");
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("disjunctionTestMethod");
 		Operation operation = new Operation();
 
 		// when
@@ -52,7 +50,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	@Test
 	public void shouldCorrectlyEnrichOperationWithSpecParametersForConjunction() throws NoSuchMethodException {
 		// given
-		HandlerMethod handlerMethod = handlerMethodForControllerMethod("conjunctionTestMethod");
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("conjunctionTestMethod");
 		Operation operation = new Operation();
 
 		// when
@@ -70,7 +68,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	@Test
 	public void shouldCorrectlyEnrichOperationWithSpecParametersForAnd() throws NoSuchMethodException {
 		// given
-		HandlerMethod handlerMethod = handlerMethodForControllerMethod("andTestMethod");
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andTestMethod");
 		Operation operation = new Operation();
 
 		// when
@@ -88,7 +86,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	@Test
 	public void shouldCorrectlyEnrichOperationWithSpecParametersForOr() throws NoSuchMethodException {
 		// given
-		HandlerMethod handlerMethod = handlerMethodForControllerMethod("orTestMethod");
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("orTestMethod");
 		Operation operation = new Operation();
 
 		// when
@@ -103,59 +101,178 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				.containsOnly("orFirstParam", "orSecondParam");
 	}
 
-	private HandlerMethod handlerMethodForControllerMethod(String controllerMethodName) throws NoSuchMethodException {
-		TestController testController = new TestController();
-		Method disjunctionTestMethod = testController.getClass().getMethod(controllerMethodName, Specification.class);
+	@Test
+	public void shouldCorrectlyEnrichOperationWithSpecParametersForSpec() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specTestMethod");
+		Operation operation = new Operation();
 
-		return new HandlerMethod(testController, disjunctionTestMethod);
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		List<String> parameterNames = customizedOperation.getParameters().stream()
+				.map(Parameter::getName)
+				.collect(toList());
+
+		Assertions.assertThat(parameterNames)
+				.containsOnly("specParam");
 	}
 
-	@Controller
+	@Test
+	public void shouldCorrectlyEnrichOperationWithoutDuplicatingTheSameParameter() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("conjunctionWithDuplicatedParamTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		List<String> parameterNames = customizedOperation.getParameters().stream()
+				.map(Parameter::getName)
+				.collect(toList());
+
+
+		Assertions.assertThat(parameterNames)
+				.containsOnly("conjunctionDuplicatedFirstParam", "conjunctionSecondParam");
+	}
+
+	@Test
+	public void shouldCorrectlyReadParametersFromCustomFilter() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodAndParameterType("customFilterTestMethod", TestFilter.class);
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		List<String> parameterNames = customizedOperation.getParameters().stream()
+				.map(Parameter::getName)
+				.collect(toList());
+
+		Assertions.assertThat(parameterNames)
+				.containsOnly("testFilterFirstParam", "testFilterSecondParam");
+	}
+
+	@Test
+	public void shouldCorrectlyMarkParameterAsRequired() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andWithRequiredParamTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		List<Parameter> parameters = customizedOperation.getParameters();
+
+		Assertions.assertThat(parameters)
+				.hasSize(2);
+
+		Assertions.assertThat(parameters.get(0).getName())
+				.isEqualTo("andRequiredParam");
+		Assertions.assertThat(parameters.get(0).getRequired())
+				.isTrue();
+
+		Assertions.assertThat(parameters.get(1).getName())
+				.isEqualTo("andNotRequiredParam");
+		Assertions.assertThat(parameters.get(1).getRequired())
+				.isFalse();
+	}
+
+	private HandlerMethod handlerMethodForControllerMethodWithSpecification(String controllerMethodName) throws NoSuchMethodException {
+
+		return handlerMethodForControllerMethodAndParameterType(controllerMethodName, Specification.class);
+	}
+
+	private HandlerMethod handlerMethodForControllerMethodAndParameterType(String controllerMethodName, Class<?> parameterType) throws NoSuchMethodException {
+		TestController testController = new TestController();
+		Method controllerMethod = testController.getClass().getMethod(controllerMethodName, parameterType);
+
+		return new HandlerMethod(testController, controllerMethod);
+	}
+
 	private static class TestController {
 
 		@RequestMapping(value = "/disjunction")
-		@ResponseBody
 		public void disjunctionTestMethod(
 				@Disjunction(
 						value = @And({
-								@Spec(path = "disjunctionFirstParam", params = "disjunctionFirstParam", spec = Like.class),
-								@Spec(path = "disjunctionSecondParam", params = "disjunctionSecondParam", spec = Like.class)
+								@Spec(path = "", params = "disjunctionFirstParam", spec = Like.class),
+								@Spec(path = "", params = "disjunctionSecondParam", spec = Like.class)
 						}),
-						or = @Spec(path = "disjunctionThirdParam", params = "disjunctionThirdParam", spec = Like.class)) Specification<Customer> spec) {
+						or = @Spec(path = "", params = "disjunctionThirdParam", spec = Like.class)) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/conjunction")
-		@ResponseBody
 		public void conjunctionTestMethod(
 				@Conjunction(
 						value = @Or({
-								@Spec(path = "conjunctionFirstParam", params = "conjunctionFirstParam", spec = Like.class),
-								@Spec(path = "conjunctionSecondParam", params = "conjunctionSecondParam", spec = Like.class)
+								@Spec(path = "", params = "conjunctionFirstParam", spec = Like.class),
+								@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class)
 						}),
-						and = @Spec(path = "conjunctionThirdParam", params = "conjunctionThirdParam", spec = Like.class)) Specification<Customer> spec) {
+						and = @Spec(path = "", params = "conjunctionThirdParam", spec = Like.class)) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/and")
-		@ResponseBody
 		public void andTestMethod(
 				@And({
-						@Spec(path = "andFirstParam", params = "andFirstParam", spec = Like.class),
-						@Spec(path = "andSecondParam", params = "andSecondParam", spec = Like.class)
+						@Spec(path = "", params = "andFirstParam", spec = Like.class),
+						@Spec(path = "", params = "andSecondParam", spec = Like.class)
 				}) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/or")
-		@ResponseBody
 		public void orTestMethod(
 				@Or({
-						@Spec(path = "orFirstParam", params = "orFirstParam", spec = Like.class),
-						@Spec(path = "orSecondParam", params = "orSecondParam", spec = Like.class)
+						@Spec(path = "", params = "orFirstParam", spec = Like.class),
+						@Spec(path = "", params = "orSecondParam", spec = Like.class)
 				}) Specification<Customer> spec) {
 
 		}
+
+		@RequestMapping(value = "/spec")
+		public void specTestMethod(@Spec(path = "", params = "specParam", spec = Like.class) Specification<Customer> spec) {
+
+		}
+
+		@RequestMapping(value = "/conjunction-duplicated-param")
+		public void conjunctionWithDuplicatedParamTestMethod(
+				@Conjunction(
+						value = @Or({
+								@Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class),
+								@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class)
+						}),
+						and = @Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class)) Specification<Customer> spec) {
+
+		}
+
+		@RequestMapping(value = "/and-required-param", params = "andRequiredParam")
+		public void andWithRequiredParamTestMethod(
+				@And({
+						@Spec(path = "", params = "andRequiredParam", spec = Like.class),
+						@Spec(path = "", params = "andNotRequiredParam", spec = Like.class)
+				}) Specification<Customer> spec) {
+
+		}
+
+		@RequestMapping(value = "/custom-filter")
+		public void customFilterTestMethod(TestFilter filter) {
+
+		}
+
+	}
+
+	@Or({
+			@Spec(path = "", params = "testFilterFirstParam", spec = Like.class),
+			@Spec(path = "", params = "testFilterSecondParam", spec = Like.class)
+	})
+	private interface TestFilter extends Specification<Customer> {
 
 	}
 
