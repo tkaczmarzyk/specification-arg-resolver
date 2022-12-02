@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class RequestAttributesWithPathVariablesUtil {
 
-	public static void setPathVariables(MockWebRequest req, Map<String, String> pathVariables) {
+	public static void setPathVariablesInRequestAttributes(MockWebRequest req, Map<String, String> pathVariables) {
 		req.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, pathVariables, RequestAttributes.SCOPE_REQUEST);
 	}
 
