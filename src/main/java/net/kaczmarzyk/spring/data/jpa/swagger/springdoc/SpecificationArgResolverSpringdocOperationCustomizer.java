@@ -72,13 +72,15 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 
 	private List<Annotation> extractAnnotationsFromMethodParameter(MethodParameter methodParameter) {
 
-		Annotation[] annotations = methodParameter.getParameterType() == Specification.class
-				? methodParameter.getParameterAnnotations()
-				: methodParameter.getParameterType().getAnnotations();
+		List<Annotation> annotations = new ArrayList<>(
+				asList(methodParameter.getParameterAnnotations()));
 
-		return stream(annotations)
-				.filter(annotation -> nestedSpecAnnotationSuppliers.containsKey(annotation.annotationType()))
-				.collect(toList());
+		if (methodParameter.getParameterType() != Specification.class) {
+			List<Annotation> innerParameterAnnotations = asList(methodParameter.getParameterType().getAnnotations());
+			annotations.addAll(innerParameterAnnotations);
+		}
+
+		return annotations;
 	}
 
 	private List<Spec> extractNestedSpecificationsFromAnnotations(List<Annotation> annotations) {

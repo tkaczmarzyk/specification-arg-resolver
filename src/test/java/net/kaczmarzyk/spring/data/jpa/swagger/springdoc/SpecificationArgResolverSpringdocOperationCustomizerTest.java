@@ -139,9 +139,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	}
 
 	@Test
-	public void shouldCorrectlyReadParametersFromCustomFilter() throws NoSuchMethodException {
+	public void shouldCorrectlyReadParametersFromCustomFilterWithAnnotations() throws NoSuchMethodException {
 		// given
-		HandlerMethod handlerMethod = handlerMethodForControllerMethodAndParameterType("customFilterTestMethod", TestFilter.class);
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodAndParameterType("customFilterWithAnnotationsTestMethod", TestFilterWithAnnotations.class);
 		Operation operation = new Operation();
 
 		// when
@@ -153,7 +153,25 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				.collect(toList());
 
 		Assertions.assertThat(parameterNames)
-				.containsOnly("testFilterFirstParam", "testFilterSecondParam");
+				.containsOnly("annotatedFilterFirstParam", "annotatedFilterSecondParam");
+	}
+
+	@Test
+	public void shouldCorrectlyReadParametersFromCustomFilterWithoutAnnotations() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodAndParameterType("customFilterWithoutAnnotationsTestMethod", TestFilterWithoutAnnotations.class);
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		List<String> parameterNames = customizedOperation.getParameters().stream()
+				.map(Parameter::getName)
+				.collect(toList());
+
+		Assertions.assertThat(parameterNames)
+				.containsOnly("notAnnotatedFilterFirstParam", "notAnnotatedFilterSecondParam");
 	}
 
 	@Test
@@ -261,18 +279,31 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		}
 
-		@RequestMapping(value = "/custom-filter")
-		public void customFilterTestMethod(TestFilter filter) {
+		@RequestMapping(value = "/custom-filter-with-annotations")
+		public void customFilterWithAnnotationsTestMethod(TestFilterWithAnnotations filter) {
+
+		}
+
+		@RequestMapping(value = "/custom-filter-without-annotations")
+		public void customFilterWithoutAnnotationsTestMethod(
+				@Or({
+						@Spec(path = "", params = "notAnnotatedFilterFirstParam", spec = Like.class),
+						@Spec(path = "", params = "notAnnotatedFilterSecondParam", spec = Like.class)
+				}) TestFilterWithoutAnnotations filter) {
 
 		}
 
 	}
 
 	@Or({
-			@Spec(path = "", params = "testFilterFirstParam", spec = Like.class),
-			@Spec(path = "", params = "testFilterSecondParam", spec = Like.class)
+			@Spec(path = "", params = "annotatedFilterFirstParam", spec = Like.class),
+			@Spec(path = "", params = "annotatedFilterSecondParam", spec = Like.class)
 	})
-	private interface TestFilter extends Specification<Customer> {
+	private interface TestFilterWithAnnotations extends Specification<Customer> {
+
+	}
+
+	private interface TestFilterWithoutAnnotations extends Specification<Customer> {
 
 	}
 
