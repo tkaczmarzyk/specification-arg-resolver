@@ -1,6 +1,6 @@
 v2.11.0
-=======
 * added Json request body support
+* replaced hibernate java persistence api dependency with java persistence api (`org.hibernate.javax.persistence` -> `javax.persistence`)
 
 v2.10.0
 =======
