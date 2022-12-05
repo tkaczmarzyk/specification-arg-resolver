@@ -103,13 +103,13 @@ For multi value filters like: `In.class`, `NotIn.class` there are two ways of pa
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator.
+The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator (can be specified only for `ParamType.QUERY`).
 For example the following controller method:
 ```java
 @RequestMapping(value = "/customers", params = "genderIn")
 @ResponseBody
 public Object findCustomersByGender(
-	@Spec(path = "gender", params = "genderIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
+	@Spec(path = "gender", params = "genderIn", paramSeparator = ',', spec = In.class) Specification<Customer> spec) {
 	return customerRepo.findAll(spec);
 }
 ```
@@ -829,17 +829,18 @@ public Object findCustomersByGenderAndNickName(
   ```
 
 This will handle request `GET /customers/reqHeaders` as `select c from Customers c where c.gender = :gender AND c.nickName = :nickName`.
+
 Json request body support
 ---------------------
 
-Also, you can specify value for specification in json request body. It might be useful when you use large number of filters for request because request url limited in size. Need specify `paramType` with value `ParamType.BODY` (by default it set as `ParamType.QUERY`). For example:
+Also, you can specify value for specification in json request body. It might be useful when you use large number of filters for request because request url is limited in size. Need to specify `paramType` with value `ParamType.BODY` (by default it set as `ParamType.QUERY`). For example:
 
 ```java
   @PostMapping("/customers/find")
   public List<Customer> findCustomersByLastNameAndAge(
                         @And({
                             @Spec(path = "lastName", params = "customerLastName", paramType = ParamType.BODY, spec = Equal.class),
-                            @Spec(path = "age", params = "castomerAge", paramType = ParamType.BODY, spec = Equal.class)
+                            @Spec(path = "age", params = "customerAge", paramType = ParamType.BODY, spec = Equal.class)
                         }) Specification<Customer> spec) {   
     
       return repository.findAll(spec);
@@ -854,9 +855,9 @@ This will handle request `POST /customers/find` with body:
   "age": 18
 }
 ```
-as `select c from Customers c where c.lastName = 'Simpson' and c.age >= 18`
+as `select c from Customers c where c.lastName = 'Simpson' and c.age = 18`
 
-Nested object suppots in json. You should specify full path to node from root element dividing nodes by `.` 
+Nested object supports in json. You should specify full path to node from root element dividing nodes by `.` 
 
 ```java
   @PostMapping("/customers/find")
@@ -889,7 +890,7 @@ For multiple values you can use array as result node in json body. For example:
 ```java
   @PostMapping("/customers/find")
   public List<Customer> findCustomersByGenderIn(
-                    @Spec(path = "lastName", params = "filters.genders", paramType = ParamType.BODY, spec = IN.class) Specification<Customer> spec) {   
+                    @Spec(path = "lastName", params = "filters.genders", paramType = ParamType.BODY, spec = In.class) Specification<Customer> spec) {   
     
       return repository.findAll(spec);
   }
@@ -906,7 +907,29 @@ This will handle request `POST /customers/find` with body:
 ```
 as `select c from Customers c where c.gender in ('MALE', 'FEMALE')`
 
-<b>!!!ATTENTION:</b> Array cannot be root or middle json node.
+<b>!!!ATTENTION:</b> Json cannot contain array of non-primitive types (array of objects). For example:
+```java
+ @PostMapping("/customers/find")
+ public List<Customer> findCustomersByLastName(
+                @Spec(path = "lastName", params = "customer.names.firstName", paramType = ParamType.BODY, spec = Equal.class) Specification<Customer> spec) {
+	return repository.findAll(spec);
+}
+```
+Request `POST /customers/find` with the following body is not valid (`JsonParseException` will be thrown)
+```json
+{
+  "customer":{
+      "names":[
+         {
+            "firstName":"value1"
+         },
+         {
+            "lastName":"value2"
+         }
+      ]
+   }
+}
+```
 
 Type conversions for HTTP parameters
 -------------------

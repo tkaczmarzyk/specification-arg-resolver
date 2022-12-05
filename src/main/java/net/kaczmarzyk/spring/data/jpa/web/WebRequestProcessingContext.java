@@ -15,12 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import net.kaczmarzyk.spring.data.jpa.utils.IOUtils;
-import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.utils.*;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,9 +25,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+
+import static java.util.Objects.isNull;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Provides information about Controller/method and WebRequest being processed.
@@ -45,6 +42,7 @@ public class WebRequestProcessingContext {
 	private final MethodParameter methodParameter;
 	private final NativeWebRequest webRequest;
 	private String pathPattern;
+	private BodyParams bodyParams;
 
 	private Map<String, String> resolvedPathVariables;
 	
@@ -81,7 +79,6 @@ public class WebRequestProcessingContext {
 		}
 	}
 
-//<<<<<<< master // TODO deferring conflict resolution
     public String getRequestBody() {
 		try {
 			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
@@ -92,10 +89,22 @@ public class WebRequestProcessingContext {
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
 		}
-//======
+	}
+
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
-//>>>>>>> json_support
+	}
+
+	public BodyParams getBodyParams() {
+		if (isNull(bodyParams)) {
+			String contentType = getRequestHeaderValue(CONTENT_TYPE);
+			if (contentType.equals(APPLICATION_JSON_VALUE)) {
+				this.bodyParams = JsonBodyParams.parse(getRequestBody());
+			} else {
+				throw new IllegalArgumentException("Content-type not supported, content-type=" + contentType);
+			}
+		}
+		return bodyParams;
 	}
 
 	private String pathPattern() {
