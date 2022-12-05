@@ -907,7 +907,7 @@ This will handle request `POST /customers/find` with body:
 ```
 as `select c from Customers c where c.gender in ('MALE', 'FEMALE')`
 
-<b>!!!ATTENTION:</b> Array cannot be root or middle json node. For example:
+<b>!!!ATTENTION:</b> Json cannot contain array of non-primitive types (array of objects). For example:
 ```java
  @PostMapping("/customers/find")
  public List<Customer> findCustomersByLastName(

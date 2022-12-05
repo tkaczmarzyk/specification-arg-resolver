@@ -15,9 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import com.google.gson.JsonElement;
 import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
+import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -38,8 +38,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static net.kaczmarzyk.spring.data.jpa.utils.JsonUtils.getValuesFromJson;
-import static net.kaczmarzyk.spring.data.jpa.utils.JsonUtils.parseRequestToJson;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -137,19 +135,19 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}
 
-    private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
-        if (specDef.constVal().length != 0) {
-            return resolveConstVal(specDef);
-        } else if (specDef.pathVars().length != 0 || specDef.paramType() == ParamType.PATH) {
-            return resolveSpecArgumentsFromPathVariables(context, specDef);
-        } else if (specDef.paramType() == ParamType.BODY) {
-            return resolveSpecArgumentsFromBody(context, specDef);
+	private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
+		if (specDef.constVal().length != 0) {
+			return resolveConstVal(specDef);
+		} else if (specDef.pathVars().length != 0 || specDef.paramType() == ParamType.PATH) {
+			return resolveSpecArgumentsFromPathVariables(context, specDef);
+		} else if (specDef.paramType() == ParamType.BODY) {
+			return resolveSpecArgumentsFromBody(context, specDef);
 		} else if (specDef.headers().length != 0) {
 			return resolveSpecArgumentsFromRequestHeaders(context, specDef);
-        } else {
-            return resolveDefaultVal(context, specDef);
-        }
-    }
+		} else {
+			return resolveDefaultVal(context, specDef);
+		}
+	}
 
 	private Collection<String> resolveConstVal(Spec specDef) {
 		if (embeddedValueResolver != null && specDef.valueInSpEL()) {
@@ -194,10 +192,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
     private Collection<String> resolveSpecArgumentsFromBody(WebRequestProcessingContext context, Spec specDef) {
         String[] params = specDef.params().length != 0 ? specDef.params() : new String[]{specDef.path()};
-        String requestBody = context.getRequestBody();
-		JsonElement requestBodyJson = parseRequestToJson(requestBody);
+		BodyParams bodyParams = context.getBodyParams();
         return Arrays.stream(params)
-            .flatMap(param -> getValuesFromJson(requestBodyJson, param).stream())
+            .flatMap(param -> bodyParams.getParamValues(param).stream())
             .collect(Collectors.toList());
     }
 
