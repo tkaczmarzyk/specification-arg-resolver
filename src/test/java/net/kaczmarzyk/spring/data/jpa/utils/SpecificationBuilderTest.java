@@ -20,10 +20,12 @@ import net.kaczmarzyk.E2eTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
+import net.kaczmarzyk.spring.data.jpa.web.SpecificationFactory;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.JoinType;
@@ -31,6 +33,7 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specification;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Jakub Radlica
@@ -99,5 +102,17 @@ public class SpecificationBuilderTest extends E2eTestBase {
 
 		assertThat(customers.size()).isEqualTo(1);
 		assertThat(customers.get(0).getFirstName()).isEqualTo("Homer");
+	}
+
+	@Test
+	public void shouldUseCreateSpecificationDependingOnMethod() {
+		SpecificationFactory specificationFactory = mock(SpecificationFactory.class);
+
+		Specification<Customer> spec = specification(CustomSpecificationWithHeader.class)
+				.withSpecificationFactory(specificationFactory)
+				.withHeader("orderIn", "Pizza")
+				.build();
+
+		verify(specificationFactory, times(1)).createSpecificationDependingOn(any());
 	}
 }
