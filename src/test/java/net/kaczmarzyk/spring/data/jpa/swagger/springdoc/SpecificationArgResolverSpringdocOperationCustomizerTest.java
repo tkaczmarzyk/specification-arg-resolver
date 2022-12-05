@@ -1,11 +1,24 @@
+/**
+ * Copyright 2014-2022 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.spring.data.jpa.swagger.springdoc;
 
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,20 +26,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import static net.kaczmarzyk.spring.data.jpa.swagger.springdoc.OperationAssertions.assertThatOperation;
 
 /**
  * @author Konrad Hajduga (Tratif sp. z o.o.)
  */
 public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
+	private static final String DEFAULT_TYPE = "string";
+
 	private SpecificationArgResolverSpringdocOperationCustomizer springdocOperationCustomizer;
 
 	@BeforeEach
 	public void initializeCustomizer() {
 		springdocOperationCustomizer = new SpecificationArgResolverSpringdocOperationCustomizer();
+	}
+
+	@Test
+	public void shouldCorrectlyEnrichOperationWithSpecParameters() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("disjunctionWithDifferentParamsLocationTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(3)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("queryParam")
+				.withNotRequiredStatus()
+				.withType(DEFAULT_TYPE)
+				.and()
+				.containsParameterAtIndex(1)
+				.withHeaderParameterName("headerParam")
+				.withNotRequiredStatus()
+				.withType(DEFAULT_TYPE)
+				.and()
+				.containsParameterAtIndex(2)
+				.withPathParameterName("pathVarParam")
+				.withNotRequiredStatus()
+				.withType(DEFAULT_TYPE);
 	}
 
 	@Test
@@ -39,12 +81,16 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("disjunctionFirstParam", "disjunctionSecondParam", "disjunctionThirdParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(3)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("disjunctionFirstParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("disjunctionSecondParam")
+				.and()
+				.containsParameterAtIndex(2)
+				.withQueryParameterName("disjunctionThirdParam");
 	}
 
 	@Test
@@ -57,12 +103,16 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("conjunctionFirstParam", "conjunctionSecondParam", "conjunctionThirdParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(3)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("conjunctionFirstParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("conjunctionSecondParam")
+				.and()
+				.containsParameterAtIndex(2)
+				.withQueryParameterName("conjunctionThirdParam");
 	}
 
 	@Test
@@ -75,12 +125,13 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("andFirstParam", "andSecondParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("andFirstParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("andSecondParam");
 	}
 
 	@Test
@@ -93,12 +144,13 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("orFirstParam", "orSecondParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("orFirstParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("orSecondParam");
 	}
 
 	@Test
@@ -111,12 +163,10 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("specParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(1)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("specParam");
 	}
 
 	@Test
@@ -129,13 +179,13 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("conjunctionDuplicatedFirstParam", "conjunctionSecondParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("conjunctionDuplicatedFirstParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("conjunctionSecondParam");
 	}
 
 	@Test
@@ -148,12 +198,13 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("annotatedFilterFirstParam", "annotatedFilterSecondParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("annotatedFilterFirstParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("annotatedFilterSecondParam");
 	}
 
 	@Test
@@ -166,12 +217,13 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<String> parameterNames = customizedOperation.getParameters().stream()
-				.map(Parameter::getName)
-				.collect(toList());
-
-		Assertions.assertThat(parameterNames)
-				.containsOnly("notAnnotatedFilterFirstParam", "notAnnotatedFilterSecondParam");
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("notAnnotatedFilterFirstParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("notAnnotatedFilterSecondParam");
 	}
 
 	@Test
@@ -184,20 +236,53 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
 		// then
-		List<Parameter> parameters = customizedOperation.getParameters();
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withQueryParameterName("andRequiredParam")
+				.withRequiredStatus()
+				.and()
+				.containsParameterAtIndex(1)
+				.withQueryParameterName("andNotRequiredParam")
+				.withNotRequiredStatus();
+	}
 
-		Assertions.assertThat(parameters)
-				.hasSize(2);
+	@Test
+	public void shouldCorrectlyEnrichOperationWithPathVarsParameters() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andUsingPathVars");
+		Operation operation = new Operation();
 
-		Assertions.assertThat(parameters.get(0).getName())
-				.isEqualTo("andRequiredParam");
-		Assertions.assertThat(parameters.get(0).getRequired())
-				.isTrue();
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
 
-		Assertions.assertThat(parameters.get(1).getName())
-				.isEqualTo("andNotRequiredParam");
-		Assertions.assertThat(parameters.get(1).getRequired())
-				.isFalse();
+		// then
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withPathParameterName("firstPathVarParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withPathParameterName("secondPathVarParam");
+	}
+
+	@Test
+	public void shouldCorrectlyEnrichOperationWithHeaderParameters() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andUsingHeaders");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+				.hasParametersCount(2)
+				.containsParameterAtIndex(0)
+				.withHeaderParameterName("firstHeaderParam")
+				.and()
+				.containsParameterAtIndex(1)
+				.withHeaderParameterName("secondHeaderParam");
 	}
 
 	private HandlerMethod handlerMethodForControllerMethodWithSpecification(String controllerMethodName) throws NoSuchMethodException {
@@ -217,22 +302,22 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		@RequestMapping(value = "/disjunction")
 		public void disjunctionTestMethod(
 				@Disjunction(
+						or = @Spec(path = "", params = "disjunctionFirstParam", spec = Like.class),
 						value = @And({
-								@Spec(path = "", params = "disjunctionFirstParam", spec = Like.class),
-								@Spec(path = "", params = "disjunctionSecondParam", spec = Like.class)
-						}),
-						or = @Spec(path = "", params = "disjunctionThirdParam", spec = Like.class)) Specification<Customer> spec) {
+								@Spec(path = "", params = "disjunctionSecondParam", spec = Like.class),
+								@Spec(path = "", params = "disjunctionThirdParam", spec = Like.class)
+						})) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/conjunction")
 		public void conjunctionTestMethod(
 				@Conjunction(
+						and = @Spec(path = "", params = "conjunctionFirstParam", spec = Like.class),
 						value = @Or({
-								@Spec(path = "", params = "conjunctionFirstParam", spec = Like.class),
-								@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class)
-						}),
-						and = @Spec(path = "", params = "conjunctionThirdParam", spec = Like.class)) Specification<Customer> spec) {
+								@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class),
+								@Spec(path = "", params = "conjunctionThirdParam", spec = Like.class)
+						})) Specification<Customer> spec) {
 
 		}
 
@@ -290,6 +375,35 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 						@Spec(path = "", params = "notAnnotatedFilterFirstParam", spec = Like.class),
 						@Spec(path = "", params = "notAnnotatedFilterSecondParam", spec = Like.class)
 				}) TestFilterWithoutAnnotations filter) {
+
+		}
+
+		@RequestMapping(value = "/and-pathVars")
+		public void andUsingPathVars(
+				@And({
+						@Spec(path = "", pathVars = "firstPathVarParam", spec = Like.class),
+						@Spec(path = "", pathVars = "secondPathVarParam", spec = Like.class)
+				}) Specification<Customer> spec) {
+
+		}
+
+		@RequestMapping(value = "/and-headers")
+		public void andUsingHeaders(
+				@And({
+						@Spec(path = "", headers = "firstHeaderParam", spec = Like.class),
+						@Spec(path = "", headers = "secondHeaderParam", spec = Like.class)
+				}) Specification<Customer> spec) {
+
+		}
+
+		@RequestMapping(value = "/disjunction-different-params-locations")
+		public void disjunctionWithDifferentParamsLocationTestMethod(
+				@Disjunction(
+						or = @Spec(path = "", params = "queryParam", spec = Like.class),
+						value = @And({
+								@Spec(path = "", headers = "headerParam", spec = Like.class),
+								@Spec(path = "", pathVars = "pathVarParam", spec = Like.class)
+						})) Specification<Customer> spec) {
 
 		}
 
