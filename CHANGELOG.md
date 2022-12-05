@@ -1,3 +1,6 @@
+v2.11.0
+* replaced hibernate java persistence api dependency with java persistence api (`org.hibernate.javax.persistence` -> `javax.persistence`)
+
 v2.10.0
 =======
 * fixed bug with not evaluated join fetches in count queries (e.g. during pagination) -- from now on, join fetches in count queries are either skipped (if they are used solely for initialization of lazy collections) or converted to regular joins (if there is any filtering applied on the fetched part). See [issue 138](https://github.com/tkaczmarzyk/specification-arg-resolver/issues/138) for more details.
