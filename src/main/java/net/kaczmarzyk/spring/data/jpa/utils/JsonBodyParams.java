@@ -11,10 +11,10 @@ public class JsonBodyParams implements BodyParams {
 
 	private static final String DOT_DELIMITER = "\\.";
 
-	private final JsonElement bodyParamsJsonElement;
+	private final JsonElement requestBody;
 
-	private JsonBodyParams(JsonElement bodyParamsJsonElement) {
-		this.bodyParamsJsonElement = bodyParamsJsonElement;
+	private JsonBodyParams(JsonElement requestBody) {
+		this.requestBody = requestBody;
 	}
 
 	public static JsonBodyParams parse(String requestBody) {
@@ -23,7 +23,7 @@ public class JsonBodyParams implements BodyParams {
 
 	@Override
 	public Collection<String> getParamValues(String paramKey) {
-		JsonElement value = getElementByKey(bodyParamsJsonElement, paramKey);
+		JsonElement value = getElementByKey(requestBody, paramKey);
 		return value != null ? getJsonElementValues(value) : Collections.emptyList();
 	}
 
