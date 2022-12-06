@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import net.kaczmarzyk.spring.data.jpa.domain.*;
-import net.kaczmarzyk.spring.data.jpa.web.WebRequestQueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.DefaultQueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
-import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 
 public class SimpleSpecificationGenerator {
 
@@ -47,7 +46,7 @@ public class SimpleSpecificationGenerator {
 	public static final Integer SEED_2 = 2;
 
 	private static Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
-	private static WebRequestQueryContext queryCtx = new WebRequestQueryContext(nativeWebRequest().build());
+	private static DefaultQueryContext queryCtx = new DefaultQueryContext();
 
 	private static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 	private static LocalDateTime GENERATOR_LOCAL_BASE_DATE_TIME = LocalDateTime.now();

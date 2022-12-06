@@ -37,7 +37,7 @@ public class RepeatedJoinResolver implements SpecificationResolver<RepeatedJoin>
 	}
 
 	@Override
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, RepeatedJoin def) {
+	public Specification<Object> buildSpecification(ProcessingContext context, RepeatedJoin def) {
 		Collection<Specification<Object>> joins = new ArrayList<>();
 
 		for (Join joinDef : def.value()) {

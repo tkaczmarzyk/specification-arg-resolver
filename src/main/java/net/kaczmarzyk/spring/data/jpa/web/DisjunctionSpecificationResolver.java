@@ -43,7 +43,7 @@ class DisjunctionSpecificationResolver implements SpecificationResolver<Disjunct
 		return Disjunction.class;
 	}
 
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Disjunction def) {
+	public Specification<Object> buildSpecification(ProcessingContext context, Disjunction def) {
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
 		for (And innerAndDef : def.value()) {
 			Specification<Object> innerAnd = andResolver.buildSpecification(context, innerAndDef);

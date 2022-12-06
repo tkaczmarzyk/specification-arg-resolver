@@ -30,6 +30,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
+   * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -994,6 +995,37 @@ Cache support
 
 Specification argument resolver supports [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching). Equals and HashCode contract is satisfied for generated specifications.
 
+Building specifications outside the web layer
+------------------------------------------
+
+Specification argument resolver supports creating specifications apart from web layer.
+To build specification outside the web-layer the `SpecificationBuilder` should be used:
+
+* Let's assume the following specification:
+    ```java
+    @Join(path = "orders", alias = "o")
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    public interface CustomerByOrdersSpec implements Specification<Customer> {
+    }
+    ```
+    * To create specifications outside the web layer, you can use the specification builder as follows:
+      ```java
+      Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
+            .withParams("orderItem", "Pizza")
+            .build();            
+      ```
+    * It is recommended to use builder methods that corresponding to the type of argument type passed to specification interface, e.g.:
+        * For:
+      ```java
+      @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+      ``` 
+      you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+        * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+        * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
+        * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
+
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
+
 Compatibility notes
 -------------------
 
@@ -1016,7 +1048,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.10.0</version>
+    <version>2.11.0</version>
 </dependency>
 ```
 

@@ -40,7 +40,7 @@ public class JoinSpecificationResolverTest extends ResolverTestBase {
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
         assertThat(resolved).isEqualTo(
-        		new net.kaczmarzyk.spring.data.jpa.domain.Join<>(new WebRequestQueryContext(req), "orders", "o", JoinType.RIGHT, false));
+        		new net.kaczmarzyk.spring.data.jpa.domain.Join<>(new DefaultQueryContext(), "orders", "o", JoinType.RIGHT, false));
     }
     
     public static class TestController {

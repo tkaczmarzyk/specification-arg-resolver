@@ -94,7 +94,7 @@ public class DisjunctionSpecificationResolverTest extends ResolverTestBase {
     public void resolvesWrapperOfSimpleSpecsAndAnds() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
         when(req.getParameterValues("path2")).thenReturn(new String[] { "value2" });
         when(req.getParameterValues("path3")).thenReturn(new String[] { "value3" });

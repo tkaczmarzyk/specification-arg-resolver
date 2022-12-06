@@ -5,6 +5,33 @@ v2.12.0
 v2.11.0
 =======
 * replaced hibernate java persistence api dependency with java persistence api (`org.hibernate.javax.persistence` -> `javax.persistence`)
+* Added `SpecificationBuilder` that allows creating specification apart from web layer.
+
+  For example:
+  * Let's assume the following specification:
+    ```java
+    @Join(path = "orders", alias = "o")
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    public interface CustomerByOrdersSpec implements Specification<Customer> {
+    }
+    ```
+  * To create specifications outside the web layer, you can use the specification builder as follows:
+    ```java
+    Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
+          .withParams("orderItem", "Pizza")
+          .build();            
+    ```
+  * It is recommended to use builder methods that corresponding to the type of argument passed to specification interface, e.g.:
+    * For:
+    ```java
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    ``` 
+    you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+    * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+    * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
+    * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
+
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
 
 v2.10.0
 =======
@@ -18,7 +45,6 @@ v2.10.0
       * `28-11-2022` was parsed to invalid date (different from `2022-11-28`), order of specific parts of date was not validated.
       * `1-1-1` was parsed to invalid date (length of specific parts of date (year, month, day) was not validated)
     * From now on strict policy of date format validation is introduced. The Date has to be in specific format and of specific length.
-
 v2.9.0
 ======
 * Fixed the bug with redundant joins

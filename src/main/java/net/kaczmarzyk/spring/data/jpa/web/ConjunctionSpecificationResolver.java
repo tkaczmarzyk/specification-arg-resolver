@@ -43,7 +43,7 @@ class ConjunctionSpecificationResolver implements SpecificationResolver<Conjunct
 		return Conjunction.class;
 	}
 
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Conjunction def) {
+	public Specification<Object> buildSpecification(ProcessingContext context, Conjunction def) {
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
 		for (Or innerOrDef : def.value()) {
 			Specification<Object> innerOr = orResolver.buildSpecification(context, innerOrDef);
