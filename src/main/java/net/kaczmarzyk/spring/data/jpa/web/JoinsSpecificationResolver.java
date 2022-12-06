@@ -44,7 +44,7 @@ class JoinsSpecificationResolver implements SpecificationResolver<Joins> {
 	}
 
 	@Override
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Joins joinsDef) {
+	public Specification<Object> buildSpecification(ProcessingContext context, Joins joinsDef) {
 		Collection<Specification<Object>> joins = new ArrayList<>();
 
 		for (JoinFetch fetchDef : joinsDef.fetch()) {

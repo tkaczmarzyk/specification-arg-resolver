@@ -92,7 +92,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 		MethodParameter param = methodParameter("annotatedInterface", OrderedItemNameBadgeFilter.class);
 
 		NativeWebRequest req = nativeWebRequest().build();
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -116,7 +116,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 				.build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -142,7 +142,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 		NativeWebRequest req = nativeWebRequest()
 				.withParameterValues("itemName", "Duff Beer")
 				.build();
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
