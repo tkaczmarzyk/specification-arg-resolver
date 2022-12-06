@@ -54,21 +54,21 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(3)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("queryParam")
-				.withNotRequiredStatus()
-				.withType(DEFAULT_TYPE)
-				.and()
-				.containsParameterAtIndex(1)
-				.withHeaderParameterName("headerParam")
-				.withNotRequiredStatus()
-				.withType(DEFAULT_TYPE)
-				.and()
-				.containsParameterAtIndex(2)
-				.withPathParameterName("pathVarParam")
-				.withNotRequiredStatus()
-				.withType(DEFAULT_TYPE);
+			.hasParametersCount(3)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("queryParam")
+			.withNotRequiredStatus()
+			.withType(DEFAULT_TYPE)
+			.and()
+			.containsParameterAtIndex(1)
+			.withHeaderParameterName("headerParam")
+			.withNotRequiredStatus()
+			.withType(DEFAULT_TYPE)
+			.and()
+			.containsParameterAtIndex(2)
+			.withPathParameterName("pathVarParam")
+			.withNotRequiredStatus()
+			.withType(DEFAULT_TYPE);
 	}
 
 	@Test
@@ -82,15 +82,15 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(3)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("disjunctionFirstParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("disjunctionSecondParam")
-				.and()
-				.containsParameterAtIndex(2)
-				.withQueryParameterName("disjunctionThirdParam");
+			.hasParametersCount(3)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("disjunctionFirstParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("disjunctionSecondParam")
+			.and()
+			.containsParameterAtIndex(2)
+			.withQueryParameterName("disjunctionThirdParam");
 	}
 
 	@Test
@@ -104,15 +104,15 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(3)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("conjunctionFirstParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("conjunctionSecondParam")
-				.and()
-				.containsParameterAtIndex(2)
-				.withQueryParameterName("conjunctionThirdParam");
+			.hasParametersCount(3)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("conjunctionFirstParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("conjunctionSecondParam")
+			.and()
+			.containsParameterAtIndex(2)
+			.withQueryParameterName("conjunctionThirdParam");
 	}
 
 	@Test
@@ -126,12 +126,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("andFirstParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("andSecondParam");
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("andFirstParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("andSecondParam");
 	}
 
 	@Test
@@ -145,12 +145,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("orFirstParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("orSecondParam");
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("orFirstParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("orSecondParam");
 	}
 
 	@Test
@@ -164,9 +164,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(1)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("specParam");
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("specParam");
 	}
 
 	@Test
@@ -180,12 +180,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("conjunctionDuplicatedFirstParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("conjunctionSecondParam");
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("conjunctionDuplicatedFirstParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("conjunctionSecondParam");
 	}
 
 	@Test
@@ -199,12 +199,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("annotatedFilterFirstParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("annotatedFilterSecondParam");
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("annotatedFilterFirstParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("annotatedFilterSecondParam");
 	}
 
 	@Test
@@ -218,12 +218,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("notAnnotatedFilterFirstParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("notAnnotatedFilterSecondParam");
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("notAnnotatedFilterFirstParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("notAnnotatedFilterSecondParam");
 	}
 
 	@Test
@@ -237,14 +237,14 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withQueryParameterName("andRequiredParam")
-				.withRequiredStatus()
-				.and()
-				.containsParameterAtIndex(1)
-				.withQueryParameterName("andNotRequiredParam")
-				.withNotRequiredStatus();
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("andRequiredParam")
+			.withRequiredStatus()
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("andNotRequiredParam")
+			.withNotRequiredStatus();
 	}
 
 	@Test
@@ -258,12 +258,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withPathParameterName("firstPathVarParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withPathParameterName("secondPathVarParam");
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withPathParameterName("firstPathVarParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withPathParameterName("secondPathVarParam");
 	}
 
 	@Test
@@ -277,12 +277,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 		assertThatOperation(customizedOperation)
-				.hasParametersCount(2)
-				.containsParameterAtIndex(0)
-				.withHeaderParameterName("firstHeaderParam")
-				.and()
-				.containsParameterAtIndex(1)
-				.withHeaderParameterName("secondHeaderParam");
+			.hasParametersCount(2)
+			.containsParameterAtIndex(0)
+			.withHeaderParameterName("firstHeaderParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withHeaderParameterName("secondHeaderParam");
 	}
 
 	private HandlerMethod handlerMethodForControllerMethodWithSpecification(String controllerMethodName) throws NoSuchMethodException {
@@ -301,41 +301,41 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		@RequestMapping(value = "/disjunction")
 		public void disjunctionTestMethod(
-				@Disjunction(
-						or = @Spec(path = "", params = "disjunctionFirstParam", spec = Like.class),
-						value = @And({
-								@Spec(path = "", params = "disjunctionSecondParam", spec = Like.class),
-								@Spec(path = "", params = "disjunctionThirdParam", spec = Like.class)
-						})) Specification<Customer> spec) {
+			@Disjunction(
+				or = @Spec(path = "", params = "disjunctionFirstParam", spec = Like.class),
+				value = @And({
+					@Spec(path = "", params = "disjunctionSecondParam", spec = Like.class),
+					@Spec(path = "", params = "disjunctionThirdParam", spec = Like.class)
+				})) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/conjunction")
 		public void conjunctionTestMethod(
-				@Conjunction(
-						and = @Spec(path = "", params = "conjunctionFirstParam", spec = Like.class),
-						value = @Or({
-								@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class),
-								@Spec(path = "", params = "conjunctionThirdParam", spec = Like.class)
-						})) Specification<Customer> spec) {
+			@Conjunction(
+				and = @Spec(path = "", params = "conjunctionFirstParam", spec = Like.class),
+				value = @Or({
+					@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class),
+					@Spec(path = "", params = "conjunctionThirdParam", spec = Like.class)
+				})) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/and")
 		public void andTestMethod(
-				@And({
-						@Spec(path = "", params = "andFirstParam", spec = Like.class),
-						@Spec(path = "", params = "andSecondParam", spec = Like.class)
-				}) Specification<Customer> spec) {
+			@And({
+				@Spec(path = "", params = "andFirstParam", spec = Like.class),
+				@Spec(path = "", params = "andSecondParam", spec = Like.class)
+			}) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/or")
 		public void orTestMethod(
-				@Or({
-						@Spec(path = "", params = "orFirstParam", spec = Like.class),
-						@Spec(path = "", params = "orSecondParam", spec = Like.class)
-				}) Specification<Customer> spec) {
+			@Or({
+				@Spec(path = "", params = "orFirstParam", spec = Like.class),
+				@Spec(path = "", params = "orSecondParam", spec = Like.class)
+			}) Specification<Customer> spec) {
 
 		}
 
@@ -346,21 +346,21 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		@RequestMapping(value = "/conjunction-duplicated-param")
 		public void conjunctionWithDuplicatedParamTestMethod(
-				@Conjunction(
-						value = @Or({
-								@Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class),
-								@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class)
-						}),
-						and = @Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class)) Specification<Customer> spec) {
+			@Conjunction(
+				value = @Or({
+					@Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class),
+					@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class)
+				}),
+				and = @Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class)) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/and-required-param", params = "andRequiredParam")
 		public void andWithRequiredParamTestMethod(
-				@And({
-						@Spec(path = "", params = "andRequiredParam", spec = Like.class),
-						@Spec(path = "", params = "andNotRequiredParam", spec = Like.class)
-				}) Specification<Customer> spec) {
+			@And({
+				@Spec(path = "", params = "andRequiredParam", spec = Like.class),
+				@Spec(path = "", params = "andNotRequiredParam", spec = Like.class)
+			}) Specification<Customer> spec) {
 
 		}
 
@@ -371,47 +371,47 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		@RequestMapping(value = "/custom-filter-without-annotations")
 		public void customFilterWithoutAnnotationsTestMethod(
-				@Or({
-						@Spec(path = "", params = "notAnnotatedFilterFirstParam", spec = Like.class),
-						@Spec(path = "", params = "notAnnotatedFilterSecondParam", spec = Like.class)
-				}) TestFilterWithoutAnnotations filter) {
+			@Or({
+				@Spec(path = "", params = "notAnnotatedFilterFirstParam", spec = Like.class),
+				@Spec(path = "", params = "notAnnotatedFilterSecondParam", spec = Like.class)
+			}) TestFilterWithoutAnnotations filter) {
 
 		}
 
 		@RequestMapping(value = "/and-pathVars")
 		public void andUsingPathVars(
-				@And({
-						@Spec(path = "", pathVars = "firstPathVarParam", spec = Like.class),
-						@Spec(path = "", pathVars = "secondPathVarParam", spec = Like.class)
-				}) Specification<Customer> spec) {
+			@And({
+				@Spec(path = "", pathVars = "firstPathVarParam", spec = Like.class),
+				@Spec(path = "", pathVars = "secondPathVarParam", spec = Like.class)
+			}) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/and-headers")
 		public void andUsingHeaders(
-				@And({
-						@Spec(path = "", headers = "firstHeaderParam", spec = Like.class),
-						@Spec(path = "", headers = "secondHeaderParam", spec = Like.class)
-				}) Specification<Customer> spec) {
+			@And({
+				@Spec(path = "", headers = "firstHeaderParam", spec = Like.class),
+				@Spec(path = "", headers = "secondHeaderParam", spec = Like.class)
+			}) Specification<Customer> spec) {
 
 		}
 
 		@RequestMapping(value = "/disjunction-different-params-locations")
 		public void disjunctionWithDifferentParamsLocationTestMethod(
-				@Disjunction(
-						or = @Spec(path = "", params = "queryParam", spec = Like.class),
-						value = @And({
-								@Spec(path = "", headers = "headerParam", spec = Like.class),
-								@Spec(path = "", pathVars = "pathVarParam", spec = Like.class)
-						})) Specification<Customer> spec) {
+			@Disjunction(
+				or = @Spec(path = "", params = "queryParam", spec = Like.class),
+				value = @And({
+					@Spec(path = "", headers = "headerParam", spec = Like.class),
+					@Spec(path = "", pathVars = "pathVarParam", spec = Like.class)
+				})) Specification<Customer> spec) {
 
 		}
 
 	}
 
 	@Or({
-			@Spec(path = "", params = "annotatedFilterFirstParam", spec = Like.class),
-			@Spec(path = "", params = "annotatedFilterSecondParam", spec = Like.class)
+		@Spec(path = "", params = "annotatedFilterFirstParam", spec = Like.class),
+		@Spec(path = "", params = "annotatedFilterSecondParam", spec = Like.class)
 	})
 	private interface TestFilterWithAnnotations extends Specification<Customer> {
 

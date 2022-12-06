@@ -970,6 +970,7 @@ Swagger support
 ------------
 
 Right now specification argument resolver supports only one library -> `Springdoc-openapi`. 
+The current limitation is that parameter may be duplicated when the same argument is defined in specification and other parameter in controller method (e.g. when we define `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName"")`)
 There are two steps in order to enable support for `Springdoc-openapi` library:
 * Add following dependency from `Springdoc-openapi` (tested with `1.6.13` version):
 ```xml
