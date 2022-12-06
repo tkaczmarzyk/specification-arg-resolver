@@ -23,9 +23,9 @@ import java.util.Map;
 import static java.util.Objects.nonNull;
 
 /**
+ * The purpose of this class is to handle non-web specification building.
  * @author Jakub Radlica
  * @author Kacper Leśniak (Tratif sp. z o.o.)
- * Purpose of this class is to handle non-web specification building.
  * @see net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder
  */
 public class StandaloneProcessingContext implements ProcessingContext {

@@ -24,13 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Jakub Radlica
- * @author Kacper Leśniak (Tratif sp. z o.o.)
  * SpecificationBuilder allows creating specification apart from web layer.
  * It is recommended to use builder methods that corresponding to the type of argument passed to sepcification.
- * params = <args> => withParams(<argName>, <values...>), single param argument can provide multiple values
- * pathVars = <args> => withPathVar(<argName>, <value>), single pathVar argument can provide single value
- * headers = <args> => withHeader(<argName>, <value>), single header argument can provide single value
+ * <p> {@code params = <args> => withParams(<argName>, <values...>)}, single param argument can provide multiple values </p>
+ * <p> {@code pathVars = <args> => withPathVar(<argName>, <value>)}, single pathVar argument can provide single value </p>
+ * <p> {@code headers = <args> => withHeader(<argName>, <value>)}, single header argument can provide single value </p>
+ * @author Jakub Radlica
+ * @author Kacper Leśniak (Tratif sp. z o.o.)
  */
 public class SpecificationBuilder<T extends Specification> {
 
@@ -57,7 +57,8 @@ public class SpecificationBuilder<T extends Specification> {
 	}
 
 	/**
-	 * The direct methods for params/headers/pathVars should be used instead.
+	 * The direct methods for params/headers/pathVars should be used in most common scenarios in order to avoid
+	 * hard-to-debug errors. Use this method only if you really understand how it works.
 	 */
 	@SuppressWarnings("unckecked")
 	public SpecificationBuilder<T> withArg(String arg, String... values) {
