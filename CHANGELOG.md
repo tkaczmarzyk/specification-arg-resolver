@@ -1,6 +1,6 @@
 v2.12.1
 =======
-* Fixed bug in `SpecificationBuilder` that was providing to create redundant query conditions.
+* Fixed bug in `SpecificationBuilder` that was creating doubled query conditions.
 
 v2.12.0
 =======
