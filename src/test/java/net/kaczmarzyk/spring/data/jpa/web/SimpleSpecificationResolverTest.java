@@ -273,34 +273,6 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2", "val3", "val4", "val5", "val6", "val7" }, converter));
     }
 
-    @Test
-    public void buildsTheSpecUsingWebParameterAndParamType() {
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod9"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
-
-        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-        Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", "theValue"));
-    }
-
-    @Test
-    public void buildsTheSpecUsingWebParameterTheSameAsPathAndParamType() {
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod10"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
-        when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
-
-        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-        Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        assertThat(resolved).isEqualTo(new Like<>(queryCtx, "thePath", "theValue"));
-    }
-
     public static class TestController {
 
         public void testMethod1(@Spec(path = "thePath", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
@@ -330,12 +302,6 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         public void testMethod8(
                 @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = In.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
-        }
-
-        public void testMethod9(@Spec(path = "thePath", params = "theParameter", paramType = ParamType.QUERY, spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
-        }
-
-        public void testMethod10(@Spec(path = "thePath", paramType = ParamType.QUERY, spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
