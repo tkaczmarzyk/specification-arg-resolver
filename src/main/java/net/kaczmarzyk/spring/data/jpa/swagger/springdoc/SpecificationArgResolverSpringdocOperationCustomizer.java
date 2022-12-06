@@ -73,28 +73,28 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		List<String> requiredParameters = extractRequiredParametersFromHandlerMethod(handlerMethod);
 
 		stream(handlerMethod.getMethodParameters())
-				.map(this::extractAnnotationsFromMethodParameter)
-				.map(this::extractNestedSpecificationsFromAnnotations)
-				.map(specs -> createParametersFromSpecs(specs, requiredParameters))
-				.flatMap(Collection::stream)
-				.distinct()
-				.collect(toList())
-				.forEach(operation::addParametersItem);
+			.map(this::extractAnnotationsFromMethodParameter)
+			.map(this::extractNestedSpecificationsFromAnnotations)
+			.map(specs -> createParametersFromSpecs(specs, requiredParameters))
+			.flatMap(Collection::stream)
+			.distinct()
+			.collect(toList())
+			.forEach(operation::addParametersItem);
 
 		return operation;
 	}
 
 	private List<String> extractRequiredParametersFromHandlerMethod(HandlerMethod handlerMethod) {
 		return ofNullable(handlerMethod.getMethodAnnotation(RequestMapping.class))
-				.map(RequestMapping::params)
-				.map(Arrays::asList)
-				.orElse(emptyList());
+			.map(RequestMapping::params)
+			.map(Arrays::asList)
+			.orElse(emptyList());
 	}
 
 	private List<Annotation> extractAnnotationsFromMethodParameter(MethodParameter methodParameter) {
 
 		List<Annotation> annotations = new ArrayList<>(
-				asList(methodParameter.getParameterAnnotations()));
+			asList(methodParameter.getParameterAnnotations()));
 
 		if (methodParameter.getParameterType() != Specification.class) {
 			List<Annotation> innerParameterAnnotations = asList(methodParameter.getParameterType().getAnnotations());
@@ -107,11 +107,11 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 	private List<Spec> extractNestedSpecificationsFromAnnotations(List<Annotation> annotations) {
 
 		return annotations.stream()
-				.filter(annotation -> NESTED_SPEC_ANNOTATION_EXTRACTORS.containsKey(annotation.annotationType()))
-				.map(annotation -> NESTED_SPEC_ANNOTATION_EXTRACTORS.get(annotation.annotationType())
-						.apply(annotation))
-				.flatMap(Collection::stream)
-				.collect(toList());
+			.filter(annotation -> NESTED_SPEC_ANNOTATION_EXTRACTORS.containsKey(annotation.annotationType()))
+			.map(annotation -> NESTED_SPEC_ANNOTATION_EXTRACTORS.get(annotation.annotationType())
+				.apply(annotation))
+			.flatMap(Collection::stream)
+			.collect(toList());
 	}
 
 	private static List<Spec> extractSpecsFromOr(Or or) {
@@ -126,9 +126,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		List<Spec> conjunctionSpecs = new ArrayList<>(asList(conjunction.and()));
 
 		stream(conjunction.value())
-				.map(Or::value)
-				.flatMap(Arrays::stream)
-				.forEach(conjunctionSpecs::add);
+			.map(Or::value)
+			.flatMap(Arrays::stream)
+			.forEach(conjunctionSpecs::add);
 
 		return conjunctionSpecs;
 	}
@@ -137,9 +137,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		List<Spec> disjunctionSpecs = new ArrayList<>(asList(conjunction.or()));
 
 		stream(conjunction.value())
-				.map(And::value)
-				.flatMap(Arrays::stream)
-				.forEach(disjunctionSpecs::add);
+			.map(And::value)
+			.flatMap(Arrays::stream)
+			.forEach(disjunctionSpecs::add);
 
 		return disjunctionSpecs;
 	}
@@ -147,29 +147,29 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 	private List<Parameter> createParametersFromSpecs(List<Spec> specs, List<String> requiredParameters) {
 
 		return specs.stream()
-				.map(spec -> {
-					List<Parameter> specParameters = new ArrayList<>();
-					specParameters.addAll(createParameters(spec.params(), requiredParameters, QUERY));
-					specParameters.addAll(createParameters(spec.pathVars(), requiredParameters, PATH));
-					specParameters.addAll(createParameters(spec.headers(), requiredParameters, HEADER));
+			.map(spec -> {
+				List<Parameter> specParameters = new ArrayList<>();
+				specParameters.addAll(createParameters(spec.params(), requiredParameters, QUERY));
+				specParameters.addAll(createParameters(spec.pathVars(), requiredParameters, PATH));
+				specParameters.addAll(createParameters(spec.headers(), requiredParameters, HEADER));
 
-					return specParameters;
-				})
-				.flatMap(Collection::stream)
-				.collect(toList());
+				return specParameters;
+			})
+			.flatMap(Collection::stream)
+			.collect(toList());
 	}
 
 	private List<Parameter> createParameters(String[] parameters, List<String> requiredParameters, ParameterIn parameterIn) {
 		return stream(parameters)
-				.map(parameterName -> {
-					Parameter specParam = generateParameterFromParameterIn(parameterIn);
-					specParam.setName(parameterName);
-					specParam.setRequired(requiredParameters.contains(parameterName));
-					specParam.setSchema(DEFAULT_PARAMETER_SCHEMA);
+			.map(parameterName -> {
+				Parameter specParam = generateParameterFromParameterIn(parameterIn);
+				specParam.setName(parameterName);
+				specParam.setRequired(requiredParameters.contains(parameterName));
+				specParam.setSchema(DEFAULT_PARAMETER_SCHEMA);
 
-					return specParam;
-				})
-				.collect(toList());
+				return specParam;
+			})
+			.collect(toList());
 	}
 
 	private Parameter generateParameterFromParameterIn(ParameterIn parameterIn) {
