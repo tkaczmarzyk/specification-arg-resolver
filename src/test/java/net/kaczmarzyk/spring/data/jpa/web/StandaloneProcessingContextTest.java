@@ -15,20 +15,14 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.domain.In;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import org.junit.rules.ExpectedException;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertThrows;
 
 /**
  * @author Kacper Leśniak
