@@ -34,7 +34,7 @@ import static net.kaczmarzyk.spring.data.jpa.swagger.springdoc.OperationAssertio
  */
 public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
-	private static final String DEFAULT_TYPE = "string";
+	private static final String DEFAULT_PARAM_TYPE = "string";
 
 	private SpecificationArgResolverSpringdocOperationCustomizer springdocOperationCustomizer;
 
@@ -58,17 +58,17 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.containsParameterAtIndex(0)
 			.withQueryParameterName("queryParam")
 			.withNotRequiredStatus()
-			.withType(DEFAULT_TYPE)
+			.withType(DEFAULT_PARAM_TYPE)
 			.and()
 			.containsParameterAtIndex(1)
 			.withHeaderParameterName("headerParam")
 			.withNotRequiredStatus()
-			.withType(DEFAULT_TYPE)
+			.withType(DEFAULT_PARAM_TYPE)
 			.and()
 			.containsParameterAtIndex(2)
 			.withPathParameterName("pathVarParam")
 			.withNotRequiredStatus()
-			.withType(DEFAULT_TYPE);
+			.withType(DEFAULT_PARAM_TYPE);
 	}
 
 	@Test
