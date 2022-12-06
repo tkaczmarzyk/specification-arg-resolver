@@ -83,7 +83,7 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void shouldCreateSpecificationWithoutDuplicatedConditions() {
+	public void shouldCreateSpecificationUsingBuilder() {
 		Map<String, String[]> params = new HashMap<>();
 		params.put("gender", new String[]{"MALE"});
 		params.put("lastName", new String[]{"Simpson"});
