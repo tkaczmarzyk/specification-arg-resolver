@@ -1,6 +1,10 @@
-v2.11.0
+v2.12.0
 =======
 * added support for `SpringDoc-OpenAPI` library -- parameters from specification will be shown in generated documentation
+
+v2.11.0
+=======
+* replaced hibernate java persistence api dependency with java persistence api (`org.hibernate.javax.persistence` -> `javax.persistence`)
 
 v2.10.0
 =======
