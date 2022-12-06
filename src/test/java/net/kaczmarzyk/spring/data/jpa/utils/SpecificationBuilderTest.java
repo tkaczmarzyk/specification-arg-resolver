@@ -26,7 +26,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.JoinType;
@@ -70,15 +69,14 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithHeader extends Specification<Customer> {
 	}
 
-	@BeforeEach
-	public void clearDb() {
-		customerRepo.deleteAll();
-	}
-
 	@Test
 	public void shouldCreateSpecificationDependingOnPathVar() {
-		Customer customer = customer("Homer", "Simpson")
+		Customer customer1 = customer("Homer", "Simpson")
 				.orders("Pizza")
+				.build(em);
+
+		Customer customer2 = customer("Marge", "Simpson")
+				.orders("Cake")
 				.build(em);
 
 		Specification<Customer> spec = specification(CustomSpecificationWithPathVar.class)
@@ -93,8 +91,12 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldCreateSpecificationDependingOnParam() {
-		Customer customer = customer("Marge", "Simpson")
+		Customer customer1 = customer("Marge", "Simpson")
 				.orders("Cake")
+				.build(em);
+
+		Customer customer2 = customer("Bart", "Simpson")
+				.orders("Bread")
 				.build(em);
 
 		Specification<Customer> spec = specification(CustomSpecificationWithParam.class)
@@ -109,8 +111,12 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldCreateSpecificationDependingOnHeader() {
-		Customer customer = customer("Bart", "Simpson")
+		Customer customer1 = customer("Bart", "Simpson")
 				.orders("Bread")
+				.build(em);
+
+		Customer customer2 = customer("Lisa", "Simpson")
+				.orders("Butter")
 				.build(em);
 
 		Specification<Customer> spec = specification(CustomSpecificationWithHeader.class)
