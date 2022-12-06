@@ -19,8 +19,8 @@ import io.swagger.v3.oas.models.Operation;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
@@ -38,7 +38,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 	private SpecificationArgResolverSpringdocOperationCustomizer springdocOperationCustomizer;
 
-	@BeforeEach
+	@Before
 	public void initializeCustomizer() {
 		springdocOperationCustomizer = new SpecificationArgResolverSpringdocOperationCustomizer();
 	}
