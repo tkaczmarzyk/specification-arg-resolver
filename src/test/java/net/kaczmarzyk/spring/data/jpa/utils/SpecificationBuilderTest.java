@@ -18,18 +18,22 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
+import net.kaczmarzyk.spring.data.jpa.web.ProcessingContext;
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationFactory;
 import net.kaczmarzyk.spring.data.jpa.web.StandaloneProcessingContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
+import net.kaczmarzyk.utils.ReflectionUtils;
 import org.junit.Test;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.JoinType;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specification;
@@ -41,6 +45,15 @@ import static org.mockito.Mockito.*;
  * @author Kacper Leśniak (Tratif sp. z o.o.)
  */
 public class SpecificationBuilderTest extends IntegrationTestBase {
+
+	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+
+	@And({
+			@Spec(params = "gender", path = "gender", spec = Equal.class),
+			@Spec(params = "lastName", path = "lastName", spec = Equal.class)
+	})
+	public interface CustomSpecification extends Specification<Customer> {
+	}
 
 	@Join(path = "orders", alias = "o")
 	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
@@ -67,6 +80,31 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 			@Spec(path = "t.name", params = "tag", spec = Equal.class)
 	})
 	public interface CustomSpecificationWithHeader extends Specification<Customer> {
+	}
+
+	@Test
+	public void shouldCreateSpecificationWithoutDuplicatedConditions() {
+		Map<String, String[]> params = new HashMap<>();
+		params.put("gender", new String[]{"MALE"});
+		params.put("lastName", new String[]{"Simpson"});
+
+		StandaloneProcessingContext ctx = new StandaloneProcessingContext(CustomSpecification.class, null, null, params, null);
+
+		Specification<Customer> spec = specification(CustomSpecification.class)
+				.withParam("gender", "MALE")
+				.withParam("lastName", "Simpson")
+				.build();
+
+		assertThat(spec)
+				.isInstanceOf(CustomSpecification.class);
+
+		assertThat(innerSpecs(spec))
+				.hasSize(2)
+				.containsExactlyInAnyOrder(
+						new EmptyResultOnTypeMismatch<>(equal(ctx, "gender", "MALE")),
+						new EmptyResultOnTypeMismatch<>(equal(ctx, "lastName", "Simpson"))
+				);
+
 	}
 
 	@Test
@@ -139,5 +177,16 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 				.build();
 
 		verify(specificationFactory, times(1)).createSpecificationDependingOn(any(StandaloneProcessingContext.class));
+	}
+
+	private Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
+		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
+				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "arg$2");
+
+		return ReflectionUtils.get(resolvedConjunction, "innerSpecs");
+	}
+
+	private Equal<Object> equal(ProcessingContext ctx, String path, String value) {
+		return new Equal<>(ctx.queryContext(), path, new String[]{value}, converter);
 	}
 }

@@ -60,7 +60,7 @@ public class StandaloneProcessingContext implements ProcessingContext {
 
 	@Override
 	public Annotation[] getParameterAnnotations() {
-		return specInterface.getAnnotations();
+		return new Annotation[]{};
 	}
 
 	@Override
