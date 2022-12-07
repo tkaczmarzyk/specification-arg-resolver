@@ -30,6 +30,18 @@ public class WebRequestProcessingContextFallbackPathVariableResolverTest extends
 	}
 
 	@Test
+	public void throwsInvalidPathVariableRequestedExceptionWhenTheActualRequestPathDoesNotMatchWithEndpointPath() {
+		thrown.expect(InvalidPathVariableRequestedException.class);
+
+		MockWebRequest req = new MockWebRequest("/request-path-which-does-not-match");
+
+		WebRequestProcessingContext context = new WebRequestProcessingContext(
+				testMethodParameter("testMethodUsingPathVariable_requestMapping_empty", testController), req);
+
+		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
+	}
+
+	@Test
 	public void resolvesPathVariableFromClassLevelRequestMapingAndMethodLevelRequestMappingUsingMethod_empty() {
 		MockWebRequest req = new MockWebRequest("/customers/888");
 

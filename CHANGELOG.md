@@ -1,21 +1,30 @@
 v2.12.1
 =======
 * Fixed bug in `SpecificationBuilder` that was creating doubled query conditions.
-* Changed approach for resolving path variables when processing request
-* From now on path variable resolving for controllers with path prefixes should work properly.
-For example path variables for controllers that set global prefixes using PathMatchConfigurer are now handled.
-As new resolving method can return null map, old one is set as fallback. However old approach doesn't handle URI global
-prefixes and causes exceptions when trying to handle URIs containing them.
+* Changed approach for resolving path variables when processing request.
+* From now on, the controllers with global prefixes (configured using `org.springframework.web.servlet.config.annotation.PathMatchConfigurer`) should be properly handled:
+  * For example, apps with following configuration are now supported:
+    ```
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+      configurer.addPathPrefix("/api/{tenantId}", HandlerTypePredicate.forAnnotation(RestController.class));
+    }
+    ```
+    Below spec will be properly resolved for request URI: `/api/123/findCustomers?firstName=John`
+    ```
+    @RestController
+    public static class TestController {
 
-Old approach takes only controllers mapping and tries to match it against request URI. As it requires paths to be exact the same it fails and throws exception:
-```
-example controllers mapping:
-/user/{userId}
-
-example request URI with global api prefix that would fail for old approach:
-/api/v1/user/12
-```
-
+        @GetMapping("/findCustomers")
+        public List<Customer> findCustomersByFirstName(@And(value = {
+        		@Spec(path = "tenantId", pathVar = "tenantId", spec = Equal.class),
+        		@Spec(path = "firstName" param = "firstName", spec = Equal.class)
+        }) Specification<Customer> spec) {
+        	return customerRepository.findAll(spec);
+        }
+    }
+    ```
+   
 v2.12.0
 =======
 * added support for `SpringDoc-OpenAPI` library -- parameters from specification will be shown in generated documentation
