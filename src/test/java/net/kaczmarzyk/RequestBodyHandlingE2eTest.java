@@ -20,7 +20,6 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
-import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
@@ -28,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -49,14 +51,14 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
 
         @PostMapping(value = "/customers/search")
         public List<Customer> findByIdInBody(
-            @Spec(path = "id", params = "customerId", paramType = ParamType.BODY, spec = Equal.class) Specification<Customer> spec) {
+            @Spec(path = "id", jsonPaths = "customerId", spec = Equal.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
 
         @PostMapping(value = "/customers/search/firstName")
         public List<Customer> findByLastNameInBody(
-                @Spec(path = "firstName", params = "filters.firstName.nameValue", paramType = ParamType.BODY, spec = Equal.class) Specification<Customer> spec) {
+                @Spec(path = "firstName", jsonPaths = "filters.firstName.nameValue", spec = Equal.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
@@ -68,7 +70,7 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
 
         @PostMapping(value = "/customers/search/firstNames")
         public List<Customer> findByLastNamesInBodyByCompositeKey(
-            @Spec(path = "firstName", params = "filters.firstNames", paramType = ParamType.BODY, spec = In.class) Specification<Customer> spec) {
+            @Spec(path = "firstName", jsonPaths = "filters.firstNames", spec = In.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
@@ -76,7 +78,7 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
         @PostMapping(value = "/customers/search/composite", params = "gender")
         public List<Customer> findByIdInBodyAndGenderInRequestParam(
             @And({
-                @Spec(path = "lastName", paramType = ParamType.BODY, spec = Equal.class),
+                @Spec(path = "lastName", jsonPaths = "lastName", spec = Equal.class),
                 @Spec(path = "gender", spec = Equal.class)
             }) Specification<Customer> spec) {
 

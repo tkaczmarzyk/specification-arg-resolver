@@ -15,7 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
@@ -38,6 +37,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -138,9 +138,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	private Collection<String> resolveSpecArguments(WebRequestProcessingContext context, Spec specDef) {
 		if (specDef.constVal().length != 0) {
 			return resolveConstVal(specDef);
-		} else if (specDef.pathVars().length != 0 || specDef.paramType() == ParamType.PATH) {
+		} else if (specDef.pathVars().length != 0) {
 			return resolveSpecArgumentsFromPathVariables(context, specDef);
-		} else if (specDef.paramType() == ParamType.BODY) {
+		} else if (specDef.jsonPaths().length != 0) {
 			return resolveSpecArgumentsFromBody(context, specDef);
 		} else if (specDef.headers().length != 0) {
 			return resolveSpecArgumentsFromRequestHeaders(context, specDef);
@@ -184,18 +184,16 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	}
 
     private Collection<String> resolveSpecArgumentsFromPathVariables(WebRequestProcessingContext context, Spec specDef) {
-        String[] params = specDef.paramType() == ParamType.PATH ? specDef.params() : specDef.pathVars();
-        return Arrays.stream(params)
+        return Arrays.stream(specDef.pathVars())
             .map(context::getPathVariableValue)
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     private Collection<String> resolveSpecArgumentsFromBody(WebRequestProcessingContext context, Spec specDef) {
-        String[] params = specDef.params().length != 0 ? specDef.params() : new String[]{specDef.path()};
 		BodyParams bodyParams = context.getBodyParams();
-        return Arrays.stream(params)
+        return Arrays.stream(specDef.jsonPaths())
             .flatMap(param -> bodyParams.getParamValues(param).stream())
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
 	private Collection<String> resolveSpecArgumentsFromRequestHeaders(WebRequestProcessingContext context, Spec specDef) {

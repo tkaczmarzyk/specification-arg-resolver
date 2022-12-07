@@ -18,7 +18,6 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.domain.ParamType;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
@@ -81,18 +80,6 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
         assertThat(resolved).isEqualTo(new DateBetween<>(ctx.queryContext(), "thePath", new String[] { "2019-01-25", "2019-01-27" }, defaultConverter));
     }
 
-    @Test
-    public void buildsTheSpecUsingParamsAndParamTypeIsPath() throws Exception {
-        MethodParameter param = testMethodParameter("testMethodUsingParamsWithParamTypeIsPath");
-        MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
-
-        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-        Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        assertThat(resolved).isEqualTo(new Like<>(ctx.queryContext(), "thePath", "theOrderIdValue"));
-    }
-
     @RequestMapping(path = "/customers/{customerId}")
     public static class TestController {
 
@@ -114,11 +101,6 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
     			@Spec(path = "thePath", pathVars="invoiceId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
 
     	}
-
-        @RequestMapping(path = "/orders/{orderId}")
-        public void testMethodUsingParamsWithParamTypeIsPath(
-    	    @Spec(path = "thePath", params = "orderId", paramType = ParamType.PATH, spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
-        }
     }
 
 	@Override
