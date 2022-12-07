@@ -16,7 +16,6 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
-import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -34,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -191,13 +190,12 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 		return args;
 	}
-  
-  private Collection<String> resolveSpecArgumentsFromBody(ProcessingContext context, Spec specDef) {
-		BodyParams bodyParams = context.getBodyParams();
-        return Arrays.stream(specDef.jsonPaths())
-            .flatMap(param -> bodyParams.getParamValues(param).stream())
-            .collect(toList());
-    }
+
+	private Collection<String> resolveSpecArgumentsFromBody(ProcessingContext context, Spec specDef) {
+		return Arrays.stream(specDef.jsonPaths())
+				.flatMap(param -> nullSafeArrayStream(context.getBodyParamValues(param)))
+				.collect(toList());
+	}
 
 	private Collection<String> resolveSpecArgumentsFromRequestHeaders(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<>();
@@ -246,6 +244,10 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 				}
 			}
 		}
+	}
+
+	private Stream<String> nullSafeArrayStream(String[] array) {
+		return array != null ? Stream.of(array) : Stream.empty();
 	}
 	
 	private static class DelimitationStrategy {
