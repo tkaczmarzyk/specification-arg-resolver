@@ -42,7 +42,7 @@ public class RepeatedJoinFetchResolverTest extends ResolverTestBase {
 		NativeWebRequest req = mock(NativeWebRequest.class);
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(RepeatedJoinFetch.class));
 

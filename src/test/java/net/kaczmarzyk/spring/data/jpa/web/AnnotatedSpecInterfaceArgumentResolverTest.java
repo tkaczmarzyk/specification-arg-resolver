@@ -144,7 +144,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 	}
 
 	NativeWebRequest req = mock(NativeWebRequest.class);
-	QueryContext queryCtx = new WebRequestQueryContext(req);
+	QueryContext queryCtx = new DefaultQueryContext();
 
 	@Before
 	public void init() {

@@ -41,7 +41,7 @@ class AndSpecificationResolver implements SpecificationResolver<And> {
 	}
 
 	@Override
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, And def) {
+	public Specification<Object> buildSpecification(ProcessingContext context, And def) {
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
 		for (Spec innerDef : def.value()) {
 			Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);

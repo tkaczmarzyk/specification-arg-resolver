@@ -121,7 +121,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingWebParameterTheSameAsPath() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
@@ -135,7 +135,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingConstValue() throws Exception {
     	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithConst1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
@@ -148,7 +148,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void ignoresHttpParamIfConstValueIsSpecified() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithConst1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue" });
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
@@ -162,7 +162,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingCustomWebParameterName() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue" });
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
@@ -176,7 +176,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingCustomMultiValueWebParameterName() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
 
 	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
@@ -190,7 +190,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void skipsEmptyWebParameterValues() {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "value1", "" });
 
         Specification<Object> resolved = resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class));
@@ -202,7 +202,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingCustomMultiValueWebParametersNames() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod4"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
         when(req.getParameterValues("theParameter2")).thenReturn(new String[] { "theValue3", "theValue4" });
 
@@ -217,7 +217,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingMultiValueWebParameterTheSameAsPathWithoutParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod5"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
 
         when(req.getParameterValues("thePath")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 
@@ -232,7 +232,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingMultiValueWebParameterTheSameAsPathAndParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod6"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
 
         when(req.getParameterValues("thePath")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 
@@ -247,7 +247,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingMultiValueWebParameterWithoutParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod7"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
 
         when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 
@@ -262,7 +262,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     public void buildsTheSpecUsingMultiValueWebParameterAndParamSeparator() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod8"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new WebRequestQueryContext(req);
+        QueryContext queryCtx = new DefaultQueryContext();
 
         when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
 

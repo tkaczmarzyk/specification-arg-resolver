@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.WebRequestQueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.DefaultQueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.junit.Before;
 import org.junit.Rule;
@@ -67,7 +67,7 @@ public abstract class IntegrationTestBase {
 
 	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
 
-	protected QueryContext queryCtx = new WebRequestQueryContext(nativeWebRequest().build());
+	protected QueryContext queryCtx = new DefaultQueryContext();
 
 	@Autowired
 	WebApplicationContext wac;

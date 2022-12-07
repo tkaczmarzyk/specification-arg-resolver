@@ -31,7 +31,7 @@ class JoinSpecificationResolver implements SpecificationResolver<Join> {
 	}
 
 	@Override
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, Join joinDef) {
+	public Specification<Object> buildSpecification(ProcessingContext context, Join joinDef) {
 		return new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(context.queryContext(), joinDef.path(), joinDef.alias(), joinDef.type(), joinDef.distinct());
 	}
 
