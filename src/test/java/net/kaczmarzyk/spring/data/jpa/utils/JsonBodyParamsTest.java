@@ -23,7 +23,7 @@ import org.junit.Test;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.fail;
 
 public class JsonBodyParamsTest {
 
@@ -45,12 +45,13 @@ public class JsonBodyParamsTest {
 		//given
 		String json = "{\"invalidJson: ";
 
-		//when
-		Exception exception = assertThrows(JsonSyntaxException.class, () -> JsonBodyParams.parse(json));
-
-		//then
-		assertThat(exception)
-				.isInstanceOf(JsonSyntaxException.class);
+		//when-then
+		try {
+			JsonBodyParams.parse(json);
+			fail("expected JsonSyntaxException");
+		} catch (JsonSyntaxException exception) {
+			// pass
+		}
 	}
 
 	@Test
@@ -106,14 +107,15 @@ public class JsonBodyParamsTest {
 		//given
 		String json = "{ \"key\": { \"innerKey\": \"value\"}}";
 
-		//when
-		Exception exception = assertThrows(JsonParseException.class,
-				() -> JsonBodyParams.parse(json).getParamValues("key"));
-
-		//then
-		assertThat(exception)
+		//when-then
+		try {
+			JsonBodyParams.parse(json).getParamValues("key");
+			fail("expected JsonParseException");
+		} catch (JsonParseException exception) {
+			assertThat(exception)
 				.isInstanceOf(JsonParseException.class)
 				.hasMessageContaining("Value by key should be primitive or array primitives");
+		}
 	}
 
 	@Test
@@ -157,14 +159,15 @@ public class JsonBodyParamsTest {
 		//given
 		String json = "{ \"key\": { \"array\": [{ \"object1\": \"value1\" }, { \"object2\": \"value2\" }]}}";
 
-		//when
-		Exception exception = assertThrows(JsonParseException.class,
-				() -> JsonBodyParams.parse(json).getParamValues("key.array.object1"));
-
-		//then
-		assertThat(exception)
+		//when-then
+		try {
+			JsonBodyParams.parse(json).getParamValues("key.array.object1");
+			fail("expected JsonParseException");
+		} catch (JsonParseException exception) {
+			assertThat(exception)
 				.isInstanceOf(JsonParseException.class)
 				.hasMessageContaining("Should be JSON object");
+		}
 	}
 
 	@Test
@@ -173,12 +176,13 @@ public class JsonBodyParamsTest {
 		String json = "{ \"key\": { \"array\": [{ \"object1\": \"value1\" }, { \"object2\": \"value2\" }]}}";
 
 		//when
-		Exception exception = assertThrows(IllegalArgumentException.class,
-				() -> JsonBodyParams.parse(json).getParamValues("key.array"));
-
-		//then
-		assertThat(exception)
+		try {
+			JsonBodyParams.parse(json).getParamValues("key.array");
+			fail("expected JsonParseException");
+		} catch (IllegalArgumentException exception) {
+			assertThat(exception)
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("Array by key contains not primitives");
+		}
 	}
 }

@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import java.lang.annotation.Annotation;
@@ -27,6 +28,7 @@ import static java.util.Objects.nonNull;
  *
  * @author Jakub Radlica
  * @author Kacper Leśniak (Tratif sp. z o.o.)
+ * 
  * @see net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder
  */
 public class StandaloneProcessingContext implements ProcessingContext {
@@ -103,5 +105,10 @@ public class StandaloneProcessingContext implements ProcessingContext {
 			return null;
 		}
 		return fallbackArgumentValues.get(argName)[0];
+	}
+
+	@Override
+	public BodyParams getBodyParams() {
+		throw new UnsupportedOperationException("todo");
 	}
 }

@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import com.google.gson.JsonParseException;
@@ -15,7 +30,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 public class SimpleSpecificationResolverJsonPathsTest extends ResolverTestBase {
@@ -87,14 +102,15 @@ public class SimpleSpecificationResolverJsonPathsTest extends ResolverTestBase {
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 		ReflectionTestUtils.setField(ctx, "bodyParams", JsonBodyParams.parse(json));
 
-		//when
-		Exception exception = assertThrows(IllegalArgumentException.class,
-				() -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)));
-
-		//then
-		assertThat(exception)
+		//when-then
+		try {
+			resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+			fail("expected exception");
+		} catch (IllegalArgumentException exception) {
+			assertThat(exception)
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("Array by key contains not primitives");
+		}
 	}
 
 	@Test
@@ -107,14 +123,15 @@ public class SimpleSpecificationResolverJsonPathsTest extends ResolverTestBase {
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 		ReflectionTestUtils.setField(ctx, "bodyParams", JsonBodyParams.parse(json));
 
-		//when
-		Exception exception = assertThrows(JsonParseException.class,
-				() -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)));
-
-		//then
-		assertThat(exception)
+		//when-then
+		try {
+			resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+			fail("expected exception");
+		} catch (JsonParseException exception) {
+			assertThat(exception)
 				.isInstanceOf(JsonParseException.class)
 				.hasMessageContaining("Failed parse JSON node with key type1. Should be JSON object");
+		}
 	}
 
 
