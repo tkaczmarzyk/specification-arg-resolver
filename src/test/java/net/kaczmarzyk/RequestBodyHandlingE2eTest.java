@@ -51,14 +51,14 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
 
         @PostMapping(value = "/customers/search")
         public List<Customer> findByIdInBody(
-            @Spec(path = "id", jsonPath = "customerId", spec = Equal.class) Specification<Customer> spec) {
+            @Spec(path = "id", jsonPaths = "customerId", spec = Equal.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
 
         @PostMapping(value = "/customers/search/firstName")
         public List<Customer> findByLastNameInBody(
-                @Spec(path = "firstName", jsonPath = "filters.firstName.nameValue", spec = Equal.class) Specification<Customer> spec) {
+                @Spec(path = "firstName", jsonPaths = "filters.firstName.nameValue", spec = Equal.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
@@ -70,7 +70,7 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
 
         @PostMapping(value = "/customers/search/firstNames")
         public List<Customer> findByLastNamesInBodyByCompositeKey(
-            @Spec(path = "firstName", jsonPath = "filters.firstNames", spec = In.class) Specification<Customer> spec) {
+            @Spec(path = "firstName", jsonPaths = "filters.firstNames", spec = In.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
@@ -78,7 +78,7 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
         @PostMapping(value = "/customers/search/composite", params = "gender")
         public List<Customer> findByIdInBodyAndGenderInRequestParam(
             @And({
-                @Spec(path = "lastName", jsonPath = "lastName", spec = Equal.class),
+                @Spec(path = "lastName", jsonPaths = "lastName", spec = Equal.class),
                 @Spec(path = "gender", spec = Equal.class)
             }) Specification<Customer> spec) {
 

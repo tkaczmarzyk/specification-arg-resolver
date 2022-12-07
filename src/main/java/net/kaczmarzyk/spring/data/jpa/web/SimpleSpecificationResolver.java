@@ -140,7 +140,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			return resolveConstVal(specDef);
 		} else if (specDef.pathVars().length != 0) {
 			return resolveSpecArgumentsFromPathVariables(context, specDef);
-		} else if (specDef.jsonPath().length != 0) {
+		} else if (specDef.jsonPaths().length != 0) {
 			return resolveSpecArgumentsFromBody(context, specDef);
 		} else if (specDef.headers().length != 0) {
 			return resolveSpecArgumentsFromRequestHeaders(context, specDef);
@@ -191,7 +191,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
     private Collection<String> resolveSpecArgumentsFromBody(WebRequestProcessingContext context, Spec specDef) {
 		BodyParams bodyParams = context.getBodyParams();
-        return Arrays.stream(specDef.jsonPath())
+        return Arrays.stream(specDef.jsonPaths())
             .flatMap(param -> bodyParams.getParamValues(param).stream())
             .collect(toList());
     }

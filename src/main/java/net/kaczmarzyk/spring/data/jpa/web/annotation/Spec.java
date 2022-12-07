@@ -42,7 +42,7 @@ public @interface Spec {
 
     String[] headers() default {};
 
-    String[] jsonPath() default {};
+    String[] jsonPaths() default {};
     
     String[] config() default {};
     
