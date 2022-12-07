@@ -18,6 +18,8 @@ package net.kaczmarzyk.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.criteria.JoinType;
+
 /**
  * Represents a logged HQL query
  * 
@@ -37,6 +39,19 @@ public class LoggedQuery {
 
 	public int countJoins() {
 		return countOccurences("join");
+	}
+	
+	public int countJoins(JoinType joinType) {
+		switch (joinType) {
+		case LEFT:
+			return countOccurences("left join");
+		case RIGHT:
+			return countOccurences("right join");
+		case INNER:
+			return countOccurences("inner join");
+		default:
+			throw new IllegalStateException("only 3 join types were expected at the time of development of this test tool");
+		}
 	}
 	
 	private int countOccurences(String pattern) {

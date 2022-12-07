@@ -30,6 +30,8 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static java.util.Objects.isNull;
+
 /**
  * <p>
  * Provides information about Controller/method and WebRequest being processed.
@@ -70,35 +72,43 @@ import javax.servlet.http.HttpServletRequest;
  * @author Tomasz Kaczmarzyk
  * @author Robert Dworak, Tratif sp. z o.o.
  */
-public class WebRequestProcessingContext {
+public class WebRequestProcessingContext implements ProcessingContext {
 
 	private final MethodParameter methodParameter;
 	private final NativeWebRequest webRequest;
 	private String pathPattern;
 
 	private Map<String, String> resolvedPathVariables;
+
+	private QueryContext queryContext;
 	
 	public WebRequestProcessingContext(MethodParameter methodParameter, NativeWebRequest webRequest) {
 		this.methodParameter = methodParameter;
 		this.webRequest = webRequest;
+		this.queryContext = new DefaultQueryContext();
 	}
 
+	@Override
 	public Class<?> getParameterType() {
 		return methodParameter.getParameterType();
 	}
 
+	@Override
 	public Annotation[] getParameterAnnotations() {
 		return methodParameter.getParameterAnnotations();
 	}
 
+	@Override
 	public String[] getParameterValues(String webParamName) {
 		return webRequest.getParameterValues(webParamName);
 	}
 
+	@Override
 	public QueryContext queryContext() {
-		return new WebRequestQueryContext(webRequest);
+		return queryContext;
 	}
 
+	@Override
 	public String getPathVariableValue(String pathVariableName) {
 		if (resolvedPathVariables == null) {
 			resolvedPathVariables = (Map) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, WebRequest.SCOPE_REQUEST);

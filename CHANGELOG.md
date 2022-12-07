@@ -1,5 +1,6 @@
-v2.10.0
-======
+v2.12.1
+=======
+* Fixed bug in `SpecificationBuilder` that was creating doubled query conditions.
 * Changed approach for resolving path variables when processing request
 * From now on path variable resolving for controllers with path prefixes should work properly.
 For example path variables for controllers that set global prefixes using PathMatchConfigurer are now handled.
@@ -15,6 +16,53 @@ example request URI with global api prefix that would fail for old approach:
 /api/v1/user/12
 ```
 
+v2.12.0
+=======
+* added support for `SpringDoc-OpenAPI` library -- parameters from specification will be shown in generated documentation
+
+v2.11.0
+=======
+* replaced hibernate java persistence api dependency with java persistence api (`org.hibernate.javax.persistence` -> `javax.persistence`)
+* Added `SpecificationBuilder` that allows creating specification apart from web layer.
+
+  For example:
+  * Let's assume the following specification:
+    ```java
+    @Join(path = "orders", alias = "o")
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    public interface CustomerByOrdersSpec implements Specification<Customer> {
+    }
+    ```
+  * To create specifications outside the web layer, you can use the specification builder as follows:
+    ```java
+    Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
+          .withParams("orderItem", "Pizza")
+          .build();            
+    ```
+  * It is recommended to use builder methods that corresponding to the type of argument passed to specification interface, e.g.:
+    * For:
+    ```java
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    ``` 
+    you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+    * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+    * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
+    * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
+
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
+
+v2.10.0
+=======
+* fixed bug with not evaluated join fetches in count queries (e.g. during pagination) -- from now on, join fetches in count queries are either skipped (if they are used solely for initialization of lazy collections) or converted to regular joins (if there is any filtering applied on the fetched part). See [issue 138](https://github.com/tkaczmarzyk/specification-arg-resolver/issues/138) for more details.
+* added conversion support for `Timestamp`
+* Added strict date format validation for `Date`, `Calendar` and `Timestamp` in `Converter` component.
+  * Let's assume following specification definition:
+    `@Spec(path = "startDate", params = "periodStart", spec = Equal.class, config = "yyyy-MM-dd")`
+    * Previously, the request parameter values was parsed as follows:
+      * `2022-11-28-unnecessary-additional-characters` was parsed to `2022-11-28` (if the date format was satisfied (checking from left to right) the next additional characters were ignored)
+      * `28-11-2022` was parsed to invalid date (different from `2022-11-28`), order of specific parts of date was not validated.
+      * `1-1-1` was parsed to invalid date (length of specific parts of date (year, month, day) was not validated)
+    * From now on strict policy of date format validation is introduced. The Date has to be in specific format and of specific length.
 
 v2.9.0
 ======

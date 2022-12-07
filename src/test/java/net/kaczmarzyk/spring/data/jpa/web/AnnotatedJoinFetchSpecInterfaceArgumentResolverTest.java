@@ -88,7 +88,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 				.withParameterValues("itemName", "Item-123").build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -118,7 +118,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 				.withParameterValues("nickName", "Hom").build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 

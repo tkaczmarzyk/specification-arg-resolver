@@ -19,6 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.springframework.core.convert.ConversionService;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -89,6 +91,7 @@ public class Converter {
 		DEFAULT_DATE_FORMATS.put(LocalDateTime.class, "yyyy-MM-dd\'T\'HH:mm:ss");
 		DEFAULT_DATE_FORMATS.put(OffsetDateTime.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
 		DEFAULT_DATE_FORMATS.put(Instant.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX");
+		DEFAULT_DATE_FORMATS.put(Timestamp.class, "yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'");
 	}
 
 	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseSensitive = (enumVal, rawValue) -> enumVal.name().equals(rawValue);
@@ -158,6 +161,8 @@ public class Converter {
 			return (T) convertToOffsetDateTime(value);
 		} else if (expectedClass.isAssignableFrom(Instant.class)) {
 			return (T) convertToInstant(value);
+		} else if (expectedClass.isAssignableFrom(Timestamp.class)) {
+			return (T) convertToTimestamp(value);
 		} else if (nonNull(conversionService) && conversionService.canConvert(String.class, expectedClass)) {
 			return conversionService.convert(value, expectedClass);
 		}
@@ -239,8 +244,9 @@ public class Converter {
 	public Date convertToDate(String value) {
 		String dateFormat = getDateFormat(Date.class);
 		try {
+			validateDateFormat(dateFormat, value);
 			return new SimpleDateFormat(dateFormat).parse(value);
-		} catch (ParseException e) {
+		} catch (ParseException | DateTimeParseException e) {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
 		}
 	}
@@ -248,10 +254,11 @@ public class Converter {
 	public Calendar convertToCalendar(String value) {
 		String dateFormat = getDateFormat(Date.class);
 		try {
+			validateDateFormat(dateFormat, value);
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
 			return cal;
-		} catch (ParseException e) {
+		} catch (ParseException | DateTimeParseException e) {
 			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
 		}
 	}
@@ -298,6 +305,24 @@ public class Converter {
 			}
 		}
 		throw new ValueRejectedException(value, "could not find value " + value + " for enum class " + enumClass.getSimpleName());
+	}
+
+	private Timestamp convertToTimestamp(String value) {
+		String dateFormat = getDateFormat(Timestamp.class);
+		try {
+			validateDateFormat(dateFormat, value);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+			Date parsedDate = simpleDateFormat.parse(value);
+			return new Timestamp(parsedDate.getTime());
+		} catch (Exception e) {
+			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat);
+		}
+	}
+
+	private void validateDateFormat(String expectedDateFormatPattern, String date) throws DateTimeParseException {
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(expectedDateFormatPattern)
+				.withResolverStyle(ResolverStyle.STRICT);
+		dateFormatter.parse(date);
 	}
 
 	@Override

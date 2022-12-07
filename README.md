@@ -29,6 +29,8 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
+   * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
+   * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -892,6 +894,7 @@ List of supported conversions:
   * `String -> LocalDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss`)
   * `String -> OffsetDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
   * `String -> Instant` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
+  * `String -> Timestamp` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`)
   * `String -> UUID` 
 
 To use a custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
@@ -964,10 +967,64 @@ Configuration example:
 
 SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
 
+Swagger support
+------------
+
+Right now specification argument resolver supports only one library -> `Springdoc-openapi`. 
+The current limitation is that parameter may be duplicated when the same argument is defined in specification and other parameter in controller method (e.g. when we define `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`).
+
+There are two steps in order to enable support for `Springdoc-openapi` library:
+* Add following dependency from `Springdoc-openapi` (tested with `1.6.13` version):
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-common</artifactId>
+</dependency>
+```
+
+* Create `@Bean` of type `SpecificationArgResolverSpringdocOperationCustomizer` in your app configuration:
+```java
+@Bean
+public SpecificationArgResolverSpringdocOperationCustomizer specificationArgResolverSpringdocOperationCustomizer() {
+    return new SpecificationArgResolverSpringdocOperationCustomizer();
+}
+```
+
 Cache support
 ------------
 
 Specification argument resolver supports [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching). Equals and HashCode contract is satisfied for generated specifications.
+
+Building specifications outside the web layer
+------------------------------------------
+
+Specification argument resolver supports creating specifications apart from web layer.
+To build specification outside the web-layer the `SpecificationBuilder` should be used:
+
+* Let's assume the following specification:
+    ```java
+    @Join(path = "orders", alias = "o")
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    public interface CustomerByOrdersSpec implements Specification<Customer> {
+    }
+    ```
+    * To create specifications outside the web layer, you can use the specification builder as follows:
+      ```java
+      Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
+            .withParams("orderItem", "Pizza")
+            .build();            
+      ```
+    * It is recommended to use builder methods that corresponding to the type of argument type passed to specification interface, e.g.:
+        * For:
+      ```java
+      @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+      ``` 
+      you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+        * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+        * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
+        * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
+
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
 
 Compatibility notes
 -------------------
@@ -991,7 +1048,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.9.0</version>
+    <version>2.11.0</version>
 </dependency>
 ```
 

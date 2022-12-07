@@ -40,7 +40,7 @@ class OrSpecificationResolver implements SpecificationResolver<Or> {
         return Or.class;
     }
 
-    public Specification<Object> buildSpecification(WebRequestProcessingContext context, Or def) {
+    public Specification<Object> buildSpecification(ProcessingContext context, Or def) {
         List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
         for (Spec innerDef : def.value()) {
             Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);

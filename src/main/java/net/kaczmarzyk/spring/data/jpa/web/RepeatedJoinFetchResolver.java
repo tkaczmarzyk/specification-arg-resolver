@@ -37,7 +37,7 @@ public class RepeatedJoinFetchResolver implements SpecificationResolver<Repeated
 	}
 
 	@Override
-	public Specification<Object> buildSpecification(WebRequestProcessingContext context, RepeatedJoinFetch def) {
+	public Specification<Object> buildSpecification(ProcessingContext context, RepeatedJoinFetch def) {
 		Collection<Specification<Object>> joins = new ArrayList<>();
 
 		for (JoinFetch fetchDef : def.value()) {
