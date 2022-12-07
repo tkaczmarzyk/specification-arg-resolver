@@ -82,13 +82,22 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithHeader extends Specification<Customer> {
 	}
 
+	@Join(path = "orders", alias = "o")
+	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Or({
+			@Spec(path = "o.itemName", jsonPaths = "orderIn", spec = In.class),
+			@Spec(path = "t.name", jsonPaths = "tag", spec = Equal.class)
+	})
+	public interface CustomSpecificationWithJsonPath extends Specification<Customer> {
+	}
+
 	@Test
 	public void shouldCreateSpecificationUsingBuilder() {
 		Map<String, String[]> params = new HashMap<>();
 		params.put("gender", new String[]{"MALE"});
 		params.put("lastName", new String[]{"Simpson"});
 
-		StandaloneProcessingContext ctx = new StandaloneProcessingContext(CustomSpecification.class, null, null, params, null);
+		StandaloneProcessingContext ctx = new StandaloneProcessingContext(CustomSpecification.class, null, null, params, null, null);
 
 		Specification<Customer> spec = specification(CustomSpecification.class)
 				.withParam("gender", "MALE")
@@ -109,11 +118,11 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldCreateSpecificationDependingOnPathVar() {
-		Customer customer1 = customer("Homer", "Simpson")
+		customer("Homer", "Simpson")
 				.orders("Pizza")
 				.build(em);
 
-		Customer customer2 = customer("Marge", "Simpson")
+		customer("Marge", "Simpson")
 				.orders("Cake")
 				.build(em);
 
@@ -129,11 +138,11 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldCreateSpecificationDependingOnParam() {
-		Customer customer1 = customer("Marge", "Simpson")
+		customer("Marge", "Simpson")
 				.orders("Cake")
 				.build(em);
 
-		Customer customer2 = customer("Bart", "Simpson")
+		customer("Bart", "Simpson")
 				.orders("Bread")
 				.build(em);
 
@@ -149,11 +158,11 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldCreateSpecificationDependingOnHeader() {
-		Customer customer1 = customer("Bart", "Simpson")
+		customer("Bart", "Simpson")
 				.orders("Bread")
 				.build(em);
 
-		Customer customer2 = customer("Lisa", "Simpson")
+		customer("Lisa", "Simpson")
 				.orders("Butter")
 				.build(em);
 
@@ -165,6 +174,28 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 		assertThat(customers.size()).isEqualTo(1);
 		assertThat(customers.get(0).getFirstName()).isEqualTo("Bart");
+	}
+
+	@Test
+	public void shouldCreateSpecificationDependingOnJsonPath() {
+		customer("Marge", "Simpson")
+				.orders("Cake")
+				.build(em);
+
+		customer("Bart", "Simpson")
+				.orders("Bread")
+				.build(em);
+
+		Specification<Customer> spec = specification(CustomSpecificationWithJsonPath.class)
+				.withJsonBodyParam("orderIn", "Cake")
+				.build();
+
+		List<Customer> customers = customerRepo.findAll(spec);
+
+		assertThat(customers.size())
+				.isEqualTo(1);
+		assertThat(customers.get(0).getFirstName())
+				.isEqualTo("Marge");
 	}
 
 	@Test

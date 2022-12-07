@@ -37,18 +37,21 @@ public class StandaloneProcessingContextTest {
 		Map<String, String[]> params = new HashMap<>();
 		Map<String, String> pathVars = new HashMap<>();
 		Map<String, String> headers = new HashMap<>();
+		Map<String, String[]> bodyParams = new HashMap<>();
 
 		args.put("fallback", new String[]{"example"});
 		params.put("param", new String[]{"example"});
 		pathVars.put("pathVar", "example");
 		headers.put("header", "example");
+		bodyParams.put("bodyParam", new String[]{"example"});
 
 		context = new StandaloneProcessingContext(
 				null,
 				args,
 				pathVars,
 				params,
-				headers);
+				headers,
+				bodyParams);
 	}
 
 	@Test
@@ -56,10 +59,12 @@ public class StandaloneProcessingContextTest {
 		String fallbackValueForPathVariable = context.getPathVariableValue("fallback");
 		String[] fallbackValueForParams = context.getParameterValues("fallback");
 		String fallbackValueForHeader = context.getRequestHeaderValue("fallback");
+		String[] fallbackValueForJsonPath = context.getBodyParamValues("fallback");
 
 		assertThat(fallbackValueForPathVariable).isEqualTo("example");
 		assertThat(fallbackValueForParams).isEqualTo(new String[]{"example"});
 		assertThat(fallbackValueForHeader).isEqualTo("example");
+		assertThat(fallbackValueForJsonPath).isEqualTo(new String[]{"example"});
 	}
 
 	@Test
@@ -92,4 +97,13 @@ public class StandaloneProcessingContextTest {
 		assertThat(context.getRequestHeaderValue("notExisting")).isNull();
 	}
 
+	@Test
+	public void shouldReturnBodyParamValue() {
+		assertThat(context.getBodyParamValues("bodyParam")).containsExactly("example");
+	}
+
+	@Test
+	public void shouldReturnNullWhenBodyParamDoesNotExist() {
+		assertThat(context.getBodyParamValues("notExisting")).isNull();
+	}
 }

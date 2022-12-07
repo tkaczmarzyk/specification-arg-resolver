@@ -31,8 +31,6 @@ import static java.util.Objects.isNull;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import static java.util.Objects.isNull;
-
 /**
  * Provides information about Controller/method and WebRequest being processed.
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
@@ -89,24 +87,17 @@ public class WebRequestProcessingContext implements ProcessingContext {
 		}
 	}
 
-  public String getRequestBody() {
-		try {
-			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-			if (request == null) {
-				throw new IllegalStateException("Request body not present");
-			}
-			return IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
-		} catch (IOException ex) {
-			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
-		}
-	}
-
 	@Override
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
 	}
 
-	public BodyParams getBodyParams() {
+	@Override
+	public String[] getBodyParamValues(String bodyParamName) {
+		return getBodyParams().getParamValues(bodyParamName).toArray(new String[0]);
+	}
+
+	private BodyParams getBodyParams() {
 		if (isNull(bodyParams)) {
 			String contentType = getRequestHeaderValue(CONTENT_TYPE);
 			if (contentType.equals(APPLICATION_JSON_VALUE)) {
@@ -116,6 +107,18 @@ public class WebRequestProcessingContext implements ProcessingContext {
 			}
 		}
 		return bodyParams;
+	}
+
+	private String getRequestBody() {
+		try {
+			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+			if (request == null) {
+				throw new IllegalStateException("Request body not present");
+			}
+			return IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
+		} catch (IOException ex) {
+			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
+		}
 	}
 
 	private String pathPattern() {

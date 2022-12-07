@@ -15,7 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import java.lang.annotation.Annotation;
@@ -34,5 +33,5 @@ public interface ProcessingContext {
 
 	String getPathVariableValue(String pathVariableName);
 
-	BodyParams getBodyParams();
+	String[] getBodyParamValues(String bodyParamName);
 }
