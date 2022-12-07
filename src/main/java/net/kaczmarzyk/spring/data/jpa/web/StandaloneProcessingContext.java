@@ -58,9 +58,12 @@ public class StandaloneProcessingContext implements ProcessingContext {
 		return specInterface;
 	}
 
+	/**
+	 * This class supports only specifications defined as interface.
+	 */
 	@Override
 	public Annotation[] getParameterAnnotations() {
-		return specInterface.getAnnotations();
+		return new Annotation[]{};
 	}
 
 	@Override

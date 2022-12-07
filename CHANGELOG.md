@@ -1,3 +1,7 @@
+v2.12.1
+=======
+* Fixed bug in `SpecificationBuilder` that was creating doubled query conditions.
+
 v2.12.0
 =======
 * added support for `SpringDoc-OpenAPI` library -- parameters from specification will be shown in generated documentation
