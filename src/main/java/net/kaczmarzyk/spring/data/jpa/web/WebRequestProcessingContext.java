@@ -34,18 +34,37 @@ import javax.servlet.http.HttpServletRequest;
  * <p>
  * Provides information about Controller/method and WebRequest being processed.
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
- * When the request attributes don't contain information about extracted path variables,
- * the path variables are extracted using a fallback approach (which has some limitations, eg. it does not support global prefixes).
  * </p>
- * <br>
- * Old approach takes only controllers mapping and tries to match it against request URI.
- * As it requires paths to be exact the same it fails and throws exception
  * <p>
- * example controllers mapping: <br>
- * /user/{userId} <br>
- *
- * example request URI with global api prefix that would fail for old approach: <br>
- * /api/v1/user/12
+ * Main extracting method uses {@link org.springframework.web.servlet.HandlerMapping#URI_TEMPLATE_VARIABLES_ATTRIBUTE HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE}
+ * that states in its javadocs that this attribute isn't supported in all cases, for these scenarios
+ * path variables are extracted using a fallback approach (which has some limitations, eg. it does not support global prefixes).
+ * </p>
+ * <p>
+ * Fallback approach takes only controllers mapping path and tries to match it against request URI path
+ * and as it requires both paths to be exactly the same it fails and throws exception.
+ * Failing example for fallback would be adding global prefix by using
+ * {@link org.springframework.web.servlet.config.annotation.PathMatchConfigurer PathMatchConfigurer}'s
+ * method 'addPathPrefix'
+ * </p>
+ * <p>
+ * Let's state we have REST controller with URI <br>
+ * {@code /user/{userId} }
+ * <br>
+ * By adding global prefix "/api/v1" <br>
+ * {@code
+ * public void configurePathMatch(PathMatchConfigurer configurer) {
+ *   configurer.addPathPrefix("/api/v1", c -> c.isAnnotationPresent(RestController.class));
+ * }
+ * }
+ * <br>
+ * Request URI changes to <br>
+ * {@code /api/v1/user/{userId}} <br>
+ * but fallback method still tries to match it against controller URI without prefix<br>
+ * {@code /user/{userId}} <br>
+ * which results in exception <br>
+ * {@code org.springframework.web.util.NestedServletException: Request processing failed; nested exception is net.kaczmarzyk.spring.data.jpa.web.InvalidPathVariableRequestedException:
+ * Requested path variable {userId} is not present in Controller request mapping annotations}
  * </p>
  *
  * @author Tomasz Kaczmarzyk
