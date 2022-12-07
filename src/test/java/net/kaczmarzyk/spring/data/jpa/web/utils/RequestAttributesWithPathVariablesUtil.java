@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Util for setting path variables in request's attributes
  * It's used in tests that should work with main request path variable resolving approach in {@link net.kaczmarzyk.spring.data.jpa.web.WebRequestProcessingContext WebRequestProcessingContext}
- * If path variable attributes aren't set then old path resolving approach is used
+ * If path variable attributes aren't set then fallback path resolving approach is used
  */
 public class RequestAttributesWithPathVariablesUtil {
 

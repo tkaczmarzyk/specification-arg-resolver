@@ -18,19 +18,17 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-
-import static java.util.Objects.isNull;
 
 /**
  * <p>
@@ -46,8 +44,8 @@ import static java.util.Objects.isNull;
  * Fallback approach takes only controllers mapping path and tries to match it against request URI path
  * and as it requires both paths to be exactly the same it fails and throws exception.
  * Failing example for fallback would be adding global prefix by using
- * {@link org.springframework.web.servlet.config.annotation.PathMatchConfigurer PathMatchConfigurer}'s
- * method 'addPathPrefix'
+ * {@link org.springframework.web.servlet.config.annotation.PathMatchConfigurer#addPathPrefix PathMatchConfigurer::addPathPrefix}
+ * method
  * </p>
  * <p>
  * Let's state we have REST controller with URI <br>
