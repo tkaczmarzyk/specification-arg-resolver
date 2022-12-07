@@ -25,23 +25,23 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static java.util.Objects.isNull;
-
 /**
+ *
  * Provides information about Controller/method and WebRequest being processed.
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
- * 
+ *
  * @author Tomasz Kaczmarzyk
+ * @author Robert Dworak, Tratif sp. z o.o.
  */
 public class WebRequestProcessingContext implements ProcessingContext {
 
 	private final MethodParameter methodParameter;
 	private final NativeWebRequest webRequest;
-	private String pathPattern;
-
 	private Map<String, String> resolvedPathVariables;
 
 	private QueryContext queryContext;
@@ -74,9 +74,10 @@ public class WebRequestProcessingContext implements ProcessingContext {
 
 	@Override
 	public String getPathVariableValue(String pathVariableName) {
-		if(resolvedPathVariables == null) {
-			resolvedPathVariables = PathVariableResolver.resolvePathVariables(pathPattern(), actualWebPath());
+		if (resolvedPathVariables == null) {
+			resolvedPathVariables = PathVariableResolver.resolvePathVariables(webRequest, methodParameter);
 		}
+
 		String value = resolvedPathVariables.get(pathVariableName);
 		if (value != null) {
 			return value;
@@ -85,53 +86,8 @@ public class WebRequestProcessingContext implements ProcessingContext {
 		}
 	}
 
-	@Override
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
 	}
 
-	private String pathPattern() {
-		if (pathPattern != null) {
-			return pathPattern;
-		} else {
-			Class<?> controllerClass = methodParameter.getContainingClass();
-			if (controllerClass.getAnnotation(RequestMapping.class) != null) {
-				RequestMapping controllerMapping = controllerClass.getAnnotation(RequestMapping.class);
-				pathPattern = firstOf(controllerMapping.value(), controllerMapping.path());
-			}
-			
-			String methodPathPattern = null;
-			
-			if (methodParameter.hasMethodAnnotation(RequestMapping.class)) {
-				RequestMapping methodMapping = methodParameter.getMethodAnnotation(RequestMapping.class);
-				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
-			} else if (methodParameter.hasMethodAnnotation(GetMapping.class)) {
-				GetMapping methodMapping = methodParameter.getMethodAnnotation(GetMapping.class);
-				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
-			}
-			
-			if (methodPathPattern != null) {
-				pathPattern = pathPattern != null ? pathPattern + methodPathPattern : methodPathPattern;
-			}
-		}
-		if (pathPattern == null) {
-			throw new IllegalStateException("path pattern could not be resolved (searched for @RequestMapping or @GetMapping)");
-		}
-		return pathPattern;
-	}
-
-	private String firstOf(String[] array1, String[] array2) {
-		if (array1.length > 0) {
-			return array1[0];
-		} else if (array2.length > 0) {
-			return array2[0];
-		}
-		return null;
-	}
-
-	private String actualWebPath() {
-		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-		return request.getPathInfo() != null ? request.getPathInfo() : request.getRequestURI().substring(request.getContextPath().length());
-	}
-	
 }
