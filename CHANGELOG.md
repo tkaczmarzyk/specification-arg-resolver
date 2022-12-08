@@ -1,7 +1,6 @@
 v2.13.0
 =======
 * added Json request body support
-* marked `gson` dependency as optional
 
 v2.12.1
 =======

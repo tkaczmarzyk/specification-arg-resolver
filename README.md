@@ -843,7 +843,7 @@ Example maven dependency in project pom file:
 <dependency>
     <groupId>com.google.code.gson</groupId>
     <artifactId>gson</artifactId>
-    <version>X.X.X</version>
+    <version>2.8.6</version>
 </dependency>
 ```
 
