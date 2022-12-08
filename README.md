@@ -837,6 +837,16 @@ Json request body support
 
 Also, you can specify value for specification in json request body. It might be useful when you use large number of filters for request because request url is limited in size. You can refer to the specification values by using `jsonPaths` property of `@Spec` (instead of `params` property).
 
+In order to use specification with json request body params, `gson` dependency has to be added to the project. 
+Example maven dependency in project pom file:
+```xml
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>X.X.X</version>
+</dependency>
+```
+
 <b>Warning!</b> RequestBody with specification values will be consumed during processing and will not be available for further operations (i.e. ServletInputStream will return no data). If you need to use request body for something else (rather than just building the Specification), you need to use some kind of content caching/wrapping (e.g. in a servlet filter).
 
 For example:
