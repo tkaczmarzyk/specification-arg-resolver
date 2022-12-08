@@ -15,25 +15,27 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import org.springframework.core.MethodParameter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.NativeWebRequest;
+import static java.util.Objects.isNull;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.HandlerMapping;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.NativeWebRequest;
+
+import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
+import net.kaczmarzyk.spring.data.jpa.utils.IOUtils;
+import net.kaczmarzyk.spring.data.jpa.utils.JsonBodyParams;
+import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
  *
@@ -41,7 +43,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
  *
  * @author Tomasz Kaczmarzyk
- * @author Robert Dworak, Tratif sp. z o.o.
  */
 public class WebRequestProcessingContext implements ProcessingContext {
 
@@ -164,10 +165,5 @@ public class WebRequestProcessingContext implements ProcessingContext {
 			return array2[0];
 		}
 		return null;
-	}
-
-	private String actualWebPath() {
-		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-		return request.getPathInfo() != null ? request.getPathInfo() : request.getRequestURI().substring(request.getContextPath().length());
 	}
 }
