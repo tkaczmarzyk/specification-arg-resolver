@@ -15,11 +15,15 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.utils.*;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -32,10 +36,12 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
+ *
  * Provides information about Controller/method and WebRequest being processed.
  * It is a wrapper around low-level Spring classes, which provides easier access to e.g. path variables.
- * 
+ *
  * @author Tomasz Kaczmarzyk
+ * @author Robert Dworak, Tratif sp. z o.o.
  */
 public class WebRequestProcessingContext implements ProcessingContext {
 
@@ -76,9 +82,10 @@ public class WebRequestProcessingContext implements ProcessingContext {
 
 	@Override
 	public String getPathVariableValue(String pathVariableName) {
-		if(resolvedPathVariables == null) {
-			resolvedPathVariables = PathVariableResolver.resolvePathVariables(pathPattern(), actualWebPath());
+		if (resolvedPathVariables == null) {
+			resolvedPathVariables = PathVariableResolver.resolvePathVariables(webRequest, methodParameter);
 		}
+
 		String value = resolvedPathVariables.get(pathVariableName);
 		if (value != null) {
 			return value;
@@ -87,7 +94,6 @@ public class WebRequestProcessingContext implements ProcessingContext {
 		}
 	}
 
-	@Override
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
 	}
@@ -164,5 +170,4 @@ public class WebRequestProcessingContext implements ProcessingContext {
 		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 		return request.getPathInfo() != null ? request.getPathInfo() : request.getRequestURI().substring(request.getContextPath().length());
 	}
-	
 }
