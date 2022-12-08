@@ -111,7 +111,7 @@ For example the following controller method:
 @RequestMapping(value = "/customers", params = "genderIn")
 @ResponseBody
 public Object findCustomersByGender(
-	@Spec(path = "gender", params = "genderIn", paramSeparator = ',', spec = In.class) Specification<Customer> spec) {
+	@Spec(path = "gender", params = "genderIn", paramSeparator = ",", spec = In.class) Specification<Customer> spec) {
 	return customerRepo.findAll(spec);
 }
 ```
@@ -165,7 +165,7 @@ HTTP request example:
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=',', spec=In.class)`):
+or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=",", spec=In.class)`):
 
     GET http://myhost/customers?gender=MALE,FEMALE
 
