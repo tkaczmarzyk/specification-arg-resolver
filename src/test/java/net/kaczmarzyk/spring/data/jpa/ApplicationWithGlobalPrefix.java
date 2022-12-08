@@ -17,15 +17,14 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -38,27 +37,23 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
  */
 @Configuration
 @ComponentScan(basePackages = "net.kaczmarzyk", excludeFilters = {
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = Application.class),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithConfiguredConversionService.class),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithSARConfiguredWithApplicationContext.class),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithGlobalPrefix.class })
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithConfiguredConversionService.class }),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithSARConfiguredWithApplicationContext.class }),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithConfiguredCache.class })
 })
 @EnableJpaRepositories
 @EnableAutoConfiguration
 @EnableMBeanExport(registration = IGNORE_EXISTING)
-@EnableCaching
-public class ApplicationWithConfiguredCache implements WebMvcConfigurer {
-
+public class ApplicationWithGlobalPrefix implements WebMvcConfigurer {
+	
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		SpecificationArgumentResolver specificationArgumentResolver = new SpecificationArgumentResolver();
-		argumentResolvers.add(specificationArgumentResolver);
+		argumentResolvers.add(new SpecificationArgumentResolver());
 	}
 
-	@Bean
-	public CacheManager customersCacheManager() {
-		return new ConcurrentMapCacheManager("customers");
+	@Override
+	public void configurePathMatch(PathMatchConfigurer configurer) {
+		configurer.addPathPrefix("/api/{gender}", HandlerTypePredicate.forAnyHandlerType());
 	}
-
 
 }

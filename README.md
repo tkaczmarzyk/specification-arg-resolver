@@ -27,6 +27,7 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
+   * [Json Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
@@ -104,7 +105,7 @@ For multi value filters like: `In.class`, `NotIn.class` there are two ways of pa
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator.
+The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator (can be specified only for query parameters).
 For example the following controller method:
 ```java
 @RequestMapping(value = "/customers", params = "genderIn")
@@ -164,7 +165,7 @@ HTTP request example:
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=',', spec=In.class)`):
+or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=",", spec=In.class)`):
 
     GET http://myhost/customers?gender=MALE,FEMALE
 
@@ -806,8 +807,8 @@ public Object findById(
 
   return customerRepo.findAll(spec);
 }
-```
 
+```
 Request Header Support
 ---------------------
 
@@ -831,6 +832,120 @@ public Object findCustomersByGenderAndNickName(
 
 This will handle request `GET /customers/reqHeaders` as `select c from Customers c where c.gender = :gender AND c.nickName = :nickName`.
 
+Json request body support
+---------------------
+
+Also, you can specify value for specification in json request body. It might be useful when you use large number of filters for request because request url is limited in size. You can refer to the specification values by using `jsonPaths` property of `@Spec` (instead of `params` property).
+
+In order to use specification with json request body params, `gson` dependency has to be added to the project. 
+Example maven dependency in project pom file:
+```xml
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.9</version>
+</dependency>
+```
+
+<b>Warning!</b> RequestBody with specification values will be consumed during processing and will not be available for further operations (i.e. ServletInputStream will return no data). If you need to use request body for something else (rather than just building the Specification), you need to use some kind of content caching/wrapping (e.g. in a servlet filter).
+
+For example:
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByLastNameAndAge(
+                        @And({
+                            @Spec(path = "lastName", jsonPaths = "customerLastName", spec = Equal.class),
+                            @Spec(path = "age", jsonPaths = "customerAge", spec = Equal.class)
+                        }) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "customerLastName": "Simpson",
+  "customerAge": 18
+}
+```
+as `select c from Customers c where c.lastName = 'Simpson' and c.age = 18`
+
+Nested json objects are supported. You should specify full path to node from root element dividing nodes by `.` 
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByLastNameAndGender(
+                        @And({
+                            @Spec(path = "lastName", jsonPaths = "filters.customer.lastName", spec = Equal.class),
+                            @Spec(path = "gender", jsonPaths = "filters.gender", spec = Equal.class)
+                        }) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "filters": {
+    "customer": {
+      "lastName": "Simpson"
+    },
+    "gender": "MALE"
+  }
+}
+```
+as `select c from Customers c where c.lastName = 'Simpson' and c.gender = 'MALE'`
+
+For multiple values you can use array (of primitive types only) as result node in json body. For example:
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByGenderIn(
+                    @Spec(path = "lastName", jsonPaths = "filters.genders", spec = In.class) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "filters": {
+    "genders": ["MALE", "FEMALE"]
+  }
+}
+```
+as `select c from Customers c where c.gender in ('MALE', 'FEMALE')`
+
+<b>!!!ATTENTION:</b> Json cannot contain array of non-primitive types (array of objects). For example:
+```java
+ @PostMapping("/customers/find")
+ public List<Customer> findCustomersByLastName(
+                @Spec(path = "lastName", jsonPaths = "customer.names.firstName", spec = Equal.class) Specification<Customer> spec) {
+	return repository.findAll(spec);
+}
+```
+Request `POST /customers/find` with the following body is not valid (`JsonParseException` will be thrown)
+```json
+{
+  "customer":{
+      "names":[
+         {
+            "firstName":"value1"
+         },
+         {
+            "lastName":"value2"
+         }
+      ]
+   }
+}
+```
 
 Type conversions for HTTP parameters
 -------------------
@@ -1048,7 +1163,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.11.0</version>
+    <version>2.13.0</version>
 </dependency>
 ```
 

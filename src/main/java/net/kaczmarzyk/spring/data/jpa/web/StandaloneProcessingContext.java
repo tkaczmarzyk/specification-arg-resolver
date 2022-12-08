@@ -27,6 +27,7 @@ import static java.util.Objects.nonNull;
  *
  * @author Jakub Radlica
  * @author Kacper Leśniak (Tratif sp. z o.o.)
+ * 
  * @see net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder
  */
 public class StandaloneProcessingContext implements ProcessingContext {
@@ -37,6 +38,7 @@ public class StandaloneProcessingContext implements ProcessingContext {
 	private Map<String, String> pathVariableArgs;
 	private Map<String, String[]> parameterArgs;
 	private Map<String, String> headerArgs;
+	private Map<String, String[]> bodyParams;
 
 	private QueryContext queryContext;
 
@@ -44,12 +46,14 @@ public class StandaloneProcessingContext implements ProcessingContext {
 									   Map<String, String[]> fallbackArgumentValues,
 									   Map<String, String> pathVariableArgs,
 									   Map<String, String[]> parameterArgs,
-									   Map<String, String> headerArgs) {
+									   Map<String, String> headerArgs,
+									   Map<String, String[]> bodyParams) {
 		this.specInterface = specInterface;
 		this.fallbackArgumentValues = fallbackArgumentValues;
 		this.pathVariableArgs = pathVariableArgs;
 		this.parameterArgs = parameterArgs;
 		this.headerArgs = headerArgs;
+		this.bodyParams = bodyParams;
 		this.queryContext = new DefaultQueryContext();
 	}
 
@@ -92,6 +96,11 @@ public class StandaloneProcessingContext implements ProcessingContext {
 		} else {
 			throw new InvalidPathVariableRequestedException(pathVariableName);
 		}
+	}
+
+	@Override
+	public String[] getBodyParamValues(String bodyParamName) {
+		return bodyParams.containsKey(bodyParamName) ? bodyParams.get(bodyParamName) : getFallbackValues(bodyParamName);
 	}
 
 	private String[] getFallbackValues(String argName) {

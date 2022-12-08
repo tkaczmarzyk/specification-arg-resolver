@@ -1,7 +1,34 @@
+v2.13.0
+=======
+* added Json request body support. This requires adding `gson` dependency to your project and has some limitations -- see json section of README.md for more details.
+
 v2.12.1
 =======
 * Fixed bug in `SpecificationBuilder` that was creating doubled query conditions.
+* Changed approach for resolving path variables when processing request.
+* From now on, the controllers with global prefixes (configured using `org.springframework.web.servlet.config.annotation.PathMatchConfigurer`) should be properly handled:
+  * For example, apps with following configuration are now supported:
+    ```
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+      configurer.addPathPrefix("/api/{tenantId}", HandlerTypePredicate.forAnnotation(RestController.class));
+    }
+    ```
+    Below spec will be properly resolved for request URI: `/api/123/findCustomers?firstName=John`
+    ```
+    @RestController
+    public static class TestController {
 
+        @GetMapping("/findCustomers")
+        public List<Customer> findCustomersByFirstName(@And(value = {
+        		@Spec(path = "tenantId", pathVar = "tenantId", spec = Equal.class),
+        		@Spec(path = "firstName" param = "firstName", spec = Equal.class)
+        }) Specification<Customer> spec) {
+        	return customerRepository.findAll(spec);
+        }
+    }
+    ```
+   
 v2.12.0
 =======
 * added support for `SpringDoc-OpenAPI` library -- parameters from specification will be shown in generated documentation
@@ -49,6 +76,7 @@ v2.10.0
       * `28-11-2022` was parsed to invalid date (different from `2022-11-28`), order of specific parts of date was not validated.
       * `1-1-1` was parsed to invalid date (length of specific parts of date (year, month, day) was not validated)
     * From now on strict policy of date format validation is introduced. The Date has to be in specific format and of specific length.
+
 v2.9.0
 ======
 * Fixed the bug with redundant joins

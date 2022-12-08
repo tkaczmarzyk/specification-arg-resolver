@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * SpecificationBuilder allows creating specification apart from web layer.
- * It is recommended to use builder methods that corresponding to the type of argument passed to sepcification.
+ * It is recommended to use builder methods that corresponding to the type of argument passed to specification.
  * <ul>
  * <li> {@code params = <args> => withParams(<argName>, <values...>)}, single param argument can provide multiple values </li>
  * <li> {@code pathVars = <args> => withPathVar(<argName>, <value>)}, single pathVar argument can provide single value </li>
@@ -45,6 +45,7 @@ public class SpecificationBuilder<T extends Specification> {
 	private Map<String, String> pathVars = new HashMap<>();
 	private Map<String, String[]> params = new HashMap<>();
 	private Map<String, String> headers = new HashMap<>();
+	private Map<String, String[]> bodyParams = new HashMap<>();
 
 	private SpecificationBuilder(Class<T> specInterface) {
 		this.specInterface = specInterface;
@@ -84,13 +85,18 @@ public class SpecificationBuilder<T extends Specification> {
 		return this;
 	}
 
+	public SpecificationBuilder<T> withJsonBodyParam(String jsonPath, String... values) {
+		this.bodyParams.put(jsonPath, values);
+		return this;
+	}
+
 	public T build() {
 		ProcessingContext context = createContext();
 		return (T) specificationFactory.createSpecificationDependingOn(context);
 	}
 
 	private ProcessingContext createContext() {
-		return new StandaloneProcessingContext(specInterface, fallbackSpecificationParamValues, pathVars, params, headers);
+		return new StandaloneProcessingContext(specInterface, fallbackSpecificationParamValues, pathVars, params, headers, bodyParams);
 	}
 
 }

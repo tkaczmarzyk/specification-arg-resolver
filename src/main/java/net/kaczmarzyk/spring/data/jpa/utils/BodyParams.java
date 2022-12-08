@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.web;
+package net.kaczmarzyk.spring.data.jpa.utils;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import java.util.Collection;
 
-import java.lang.annotation.Annotation;
+public interface BodyParams {
 
-public interface ProcessingContext {
-
-	Class<?> getParameterType();
-
-	Annotation[] getParameterAnnotations();
-
-	QueryContext queryContext();
-
-	String getRequestHeaderValue(String headerKey);
-
-	String[] getParameterValues(String webParamName);
-
-	String getPathVariableValue(String pathVariableName);
-
-	String[] getBodyParamValues(String bodyParamName);
+	Collection<String> getParamValues(String paramKey);
 }

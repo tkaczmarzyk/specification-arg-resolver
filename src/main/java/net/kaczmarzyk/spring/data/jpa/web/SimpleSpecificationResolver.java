@@ -30,11 +30,13 @@ import org.springframework.expression.ParseException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -42,8 +44,8 @@ import static java.util.Arrays.asList;
  */
 class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
-	private final ConversionService conversionService;
-	private final EmbeddedValueResolver embeddedValueResolver;
+    private final ConversionService conversionService;
+    private final EmbeddedValueResolver embeddedValueResolver;
 
 	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext) {
 		this.conversionService = conversionService;
@@ -131,12 +133,15 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}
+
 	
 	private Collection<String> resolveSpecArguments(ProcessingContext context, Spec specDef) {
 		if (specDef.constVal().length != 0) {
 			return resolveConstVal(specDef);
 		} else if (specDef.pathVars().length != 0) {
 			return resolveSpecArgumentsFromPathVariables(context, specDef);
+		} else if (specDef.jsonPaths().length != 0) {
+			return resolveSpecArgumentsFromBody(context, specDef);
 		} else if (specDef.headers().length != 0) {
 			return resolveSpecArgumentsFromRequestHeaders(context, specDef);
 		} else {
@@ -186,6 +191,12 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		return args;
 	}
 
+	private Collection<String> resolveSpecArgumentsFromBody(ProcessingContext context, Spec specDef) {
+		return Arrays.stream(specDef.jsonPaths())
+				.flatMap(param -> nullSafeArrayStream(context.getBodyParamValues(param)))
+				.collect(toList());
+	}
+
 	private Collection<String> resolveSpecArgumentsFromRequestHeaders(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<>();
 		for (String headerKey : specDef.headers()) {
@@ -200,9 +211,9 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	
 	private Collection<String> resolveSpecArgumentsFromHttpParameters(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<String>();
-		
+
 		DelimitationStrategy delimitationStrategy = DelimitationStrategy.of(specDef.paramSeparator());
-		
+
 		if (specDef.params().length != 0) {
 			for (String webParamName : specDef.params()) {
 				if (embeddedValueResolver != null && specDef.paramsInSpEL()) {
@@ -221,7 +232,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 				addValuesToArgs(httpParamValues, args);
 			}
 		}
-		
+
 		return args;
 	}
 	
@@ -233,6 +244,10 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 				}
 			}
 		}
+	}
+
+	private Stream<String> nullSafeArrayStream(String[] array) {
+		return array != null ? Stream.of(array) : Stream.empty();
 	}
 	
 	private static class DelimitationStrategy {
