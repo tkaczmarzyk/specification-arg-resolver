@@ -1163,7 +1163,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.12.1</version>
+    <version>2.13.0</version>
 </dependency>
 ```
 
