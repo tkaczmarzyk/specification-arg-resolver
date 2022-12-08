@@ -23,7 +23,8 @@ import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.PathParameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
+import net.kaczmarzyk.spring.data.jpa.swagger.SpecExtractorUtil;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springdoc.core.SpringDocUtils;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.core.MethodParameter;
@@ -39,7 +40,6 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -56,16 +56,6 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		SpringDocUtils.getConfig().addRequestWrapperToIgnore(Specification.class);
 	}
 
-	private static final Map<Class<?>, Function<Annotation, List<Spec>>> NESTED_SPEC_ANNOTATION_EXTRACTORS = new HashMap<>();
-
-	static {
-		NESTED_SPEC_ANNOTATION_EXTRACTORS.put(Spec.class, annotation -> singletonList((Spec) annotation));
-		NESTED_SPEC_ANNOTATION_EXTRACTORS.put(And.class, annotation -> extractSpecsFromAnd((And) annotation));
-		NESTED_SPEC_ANNOTATION_EXTRACTORS.put(Or.class, annotation -> extractSpecsFromOr((Or) annotation));
-		NESTED_SPEC_ANNOTATION_EXTRACTORS.put(Conjunction.class, annotation -> extractSpecsFromConjunction((Conjunction) annotation));
-		NESTED_SPEC_ANNOTATION_EXTRACTORS.put(Disjunction.class, annotation -> extractSpecsFromDisjunction((Disjunction) annotation));
-	}
-
 	@Override
 	public Operation customize(Operation operation, HandlerMethod handlerMethod) {
 		if (isNull(operation) || isNull(handlerMethod)) return operation;
@@ -75,7 +65,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 
 		stream(handlerMethod.getMethodParameters())
 			.map(this::extractAnnotationsFromMethodParameter)
-			.map(this::extractNestedSpecificationsFromAnnotations)
+			.map(SpecExtractorUtil::extractNestedSpecificationsFromAnnotations)
 			.map(specs -> createParametersFromSpecs(specs, requiredParams, requiredHeaders))
 			.flatMap(Collection::stream)
 			.distinct()
@@ -111,46 +101,6 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		}
 
 		return annotations;
-	}
-
-	private List<Spec> extractNestedSpecificationsFromAnnotations(List<Annotation> annotations) {
-
-		return annotations.stream()
-			.filter(annotation -> NESTED_SPEC_ANNOTATION_EXTRACTORS.containsKey(annotation.annotationType()))
-			.map(annotation -> NESTED_SPEC_ANNOTATION_EXTRACTORS.get(annotation.annotationType())
-				.apply(annotation))
-			.flatMap(Collection::stream)
-			.collect(toList());
-	}
-
-	private static List<Spec> extractSpecsFromOr(Or or) {
-		return asList(or.value());
-	}
-
-	private static List<Spec> extractSpecsFromAnd(And and) {
-		return asList(and.value());
-	}
-
-	private static List<Spec> extractSpecsFromConjunction(Conjunction conjunction) {
-		List<Spec> conjunctionSpecs = new ArrayList<>(asList(conjunction.and()));
-
-		stream(conjunction.value())
-			.map(Or::value)
-			.flatMap(Arrays::stream)
-			.forEach(conjunctionSpecs::add);
-
-		return conjunctionSpecs;
-	}
-
-	private static List<Spec> extractSpecsFromDisjunction(Disjunction conjunction) {
-		List<Spec> disjunctionSpecs = new ArrayList<>(asList(conjunction.or()));
-
-		stream(conjunction.value())
-			.map(And::value)
-			.flatMap(Arrays::stream)
-			.forEach(disjunctionSpecs::add);
-
-		return disjunctionSpecs;
 	}
 
 	private List<Parameter> createParametersFromSpecs(List<Spec> specs, List<String> requiredParams, List<String> requiredHeaders) {
