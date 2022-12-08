@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.web;
+package net.kaczmarzyk.spring.data.jpa.utils;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.stream.Collectors;
 
-import java.lang.annotation.Annotation;
+/**
+ * @author Andrei Shakarov
+ */
+public class IOUtils {
 
-public interface ProcessingContext {
+    private IOUtils() {}
 
-	Class<?> getParameterType();
-
-	Annotation[] getParameterAnnotations();
-
-	QueryContext queryContext();
-
-	String getRequestHeaderValue(String headerKey);
-
-	String[] getParameterValues(String webParamName);
-
-	String getPathVariableValue(String pathVariableName);
-
-	String[] getBodyParamValues(String bodyParamName);
+    public static String toString(InputStream inputStream, Charset charset) {
+        return new BufferedReader(
+            new InputStreamReader(inputStream, charset))
+            .lines()
+            .collect(Collectors.joining("\n"));
+    }
 }

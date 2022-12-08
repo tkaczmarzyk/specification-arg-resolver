@@ -41,6 +41,11 @@ public @interface Spec {
     String[] pathVars() default {};
 
     String[] headers() default {};
+
+    /**
+     * Please remember about adding required Maven dependenecy to your project before using jsonPaths. See see <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a> for details. 
+     */
+    String[] jsonPaths() default {};
     
     String[] config() default {};
     

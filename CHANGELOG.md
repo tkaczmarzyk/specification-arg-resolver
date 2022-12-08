@@ -1,3 +1,7 @@
+v2.13.0
+=======
+* added Json request body support. This requires adding `gson` dependency to your project and has some limitations -- see json section of README.md for more details.
+
 v2.12.1
 =======
 * Fixed bug in `SpecificationBuilder` that was creating doubled query conditions.
