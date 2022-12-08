@@ -70,23 +70,32 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 	public Operation customize(Operation operation, HandlerMethod handlerMethod) {
 		if (isNull(operation) || isNull(handlerMethod)) return operation;
 
-		List<String> requiredParameters = extractRequiredParametersFromHandlerMethod(handlerMethod);
+		List<String> requiredParams = extractRequiredParametersFromHandlerMethod(handlerMethod, RequestMapping::params);
+		List<String> requiredHeaders = extractRequiredParametersFromHandlerMethod(handlerMethod, RequestMapping::headers);
 
 		stream(handlerMethod.getMethodParameters())
 			.map(this::extractAnnotationsFromMethodParameter)
 			.map(this::extractNestedSpecificationsFromAnnotations)
-			.map(specs -> createParametersFromSpecs(specs, requiredParameters))
+			.map(specs -> createParametersFromSpecs(specs, requiredParams, requiredHeaders))
 			.flatMap(Collection::stream)
 			.distinct()
-			.collect(toList())
+			.filter(parameter -> parameterWasNotGeneratedAutomatically(operation, parameter))
 			.forEach(operation::addParametersItem);
 
 		return operation;
 	}
 
-	private List<String> extractRequiredParametersFromHandlerMethod(HandlerMethod handlerMethod) {
+	private boolean parameterWasNotGeneratedAutomatically(Operation operation, Parameter parameter) {
+		if (isNull(operation.getParameters())) return true;
+
+		return operation.getParameters().stream()
+			.noneMatch(operationParam ->
+				Objects.equals(operationParam.getName(), parameter.getName()) && Objects.equals(operationParam.getIn(), parameter.getIn()));
+	}
+
+	private List<String> extractRequiredParametersFromHandlerMethod(HandlerMethod handlerMethod, Function<RequestMapping, String[]> parametersFetchingFunction) {
 		return ofNullable(handlerMethod.getMethodAnnotation(RequestMapping.class))
-			.map(RequestMapping::params)
+			.map(parametersFetchingFunction)
 			.map(Arrays::asList)
 			.orElse(emptyList());
 	}
@@ -144,14 +153,14 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		return disjunctionSpecs;
 	}
 
-	private List<Parameter> createParametersFromSpecs(List<Spec> specs, List<String> requiredParameters) {
+	private List<Parameter> createParametersFromSpecs(List<Spec> specs, List<String> requiredParams, List<String> requiredHeaders) {
 
 		return specs.stream()
 			.map(spec -> {
 				List<Parameter> specParameters = new ArrayList<>();
-				specParameters.addAll(createParameters(spec.params(), requiredParameters, QUERY));
-				specParameters.addAll(createParameters(spec.pathVars(), requiredParameters, PATH));
-				specParameters.addAll(createParameters(spec.headers(), requiredParameters, HEADER));
+				specParameters.addAll(createParameters(spec.params(), requiredParams, QUERY));
+				specParameters.addAll(createParameters(spec.pathVars(), emptyList(), PATH));
+				specParameters.addAll(createParameters(spec.headers(), requiredHeaders, HEADER));
 
 				return specParameters;
 			})
@@ -164,7 +173,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 			.map(parameterName -> {
 				Parameter specParam = generateParameterFromParameterIn(parameterIn);
 				specParam.setName(parameterName);
-				specParam.setRequired(requiredParameters.contains(parameterName));
+				specParam.setRequired(requiredParameters.contains(parameterName) || parameterIn == PATH);
 				specParam.setSchema(DEFAULT_PARAMETER_SCHEMA);
 
 				return specParam;

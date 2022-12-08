@@ -16,6 +16,8 @@
 package net.kaczmarzyk.spring.data.jpa.swagger.springdoc;
 
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
@@ -67,7 +69,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.and()
 			.containsParameterAtIndex(2)
 			.withPathParameterName("pathVarParam")
-			.withNotRequiredStatus()
+			.withRequiredStatus()
 			.withType(DEFAULT_PARAM_TYPE);
 	}
 
@@ -227,7 +229,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	}
 
 	@Test
-	public void shouldCorrectlyMarkParameterAsRequired() throws NoSuchMethodException {
+	public void shouldCorrectlyMarkParamAsRequired() throws NoSuchMethodException {
 		// given
 		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andWithRequiredParamTestMethod");
 		Operation operation = new Operation();
@@ -248,6 +250,23 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	}
 
 	@Test
+	public void shouldCorrectlyMarkHeaderAsRequired() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specRequiredHeaderTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withHeaderParameterName("specRequiredHeaderParam")
+			.withRequiredStatus();
+	}
+
+	@Test
 	public void shouldCorrectlyEnrichOperationWithPathVarsParameters() throws NoSuchMethodException {
 		// given
 		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andUsingPathVars");
@@ -261,9 +280,11 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.hasParametersCount(2)
 			.containsParameterAtIndex(0)
 			.withPathParameterName("firstPathVarParam")
+			.withRequiredStatus()
 			.and()
 			.containsParameterAtIndex(1)
-			.withPathParameterName("secondPathVarParam");
+			.withPathParameterName("secondPathVarParam")
+			.withRequiredStatus();
 	}
 
 	@Test
@@ -280,9 +301,36 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.hasParametersCount(2)
 			.containsParameterAtIndex(0)
 			.withHeaderParameterName("firstHeaderParam")
+			.withNotRequiredStatus()
 			.and()
 			.containsParameterAtIndex(1)
-			.withHeaderParameterName("secondHeaderParam");
+			.withHeaderParameterName("secondHeaderParam")
+			.withNotRequiredStatus();
+	}
+
+	@Test
+	public void shouldNotDuplicateParameters() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specTestMethod");
+
+		Operation operation = new Operation();
+
+		Parameter specParameter = new Parameter();
+		specParameter.setName("specParam");
+		specParameter.setSchema(new StringSchema());
+		specParameter.setRequired(false);
+		specParameter.setIn("query");
+
+		operation.addParametersItem(specParameter);
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("specParam");
 	}
 
 	private HandlerMethod handlerMethodForControllerMethodWithSpecification(String controllerMethodName) throws NoSuchMethodException {
@@ -404,6 +452,11 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 					@Spec(path = "", headers = "headerParam", spec = Like.class),
 					@Spec(path = "", pathVars = "pathVarParam", spec = Like.class)
 				})) Specification<Customer> spec) {
+
+		}
+
+		@RequestMapping(value = "/spec-required-header", headers = "specRequiredHeaderParam")
+		public void specRequiredHeaderTestMethod(@Spec(path = "", headers = "specRequiredHeaderParam", spec = Like.class) Specification<Customer> spec) {
 
 		}
 
