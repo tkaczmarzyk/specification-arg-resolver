@@ -1,3 +1,10 @@
+v2.14.0
+=======
+* added support for `jsonPaths` during generation of swagger documentation.
+* fixed bugs related to swagger support:
+  * fixed marking `headers` and `pathVars` parameters as required/non-required. From now all `pathVars` are marked as required and `headers` can be marked as required.
+  * fixed duplicated parameters when the same parameter was defined in spec and controller method (e.g. when we define `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`). 
+
 v2.13.0
 =======
 * added Json request body support. This requires adding `gson` dependency to your project and has some limitations -- see json section of README.md for more details.

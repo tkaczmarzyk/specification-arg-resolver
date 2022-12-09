@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.swagger.springdoc;
 
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
@@ -41,6 +42,8 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
@@ -49,7 +52,9 @@ import static java.util.stream.Collectors.toList;
  */
 public class SpecificationArgResolverSpringdocOperationCustomizer implements OperationCustomizer {
 
-	private static final Schema<String> DEFAULT_PARAMETER_SCHEMA = new StringSchema();
+	private static final Schema<String> STRING_PARAMETER_SCHEMA = new StringSchema();
+
+	private static final String JSON_FILTER_PARAMETER_NAME = "filterRequestBody";
 
 	// Static code block below is necessary to ignore parameters of Specification type in controller method
 	static {
@@ -69,18 +74,21 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 			.map(specs -> createParametersFromSpecs(specs, requiredParams, requiredHeaders))
 			.flatMap(Collection::stream)
 			.distinct()
-			.filter(parameter -> parameterWasNotGeneratedAutomatically(operation, parameter))
-			.forEach(operation::addParametersItem);
+			.forEach(parameter -> addOrUpdateParameter(operation, parameter));
 
 		return operation;
 	}
 
-	private boolean parameterWasNotGeneratedAutomatically(Operation operation, Parameter parameter) {
-		if (isNull(operation.getParameters())) return true;
+	private void addOrUpdateParameter(Operation operation, Parameter parameter) {
+		if (nonNull(operation.getParameters())) {
+			operation.getParameters().removeIf(operationParameter ->
+				parametersRepresentTheSameProperty(operationParameter, parameter));
+		}
+		operation.addParametersItem(parameter);
+	}
 
-		return operation.getParameters().stream()
-			.noneMatch(operationParam ->
-				Objects.equals(operationParam.getName(), parameter.getName()) && Objects.equals(operationParam.getIn(), parameter.getIn()));
+	private boolean parametersRepresentTheSameProperty(Parameter firstParameter, Parameter secondParameter) {
+		return Objects.equals(firstParameter.getName(), secondParameter.getName()) && Objects.equals(firstParameter.getIn(), secondParameter.getIn());
 	}
 
 	private List<String> extractRequiredParametersFromHandlerMethod(HandlerMethod handlerMethod, Function<RequestMapping, String[]> parametersFetchingFunction) {
@@ -104,8 +112,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 	}
 
 	private List<Parameter> createParametersFromSpecs(List<Spec> specs, List<String> requiredParams, List<String> requiredHeaders) {
-
-		return specs.stream()
+		List<Parameter> parameters = specs.stream()
 			.map(spec -> {
 				List<Parameter> specParameters = new ArrayList<>();
 				specParameters.addAll(createParameters(spec.params(), requiredParams, QUERY));
@@ -116,6 +123,10 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 			})
 			.flatMap(Collection::stream)
 			.collect(toList());
+
+		createJsonParameterFromSpecs(specs).ifPresent(parameters::add);
+
+		return parameters;
 	}
 
 	private List<Parameter> createParameters(String[] parameters, List<String> requiredParameters, ParameterIn parameterIn) {
@@ -124,11 +135,61 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 				Parameter specParam = generateParameterFromParameterIn(parameterIn);
 				specParam.setName(parameterName);
 				specParam.setRequired(requiredParameters.contains(parameterName) || parameterIn == PATH);
-				specParam.setSchema(DEFAULT_PARAMETER_SCHEMA);
+				specParam.setSchema(STRING_PARAMETER_SCHEMA);
 
 				return specParam;
 			})
 			.collect(toList());
+	}
+
+	private Optional<Parameter> createJsonParameterFromSpecs(List<Spec> specs) {
+
+		List<String> jsonPaths = specs.stream()
+			.map(Spec::jsonPaths)
+			.flatMap(Arrays::stream)
+			.collect(toList());
+
+		if (jsonPaths.isEmpty()) return empty();
+
+		Parameter jsonParameter = generateParameterFromParameterIn(QUERY);
+		jsonParameter.setName(JSON_FILTER_PARAMETER_NAME);
+
+		Map<String, Schema> schemasForJsonPaths = preparePropertiesMapFromJsonPaths(jsonPaths);
+		Schema<Object> parameterSchema = new ObjectSchema();
+		parameterSchema.setProperties(schemasForJsonPaths);
+
+		jsonParameter.setSchema(parameterSchema);
+		jsonParameter.setRequired(false);
+
+		return Optional.of(jsonParameter);
+	}
+
+	private Map<String, Schema> preparePropertiesMapFromJsonPaths(List<String> jsonPaths) {
+		Map<String, Schema> ejectedPaths = new HashMap<>();
+
+		jsonPaths.forEach(jsonPath -> {
+			String[] partsOfJsonPath = jsonPath.split("\\.");
+
+			if (!ejectedPaths.containsKey(partsOfJsonPath[0])) {
+				Schema<?> jsonSchema = partsOfJsonPath.length > 1 ? new ObjectSchema() : STRING_PARAMETER_SCHEMA;
+				ejectedPaths.put(partsOfJsonPath[0], jsonSchema);
+			}
+
+			Schema previousSchema = ejectedPaths.get(partsOfJsonPath[0]);
+			for (int i = 1; i < partsOfJsonPath.length; i++) {
+				if (schemaDoesNotContainParameter(previousSchema, partsOfJsonPath[i])) {
+					Schema<?> jsonSchema = i < partsOfJsonPath.length - 1 ? new ObjectSchema() : STRING_PARAMETER_SCHEMA;
+					previousSchema.addProperty(partsOfJsonPath[i], jsonSchema);
+				}
+				previousSchema = (Schema) previousSchema.getProperties().get(partsOfJsonPath[i]);
+			}
+		});
+
+		return ejectedPaths;
+	}
+
+	private boolean schemaDoesNotContainParameter(Schema<?> schema, String parameterName) {
+		return isNull(schema.getProperties()) || !schema.getProperties().containsKey(parameterName);
 	}
 
 	private Parameter generateParameterFromParameterIn(ParameterIn parameterIn) {
