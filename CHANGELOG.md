@@ -1,3 +1,28 @@
+v2.14.0
+=======
+* added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored). 
+  * For example, for the following endpoint: 
+    ```
+    @RequestMapping(value = "/customers", params = { "id" })
+    @ResponseBody
+    public Object findById(
+           @Spec(path = "id", params = "id", spec = Equal.class, onTypeMismatch = IGNORE) Specification<Customer> spec) {
+    return customerRepo.findAll(spec);
+    }
+    ```
+    * For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all results will be returned.
+  * But for the following endpoint with `In.class` specification type:
+    ```
+    @RequestMapping(value = "/customers", params = { "id_in" })
+    @ResponseBody
+    public Object findByIdIn(
+       @Spec(path = "id", params = "id_in", spec = In.class, onTypeMismatch = IGNORE) Specification<Customer> spec) {
+			 return customerRepo.findAll(spec);
+    }
+    ```
+    * For request with params `?id_in=[1,2,invalidId]` - only valid params will be taken into consideration (invalid params (not whole specification) will be ignored)
+    * For request with only invalid params `id_in=[invalidId1,invalidId2]` - empty result will be returned as there are only invalid parameters (which are ignored).
+
 v2.13.0
 =======
 * added Json request body support. This requires adding `gson` dependency to your project and has some limitations -- see json section of README.md for more details.

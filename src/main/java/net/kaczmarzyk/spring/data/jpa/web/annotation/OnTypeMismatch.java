@@ -18,6 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.web.annotation;
 import java.util.List;
 import static net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
 
+import net.kaczmarzyk.spring.data.jpa.domain.IgnoreOnTypeMismatch;
 import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
@@ -57,7 +58,22 @@ public enum OnTypeMismatch {
 		void doHandleRejectedValues(List<String> rejected) {
 			// do nothing
 		}
-	}, DEFAULT {
+	},
+	IGNORE {
+		@Override
+		public <T> Specification<T> wrap(Specification<T> spec) {
+			if (spec instanceof WithoutTypeConversion) {
+				return spec;
+			}
+			return new IgnoreOnTypeMismatch<>(spec);
+		}
+
+		@Override
+		void doHandleRejectedValues(List<String> rejected) {
+			// do nothing
+		}
+	},
+	DEFAULT {
 		@Override
 		public <T> Specification<T> wrap(Specification<T> spec) {
 			return OnTypeMismatch.EMPTY_RESULT.wrap(spec);
