@@ -53,7 +53,7 @@ public class EmptyResultOnTypeMismatch<T> implements Specification<T> {
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		try {
 			return wrappedSpec.toPredicate(root, query, cb);
-		} catch (ValueRejectedException e) {
+		} catch (IllegalArgumentException e) {
 			return cb.equal(cb.literal(0), cb.literal(1));
 		}
 	}
