@@ -16,12 +16,12 @@ v2.14.0
     @RequestMapping(value = "/customers", params = { "id_in" })
     @ResponseBody
     public Object findByIdIn(
-       @Spec(path = "id", params = "id_in", spec = In.class, onTypeMismatch = IGNORE) Specification<Customer> spec) {
+       @Spec(path = "id", params = "id_in", spec = In.class, paramSeparator = ",", onTypeMismatch = IGNORE) Specification<Customer> spec) {
 			 return customerRepo.findAll(spec);
     }
     ```
-    * For request with params `?id_in=[1,2,invalidId]` - only valid params will be taken into consideration (invalid params (not whole specification) will be ignored)
-    * For request with only invalid params `id_in=[invalidId1,invalidId2]` - empty result will be returned as there are only invalid parameters (which are ignored).
+    * For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not whole specification) will be ignored)
+    * For request with only invalid params `id_in=invalidId1,invalidId2` - empty result will be returned as there are only invalid parameters (which are ignored).
 
 v2.13.0
 =======
