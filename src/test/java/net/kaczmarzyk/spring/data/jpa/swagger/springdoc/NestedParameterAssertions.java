@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.swagger.springdoc;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.assertj.core.api.AbstractAssert;
 
@@ -70,6 +71,11 @@ class NestedParameterAssertions extends AbstractAssert<NestedParameterAssertions
 
 	public NestedParameterAssertions withType(String type) {
 		assertThatParameter(actual).hasType(type);
+		return this;
+	}
+
+	public NestedParameterAssertions withSchema(Schema<?> schema) {
+		assertThatParameter(actual).hasSchema(schema);
 		return this;
 	}
 

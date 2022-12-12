@@ -1,5 +1,9 @@
 v2.14.0
 =======
+* added support for `jsonPaths` during generation of swagger documentation.
+* fixed bugs related to swagger support:
+  * fixed marking `headers` and `pathVars` parameters as required/non-required. From now all `pathVars` are marked as required and `headers` can be marked as required depending on controller method configuration.
+  * fixed duplicated parameters when the same parameter was defined in spec and controller method (e.g. when we defined `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`).
 * added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
   * For example, for the following endpoint:
     ```

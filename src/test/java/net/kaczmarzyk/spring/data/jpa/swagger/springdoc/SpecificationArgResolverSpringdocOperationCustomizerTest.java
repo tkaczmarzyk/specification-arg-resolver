@@ -16,7 +16,10 @@
 package net.kaczmarzyk.spring.data.jpa.swagger.springdoc;
 
 import io.swagger.v3.oas.models.Operation;
-import net.kaczmarzyk.spring.data.jpa.Customer;
+import io.swagger.v3.oas.models.media.ObjectSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import org.junit.Before;
@@ -35,6 +38,9 @@ import static net.kaczmarzyk.spring.data.jpa.swagger.springdoc.OperationAssertio
 public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 	private static final String DEFAULT_PARAM_TYPE = "string";
+	private static final String OBJECT_PARAM_TYPE = "object";
+
+	private static final StringSchema STRING_SCHEMA = new StringSchema();
 
 	private SpecificationArgResolverSpringdocOperationCustomizer springdocOperationCustomizer;
 
@@ -67,8 +73,76 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.and()
 			.containsParameterAtIndex(2)
 			.withPathParameterName("pathVarParam")
-			.withNotRequiredStatus()
+			.withRequiredStatus()
 			.withType(DEFAULT_PARAM_TYPE);
+	}
+
+	@Test
+	public void shouldCorrectlyEnrichOperationWithSpecJsonPathsParameters() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("disjunctionWithJsonPathsParamsTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+
+		// {
+		//   "firstLevel": {
+		//     "secondLevel": {
+		//       "paramA": "string",
+		//       "paramB": "string"
+		//     },
+		//     "paramC": "string"
+		//   },
+		//   "paramD": "string"
+		// }
+		Schema<Object> secondLevelSchema = new ObjectSchema();
+		secondLevelSchema.addProperty("paramA", STRING_SCHEMA);
+		secondLevelSchema.addProperty("paramB", STRING_SCHEMA);
+
+		Schema<Object> firstLevelSchema = new ObjectSchema();
+		firstLevelSchema.addProperty("secondLevel", secondLevelSchema);
+		firstLevelSchema.addProperty("paramC", STRING_SCHEMA);
+
+		Schema<Object> expectedSchema = new ObjectSchema();
+		expectedSchema.addProperty("firstLevel", firstLevelSchema);
+		expectedSchema.addProperty("paramD", STRING_SCHEMA);
+
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("filterRequestBody")
+			.withNotRequiredStatus()
+			.withType(OBJECT_PARAM_TYPE)
+			.withSchema(expectedSchema);
+	}
+
+	@Test
+	public void shouldCorrectlyEnrichOperationWithOnlyOneSpecJsonPathsParameter() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specWithJsonPathParamTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+
+		// {
+		//   "specPath": "string"
+		// }
+		Schema<Object> expectedSchema = new ObjectSchema();
+		expectedSchema.addProperty("specPath", STRING_SCHEMA);
+
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("filterRequestBody")
+			.withNotRequiredStatus()
+			.withType(OBJECT_PARAM_TYPE)
+			.withSchema(expectedSchema);
 	}
 
 	@Test
@@ -227,7 +301,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	}
 
 	@Test
-	public void shouldCorrectlyMarkParameterAsRequired() throws NoSuchMethodException {
+	public void shouldCorrectlyMarkParamAsRequired() throws NoSuchMethodException {
 		// given
 		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andWithRequiredParamTestMethod");
 		Operation operation = new Operation();
@@ -248,9 +322,26 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	}
 
 	@Test
+	public void shouldCorrectlyMarkHeaderAsRequired() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specRequiredHeaderTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withHeaderParameterName("specRequiredHeaderParam")
+			.withRequiredStatus();
+	}
+
+	@Test
 	public void shouldCorrectlyEnrichOperationWithPathVarsParameters() throws NoSuchMethodException {
 		// given
-		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andUsingPathVars");
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andUsingPathVarsTestMethod");
 		Operation operation = new Operation();
 
 		// when
@@ -261,15 +352,17 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.hasParametersCount(2)
 			.containsParameterAtIndex(0)
 			.withPathParameterName("firstPathVarParam")
+			.withRequiredStatus()
 			.and()
 			.containsParameterAtIndex(1)
-			.withPathParameterName("secondPathVarParam");
+			.withPathParameterName("secondPathVarParam")
+			.withRequiredStatus();
 	}
 
 	@Test
 	public void shouldCorrectlyEnrichOperationWithHeaderParameters() throws NoSuchMethodException {
 		// given
-		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andUsingHeaders");
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andUsingHeadersTestMethod");
 		Operation operation = new Operation();
 
 		// when
@@ -280,9 +373,36 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.hasParametersCount(2)
 			.containsParameterAtIndex(0)
 			.withHeaderParameterName("firstHeaderParam")
+			.withNotRequiredStatus()
 			.and()
 			.containsParameterAtIndex(1)
-			.withHeaderParameterName("secondHeaderParam");
+			.withHeaderParameterName("secondHeaderParam")
+			.withNotRequiredStatus();
+	}
+
+	@Test
+	public void shouldNotDuplicateParameters() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specTestMethod");
+
+		Operation operation = new Operation();
+
+		Parameter specParameter = new Parameter();
+		specParameter.setName("specParam");
+		specParameter.setSchema(new StringSchema());
+		specParameter.setRequired(false);
+		specParameter.setIn("query");
+
+		operation.addParametersItem(specParameter);
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("specParam");
 	}
 
 	private HandlerMethod handlerMethodForControllerMethodWithSpecification(String controllerMethodName) throws NoSuchMethodException {
@@ -306,7 +426,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				value = @And({
 					@Spec(path = "", params = "disjunctionSecondParam", spec = Like.class),
 					@Spec(path = "", params = "disjunctionThirdParam", spec = Like.class)
-				})) Specification<Customer> spec) {
+				})) Specification<Object> spec) {
 
 		}
 
@@ -317,7 +437,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				value = @Or({
 					@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class),
 					@Spec(path = "", params = "conjunctionThirdParam", spec = Like.class)
-				})) Specification<Customer> spec) {
+				})) Specification<Object> spec) {
 
 		}
 
@@ -326,7 +446,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@And({
 				@Spec(path = "", params = "andFirstParam", spec = Like.class),
 				@Spec(path = "", params = "andSecondParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
@@ -335,12 +455,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@Or({
 				@Spec(path = "", params = "orFirstParam", spec = Like.class),
 				@Spec(path = "", params = "orSecondParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
 		@RequestMapping(value = "/spec")
-		public void specTestMethod(@Spec(path = "", params = "specParam", spec = Like.class) Specification<Customer> spec) {
+		public void specTestMethod(@Spec(path = "", params = "specParam", spec = Like.class) Specification<Object> spec) {
 
 		}
 
@@ -351,7 +471,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 					@Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class),
 					@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class)
 				}),
-				and = @Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class)) Specification<Customer> spec) {
+				and = @Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class)) Specification<Object> spec) {
 
 		}
 
@@ -360,7 +480,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@And({
 				@Spec(path = "", params = "andRequiredParam", spec = Like.class),
 				@Spec(path = "", params = "andNotRequiredParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
@@ -379,20 +499,20 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		}
 
 		@RequestMapping(value = "/and-pathVars")
-		public void andUsingPathVars(
+		public void andUsingPathVarsTestMethod(
 			@And({
 				@Spec(path = "", pathVars = "firstPathVarParam", spec = Like.class),
 				@Spec(path = "", pathVars = "secondPathVarParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
 		@RequestMapping(value = "/and-headers")
-		public void andUsingHeaders(
+		public void andUsingHeadersTestMethod(
 			@And({
 				@Spec(path = "", headers = "firstHeaderParam", spec = Like.class),
 				@Spec(path = "", headers = "secondHeaderParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
@@ -403,7 +523,30 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				value = @And({
 					@Spec(path = "", headers = "headerParam", spec = Like.class),
 					@Spec(path = "", pathVars = "pathVarParam", spec = Like.class)
-				})) Specification<Customer> spec) {
+				})) Specification<Object> spec) {
+
+		}
+
+		@RequestMapping(value = "/disjunction-json-paths")
+		public void disjunctionWithJsonPathsParamsTestMethod(
+			@Disjunction(
+				or = @Spec(path = "", jsonPaths = "firstLevel.secondLevel.paramA", spec = Like.class),
+				value = @And({
+					@Spec(path = "", jsonPaths = "firstLevel.secondLevel.paramB", spec = Like.class),
+					@Spec(path = "", jsonPaths = "firstLevel.paramC", spec = Like.class),
+					@Spec(path = "", jsonPaths = "paramD", spec = Like.class)
+				})) Specification<Object> spec) {
+
+		}
+
+		@RequestMapping(value = "/spec-json-path")
+		public void specWithJsonPathParamTestMethod(
+			@Spec(path = "", jsonPaths = "specPath", spec = Like.class) Specification<Object> spec) {
+
+		}
+
+		@RequestMapping(value = "/spec-required-header", headers = "specRequiredHeaderParam")
+		public void specRequiredHeaderTestMethod(@Spec(path = "", headers = "specRequiredHeaderParam", spec = Like.class) Specification<Object> spec) {
 
 		}
 
@@ -413,11 +556,11 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		@Spec(path = "", params = "annotatedFilterFirstParam", spec = Like.class),
 		@Spec(path = "", params = "annotatedFilterSecondParam", spec = Like.class)
 	})
-	private interface TestFilterWithAnnotations extends Specification<Customer> {
+	private interface TestFilterWithAnnotations extends Specification<Object> {
 
 	}
 
-	private interface TestFilterWithoutAnnotations extends Specification<Customer> {
+	private interface TestFilterWithoutAnnotations extends Specification<Object> {
 
 	}
 
