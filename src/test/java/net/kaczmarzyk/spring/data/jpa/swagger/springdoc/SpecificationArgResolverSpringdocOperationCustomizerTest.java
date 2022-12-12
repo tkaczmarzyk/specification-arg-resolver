@@ -20,7 +20,6 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import org.junit.Before;
@@ -89,12 +88,15 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		// then
 
-		// "firstLevel": {
-		//   "secondLevel": {
-		//     "paramA": "string",
-		//     "paramB": "string"
-		//   }
-		//   "paramC": "string"
+		// {
+		//   "firstLevel": {
+		//     "secondLevel": {
+		//       "paramA": "string",
+		//       "paramB": "string"
+		//     },
+		//     "paramC": "string"
+		//   },
+		//   "paramD": "string"
 		// }
 		Schema<Object> secondLevelSchema = new ObjectSchema();
 		secondLevelSchema.addProperty("paramA", STRING_SCHEMA);
@@ -106,6 +108,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		Schema<Object> expectedSchema = new ObjectSchema();
 		expectedSchema.addProperty("firstLevel", firstLevelSchema);
+		expectedSchema.addProperty("paramD", STRING_SCHEMA);
 
 		assertThatOperation(customizedOperation)
 			.hasParametersCount(1)
@@ -423,7 +426,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				value = @And({
 					@Spec(path = "", params = "disjunctionSecondParam", spec = Like.class),
 					@Spec(path = "", params = "disjunctionThirdParam", spec = Like.class)
-				})) Specification<Customer> spec) {
+				})) Specification<Object> spec) {
 
 		}
 
@@ -434,7 +437,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				value = @Or({
 					@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class),
 					@Spec(path = "", params = "conjunctionThirdParam", spec = Like.class)
-				})) Specification<Customer> spec) {
+				})) Specification<Object> spec) {
 
 		}
 
@@ -443,7 +446,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@And({
 				@Spec(path = "", params = "andFirstParam", spec = Like.class),
 				@Spec(path = "", params = "andSecondParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
@@ -452,12 +455,12 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@Or({
 				@Spec(path = "", params = "orFirstParam", spec = Like.class),
 				@Spec(path = "", params = "orSecondParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
 		@RequestMapping(value = "/spec")
-		public void specTestMethod(@Spec(path = "", params = "specParam", spec = Like.class) Specification<Customer> spec) {
+		public void specTestMethod(@Spec(path = "", params = "specParam", spec = Like.class) Specification<Object> spec) {
 
 		}
 
@@ -468,7 +471,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 					@Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class),
 					@Spec(path = "", params = "conjunctionSecondParam", spec = Like.class)
 				}),
-				and = @Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class)) Specification<Customer> spec) {
+				and = @Spec(path = "", params = "conjunctionDuplicatedFirstParam", spec = Like.class)) Specification<Object> spec) {
 
 		}
 
@@ -477,7 +480,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@And({
 				@Spec(path = "", params = "andRequiredParam", spec = Like.class),
 				@Spec(path = "", params = "andNotRequiredParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
@@ -500,7 +503,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@And({
 				@Spec(path = "", pathVars = "firstPathVarParam", spec = Like.class),
 				@Spec(path = "", pathVars = "secondPathVarParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
@@ -509,7 +512,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			@And({
 				@Spec(path = "", headers = "firstHeaderParam", spec = Like.class),
 				@Spec(path = "", headers = "secondHeaderParam", spec = Like.class)
-			}) Specification<Customer> spec) {
+			}) Specification<Object> spec) {
 
 		}
 
@@ -520,7 +523,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				value = @And({
 					@Spec(path = "", headers = "headerParam", spec = Like.class),
 					@Spec(path = "", pathVars = "pathVarParam", spec = Like.class)
-				})) Specification<Customer> spec) {
+				})) Specification<Object> spec) {
 
 		}
 
@@ -530,19 +533,20 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 				or = @Spec(path = "", jsonPaths = "firstLevel.secondLevel.paramA", spec = Like.class),
 				value = @And({
 					@Spec(path = "", jsonPaths = "firstLevel.secondLevel.paramB", spec = Like.class),
-					@Spec(path = "", jsonPaths = "firstLevel.paramC", spec = Like.class)
-				})) Specification<Customer> spec) {
+					@Spec(path = "", jsonPaths = "firstLevel.paramC", spec = Like.class),
+					@Spec(path = "", jsonPaths = "paramD", spec = Like.class)
+				})) Specification<Object> spec) {
 
 		}
 
 		@RequestMapping(value = "/spec-json-path")
 		public void specWithJsonPathParamTestMethod(
-			@Spec(path = "", jsonPaths = "specPath", spec = Like.class) Specification<Customer> spec) {
+			@Spec(path = "", jsonPaths = "specPath", spec = Like.class) Specification<Object> spec) {
 
 		}
 
 		@RequestMapping(value = "/spec-required-header", headers = "specRequiredHeaderParam")
-		public void specRequiredHeaderTestMethod(@Spec(path = "", headers = "specRequiredHeaderParam", spec = Like.class) Specification<Customer> spec) {
+		public void specRequiredHeaderTestMethod(@Spec(path = "", headers = "specRequiredHeaderParam", spec = Like.class) Specification<Object> spec) {
 
 		}
 
@@ -552,11 +556,11 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		@Spec(path = "", params = "annotatedFilterFirstParam", spec = Like.class),
 		@Spec(path = "", params = "annotatedFilterSecondParam", spec = Like.class)
 	})
-	private interface TestFilterWithAnnotations extends Specification<Customer> {
+	private interface TestFilterWithAnnotations extends Specification<Object> {
 
 	}
 
-	private interface TestFilterWithoutAnnotations extends Specification<Customer> {
+	private interface TestFilterWithoutAnnotations extends Specification<Object> {
 
 	}
 

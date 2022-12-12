@@ -169,19 +169,25 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 
 		jsonPaths.forEach(jsonPath -> {
 			String[] partsOfJsonPath = jsonPath.split("\\.");
+			Iterator<String> jsonPathIterator = stream(partsOfJsonPath).iterator();
 
-			if (!ejectedPaths.containsKey(partsOfJsonPath[0])) {
-				Schema<?> jsonSchema = partsOfJsonPath.length > 1 ? new ObjectSchema() : STRING_PARAMETER_SCHEMA;
-				ejectedPaths.put(partsOfJsonPath[0], jsonSchema);
+			// initialize schemas on the main JSON level
+			String firstPartOfPath = jsonPathIterator.next();
+			if (!ejectedPaths.containsKey(firstPartOfPath)) {
+				Schema<?> jsonSchema = jsonPathIterator.hasNext() ? new ObjectSchema() : STRING_PARAMETER_SCHEMA;
+				ejectedPaths.put(firstPartOfPath, jsonSchema);
 			}
 
-			Schema previousSchema = ejectedPaths.get(partsOfJsonPath[0]);
-			for (int i = 1; i < partsOfJsonPath.length; i++) {
-				if (schemaDoesNotContainParameter(previousSchema, partsOfJsonPath[i])) {
-					Schema<?> jsonSchema = i < partsOfJsonPath.length - 1 ? new ObjectSchema() : STRING_PARAMETER_SCHEMA;
-					previousSchema.addProperty(partsOfJsonPath[i], jsonSchema);
+			// build schemas for nested JSON objects
+			Schema<?> previousSchema = ejectedPaths.get(firstPartOfPath);
+			while (jsonPathIterator.hasNext()) {
+				String nextJsonPath = jsonPathIterator.next();
+
+				if (schemaDoesNotContainParameter(previousSchema, nextJsonPath)) {
+					Schema<?> jsonSchema = jsonPathIterator.hasNext() ? new ObjectSchema() : STRING_PARAMETER_SCHEMA;
+					previousSchema.addProperty(nextJsonPath, jsonSchema);
 				}
-				previousSchema = (Schema) previousSchema.getProperties().get(partsOfJsonPath[i]);
+				previousSchema = (Schema<?>) previousSchema.getProperties().get(nextJsonPath);
 			}
 		});
 
