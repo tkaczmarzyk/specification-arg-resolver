@@ -15,67 +15,80 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
-import java.util.List;
-import static net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
-
+import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
+import net.kaczmarzyk.spring.data.jpa.domain.IgnoreOnTypeMismatch;
+import net.kaczmarzyk.spring.data.jpa.domain.WithoutTypeConversion;
 import org.springframework.data.jpa.domain.Specification;
 
-import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
-import net.kaczmarzyk.spring.data.jpa.domain.WithoutTypeConversion;
+import java.util.List;
+
+import static net.kaczmarzyk.spring.data.jpa.utils.Converter.ValuesRejectedException;
 
 /**
  * <p>Specifies the behaviour in case of type mismatch between HTTP param value
  * and the type on the property being filtered (e.g. when HTTP param = {@code "abc"} and the type is {@code Long}).</p>
- * 
+ *
  * <p>To be used with {@code onTypeMismatch} property of {@code @Spec} annotation.</p>
- * 
+ *
  * @author Tomasz Kaczmarzyk
  */
 public enum OnTypeMismatch {
 
-	EXCEPTION {
-		@Override
-		public <T> Specification<T> wrap(Specification<T> spec) {
-			return spec;
-		}
+    EXCEPTION {
+        @Override
+        public <T> Specification<T> wrap(Specification<T> spec) {
+            return spec;
+        }
 
-		@Override
-		void doHandleRejectedValues(List<String> rejected) {
-			throw new ValuesRejectedException(rejected, "invalid values present in the HTTP param");
-		}
-	},
-	EMPTY_RESULT {
-		@Override
-		public <T> Specification<T> wrap(Specification<T> spec) {
-			if (spec instanceof WithoutTypeConversion) {
-				return spec;
-			}
-			return new EmptyResultOnTypeMismatch<>(spec);
-		}
+        @Override
+        void doHandleRejectedValues(List<String> rejected) {
+            throw new ValuesRejectedException(rejected, "invalid values present in the HTTP param");
+        }
+    }, EMPTY_RESULT {
+        @Override
+        public <T> Specification<T> wrap(Specification<T> spec) {
+            if (spec instanceof WithoutTypeConversion) {
+                return spec;
+            }
+            return new EmptyResultOnTypeMismatch<>(spec);
+        }
 
-		@Override
-		void doHandleRejectedValues(List<String> rejected) {
-			// do nothing
-		}
-	}, DEFAULT {
-		@Override
-		public <T> Specification<T> wrap(Specification<T> spec) {
-			return OnTypeMismatch.EMPTY_RESULT.wrap(spec);
-		}
+        @Override
+        void doHandleRejectedValues(List<String> rejected) {
+            // do nothing
+        }
+    }, IGNORE {
+        @Override
+        public <T> Specification<T> wrap(Specification<T> spec) {
+            if (spec instanceof WithoutTypeConversion) {
+                return spec;
+            }
+            return new IgnoreOnTypeMismatch<>(spec);
+        }
 
-		@Override
-		void doHandleRejectedValues(List<String> rejected) {
-			OnTypeMismatch.EMPTY_RESULT.doHandleRejectedValues(rejected);
-		}
-	};
+        @Override
+        void doHandleRejectedValues(List<String> rejected) {
+            // do nothing
+        }
+    }, DEFAULT {
+        @Override
+        public <T> Specification<T> wrap(Specification<T> spec) {
+            return OnTypeMismatch.EMPTY_RESULT.wrap(spec);
+        }
 
-	public abstract <T> Specification<T> wrap(Specification<T> spec);
+        @Override
+        void doHandleRejectedValues(List<String> rejected) {
+            OnTypeMismatch.EMPTY_RESULT.doHandleRejectedValues(rejected);
+        }
+    };
 
-	public void handleRejectedValues(List<String> rejected) {
-		if (rejected != null && !rejected.isEmpty()) {
-			doHandleRejectedValues(rejected);
-		}
-	}
+    public abstract <T> Specification<T> wrap(Specification<T> spec);
 
-	abstract void doHandleRejectedValues(List<String> rejected);
+    public void handleRejectedValues(List<String> rejected) {
+        if (rejected != null && !rejected.isEmpty()) {
+            doHandleRejectedValues(rejected);
+        }
+    }
+
+    abstract void doHandleRejectedValues(List<String> rejected);
 }
