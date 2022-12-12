@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -27,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -164,11 +166,23 @@ public class InTest extends IntegrationTestBase {
     	assertThat(found).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
 
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArgument() throws ParseException {
+		new In<>(queryCtx, "path", new String[] {}, defaultConverter);
+	}
+
 	@Test
 	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(In.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
+	@Test
+	public void toStringVerifier() {
+		ToStringVerifier.forClass(In.class)
+				.withIgnoredFields("queryContext")
 				.verify();
 	}
 }

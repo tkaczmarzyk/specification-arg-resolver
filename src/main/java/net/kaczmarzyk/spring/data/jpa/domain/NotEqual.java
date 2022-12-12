@@ -73,6 +73,7 @@ public class NotEqual<T> extends PathSpecification<T> {
 		return "NotEqual[" +
 				"expectedValue='" + expectedValue + '\'' +
 				", converter=" + converter +
+				", path='" + path + '\'' +
 				']';
 	}
 }

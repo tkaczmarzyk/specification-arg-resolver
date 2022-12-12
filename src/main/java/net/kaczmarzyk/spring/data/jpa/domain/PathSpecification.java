@@ -22,6 +22,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
+import java.util.Objects;
+
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -88,27 +90,16 @@ public abstract class PathSpecification<T> implements Specification<T> {
 		return result;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		if (obj == null)
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PathSpecification other = (PathSpecification) obj;
-		if (path == null) {
-			if (other.path != null)
-				return false;
-		} else if (!path.equals(other.path))
-			return false;
-		if (queryContext == null) {
-			if (other.queryContext != null)
-				return false;
-		} else if (!queryContext.equals(other.queryContext))
-			return false;
-		return true;
+		}
+		PathSpecification<?> that = (PathSpecification<?>) o;
+		return Objects.equals(path, that.path) &&
+				Objects.equals(queryContext, that.queryContext);
 	}
-
 }

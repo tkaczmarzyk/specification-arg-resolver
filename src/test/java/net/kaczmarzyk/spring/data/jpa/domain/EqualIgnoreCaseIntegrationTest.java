@@ -59,5 +59,14 @@ public class EqualIgnoreCaseIntegrationTest extends EqualIntegrationTest {
         assertThat(moeFound).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsMissingArguments() {
+        new EqualIgnoreCase<>(queryCtx, "path", new String[] {}, defaultConverter);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsTooManyArguments() {
+        new EqualIgnoreCase<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
+    }
     
 }

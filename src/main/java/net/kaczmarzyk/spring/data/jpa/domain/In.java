@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -71,26 +72,27 @@ public class In<T> extends PathSpecification<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!super.equals(o)) {
 			return false;
-		In other = (In) obj;
-		if (!Arrays.equals(allowedValues, other.allowedValues))
-			return false;
-		if (converter == null) {
-			if (other.converter != null)
-				return false;
-		} else if (!converter.equals(other.converter))
-			return false;
-		return true;
+		}
+		In<?> in = (In<?>) o;
+		return Arrays.equals(allowedValues, in.allowedValues) &&
+				Objects.equals(converter, in.converter);
 	}
 
 	@Override
 	public String toString() {
-		return "In [allowedValues=" + Arrays.toString(allowedValues) + ", converter=" + converter + "]";
+		return "In[" +
+				"allowedValues=" + Arrays.toString(allowedValues) +
+				", converter=" + converter +
+				", path='" + path + '\'' +
+				']';
 	}
 }

@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -60,25 +61,25 @@ public class NotLike<T> extends PathSpecification<T> implements WithoutTypeConve
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!super.equals(o)) {
 			return false;
-		NotLike other = (NotLike) obj;
-		if (pattern == null) {
-			if (other.pattern != null)
-				return false;
-		} else if (!pattern.equals(other.pattern))
-			return false;
-		return true;
+		}
+		NotLike<?> notLike = (NotLike<?>) o;
+		return Objects.equals(pattern, notLike.pattern);
 	}
 
 	@Override
 	public String toString() {
-		return "NotLike [pattern=" + pattern + "]";
+		return "NotLike[" +
+				"pattern='" + pattern + '\'' +
+				", path='" + path + '\'' +
+				']';
 	}
-    
 }

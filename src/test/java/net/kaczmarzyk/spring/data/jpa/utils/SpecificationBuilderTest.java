@@ -199,6 +199,28 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	}
 
 	@Test
+	public void shouldCreateSpecificationDependingOnFallbackValueWhenHeaderValueIsMissing() {
+		customer("Bart", "Simpson")
+				.orders("Bread")
+				.build(em);
+
+		customer("Lisa", "Simpson")
+				.orders("Eggs")
+				.build(em);
+
+		Specification<Customer> spec = specification(CustomSpecificationWithHeader.class)
+				.withArg("orderIn", "Eggs")
+				.build();
+
+		List<Customer> customers = customerRepo.findAll(spec);
+
+		assertThat(customers.size())
+				.isEqualTo(1);
+		assertThat(customers.get(0).getFirstName())
+				.isEqualTo("Lisa");
+	}
+
+	@Test
 	public void shouldInvokeMethodToGenerateSpecificationDependingOnStandaloneProcessingContext() {
 		SpecificationFactory specificationFactory = mock(SpecificationFactory.class);
 

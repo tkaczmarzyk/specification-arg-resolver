@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -63,6 +64,13 @@ public class ConjunctionTest extends IntegrationTestBase {
         EqualsVerifier.forClass(Conjunction.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)
+                .withIgnoredFields("queriesWithInitializedFakes")
+                .verify();
+    }
+
+    @Test
+    public void toStringVerifier() {
+        ToStringVerifier.forClass(Conjunction.class)
                 .withIgnoredFields("queriesWithInitializedFakes")
                 .verify();
     }
