@@ -64,7 +64,7 @@ public class IgnoreTypeMismatchE2eTest extends E2eTestBase {
 	}
 
 	@Test
-	public void ignoresWholeSpecificationWithMismatchedParameterForEqualSpecificationType_returnsAllResultsIfItWasOneAndOnlyParameter() throws Exception {
+	public void ignoresSpecificationWithMismatchedParameterForEqualSpecificationType_returnsAllResultsIfItWasOneAndOnlyFilteringParameter() throws Exception {
 		mockMvc.perform(get("/ignore/customers")
 						.param("id", "not a Long")
 						.accept(MediaType.APPLICATION_JSON))
@@ -124,7 +124,7 @@ public class IgnoreTypeMismatchE2eTest extends E2eTestBase {
 	}
 
 	@Test
-	public void ignoresWholeSpecificationIfAtLeastOneParameterNotMatchesForOtherThanInSpecificationType_returnsAllResults() throws Exception {
+	public void ignoresSpecificationIfAtLeastOneParameterDoesNotMatchForOtherThanInSpecificationType_returnsAllResults() throws Exception {
 		mockMvc.perform(get("/ignore/customers")
 						.param("from", "not-valid-date")
 						.param("to", "2014-03-21")
