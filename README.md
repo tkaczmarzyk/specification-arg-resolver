@@ -763,7 +763,7 @@ Consider a field `age` of type `Integer` and the following specification definit
 @Spec(path="age", spec=Equal.class)
 ```
 
-If non-numeric values is passed with the HTTP request (e.g. `?age=test`), then the result list will be empty. If you want an exception to be thrown instead, use `onTypeMismatch` property of the `Spec` annotation, i.e:
+If non-numeric value is passed with the HTTP request (e.g. `?age=test`), then the result list will be empty. If you want an exception to be thrown instead, use `onTypeMismatch` property of the `Spec` annotation, i.e:
 
 ```java
 @Spec(path="age", spec=Equal.class, onTypeMismatch=OnTypeMismatch.EXCEPTION)
@@ -779,6 +779,28 @@ This behaviour has changed in version `0.9.0` (exception was the default value i
 
 (assuming that `firstName` is `String` and `customerId` is a numeric type)
 
+There is also `OnTypeMismatch.IGNORE` type which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification type only mismatched parameter values are ignored).
+For example, for the following endpoint:
+```java
+ @RequestMapping(value = "/customers", params = { "id" })
+ @ResponseBody
+ public Object findById(
+		 @Spec(path = "id", params = "id", spec = Equal.class, onTypeMismatch = IGNORE) Specification<Customer> spec) {
+   return customerRepo.findAll(spec);
+}
+```
+* For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all results will be returned.
+  But for the following endpoint with `In.class` specification type:
+```java
+  @RequestMapping(value = "/customers", params = { "id_in" })
+  @ResponseBody
+  public Object findByIdIn(
+		  @Spec(path = "id", params = "id_in", spec = In.class, paramSeparator = ",", onTypeMismatch = IGNORE) Specification<Customer> spec) {
+	return customerRepo.findAll(spec);
+    }
+```
+* For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not whole specification) will be ignored)
+* For request with only invalid params `id_in=invalidId1,invalidId2` - empty result will be returned as there are only invalid parameters (which are ignored).
 
 Path variable support
 ---------------------

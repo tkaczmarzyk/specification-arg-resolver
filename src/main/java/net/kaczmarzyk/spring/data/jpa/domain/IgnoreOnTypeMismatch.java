@@ -24,20 +24,21 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
- * <p>Wrapper that turns a {@code Specification} into a one that always produces in an empty result
- * (i.e. {@code where 0 = 1}) in case of a type mismatch (e.g. when type on path is {@code Long}
- *  and the value from the HTTP parameter is not a numeric.</p>
+ * <p>Wrapper that turns a {@code Specification} into a one that ignores wrapped specification containing mismatched parameter
+ * (except {@code spec = In.class} - in this specification only mismatched parameter values are ignored).
+ *  Type mismatch - e.g. when type on path is {@code Long} and the value
+ *  from the HTTP parameter is not a numeric.</p>
  *
- * <p> It's useful for polymorphic "OR" queries such as {@code where id = ? or name = ?}.
- * A spec will be wrapped with this decorator if {@code onTypeMismatch} property of {@code @Spec}
- * is explicitly set to {@code OnTypeMismatch.EMPTY_RESULT}, i.e.: {@code @Spec(path="id", onTypeMismatch=EMPTY_RESULT)}.
+ * <p>A spec will be wrapped with this decorator if {@code onTypeMismatch} property of {@code @Spec}
+ * is explicitly set to {@code OnTypeMismatch.IGNORE}, i.e.: {@code @Spec(path="id", onTypeMismatch=IGNORE)}.
  * </p>
  *
  * @see OnTypeMismatch
  *
- * @author Tomasz Kaczmarzyk
  */
 public class IgnoreOnTypeMismatch<T> extends EmptyResultOnTypeMismatch<T> {
+
+    private static final long serialVersionUID = 1L;
 
     public IgnoreOnTypeMismatch(Specification<T> wrappedSpec) {
         super(wrappedSpec);
@@ -52,4 +53,33 @@ public class IgnoreOnTypeMismatch<T> extends EmptyResultOnTypeMismatch<T> {
         }
     }
 
+    @Override
+    public String toString() {
+        return "IgnoreOnTypeMismatch [wrappedSpec=" + getWrappedSpec() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getWrappedSpec() == null) ? 0 : getWrappedSpec().hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        IgnoreOnTypeMismatch other = (IgnoreOnTypeMismatch) obj;
+        if (getWrappedSpec() == null) {
+            if (other.getWrappedSpec() != null)
+                return false;
+        } else if (!getWrappedSpec().equals(other.getWrappedSpec()))
+            return false;
+        return true;
+    }
 }
