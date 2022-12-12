@@ -15,10 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
+
+import java.text.ParseException;
 
 /**
  * @author Mateusz Fedkowicz
@@ -43,11 +46,28 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 		assertFilterMembers(notFemale, homerSimpson);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArgument() throws ParseException {
+		new NotEqualIgnoreCase<>(queryCtx, "path", new String[] {}, defaultConverter);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsTooManyArguments() throws ParseException {
+		new NotEqualIgnoreCase<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
+	}
+
 	@Test
 	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(NotEqualIgnoreCase.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
+	@Test
+	public void toStringVerifier() {
+		ToStringVerifier.forClass(NotEqualIgnoreCase.class)
+				.withIgnoredFields("path", "queryContext")
 				.verify();
 	}
 

@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -180,6 +181,11 @@ public class BetweenTest extends IntegrationTestBase {
             .hasSize(1)
             .containsOnly(margeSimpson);
     }
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArgument() throws ParseException {
+		new Between<>(queryCtx, "path", new String[] {}, defaultConverter);
+	}
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsTooFewArguments() throws ParseException {
@@ -196,6 +202,13 @@ public class BetweenTest extends IntegrationTestBase {
 		EqualsVerifier.forClass(Between.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
+	@Test
+	public void toStringVerifier() {
+		ToStringVerifier.forClass(Between.class)
+				.withIgnoredFields("path", "queryContext")
 				.verify();
 	}
 }

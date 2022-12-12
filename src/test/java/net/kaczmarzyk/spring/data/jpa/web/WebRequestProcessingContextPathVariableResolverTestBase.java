@@ -35,7 +35,7 @@ import static org.junit.runners.Parameterized.Parameters;
  * @author Jakub Radlica
  */
 @RunWith(Parameterized.class)
-public class WebRequestProcessingContextPathVariableResolverTestBase {
+public abstract class WebRequestProcessingContextPathVariableResolverTestBase {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

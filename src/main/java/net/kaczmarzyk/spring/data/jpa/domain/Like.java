@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -58,23 +59,15 @@ public class Like<T> extends PathSpecification<T> implements WithoutTypeConversi
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Like<?> other = (Like<?>) obj;
-        if (pattern == null) {
-            if (other.pattern != null)
-                return false;
-        } else if (!pattern.equals(other.pattern))
-            return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Like<?> like = (Like<?>) o;
+        return Objects.equals(pattern, like.pattern);
     }
 
-	@Override
+    @Override
 	public String toString() {
 		return "Like [pattern=" + pattern + "]";
 	}

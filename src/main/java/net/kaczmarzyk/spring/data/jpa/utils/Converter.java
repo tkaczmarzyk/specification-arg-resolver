@@ -333,26 +333,17 @@ public class Converter {
 		result = prime * result + ((onTypeMismatch == null) ? 0 : onTypeMismatch.hashCode());
 		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Converter other = (Converter) obj;
-		if (dateFormat == null) {
-			if (other.dateFormat != null)
-				return false;
-		} else if (!dateFormat.equals(other.dateFormat))
-			return false;
-		if (onTypeMismatch != other.onTypeMismatch)
-			return false;
-		return true;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Converter converter = (Converter) o;
+		return Objects.equals(dateFormat, converter.dateFormat) &&
+				onTypeMismatch == converter.onTypeMismatch &&
+				Objects.equals(conversionService, converter.conversionService);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Converter [dateFormat=" + dateFormat + ", onTypeMismatch=" + onTypeMismatch + "]";

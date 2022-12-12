@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -25,6 +26,7 @@ import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -152,11 +154,23 @@ public class NotInTest extends IntegrationTestBase {
     	assertThat(found).hasSize(1).containsOnly(joeQuimby);
     }
 
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArgument() throws ParseException {
+		new NotIn<>(queryCtx, "path", new String[] {}, defaultConverter);
+	}
+
 	@Test
 	public void equalsAndHashCodeContract() {
 		EqualsVerifier.forClass(NotIn.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
+	@Test
+	public void toStringVerifier() {
+		ToStringVerifier.forClass(NotIn.class)
+				.withIgnoredFields("converter", "path", "queryContext")
 				.verify();
 	}
 }

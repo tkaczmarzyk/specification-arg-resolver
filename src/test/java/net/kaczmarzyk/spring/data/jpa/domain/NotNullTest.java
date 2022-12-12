@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -22,6 +23,7 @@ import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -60,11 +62,28 @@ public class NotNullTest extends IntegrationTestBase {
         assertThat(found).hasSize(1).containsOnly(lisaSimpson);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsMissingArgument() throws ParseException {
+        new NotNull<>(queryCtx, "path", new String[] {}, defaultConverter);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsTooManyArguments() throws ParseException {
+        new NotNull<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
+    }
+
     @Test
     public void equalsAndHashCodeContract() {
         EqualsVerifier.forClass(NotNull.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
+    }
+
+    @Test
+    public void toStringVerifier() {
+        ToStringVerifier.forClass(NotNull.class)
+                .withIgnoredFields("queryContext")
                 .verify();
     }
 }

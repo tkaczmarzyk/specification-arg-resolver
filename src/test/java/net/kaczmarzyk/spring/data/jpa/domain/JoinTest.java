@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
@@ -156,6 +157,12 @@ public class JoinTest extends IntegrationTestBase {
 		EqualsVerifier.forClass(Join.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
+	@Test
+	public void toStringVerifier() {
+		ToStringVerifier.forClass(Join.class)
 				.verify();
 	}
 

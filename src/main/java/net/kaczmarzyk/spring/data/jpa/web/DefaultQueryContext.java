@@ -23,6 +23,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -80,31 +81,28 @@ public class DefaultQueryContext implements QueryContext {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((contextMap == null) ? 0 : contextMap.hashCode());
+		int result = contextMap.hashCode();
+		result = 31 * result + evaluatedJoinFetch.hashCode();
+		result = 31 * result + rootCache.hashCode();
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DefaultQueryContext other = (DefaultQueryContext) obj;
-		if (contextMap == null) {
-			if (other.contextMap != null)
-				return false;
-		} else if (!contextMap.equals(other.contextMap))
-			return false;
-		return true;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DefaultQueryContext that = (DefaultQueryContext) o;
+		return Objects.equals(contextMap, that.contextMap) &&
+				Objects.equals(evaluatedJoinFetch, that.evaluatedJoinFetch) &&
+				Objects.equals(rootCache, that.rootCache);
 	}
 
 	@Override
 	public String toString() {
-		return "WebRequestQueryContext [contextMap=" + contextMap + "]";
+		return "DefaultQueryContext[" +
+				"contextMap=" + contextMap +
+				", evaluatedJoinFetch=" + evaluatedJoinFetch +
+				", rootCache=" + rootCache +
+				']';
 	}
 }

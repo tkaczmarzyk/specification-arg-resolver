@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -81,6 +82,13 @@ public class LikeTest extends IntegrationTestBase {
         EqualsVerifier.forClass(Like.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
+    }
+
+    @Test
+    public void toStringVerifier() {
+        ToStringVerifier.forClass(Like.class)
+                .withIgnoredFields("path", "queryContext")
                 .verify();
     }
 }

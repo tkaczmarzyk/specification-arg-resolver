@@ -23,6 +23,8 @@ import javax.persistence.criteria.Root;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
+import java.util.Objects;
+
 /**
  * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
  * 
@@ -63,25 +65,13 @@ public class Equal<T> extends PathSpecification<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Equal other = (Equal) obj;
-		if (converter == null) {
-			if (other.converter != null)
-				return false;
-		} else if (!converter.equals(other.converter))
-			return false;
-		if (expectedValue == null) {
-			if (other.expectedValue != null)
-				return false;
-		} else if (!expectedValue.equals(other.expectedValue))
-			return false;
-		return true;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		Equal<?> equal = (Equal<?>) o;
+		return Objects.equals(expectedValue, equal.expectedValue) &&
+				Objects.equals(converter, equal.converter);
 	}
 
 	@Override

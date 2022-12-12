@@ -177,4 +177,14 @@ public class EqualIntegrationTest extends IntegrationTestBase {
     	Equal<Customer> homerWeightFloat = new Equal<>(queryCtx, "weightFloat", new String[] { String.valueOf(homerSimpson.getWeightFloat()) }, defaultConverter);
     	assertFilterMembers(homerWeightFloat, homerSimpson);
     }
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsMissingArguments() {
+		new Equal<>(queryCtx, "path", new String[] {}, defaultConverter);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsTooManyArguments() {
+		new Equal<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
+	}
 }
