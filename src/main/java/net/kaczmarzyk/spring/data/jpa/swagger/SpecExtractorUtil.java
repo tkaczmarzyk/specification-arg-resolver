@@ -41,6 +41,10 @@ public class SpecExtractorUtil {
 		NESTED_SPEC_ANNOTATION_EXTRACTORS.put(Disjunction.class, annotation -> extractSpecsFromDisjunction((Disjunction) annotation));
 	}
 
+	private SpecExtractorUtil() {
+
+	}
+
 	public static List<Spec> extractNestedSpecificationsFromAnnotations(List<Annotation> annotations) {
 
 		return annotations.stream()

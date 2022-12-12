@@ -124,7 +124,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 			.flatMap(Collection::stream)
 			.collect(toList());
 
-		createJsonParameterFromSpecs(specs).ifPresent(parameters::add);
+		createJsonPathsParameterFromSpecs(specs).ifPresent(parameters::add);
 
 		return parameters;
 	}
@@ -142,7 +142,7 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 			.collect(toList());
 	}
 
-	private Optional<Parameter> createJsonParameterFromSpecs(List<Spec> specs) {
+	private Optional<Parameter> createJsonPathsParameterFromSpecs(List<Spec> specs) {
 
 		List<String> jsonPaths = specs.stream()
 			.map(Spec::jsonPaths)
