@@ -95,6 +95,7 @@ public class Between<T> extends PathSpecification<T> {
 				"lowerBoundaryStr='" + lowerBoundaryStr + '\'' +
 				", upperBoundaryStr='" + upperBoundaryStr + '\'' +
 				", converter=" + converter +
+				", path='" + path + '\'' +
 				']';
 	}
 }

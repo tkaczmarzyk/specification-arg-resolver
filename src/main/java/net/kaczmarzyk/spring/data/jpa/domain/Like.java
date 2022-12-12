@@ -60,15 +60,24 @@ public class Like<T> extends PathSpecification<T> implements WithoutTypeConversi
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
         Like<?> like = (Like<?>) o;
         return Objects.equals(pattern, like.pattern);
     }
 
     @Override
-	public String toString() {
-		return "Like [pattern=" + pattern + "]";
-	}
+    public String toString() {
+        return "Like[" +
+                "pattern='" + pattern + '\'' +
+                ", path='" + path + '\'' +
+                ']';
+    }
 }

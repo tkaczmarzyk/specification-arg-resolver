@@ -182,7 +182,7 @@ public class InTest extends IntegrationTestBase {
 	@Test
 	public void toStringVerifier() {
 		ToStringVerifier.forClass(In.class)
-				.withIgnoredFields("path", "queryContext")
+				.withIgnoredFields("queryContext")
 				.verify();
 	}
 }

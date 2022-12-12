@@ -74,9 +74,15 @@ public class NotIn<T> extends PathSpecification<T> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		if (!super.equals(o)) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
 		NotIn<?> notIn = (NotIn<?>) o;
 		return Arrays.equals(allowedValues, notIn.allowedValues) &&
 				Objects.equals(converter, notIn.converter);
@@ -84,6 +90,10 @@ public class NotIn<T> extends PathSpecification<T> {
 
 	@Override
 	public String toString() {
-		return "NotIn [allowedValues=" + Arrays.toString(allowedValues) + "]";
+		return "NotIn[" +
+				"allowedValues=" + Arrays.toString(allowedValues) +
+				", converter=" + converter +
+				", path='" + path + '\'' +
+				']';
 	}
 }

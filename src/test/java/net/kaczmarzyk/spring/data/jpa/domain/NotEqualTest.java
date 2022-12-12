@@ -180,7 +180,7 @@ public class NotEqualTest extends IntegrationTestBase {
 	@Test
 	public void toStringVerifier() {
 		ToStringVerifier.forClass(NotEqual.class)
-				.withIgnoredFields("path", "queryContext")
+				.withIgnoredFields("queryContext")
 				.verify();
 	}
 }

@@ -199,7 +199,7 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void shouldCreateSpecificationDependingOnFallbackValue() {
+	public void shouldCreateSpecificationDependingOnFallbackValueWhenHeaderValueIsMissing() {
 		customer("Bart", "Simpson")
 				.orders("Bread")
 				.build(em);

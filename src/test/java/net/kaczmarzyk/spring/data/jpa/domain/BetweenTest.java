@@ -208,7 +208,7 @@ public class BetweenTest extends IntegrationTestBase {
 	@Test
 	public void toStringVerifier() {
 		ToStringVerifier.forClass(Between.class)
-				.withIgnoredFields("path", "queryContext")
+				.withIgnoredFields("queryContext")
 				.verify();
 	}
 }

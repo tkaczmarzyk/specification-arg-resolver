@@ -170,7 +170,7 @@ public class NotInTest extends IntegrationTestBase {
 	@Test
 	public void toStringVerifier() {
 		ToStringVerifier.forClass(NotIn.class)
-				.withIgnoredFields("converter", "path", "queryContext")
+				.withIgnoredFields("queryContext")
 				.verify();
 	}
 }

@@ -101,8 +101,6 @@ public class DefaultQueryContext implements QueryContext {
 	public String toString() {
 		return "DefaultQueryContext[" +
 				"contextMap=" + contextMap +
-				", evaluatedJoinFetch=" + evaluatedJoinFetch +
-				", rootCache=" + rootCache +
 				']';
 	}
 }

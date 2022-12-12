@@ -67,7 +67,7 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 	@Test
 	public void toStringVerifier() {
 		ToStringVerifier.forClass(NotEqualIgnoreCase.class)
-				.withIgnoredFields("path", "queryContext")
+				.withIgnoredFields("queryContext")
 				.verify();
 	}
 

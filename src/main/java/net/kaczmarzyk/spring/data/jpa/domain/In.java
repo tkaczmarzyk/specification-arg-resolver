@@ -73,9 +73,15 @@ public class In<T> extends PathSpecification<T> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		if (!super.equals(o)) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
 		In<?> in = (In<?>) o;
 		return Arrays.equals(allowedValues, in.allowedValues) &&
 				Objects.equals(converter, in.converter);
@@ -83,6 +89,10 @@ public class In<T> extends PathSpecification<T> {
 
 	@Override
 	public String toString() {
-		return "In [allowedValues=" + Arrays.toString(allowedValues) + ", converter=" + converter + "]";
+		return "In[" +
+				"allowedValues=" + Arrays.toString(allowedValues) +
+				", converter=" + converter +
+				", path='" + path + '\'' +
+				']';
 	}
 }

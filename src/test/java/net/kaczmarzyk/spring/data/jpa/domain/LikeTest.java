@@ -88,7 +88,7 @@ public class LikeTest extends IntegrationTestBase {
     @Test
     public void toStringVerifier() {
         ToStringVerifier.forClass(Like.class)
-                .withIgnoredFields("path", "queryContext")
+                .withIgnoredFields("queryContext")
                 .verify();
     }
 }

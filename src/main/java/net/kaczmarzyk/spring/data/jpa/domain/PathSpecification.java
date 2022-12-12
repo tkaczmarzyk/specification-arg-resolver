@@ -92,9 +92,14 @@ public abstract class PathSpecification<T> implements Specification<T> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		PathSpecification<?> that = (PathSpecification<?>) o;
-		return Objects.equals(path, that.path) && Objects.equals(queryContext, that.queryContext);
+		return Objects.equals(path, that.path) &&
+				Objects.equals(queryContext, that.queryContext);
 	}
 }

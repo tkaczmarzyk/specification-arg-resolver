@@ -340,8 +340,7 @@ public class Converter {
 		if (o == null || getClass() != o.getClass()) return false;
 		Converter converter = (Converter) o;
 		return Objects.equals(dateFormat, converter.dateFormat) &&
-				onTypeMismatch == converter.onTypeMismatch &&
-				Objects.equals(conversionService, converter.conversionService);
+				onTypeMismatch == converter.onTypeMismatch;
 	}
 
 	@Override

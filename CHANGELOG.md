@@ -1,7 +1,3 @@
-v2.14.1
-=======
-* Increased test coverage by adding additional tests
-
 v2.14.0
 =======
 * added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).

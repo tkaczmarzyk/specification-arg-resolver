@@ -88,7 +88,7 @@ public class NotLikeTest extends IntegrationTestBase {
     @Test
     public void toStringVerifier() {
         ToStringVerifier.forClass(NotLike.class)
-                .withIgnoredFields("path", "queryContext")
+                .withIgnoredFields("queryContext")
                 .verify();
     }
 }

@@ -79,7 +79,7 @@ public class NotEqualIgnoreCase<T> extends PathSpecification<T> {
 		return "NotEqualIgnoreCase[" +
 				"expectedValue='" + expectedValue + '\'' +
 				", converter=" + converter +
+				", path='" + path + '\'' +
 				']';
 	}
-
 }

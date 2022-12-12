@@ -84,7 +84,7 @@ public class NullTest extends IntegrationTestBase {
 	@Test
 	public void toStringVerifier() {
 		ToStringVerifier.forClass(Null.class)
-				.withIgnoredFields("path", "queryContext")
+				.withIgnoredFields("queryContext")
 				.verify();
 	}
 }
