@@ -779,7 +779,7 @@ This behaviour has changed in version `0.9.0` (exception was the default value i
 
 (assuming that `firstName` is `String` and `customerId` is a numeric type)
 
-There is also `OnTypeMismatch.IGNORE` type which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification type only mismatched parameter values are ignored).
+There is also `OnTypeMismatch.IGNORE` type which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
 For example, for the following endpoint:
 ```java
  @RequestMapping(value = "/customers", params = { "id" })
@@ -789,7 +789,7 @@ For example, for the following endpoint:
    return customerRepo.findAll(spec);
 }
 ```
-* For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all results will be returned.
+* For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all records from the database (without filtering) will be returned.
   But for the following endpoint with `In.class` specification type:
 ```java
   @RequestMapping(value = "/customers", params = { "id_in" })
@@ -799,8 +799,8 @@ For example, for the following endpoint:
 	return customerRepo.findAll(spec);
     }
 ```
-* For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not whole specification) will be ignored)
-* For request with only invalid params `id_in=invalidId1,invalidId2` - empty result will be returned as there are only invalid parameters (which are ignored).
+* For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not the whole specification) will be ignored)
+* For request with only invalid params `id_in=invalidId1,invalidId2` - an empty result will be returned as there are only invalid parameters (which are ignored).
 
 Path variable support
 ---------------------

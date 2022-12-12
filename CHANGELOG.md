@@ -1,6 +1,6 @@
 v2.14.0
 =======
-* added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored).
+* added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
   * For example, for the following endpoint:
     ```
     @RequestMapping(value = "/customers", params = { "id" })
@@ -10,7 +10,7 @@ v2.14.0
     return customerRepo.findAll(spec);
     }
     ```
-    * For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all results will be returned.
+  * For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all records from the database (without filtering) will be returned.
   * But for the following endpoint with `In.class` specification type:
     ```
     @RequestMapping(value = "/customers", params = { "id_in" })
@@ -20,8 +20,8 @@ v2.14.0
 			 return customerRepo.findAll(spec);
     }
     ```
-    * For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not whole specification) will be ignored)
-    * For request with only invalid params `id_in=invalidId1,invalidId2` - empty result will be returned as there are only invalid parameters (which are ignored).
+  * For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not the whole specification) will be ignored)
+  * For request with only invalid params `id_in=invalidId1,invalidId2` - an empty result will be returned as there are only invalid parameters (which are ignored).
 
 v2.13.0
 =======
