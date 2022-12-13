@@ -30,7 +30,9 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Json Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
+   * [Spring native support](#spring-native-image--graalvm-native-image-support) -- information about support for spring native
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
+   * [Cache support](#cache-support) -- information about support for spring cache
    * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
@@ -1104,6 +1106,79 @@ Configuration example:
 
 SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
 
+
+spring native image / GraalVM native image support
+------------
+
+### General comment
+The information about the spring native image support could be found in the [spring-boot-documentation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#native-image).
+
+### Why specification-argument-resolver does not support native-image by default?
+The specification-argument-resolver uses two mechanisms that are not supported by graalvm native image by default:
+* Reflection - it's used to construct specification instances (`SimpleSpecificationResolver.java`). 
+* Dynamic proxy class - it's used for proxy creation for specifications defined in interfaces.
+  * For example, consider following specification and endpoint:
+     ```java
+     @Or({
+         @Spec(path="firstName", params="name", spec=Like.class), 
+         @Spec(path="lastName", params="name", spec=Like.class)
+     })
+     public interface FullNameSpec extends Specification<Customer> {}
+    
+     @RequestMapping("/customers")
+     @ResponseBody
+     public Object findByFullName(FullNameSpec spec) {
+         return repository.findAll(spec);
+     }
+     ```
+    For the above specification, the `Disjunction` specification with two inner specifications of type `Like` is created.
+    However, the endpoint signature requires a argument of type `FullNameSpec` not the `Disjunction`.
+    So when the specification-argument-resolver detect such argument incompatibility (`Disjunction` vs `FullNameSpec`) it generates (`EnhancerUtil.java`)
+    the proxy for `Disjunction` of type `FullNameSpec`.
+
+#### How to enable native-image support?
+  * To enable of basic-support of native-image (assuming that specifications are not defined in interfaces), 
+    the specification argument resolver hints registrar should be imported to your app - `SpecificationArgumentResolverHintRegistrar.java`.
+    It registers a constructors of specification classes defined in package `net.kaczmarzyk.spring.data.jpa.domain` for reflection.
+    Example config:
+    ```
+    @Configuration
+    @ImportRuntimeHints(SpecificationArgumentResolverHintRegistrar.class)
+    public class AppConfig{}
+    ```
+  * To enable full support you should enable support for dynamic proxy for your interfaces with specification definitions.
+    * You should manually register spec-interfaces for dynamic proxy
+     or
+    * You should extend `SpecificationArgumentResolverProxyHintRegistrar.java` and set the packages with interfaces containing specification definitions, and import hints from this registrar.
+    This registrar scans the classpath looking for a interfaces with specification-argument-resolver annotations, and register the found interfaces for dynamic proxy.
+    Example:
+    ```
+    class ProjectSpecificationArgumentResolverProxyHintRegistrar extends SpecificationArgumentResolverProxyHintRegistrar {
+        protected MyProjectSpecificationArgumentResolverProxyHintRegistrar() {
+            super(
+                    "net.kaczmarzyk" // the name of package containing the interfaces with specification definitions
+            );
+        }
+    }
+    ```
+    and then in config:
+    ```
+    @Configuration
+    @ImportRuntimeHints(SpecificationArgumentResolverHintRegistrar.class) //suport for reflection
+    @ImportRuntimeHints(MyProjectSpecificationArgumentResolverProxyHintRegistrar.class) //suport for dynamic proxy
+    public class AppConfig{}
+    ```
+    
+    The `SpecificationArgumentResolverProxyHintRegistrar.java` requires dependency:
+    ```
+	<dependency>
+		<groupId>io.github.classgraph</groupId>
+		<artifactId>classgraph</artifactId>
+		<version>4.8.X</version>
+	</dependency>
+    ```
+
+
 Swagger support
 ------------
 
@@ -1169,7 +1244,8 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
+| `v3.0.0` (or newer)                | `17` or higher   | Compiled and tested against Spring Boot `3.0.0`                                         |
+| `v2.X.X`                           | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
 As far as the features supported in each version, please check the [CHANGELOG.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/CHANGELOG.md)

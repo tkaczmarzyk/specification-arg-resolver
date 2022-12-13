@@ -18,9 +18,9 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public class DefaultQueryContext implements QueryContext {
 	private HashMap<String, Function<Root<?>, Join<?, ?>>> contextMap;
 	private HashMap<String, Fetch<?, ?>> evaluatedJoinFetch;
 
-	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache;
+	private Map<Pair<String, Root>, jakarta.persistence.criteria.Join<?, ?>> rootCache;
 
 	public DefaultQueryContext() {
 		this.contextMap = new HashMap<>();

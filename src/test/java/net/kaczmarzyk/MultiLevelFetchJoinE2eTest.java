@@ -18,16 +18,14 @@ package net.kaczmarzyk;
 import net.kaczmarzyk.spring.data.jpa.*;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.NotEqual;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,11 +33,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.criteria.JoinType;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static jakarta.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static java.util.stream.Collectors.toList;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
@@ -75,8 +73,8 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		@RequestMapping(value = "/findAllWthUsingInnerFetchJoins")
 		@PostMapping
 		public Object findAllCustomersUsingInnerFetchJoins(
-				@JoinFetch(paths = "orders", alias = "o", joinType = JoinType.INNER)
-				@JoinFetch(paths = "o.tags", joinType = JoinType.INNER) Specification<Customer> spec) {
+				@JoinFetch(paths = "orders", alias = "o", joinType = INNER)
+				@JoinFetch(paths = "o.tags", joinType = INNER) Specification<Customer> spec) {
 			return customerRepo.findAll(spec, Sort.by("id")).stream()
 					.map(this::mapToCustomerDto)
 					.collect(toList());
@@ -128,8 +126,8 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		@RequestMapping(value = "/findCustomersWithOrderedItemTaggedDifferentlyThan_fetchOrderWithTagsAndNotes")
 		@PostMapping
 		public Object findCustomersWithOrderedItemTaggedWithDifferentTagThan(
-				@JoinFetch(paths = "orders", alias = "o", joinType = JoinType.INNER)
-				@JoinFetch(paths = "o.tags", alias = "t", joinType = JoinType.INNER)
+				@JoinFetch(paths = "orders", alias = "o", joinType = INNER)
+				@JoinFetch(paths = "o.tags", alias = "t", joinType = INNER)
 				@JoinFetch(paths = "o.note")
 				@Spec(path = "t.name", params = "tag", spec = NotEqual.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec, Sort.by("id")).stream()
@@ -228,7 +226,9 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 							order("Jazz music disc")).build(em);
 
 			customer("Maggie", "Simpson").build(em);
+			em.flush();
 		});
+		HibernateStatementInspector.clearInterceptedStatements();
 	}
 
 	@Autowired
@@ -244,8 +244,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldFindCustomersUsingLeftFetchJoins() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
-
 		mockMvc.perform(post("/multilevel-join-fetch/findAll")
 				.param("tag", "#snacks"))
 			.andExpect(status().isOk())
@@ -260,16 +258,14 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
 				.hasSelects(1)
-				.hasJoins(3)
-				.hasOneClause(" left outer join orders ")
-				.hasOneClause(" left outer join orders_tags ")
-				.hasOneClause(" left outer join item_tags ");
+				.hasNumberOfJoins(3)
+				.hasNumberOfTableJoins("orders", LEFT, 1)
+				.hasNumberOfTableJoins("orders_tags", LEFT, 1)
+				.hasNumberOfTableJoins("item_tags", INNER, 1);
 	}
 
 	@Test
 	public void shouldFindCustomersUsingInnerFetchJoins() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
-
 		mockMvc.perform(post("/multilevel-join-fetch/findAllWthUsingInnerFetchJoins")
 				.param("tag", "#snacks"))
 			.andExpect(status().isOk())
@@ -282,16 +278,14 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
 				.hasSelects(1)
-				.hasJoins(3)
-				.hasOneClause(" inner join orders ")
-				.hasOneClause(" inner join orders_tags ")
-				.hasOneClause(" inner join item_tags ");
+				.hasNumberOfJoins(3)
+				.hasNumberOfTableJoins("orders", INNER, 1)
+				.hasNumberOfTableJoins("orders_tags", INNER, 1)
+				.hasNumberOfTableJoins("item_tags", INNER, 1);
 	}
 
 	@Test
 	public void shouldFindAllCustomersWithoutUsingJoinFetches() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
-
 		mockMvc.perform(post("/multilevel-join-fetch/findAllWithoutFetchJoins")
 				.param("tag", "#snacks"))
 			.andExpect(status().isOk())
@@ -311,8 +305,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldFindCustomersWithFetchedOrderWithTagsAndNotes() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
-
 		mockMvc.perform(post("/multilevel-join-fetch/findAllCustomersFetchOrdersWithTagsAndNotes")
 				.param("tag", "#snacks"))
 				.andExpect(status().isOk())
@@ -377,8 +369,6 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 
 	@Test
 	public void shouldFindCustomersByOrderedItemTag_withFetchedOrdersWithTagsAndNotes() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
-
 		mockMvc.perform(post("/multilevel-join-fetch/findCustomersByOrderedItemTag_fetchOrdersWithTagsAndNotes")
 				.param("tag", "#fruits"))
 			.andExpect(status().isOk())
@@ -395,17 +385,15 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
 				.hasSelects(1)
-				.hasJoins(4)
-				.hasOneClause(" left outer join orders ")
-				.hasOneClause(" left outer join orders_tags ")
-				.hasOneClause(" left outer join order_note ")
-				.hasOneClause(" left outer join item_tags ");
+				.hasNumberOfJoins(4)
+				.hasNumberOfTableJoins("orders", LEFT, 1)
+				.hasNumberOfTableJoins("orders_tags", LEFT, 1)
+				.hasNumberOfTableJoins("order_note", LEFT, 1)
+				.hasNumberOfTableJoins("item_tags", INNER, 1);
 	}
 
 	@Test
 	public void shouldFindCustomersByOrderedItemWithTagDifferentThan_withFetchedOrdersWithTagsAndNotes() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
-
 		mockMvc.perform(post("/multilevel-join-fetch/findCustomersWithOrderedItemTaggedDifferentlyThan_fetchOrderWithTagsAndNotes")
 				.param("tag", "#fruits"))
 			.andExpect(status().isOk())
@@ -433,12 +421,11 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 		assertThatInterceptedStatements()
 				// Verifying that all lazy collection is initialized due to join fetch usage.
 				.hasSelects(1)
-				.hasJoins(4)
-				.hasOneClause(" inner join orders ")
-				.hasOneClause(" inner join orders_tags ")
-				.hasOneClause(" inner join item_tags ")
-				.hasOneClause(" left outer join order_note ");
-
+				.hasNumberOfJoins(4)
+				.hasNumberOfTableJoins("orders", INNER, 1)
+				.hasNumberOfTableJoins("orders_tags", INNER, 1)
+				.hasNumberOfTableJoins("item_tags", INNER, 1)
+				.hasNumberOfTableJoins("order_note", LEFT, 1);
 	}
 
 }

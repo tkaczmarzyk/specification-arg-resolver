@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Address {

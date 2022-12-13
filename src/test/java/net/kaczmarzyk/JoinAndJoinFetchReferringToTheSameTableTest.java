@@ -15,16 +15,16 @@
  */
 package net.kaczmarzyk;
 
+import jakarta.servlet.ServletException;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerDto;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
 import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
-import net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,10 +35,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.NestedServletException;
 
+import static jakarta.persistence.criteria.JoinType.INNER;
 import static java.util.stream.Collectors.toList;
-import static javax.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
@@ -75,8 +75,8 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 		@RequestMapping(value = "/join-and-join-fetch/customers_join_fetch")
 		@ResponseBody
 		public Object findByOrderedItemTagName_join_fetch(
-				@JoinFetch(paths = "orders", alias = "o")
-				@JoinFetch(paths = "o.tags", alias = "t")
+				@JoinFetch(paths = "orders", alias = "o", joinType = LEFT)
+				@JoinFetch(paths = "o.tags", alias = "t", joinType = LEFT)
 				@Spec(path = "t.name", params = "tagName", spec = LikeIgnoreCase.class)
 						Specification<Customer> spec) {
 
@@ -152,6 +152,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 
 			customer("Maggie", "Simpson").build(em);
 		});
+		em.flush();
 	}
 
 	@After
@@ -164,56 +165,55 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 
 	@Test
 	public void findsByOrdersAndName_join() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
+		HibernateStatementInspector.clearInterceptedStatements();
 
 		performRequestAndAssertResponseContent("/join-and-join-fetch/customers_join");
 
 		assertThatInterceptedStatements()
 				// N+1 SELECT problem
 				.hasSelects(5)
-				.hasJoins(5)
-				.hasOneClause(" left outer join orders ")
-				.hasOneClause(" left outer join orders_tags ")
-				.hasOneClause(" left outer join item_tags ")
-				.hasClause(" inner join item_tags ", 2);
+				.hasNumberOfJoins(5)
+				.hasNumberOfTableJoins("orders", LEFT, 1)
+				.hasNumberOfTableJoins("orders_tags", LEFT, 1)
+				.hasNumberOfTableJoins("item_tags", INNER, 3);
 	}
 
 	@Test
 	public void findsByOrdersAndName_join_fetch() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
+		HibernateStatementInspector.clearInterceptedStatements();
 
 		performRequestAndAssertResponseContent("/join-and-join-fetch/customers_join_fetch");
 
 		assertThatInterceptedStatements()
 				.hasSelects(1)
 				// Verifying that all lazy collection is initialized due to join fetch usage.
-				.hasJoins(3)
-				.hasOneClause(" left outer join orders ")
-				.hasOneClause(" left outer join orders_tags ")
-				.hasOneClause(" left outer join item_tags ");
+				.hasNumberOfJoins(3)
+                .hasNumberOfTableJoins("orders", LEFT, 1)
+                .hasNumberOfTableJoins("orders_tags", LEFT, 1)
+                .hasNumberOfTableJoins("item_tags", INNER, 1);
 	}
 
 	@Test
 	public void findsByOrdersAndName_join_and_join_fetch() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
+		HibernateStatementInspector.clearInterceptedStatements();
 
 		performRequestAndAssertResponseContent("/join-and-join-fetch/customers_join_and_join_fetch");
 
 		assertThatInterceptedStatements()
 				.hasSelects(1)
 				// Example of redundant joins due to usage @Join and @JoinFetch with the same aliases
-				.hasJoins(6)
-				.hasClause(" left outer join orders ", 2)
-				.hasClause(" left outer join orders_tags ", 2)
-				.hasClause(" left outer join item_tags ", 2);
+				.hasNumberOfJoins(6)
+				.hasNumberOfTableJoins("orders", LEFT, 2)
+				.hasNumberOfTableJoins("orders_tags", LEFT, 2)
+				.hasNumberOfTableJoins("item_tags", INNER, 2);
 	}
 
 	@Test
 	public void throwsNestedServletExceptionWhenJoinPathContainsJoinFetchAlias() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
+		HibernateStatementInspector.clearInterceptedStatements();
 
 		assertThrows(
-				NestedServletException.class,
+				ServletException.class,
 				() -> {
 					mockMvc.perform(get("/join-and-join-fetch/customers_joinPathContainingJoinFetchAlias")
 							.param("tagName", "#snacks")
@@ -225,17 +225,19 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 	}
 
 	@Test
-	public void throwsNestedServletExceptionWhenJoinFetchPathContainsJoinAlias() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
+	public void throwsServletExceptionWhenJoinFetchPathContainsJoinAlias() throws Exception {
+		HibernateStatementInspector.clearInterceptedStatements();
 
 		assertThrows(
-				NestedServletException.class,
+				ServletException.class,
 				() -> {
 					mockMvc.perform(get("/join-and-join-fetch/customers_joinFetchPathContainingJoinAlias")
 							.param("tagName", "#snacks")
 							.accept(MediaType.APPLICATION_JSON))
 							.andExpect(status().isOk());
-				}
+				},
+				"Request processing failed: org.springframework.dao.InvalidDataAccessApiUsageException: " +
+						"Join fetch definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
 		);
 
 	}

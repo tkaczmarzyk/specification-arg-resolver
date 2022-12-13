@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -28,7 +28,7 @@ import java.util.*;
 
 /**
  * A simple entity for specification testing
- * 
+ *
  * @author Tomasz Kaczmarzyk
  */
 @Entity
@@ -39,7 +39,7 @@ public class Customer {
     private Long id;
 
     private Gender gender;
-    
+
     @Enumerated(EnumType.STRING)
     private Gender genderAsString;
 
@@ -48,7 +48,7 @@ public class Customer {
     private String lastName;
 
     private String nickName;
-    
+
     @Embedded
     private Address address = new Address();
 
@@ -70,25 +70,25 @@ public class Customer {
     private float weightFloat;
     private Double weightDouble;
     private BigDecimal weightBigDecimal;
-    
+
     private boolean gold;
     private Boolean goldObj;
-    
+
     private Instant dateOfNextSpecialOfferInstant;
     private OffsetDateTime dateOfNextSpecialOffer;
-    
+
     private UUID refCode;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Order> orders;
-    
+
     @OneToMany(mappedBy = "customer2", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Order> orders2;
-    
+
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Badge> badges;
-    
-    
+
+
     public Customer() {
     }
 
@@ -150,15 +150,15 @@ public class Customer {
         this.birthDate = birthDate;
     }
 
-	public String getOccupation() {
-		return occupation;
-	}
+    public String getOccupation() {
+        return occupation;
+    }
 
-	public void setOccupation(String occupation) {
-		this.occupation = occupation;
-	}
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
+    }
 
-	public LocalDateTime getLastOrderTime() {
+    public LocalDateTime getLastOrderTime() {
         return lastOrderTime;
     }
 
@@ -167,105 +167,105 @@ public class Customer {
     }
 
     /**
-     * 
+     *
      * @param weight
      * NOTE: weightFloat has 0.1 added, weightDouble has 0.2 added, weightBigDecimal has 0.3 added
      */
-	public void setWeight(int weight) {
-		this.weight = weight;
-		this.weightInt = weight;
-		this.weightLong = weight;
-		this.weightFloat = weight + 0.1f;
-		this.weightDouble = weight + 0.2;
-		this.weightBigDecimal = BigDecimal.valueOf(weight).add(new BigDecimal("0.3"));
-	}
-	
-	public boolean isGold() {
-		return gold;
-	}
-	
-	public void setGold(boolean gold) {
-		this.gold = gold;
-		this.goldObj = gold;
-	}
-	
-	public OffsetDateTime getDateOfNextSpecialOffer() {
-		return dateOfNextSpecialOffer;
-	}
-	
-	public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
-		this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
-		this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
-	}
-	
-	public UUID getRefCode() {
-		return refCode;
-	}
-	
-	public void setRefCode(UUID refCode) {
-		this.refCode = refCode;
-	}
-	
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
-	
-	public String getNickName() {
-		return nickName;
-	}
+    public void setWeight(int weight) {
+        this.weight = weight;
+        this.weightInt = weight;
+        this.weightLong = weight;
+        this.weightFloat = weight + 0.1f;
+        this.weightDouble = weight + 0.2;
+        this.weightBigDecimal = BigDecimal.valueOf(weight).add(new BigDecimal("0.3"));
+    }
 
-	public Collection<Order> getOrders() {
-	    if (orders == null) {
-	        orders = new HashSet<>();
-	    }
-	    return orders;
-	}
-	
-	public Collection<Order> getOrders2() {
-		if (orders2 == null) {
-			orders2 = new HashSet<>();
-		}
-		return orders2;
-	}
-	
-	@Override
-	public String toString() {
-		return "Customer[" + firstName + " " + lastName + "]";
-	}
+    public boolean isGold() {
+        return gold;
+    }
 
-	public Gender getGenderAsString() {
-		return genderAsString;
-	}
+    public void setGold(boolean gold) {
+        this.gold = gold;
+        this.goldObj = gold;
+    }
 
-	public Integer getWeight() {
-		return weight;
-	}
+    public OffsetDateTime getDateOfNextSpecialOffer() {
+        return dateOfNextSpecialOffer;
+    }
 
-	public int getWeightInt() {
-		return weightInt;
-	}
+    public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
+        this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
+        this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
+    }
 
-	public long getWeightLong() {
-		return weightLong;
-	}
+    public UUID getRefCode() {
+        return refCode;
+    }
 
-	public float getWeightFloat() {
-		return weightFloat;
-	}
+    public void setRefCode(UUID refCode) {
+        this.refCode = refCode;
+    }
 
-	public Double getWeightDouble() {
-		return weightDouble;
-	}
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
 
-	public Boolean getGoldObj() {
-		return goldObj;
-	}
-	
-	public Set<Badge> getBadges() {
-		if (badges == null) {
-			badges = new HashSet<>();
-		}
-		return badges;
-	}
-	
+    public String getNickName() {
+        return nickName;
+    }
+
+    public Collection<Order> getOrders() {
+        if (orders == null) {
+            orders = new HashSet<>();
+        }
+        return orders;
+    }
+
+    public Collection<Order> getOrders2() {
+        if (orders2 == null) {
+            orders2 = new HashSet<>();
+        }
+        return orders2;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer[" + firstName + " " + lastName + "]";
+    }
+
+    public Gender getGenderAsString() {
+        return genderAsString;
+    }
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public int getWeightInt() {
+        return weightInt;
+    }
+
+    public long getWeightLong() {
+        return weightLong;
+    }
+
+    public float getWeightFloat() {
+        return weightFloat;
+    }
+
+    public Double getWeightDouble() {
+        return weightDouble;
+    }
+
+    public Boolean getGoldObj() {
+        return goldObj;
+    }
+
+    public Set<Badge> getBadges() {
+        if (badges == null) {
+            badges = new HashSet<>();
+        }
+        return badges;
+    }
+
 }

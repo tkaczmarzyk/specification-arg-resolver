@@ -1,3 +1,61 @@
+v3.0.0
+=======
+* Migrated project to spring 3.0 and java 17
+* Added support for spring-native (see [README.md](README.md#spring-native-image--graalvm-native-image-support) for the details)
+  * For specifications defined in annotation parameters, the hint registrar `SpecificationArgumentResolverHintRegistrar.java` should be imported to the project:
+    * ```
+      @Configuration
+      @ImportAutoConfiguration(@ImportRuntimeHints(SpecificationArgumentResolverHintRegistrar.class)
+      public class AppConfig{}
+      ```
+  * For specification defined in interfaces
+    * The hints could be registered manually:
+      ```
+      @And({
+      @Spec(path = "firstName", params = "firstName", spec = Equal.class),
+      @Spec(path = "lastName", params = "lastName", spec = Equal.class),
+      })
+    
+      interface SpecDefinedInInterface extends Specification<Citizen> {}
+
+      class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+          @Override
+          public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+              hints.proxies().registerJdkProxy(SpecDefinedInInterface.class);
+          }
+      }
+
+      @Configuration
+      @ImportAutoConfiguration(@ImportRuntimeHints(CustomRuntimeHintsRegistrar.class)
+      public class AppConfig{}
+      ```
+    * or through the `SpecificationArgumentResolverUserInterfacesHintRegistrar.java` util which scans classpath to find a interfaces with specification definitions. to use it, you should extend `SpecificationArgumentResolverProxyHintRegistrar.java` and set the packages with interfaces containing specification definitions, and import hints from this registrar.
+      Example:
+        ```
+        class ProjectSpecificationArgumentResolverProxyHintRegistrar extends SpecificationArgumentResolverProxyHintRegistrar {
+            protected MyProjectSpecificationArgumentResolverProxyHintRegistrar() {
+                super(
+                        "net.kaczmarzyk" // the name of package containing the interfaces with specification definitions
+                );
+            }
+        }
+        ```
+      and then in config:
+        ```
+        @Configuration
+        @ImportRuntimeHints(SpecificationArgumentResolverHintRegistrar.class) //suport for reflection
+        @ImportRuntimeHints(MyProjectSpecificationArgumentResolverProxyHintRegistrar.class) //suport for dynamic proxy
+        public class AppConfig{}
+        ```
+      The `SpecificationArgumentResolverProxyHintRegistrar.java` requires dependency:
+      ```
+  	   <dependency>
+  	       <groupId>io.github.classgraph</groupId>
+  	       <artifactId>classgraph</artifactId>
+  	       <version>4.8.151</version> //or higher
+  	   </dependency>
+      ```
+      
 v2.14.0
 =======
 * added support for `jsonPaths` during generation of swagger documentation.

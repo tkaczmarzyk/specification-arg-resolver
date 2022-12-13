@@ -15,14 +15,16 @@
  */
 package net.kaczmarzyk;
 
-import net.kaczmarzyk.spring.data.jpa.*;
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerDto;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -33,10 +35,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
+import static jakarta.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static java.util.stream.Collectors.toList;
 import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import static org.hamcrest.Matchers.hasSize;
@@ -56,15 +56,6 @@ public class JoinFetchE2eTest extends E2eTestBase {
 		public Object findByFirstName(
 
 				@JoinFetch(paths = "badges")
-				@Spec(path = "firstName", spec = Equal.class) Specification<Customer> spec) {
-
-			return customerRepository.findAll(spec);
-		}
-
-		@RequestMapping("/join-fetch/customers/not-distinct")
-		public Object findByFirstNameAndJoinFetchDistinctSetToFalse(
-
-				@JoinFetch(paths = "badges", distinct = false)
 				@Spec(path = "firstName", spec = Equal.class) Specification<Customer> spec) {
 
 			return customerRepository.findAll(spec);
@@ -111,30 +102,6 @@ public class JoinFetchE2eTest extends E2eTestBase {
 	}
 
 	@Test
-	public void createsDistinctQueryByDefault() throws Exception {
-		mockMvc.perform(get("/join-fetch/customers")
-				.param("firstName", "Homer")
-				.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[0].firstName").value("Homer"))
-			.andExpect(jsonPath("$[1]").doesNotExist());
-	}
-
-	@Test
-	public void createsNotDistinctQueryIfDistinctAttributeIsSetToFalse() throws Exception {
-		mockMvc.perform(get("/join-fetch/customers/not-distinct")
-				.param("firstName", "Homer")
-				.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$[0].firstName").value("Homer"))
-			.andExpect(jsonPath("$[1].firstName").value("Homer"))
-			.andExpect(jsonPath("$[2].firstName").value("Homer"))
-			.andExpect(jsonPath("$[3]").doesNotExist());
-	}
-
-	@Test
 	public void findsByLastNameWithPagination() throws Exception {
 		mockMvc.perform(get("/join-fetch-pageable/customers")
 				.param("lastName", "Simpson")
@@ -164,7 +131,7 @@ public class JoinFetchE2eTest extends E2eTestBase {
 
 	@Test
 	public void filtersByAttributesOfMultipleJoins() throws Exception {
-		HibernateStatementInterceptor.clearInterceptedStatements();
+		HibernateStatementInspector.clearInterceptedStatements();
 
 		mockMvc.perform(get("/multi-join-fetch/customers")
 				.param("order", "Pizza")
@@ -178,12 +145,11 @@ public class JoinFetchE2eTest extends E2eTestBase {
 
 		assertThatInterceptedStatements()
 				.hasSelects(1)
-				.hasJoins(4)
-				.hasOneClause(" left outer join badges ")
-				.hasOneClause(" left outer join orders ")
-				.hasOneClause(" left outer join orders_tags ")
-				.hasOneClause(" left outer join item_tags ");
-
+				.hasNumberOfJoins(4)
+				.hasNumberOfTableJoins("badges", LEFT, 1)
+				.hasNumberOfTableJoins("orders", LEFT, 1)
+				.hasNumberOfTableJoins("orders_tags", LEFT, 1)
+				.hasNumberOfTableJoins("item_tags", INNER, 1);
 	}
 
 }

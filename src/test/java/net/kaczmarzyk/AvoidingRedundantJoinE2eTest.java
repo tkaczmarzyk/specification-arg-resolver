@@ -16,11 +16,12 @@
 package net.kaczmarzyk;
 
 import static java.util.Arrays.asList;
-import static net.kaczmarzyk.utils.LoggedQueryAssertions.assertThat;
+import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,10 @@ public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 		em.persist(new Movie("My Way or the Highway to Heaven",
 				asList(new Person("Marge Simpson"), new Person("Homer Simpson")),
 				asList(new Person("Rob Oliver"))));
+
+		em.flush();
+
+		HibernateStatementInspector.clearInterceptedStatements();
 	}
 	
 	@Test
@@ -89,12 +94,11 @@ public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/movies?star=Homer&director=Anderson"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.totalElements").value(1));
-		
-		assertThat()
-			.numberOfPerformedHqlQueriesIs(1)
-			.andQueryWithIndex(0)
-			.hasNumberOfJoinsForPath(".stars", 1)
-			.hasNumberOfJoinsForPath(".directors", 1);
+
+		assertThatInterceptedStatements()
+						.hasSelects(1)
+						.hasNumberOfTableJoins("movie_stars", 1)
+						.hasNumberOfTableJoins("movie_directors", 1);
 	}
 	
 	@Test
@@ -102,12 +106,11 @@ public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/movies?star=Homer"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.totalElements").value(2));
-		
-		assertThat()
-			.numberOfPerformedHqlQueriesIs(1)
-			.andQueryWithIndex(0)
-			.hasNumberOfJoinsForPath(".stars", 1)
-			.hasNumberOfJoinsForPath(".directors", 0);
+
+		assertThatInterceptedStatements()
+				.hasSelects(1)
+				.hasNumberOfTableJoins("movie_stars", 1)
+				.hasNumberOfTableJoins("movie_directors", 0);
 	}
 	
 	@Test
@@ -115,11 +118,10 @@ public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 		mockMvc.perform(get("/movies"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.totalElements").value(3));
-		
-		assertThat()
-			.numberOfPerformedHqlQueriesIs(1)
-			.andQueryWithIndex(0)
-			.hasNumberOfJoins(0);
+
+		assertThatInterceptedStatements()
+				.hasSelects(1)
+				.hasNumberOfJoins(0);
 	}
 		
 }
