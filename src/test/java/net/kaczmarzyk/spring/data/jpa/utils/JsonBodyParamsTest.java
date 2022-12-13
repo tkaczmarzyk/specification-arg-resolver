@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import net.kaczmarzyk.utils.ReflectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -149,6 +150,20 @@ public class JsonBodyParamsTest {
 
 		//when
 		Collection<String> result = JsonBodyParams.parse(json).getParamValues("key1.innerKey");
+
+		//then
+		Assert.assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void returnsEmptyValueWhenRequestBodyIsNull() {
+		//given
+		String json = "{ \"key1\": { \"key2\": \"value\" }}";
+
+		//when
+		JsonBodyParams jsonBodyParams = JsonBodyParams.parse(json);
+		ReflectionUtils.set(jsonBodyParams, "requestBody", null);
+		Collection<String> result = jsonBodyParams.getParamValues("key1.innerKey");
 
 		//then
 		Assert.assertTrue(result.isEmpty());

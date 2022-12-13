@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -113,6 +114,12 @@ public class IgnoreOnTypeMismatchTest extends IntegrationTestBase {
 		EqualsVerifier.forClass(IgnoreOnTypeMismatch.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
+	@Test
+	public void toStringVerifier() {
+		ToStringVerifier.forClass(IgnoreOnTypeMismatch.class)
 				.verify();
 	}
 }
