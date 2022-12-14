@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 
 import org.junit.Test;
 import org.springframework.core.MethodParameter;

@@ -28,7 +28,7 @@ import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
@@ -146,9 +146,7 @@ public class JoinTest extends IntegrationTestBase {
 				InvalidDataAccessApiUsageException.class,
 				() -> customerRepo.findAll(conjunction),
 				"Join definition with alias: 'o' not found! " +
-						"Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'; " +
-						"nested exception is java.lang.IllegalArgumentException: " +
-						"Join definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
+						"Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
 		);
 	}
 

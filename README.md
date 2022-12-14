@@ -30,7 +30,9 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Json Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
+   * [Spring native support](#spring-native-image--graalvm-native-image-support) -- information about support for spring native
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
+   * [Cache support](#cache-support) -- information about support for spring cache
    * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
@@ -1104,6 +1106,11 @@ Configuration example:
 
 SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
 
+
+Spring native image / GraalVM native image support
+------------
+Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please find more detailed description and guideline [here](README_native_image.md)
+
 Swagger support
 ------------
 
@@ -1169,7 +1176,8 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
+| `v3.0.0` (or newer)                | `17` or higher   | Compiled and tested against Spring Boot `3.0.0`                                         |
+| `v2.X.X`                           | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
 As far as the features supported in each version, please check the [CHANGELOG.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/CHANGELOG.md)

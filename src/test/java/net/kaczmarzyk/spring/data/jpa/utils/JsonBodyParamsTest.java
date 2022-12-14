@@ -17,9 +17,11 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import org.assertj.core.api.LocalDateAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;

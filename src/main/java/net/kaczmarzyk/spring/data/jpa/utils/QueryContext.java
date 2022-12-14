@@ -15,9 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import java.util.function.Function;
 
 /**

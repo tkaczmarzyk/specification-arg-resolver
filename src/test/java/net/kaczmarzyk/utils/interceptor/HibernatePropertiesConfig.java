@@ -16,6 +16,7 @@
 package net.kaczmarzyk.utils.interceptor;
 
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
@@ -23,7 +24,12 @@ import java.util.Map;
 @Configuration
 public class HibernatePropertiesConfig implements HibernatePropertiesCustomizer {
 
+    @Bean
+    HibernateStatementInspector hibernateStatementInterceptor() {
+        return new HibernateStatementInspector();
+    }
+
     public void customize(Map<String, Object> hibernateProperties) {
-        hibernateProperties.put("hibernate.session_factory.interceptor", new HibernateStatementInterceptor());
+        hibernateProperties.put("hibernate.session_factory.statement_inspector", HibernateStatementInspector.class);
     }
 }

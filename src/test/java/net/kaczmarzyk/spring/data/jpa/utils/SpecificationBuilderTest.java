@@ -29,7 +29,9 @@ import net.kaczmarzyk.utils.ReflectionUtils;
 import org.junit.Test;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
+
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -234,7 +236,7 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 	private Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "arg$2");
+				ReflectionUtils.get(Proxy.getInvocationHandler(resolvedSpec), "arg$1");
 
 		return ReflectionUtils.get(resolvedConjunction, "innerSpecs");
 	}

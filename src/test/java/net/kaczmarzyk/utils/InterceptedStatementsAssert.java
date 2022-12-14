@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.utils.interceptor;
+package net.kaczmarzyk.utils;
+
+import jakarta.persistence.criteria.JoinType;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +33,39 @@ public class InterceptedStatementsAssert {
 	}
 
 	public static InterceptedStatementsAssert assertThatInterceptedStatements() {
-		return new InterceptedStatementsAssert(HibernateStatementInterceptor.getInterceptedStatements());
+		return new InterceptedStatementsAssert(HibernateStatementInspector.getInterceptedStatements());
 	}
 
+	public InterceptedStatementsAssert hasNumberOfTableJoins(String tableName, int expectedCount) {
+		int numberOfJoins = logs.stream()
+				.mapToInt(statement -> new LoggedQuery(statement).countTableJoins(tableName))
+				.sum();
+
+		assertThat(numberOfJoins)
+				.withFailMessage("Expected: %s table %s joins, actual: %s", tableName, expectedCount, numberOfJoins)
+				.isEqualTo(expectedCount);
+		return this;
+	}
+
+	public InterceptedStatementsAssert hasNumberOfTableJoins(String tableName, JoinType joinType, int expectedCount) {
+		int numberOfJoins = logs.stream()
+				.mapToInt(statement -> new LoggedQuery(statement).countTableJoins(tableName, joinType))
+				.sum();
+
+		assertThat(numberOfJoins)
+				.withFailMessage("Expected: %s table %s joins (%s), actual: %s", tableName, expectedCount, joinType, numberOfJoins)
+				.isEqualTo(expectedCount);
+		return this;
+	}
+
+	public LoggedQueryAssertions<InterceptedStatementsAssert> andQueryAtIndex(Integer index) {
+		return new LoggedQueryAssertions<>(this, new LoggedQuery(logs.get(index)));
+	}
+
+	public InterceptedStatementsAssert hasOnlyOneQueryThatWasExecuted() {
+		return hasSelects(1);
+	}
+	
 	public InterceptedStatementsAssert hasSelects(int expectedAmountOfSelects) {
 		long selectCount = logs.stream()
 				.filter(statement -> statement.contains("SELECT") || statement.contains("select"))
@@ -43,7 +76,7 @@ public class InterceptedStatementsAssert {
 		return this;
 	}
 
-	public InterceptedStatementsAssert hasJoins(int expectedNumberOfJoins) {
+	public InterceptedStatementsAssert hasNumberOfJoins(int expectedNumberOfJoins) {
 		long joinsCount = logs.stream()
 				.map(statement -> countNumberOfSqlClauseInStatement(statement, "join"))
 				.reduce((i, joinCounter) -> joinCounter += i)
@@ -64,9 +97,8 @@ public class InterceptedStatementsAssert {
 
 	public InterceptedStatementsAssert hasClause(String clause, int expectedNumberOfClauseOccurrences) {
 		long clauseOccurrenceCount = logs.stream()
-				.map(statement -> countNumberOfSqlClauseInStatement(statement, clause))
-				.reduce((i, joinCounter) -> joinCounter += i)
-				.orElse(0);
+				.mapToInt(statement -> countNumberOfSqlClauseInStatement(statement, clause))
+				.sum();
 
 		if (clauseOccurrenceCount != expectedNumberOfClauseOccurrences) {
 			throw new AssertionError(
@@ -118,7 +150,7 @@ public class InterceptedStatementsAssert {
 		return count;
 
 	}
-  
+
   public InterceptedStatementsAssert hasSingleSelectWithNumberOfJoins(int expectedNumberOfJoins) {
 		assertThat(logs.size()).isEqualTo(1);
 
@@ -126,6 +158,17 @@ public class InterceptedStatementsAssert {
 
 		assertThat(numberOfJoins)
 				.isEqualTo(expectedNumberOfJoins);
+
+		return this;
+	}
+
+	public InterceptedStatementsAssert doesNotHaveClause(String clause) {
+		List<String> statementsWithGivenClause = logs.stream()
+				.filter(string -> string.contains(clause))
+				.toList();
+
+		assertThat(statementsWithGivenClause)
+				.isEmpty();
 
 		return this;
 	}

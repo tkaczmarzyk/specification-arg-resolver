@@ -15,11 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import net.kaczmarzyk.spring.data.jpa.utils.*;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
