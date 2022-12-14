@@ -27,8 +27,13 @@ You can also take a look on a working Spring Boot app that uses this library: ht
       * [Interface inheritance tree](#interface-inheritance-tree)
    * [Handling different field types](#handling-different-field-types) -- handling situations when provided parameter is of different type than the field (e.g. `"abc"` sent against an integer field)
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
+   * [Json Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
+   * [Spring native support](#spring-native-image--graalvm-native-image-support) -- information about support for spring native
+   * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
+   * [Cache support](#cache-support) -- information about support for spring cache
+   * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
 
@@ -102,7 +107,7 @@ For multi value filters like: `In.class`, `NotIn.class` there are two ways of pa
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator.
+The second way is the use `paramSeparator` attribute of `@Spec`, which determines the argument separator (can be specified only for query parameters).
 For example the following controller method:
 ```java
 @RequestMapping(value = "/customers", params = "genderIn")
@@ -162,7 +167,7 @@ HTTP request example:
 
     GET http://myhost/customers?gender=MALE&gender=FEMALE
 
-or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=',', spec=In.class)`):
+or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=",", spec=In.class)`):
 
     GET http://myhost/customers?gender=MALE,FEMALE
 
@@ -760,7 +765,7 @@ Consider a field `age` of type `Integer` and the following specification definit
 @Spec(path="age", spec=Equal.class)
 ```
 
-If non-numeric values is passed with the HTTP request (e.g. `?age=test`), then the result list will be empty. If you want an exception to be thrown instead, use `onTypeMismatch` property of the `Spec` annotation, i.e:
+If non-numeric value is passed with the HTTP request (e.g. `?age=test`), then the result list will be empty. If you want an exception to be thrown instead, use `onTypeMismatch` property of the `Spec` annotation, i.e:
 
 ```java
 @Spec(path="age", spec=Equal.class, onTypeMismatch=OnTypeMismatch.EXCEPTION)
@@ -776,6 +781,28 @@ This behaviour has changed in version `0.9.0` (exception was the default value i
 
 (assuming that `firstName` is `String` and `customerId` is a numeric type)
 
+There is also `OnTypeMismatch.IGNORE` type which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
+For example, for the following endpoint:
+```java
+ @RequestMapping(value = "/customers", params = { "id" })
+ @ResponseBody
+ public Object findById(
+		 @Spec(path = "id", params = "id", spec = Equal.class, onTypeMismatch = IGNORE) Specification<Customer> spec) {
+   return customerRepo.findAll(spec);
+}
+```
+* For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all records from the database (without filtering) will be returned.
+  But for the following endpoint with `In.class` specification type:
+```java
+  @RequestMapping(value = "/customers", params = { "id_in" })
+  @ResponseBody
+  public Object findByIdIn(
+		  @Spec(path = "id", params = "id_in", spec = In.class, paramSeparator = ",", onTypeMismatch = IGNORE) Specification<Customer> spec) {
+	return customerRepo.findAll(spec);
+    }
+```
+* For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not the whole specification) will be ignored)
+* For request with only invalid params `id_in=invalidId1,invalidId2` - an empty result will be returned as there are only invalid parameters (which are ignored).
 
 Path variable support
 ---------------------
@@ -804,8 +831,8 @@ public Object findById(
 
   return customerRepo.findAll(spec);
 }
-```
 
+```
 Request Header Support
 ---------------------
 
@@ -829,6 +856,120 @@ public Object findCustomersByGenderAndNickName(
 
 This will handle request `GET /customers/reqHeaders` as `select c from Customers c where c.gender = :gender AND c.nickName = :nickName`.
 
+Json request body support
+---------------------
+
+Also, you can specify value for specification in json request body. It might be useful when you use large number of filters for request because request url is limited in size. You can refer to the specification values by using `jsonPaths` property of `@Spec` (instead of `params` property).
+
+In order to use specification with json request body params, `gson` dependency has to be added to the project. 
+Example maven dependency in project pom file:
+```xml
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.9</version>
+</dependency>
+```
+
+<b>Warning!</b> RequestBody with specification values will be consumed during processing and will not be available for further operations (i.e. ServletInputStream will return no data). If you need to use request body for something else (rather than just building the Specification), you need to use some kind of content caching/wrapping (e.g. in a servlet filter).
+
+For example:
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByLastNameAndAge(
+                        @And({
+                            @Spec(path = "lastName", jsonPaths = "customerLastName", spec = Equal.class),
+                            @Spec(path = "age", jsonPaths = "customerAge", spec = Equal.class)
+                        }) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "customerLastName": "Simpson",
+  "customerAge": 18
+}
+```
+as `select c from Customers c where c.lastName = 'Simpson' and c.age = 18`
+
+Nested json objects are supported. You should specify full path to node from root element dividing nodes by `.` 
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByLastNameAndGender(
+                        @And({
+                            @Spec(path = "lastName", jsonPaths = "filters.customer.lastName", spec = Equal.class),
+                            @Spec(path = "gender", jsonPaths = "filters.gender", spec = Equal.class)
+                        }) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "filters": {
+    "customer": {
+      "lastName": "Simpson"
+    },
+    "gender": "MALE"
+  }
+}
+```
+as `select c from Customers c where c.lastName = 'Simpson' and c.gender = 'MALE'`
+
+For multiple values you can use array (of primitive types only) as result node in json body. For example:
+
+```java
+  @PostMapping("/customers/find")
+  public List<Customer> findCustomersByGenderIn(
+                    @Spec(path = "lastName", jsonPaths = "filters.genders", spec = In.class) Specification<Customer> spec) {   
+    
+      return repository.findAll(spec);
+  }
+```
+
+This will handle request `POST /customers/find` with body:
+
+```json
+{
+  "filters": {
+    "genders": ["MALE", "FEMALE"]
+  }
+}
+```
+as `select c from Customers c where c.gender in ('MALE', 'FEMALE')`
+
+<b>!!!ATTENTION:</b> Json cannot contain array of non-primitive types (array of objects). For example:
+```java
+ @PostMapping("/customers/find")
+ public List<Customer> findCustomersByLastName(
+                @Spec(path = "lastName", jsonPaths = "customer.names.firstName", spec = Equal.class) Specification<Customer> spec) {
+	return repository.findAll(spec);
+}
+```
+Request `POST /customers/find` with the following body is not valid (`JsonParseException` will be thrown)
+```json
+{
+  "customer":{
+      "names":[
+         {
+            "firstName":"value1"
+         },
+         {
+            "lastName":"value2"
+         }
+      ]
+   }
+}
+```
 
 Type conversions for HTTP parameters
 -------------------
@@ -965,10 +1106,68 @@ Configuration example:
 
 SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
 
+
+Spring native image / GraalVM native image support
+------------
+Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please find more detailed description and guideline [here](README_native_image.md)
+
+Swagger support
+------------
+
+Right now specification argument resolver supports only one library -> `Springdoc-openapi`.
+
+There are two steps in order to enable support for `Springdoc-openapi` library:
+* Add following dependency from `Springdoc-openapi` (tested with `1.6.13` version):
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-common</artifactId>
+</dependency>
+```
+
+* Create `@Bean` of type `SpecificationArgResolverSpringdocOperationCustomizer` in your app configuration:
+```java
+@Bean
+public SpecificationArgResolverSpringdocOperationCustomizer specificationArgResolverSpringdocOperationCustomizer() {
+    return new SpecificationArgResolverSpringdocOperationCustomizer();
+}
+```
+
 Cache support
 ------------
 
 Specification argument resolver supports [spring cache](https://docs.spring.io/spring-boot/docs/2.6.x/reference/html/io.html#io.caching). Equals and HashCode contract is satisfied for generated specifications.
+
+Building specifications outside the web layer
+------------------------------------------
+
+Specification argument resolver supports creating specifications apart from web layer.
+To build specification outside the web-layer the `SpecificationBuilder` should be used:
+
+* Let's assume the following specification:
+    ```java
+    @Join(path = "orders", alias = "o")
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    public interface CustomerByOrdersSpec implements Specification<Customer> {
+    }
+    ```
+    * To create specifications outside the web layer, you can use the specification builder as follows:
+      ```java
+      Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
+            .withParams("orderItem", "Pizza")
+            .build();            
+      ```
+    * It is recommended to use builder methods that corresponding to the type of argument type passed to specification interface, e.g.:
+        * For:
+      ```java
+      @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+      ``` 
+      you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+        * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+        * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
+        * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
+
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
 
 Compatibility notes
 -------------------
@@ -977,7 +1176,8 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v2.0.0` (or newer)                | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
+| `v3.0.0` (or newer)                | `17` or higher   | Compiled and tested against Spring Boot `3.0.0`                                         |
+| `v2.X.X`                           | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
 As far as the features supported in each version, please check the [CHANGELOG.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/CHANGELOG.md)
@@ -992,7 +1192,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.9.0</version>
+    <version>2.13.0</version>
 </dependency>
 ```
 

@@ -38,7 +38,8 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
 @ComponentScan(basePackages = "net.kaczmarzyk", excludeFilters = {
 		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = Application.class),
 		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithConfiguredConversionService.class),
-		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithConfiguredCache.class)
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = ApplicationWithConfiguredCache.class),
+		@ComponentScan.Filter(type = ASSIGNABLE_TYPE, value = { ApplicationWithGlobalPrefix.class })
 })
 @EnableJpaRepositories
 @EnableAutoConfiguration

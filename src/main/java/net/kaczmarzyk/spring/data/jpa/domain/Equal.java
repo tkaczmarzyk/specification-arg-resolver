@@ -15,13 +15,15 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
+import java.util.Objects;
 
 /**
  * <p>Filters with equal where-clause (e.g. {@code where firstName = "Homer"}).</p>
@@ -63,25 +65,19 @@ public class Equal<T> extends PathSpecification<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!super.equals(o)) {
 			return false;
-		Equal other = (Equal) obj;
-		if (converter == null) {
-			if (other.converter != null)
-				return false;
-		} else if (!converter.equals(other.converter))
-			return false;
-		if (expectedValue == null) {
-			if (other.expectedValue != null)
-				return false;
-		} else if (!expectedValue.equals(other.expectedValue))
-			return false;
-		return true;
+		}
+		Equal<?> equal = (Equal<?>) o;
+		return Objects.equals(expectedValue, equal.expectedValue) &&
+				Objects.equals(converter, equal.converter);
 	}
 
 	@Override

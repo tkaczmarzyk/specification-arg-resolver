@@ -24,8 +24,8 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import static javax.persistence.criteria.JoinType.LEFT;
-import static javax.persistence.criteria.JoinType.RIGHT;
+import static jakarta.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.RIGHT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -42,7 +42,7 @@ public class RepeatedJoinFetchResolverTest extends ResolverTestBase {
 		NativeWebRequest req = mock(NativeWebRequest.class);
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> result = resolver.buildSpecification(ctx, param.getParameterAnnotation(RepeatedJoinFetch.class));
 

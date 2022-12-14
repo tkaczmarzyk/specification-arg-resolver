@@ -6,8 +6,8 @@
     </encoder>
   </appender>
 
-  <logger name="org.hibernate.hql.internal.ast.QueryTranslatorImpl" level="DEBUG">
-  	<appender name="testAppender" class="net.kaczmarzyk.utils.TestLogAppender"/>
+  <logger name="org.hibernate" level="DEBUG">
+    <appender-ref ref="STDOUT" />
   </logger>
 
   <root level="INFO">

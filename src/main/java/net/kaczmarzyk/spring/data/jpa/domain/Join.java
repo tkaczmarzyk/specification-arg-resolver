@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
@@ -73,7 +73,7 @@ public class Join<T> implements Specification<T>, Fake {
                         alias,
                         root,
                         (r) -> {
-                        	javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
+                        	jakarta.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
                         	return evaluated.join(extractedPathToJoin, joinType);
                         }
                 );
@@ -81,7 +81,7 @@ public class Join<T> implements Specification<T>, Fake {
 		return null;
 	}
 
-	private void putValToQueryContext(String alias, Root<T> root, Function<Root<?>, javax.persistence.criteria.Join<?, ?>> lazyVal) {
+	private void putValToQueryContext(String alias, Root<T> root, Function<Root<?>, jakarta.persistence.criteria.Join<?, ?>> lazyVal) {
 		// generally we want to evaluate join lazily
 		// because most typical scenario tends to be a LEFT join with distinct = true
 		// and in such scenario if there is no filtering on the joined part (e.g. no related http param was sent)

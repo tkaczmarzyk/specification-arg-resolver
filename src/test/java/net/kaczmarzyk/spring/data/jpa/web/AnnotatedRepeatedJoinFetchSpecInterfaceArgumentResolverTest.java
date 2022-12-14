@@ -27,7 +27,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import static javax.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.*;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 /**
@@ -92,7 +92,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 		MethodParameter param = methodParameter("annotatedInterface", OrderedItemNameBadgeFilter.class);
 
 		NativeWebRequest req = nativeWebRequest().build();
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -116,7 +116,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 				.build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -142,7 +142,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 		NativeWebRequest req = nativeWebRequest()
 				.withParameterValues("itemName", "Duff Beer")
 				.build();
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 

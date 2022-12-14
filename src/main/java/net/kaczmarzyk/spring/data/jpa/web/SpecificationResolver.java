@@ -27,6 +27,6 @@ public interface SpecificationResolver<T extends Annotation> {
 
 	Class<? extends Annotation> getSupportedSpecificationDefinition();
 
-	Specification<Object> buildSpecification(WebRequestProcessingContext context, T def);
+	Specification<Object> buildSpecification(ProcessingContext context, T def);
 
 }

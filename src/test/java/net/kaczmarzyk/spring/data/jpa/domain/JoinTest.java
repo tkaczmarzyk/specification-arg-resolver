@@ -15,23 +15,24 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static javax.persistence.criteria.JoinType.INNER;
-import static javax.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.INNER;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
-import static net.kaczmarzyk.utils.LoggedQueryAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import java.util.List;
+import static net.kaczmarzyk.utils.InterceptedStatementsAssert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+
+import com.jparams.verifier.tostring.ToStringVerifier;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -158,9 +159,7 @@ public class JoinTest extends IntegrationTestBase {
 				InvalidDataAccessApiUsageException.class,
 				() -> customerRepo.findAll(conjunction),
 				"Join definition with alias: 'o' not found! " +
-						"Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'; " +
-						"nested exception is java.lang.IllegalArgumentException: " +
-						"Join definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
+						"Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
 		);
 	}
 	
@@ -176,8 +175,8 @@ public class JoinTest extends IntegrationTestBase {
 			.extracting(Customer::getFirstName)
 			.containsOnly("Bart", "Homer");
 		
-		assertThat()
-			.theOnlyOneQueryThatWasExecuted()
+		assertThatInterceptedStatements()
+			.hasSelects(1)
 			.hasNumberOfJoins(1);
 	}
 	
@@ -193,11 +192,11 @@ public class JoinTest extends IntegrationTestBase {
 			.extracting(Customer::getFirstName)
 			.containsOnly("Bart");
 		
-		assertThat()
-			.theOnlyOneQueryThatWasExecuted()
+		assertThatInterceptedStatements()
+			.hasSelects(1)
 			.hasNumberOfJoins(2)
-			.hasNumberOfJoins(1, LEFT)
-			.hasNumberOfJoins(1, INNER);
+			.hasNumberOfTableJoins("orders", LEFT, 1)
+			.hasNumberOfTableJoins("tags", INNER, 1);
 	}
 	
 	@Test
@@ -212,8 +211,8 @@ public class JoinTest extends IntegrationTestBase {
 			.extracting(Customer::getFirstName)
 			.containsOnly("Bart", "Homer", "Homer", "Marge");
 		
-		assertThat()
-			.theOnlyOneQueryThatWasExecuted()
+		assertThatInterceptedStatements()
+			.hasSelects(1)
 			.hasNumberOfJoins(1);
 	}
 	
@@ -229,10 +228,11 @@ public class JoinTest extends IntegrationTestBase {
 			.extracting(Customer::getFirstName)
 			.containsOnly("Bart", "Homer", "Homer", "Marge");
 		
-		assertThat()
-			.theOnlyOneQueryThatWasExecuted()
+		assertThatInterceptedStatements()
+			.hasSelects(1)
 			.hasNumberOfJoins(2)
-			.hasNumberOfJoins(2, LEFT);
+			.hasNumberOfTableJoins("orders", LEFT, 1)
+			.hasNumberOfTableJoins("tags", LEFT, 1);
 	}
 	
 	@Test
@@ -247,8 +247,8 @@ public class JoinTest extends IntegrationTestBase {
 			.extracting(Customer::getFirstName)
 			.containsOnly("Bart", "Homer", "Marge");
 		
-		assertThat()
-			.theOnlyOneQueryThatWasExecuted()
+		assertThatInterceptedStatements()
+			.hasSelects(1)
 			.hasNumberOfJoins(0);
 	}
 	
@@ -264,8 +264,8 @@ public class JoinTest extends IntegrationTestBase {
 			.extracting(Customer::getFirstName)
 			.containsOnly("Bart", "Homer", "Marge");
 		
-		assertThat()
-			.theOnlyOneQueryThatWasExecuted()
+		assertThatInterceptedStatements()
+			.hasSelects(1)
 			.hasNumberOfJoins(0);
 	}
 
@@ -274,6 +274,12 @@ public class JoinTest extends IntegrationTestBase {
 		EqualsVerifier.forClass(Join.class)
 				.usingGetClass()
 				.suppress(Warning.NONFINAL_FIELDS)
+				.verify();
+	}
+
+	@Test
+	public void toStringVerifier() {
+		ToStringVerifier.forClass(Join.class)
 				.verify();
 	}
 

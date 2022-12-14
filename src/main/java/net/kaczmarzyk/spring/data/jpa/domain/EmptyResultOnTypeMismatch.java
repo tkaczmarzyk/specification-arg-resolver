@@ -15,10 +15,10 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -53,7 +53,7 @@ public class EmptyResultOnTypeMismatch<T> implements Specification<T> {
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		try {
 			return wrappedSpec.toPredicate(root, query, cb);
-		} catch (ValueRejectedException e) {
+		} catch (IllegalArgumentException e) {
 			return cb.equal(cb.literal(0), cb.literal(1));
 		}
 	}

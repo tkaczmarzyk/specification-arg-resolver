@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.utils.interceptor;
+package net.kaczmarzyk.spring.data.jpa.utils;
 
-import org.hibernate.EmptyInterceptor;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.stream.Collectors;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+/**
+ * @author Andrei Shakarov
+ */
+public class IOUtils {
 
-public class HibernateStatementInterceptor extends EmptyInterceptor {
+    private IOUtils() {}
 
-	private static List<String> statements = new CopyOnWriteArrayList<>();
-
-	@Override
-	public String onPrepareStatement(String sql) {
-		statements.add(sql);
-		return super.onPrepareStatement(sql);
-	}
-
-	public static List<String> getInterceptedStatements() {
-		return statements;
-	}
-
-	public static void clearInterceptedStatements() {
-		statements.clear();
-	}
+    public static String toString(InputStream inputStream, Charset charset) {
+        return new BufferedReader(
+            new InputStreamReader(inputStream, charset))
+            .lines()
+            .collect(Collectors.joining("\n"));
+    }
 }

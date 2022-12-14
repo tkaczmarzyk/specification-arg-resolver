@@ -15,22 +15,23 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
 import java.lang.annotation.Annotation;
 
-import org.springframework.core.MethodParameter;
+public interface ProcessingContext {
 
+	Class<?> getParameterType();
 
-public class MethodParameterUtil {
+	Annotation[] getParameterAnnotations();
 
-	public static boolean isAnnotatedWith(Class<? extends Annotation> annotation, MethodParameter param) {
-		return param.hasParameterAnnotation(annotation) || param.getParameterType().isAnnotationPresent(annotation);
-	}
-	
-	public static <A extends Annotation> A getAnnotation(Class<A> annotationType, MethodParameter parameter) {
-        A annotation = parameter.getParameterAnnotation(annotationType);
-        if (annotation == null) {
-            annotation = parameter.getParameterType().getAnnotation(annotationType);
-        }
-        return annotation;
-    }
+	QueryContext queryContext();
+
+	String getRequestHeaderValue(String headerKey);
+
+	String[] getParameterValues(String webParamName);
+
+	String getPathVariableValue(String pathVariableName);
+
+	String[] getBodyParamValues(String bodyParamName);
 }

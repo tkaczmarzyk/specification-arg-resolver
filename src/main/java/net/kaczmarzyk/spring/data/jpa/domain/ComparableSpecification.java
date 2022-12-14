@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.Objects;
 

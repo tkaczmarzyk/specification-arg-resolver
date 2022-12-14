@@ -28,8 +28,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Collection;
 
-import static javax.persistence.criteria.JoinType.INNER;
-import static javax.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -88,7 +88,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 				.withParameterValues("itemName", "Item-123").build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
@@ -118,7 +118,7 @@ public class AnnotatedJoinFetchSpecInterfaceArgumentResolverTest extends Annotat
 				.withParameterValues("nickName", "Hom").build();
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-		QueryContext queryCtx = new WebRequestQueryContext(req);
+		QueryContext queryCtx = new DefaultQueryContext();
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 

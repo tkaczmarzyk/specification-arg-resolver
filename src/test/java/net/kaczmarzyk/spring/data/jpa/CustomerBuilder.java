@@ -21,7 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * Helper class for building test data
@@ -29,44 +29,44 @@ import javax.persistence.EntityManager;
  * @author Tomasz Kaczmarzyk
  */
 public class CustomerBuilder {
-	
+
 	private Customer customer = new Customer();
-	
+
 	private CustomerBuilder(String firstName, String lastName) {
 		customer.setFirstName(firstName);
 		customer.setLastName(lastName);
 	}
-	
+
 	public CustomerBuilder street(String street) {
 		customer.getAddress().setStreet(street);
 		return this;
 	}
-	
+
 	public CustomerBuilder gender(Gender gender) {
 		customer.setGender(gender);
 		return this;
 	}
-	
+
 	public CustomerBuilder nickName(String nickName) {
 		customer.setNickName(nickName);
 		return this;
 	}
-	
+
 	public CustomerBuilder birthDate(LocalDate birthDate) {
 		customer.setBirthDate(birthDate);
 		return this;
 	}
-	
+
 	public CustomerBuilder occupation(String occupation) {
 		customer.setOccupation(occupation);
 		return this;
 	}
-	
+
 	public CustomerBuilder lastOrderTime(LocalDateTime lastOrderTime) {
 		customer.setLastOrderTime(lastOrderTime);
 		return this;
 	}
-	
+
 	public CustomerBuilder registrationDate(int year, int month, int day) {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.YEAR, year);
@@ -79,32 +79,32 @@ public class CustomerBuilder {
 		customer.setRegistrationDate(cal.getTime());
 		return this;
 	}
-	
+
 	public CustomerBuilder weight(int weight) {
 		customer.setWeight(weight);
 		return this;
 	}
-	
+
 	public CustomerBuilder golden() {
 		customer.setGold(true);
 		return this;
 	}
-	
+
 	public CustomerBuilder notGolden() {
 		customer.setGold(false);
 		return this;
 	}
-	
+
 	public CustomerBuilder refCode(UUID refCode) {
 		customer.setRefCode(refCode);
 		return this;
 	}
-	
+
 	public CustomerBuilder nextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
 		customer.setDateOfNextSpecialOffer(dateOfNextSpecialOffer);
 		return this;
 	}
-	
+
 	public CustomerBuilder orders(String... orderItems) {
 		for (String orderItem : orderItems) {
 			new Order(customer, orderItem);
@@ -118,19 +118,19 @@ public class CustomerBuilder {
 		}
 		return this;
 	}
-	
+
 	public CustomerBuilder badges(String... badgeTypes) {
 		for (String badgeType : badgeTypes) {
 			new Badge(customer, badgeType);
 		}
 		return this;
 	}
-	
+
 	public Customer build(EntityManager em) {
 		em.persist(customer);
 		return customer;
 	}
-	
+
 	public static CustomerBuilder customer(String firstName, String lastName) {
 		return new CustomerBuilder(firstName, lastName);
 	}

@@ -1,4 +1,106 @@
-v2.10.0 - not released yet
+v3.0.0
+=======
+* Migrated project to spring boot 3.0 and java 17
+  * Spring boot 3.0 is based on Hibernate version 6.X because in this version of hibernate all query results are distinct by default. This shouldn't affect most projects, but please be extra careful if you've ever used a spec with the `distinct=false` attribute.
+* Added support for spring native-image.
+  * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details
+
+v2.14.0
+=======
+* added support for `jsonPaths` during generation of swagger documentation.
+* fixed bugs related to swagger support:
+  * fixed marking `headers` and `pathVars` parameters as required/non-required. From now all `pathVars` are marked as required and `headers` can be marked as required depending on controller method configuration.
+  * fixed duplicated parameters when the same parameter was defined in spec and controller method (e.g. when we defined `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`).
+* added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
+  * For example, for the following endpoint:
+    ```
+    @RequestMapping(value = "/customers", params = { "id" })
+    @ResponseBody
+    public Object findById(
+           @Spec(path = "id", params = "id", spec = Equal.class, onTypeMismatch = IGNORE) Specification<Customer> spec) {
+    return customerRepo.findAll(spec);
+    }
+    ```
+  * For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all records from the database (without filtering) will be returned.
+  * But for the following endpoint with `In.class` specification type:
+    ```
+    @RequestMapping(value = "/customers", params = { "id_in" })
+    @ResponseBody
+    public Object findByIdIn(
+       @Spec(path = "id", params = "id_in", spec = In.class, paramSeparator = ",", onTypeMismatch = IGNORE) Specification<Customer> spec) {
+			 return customerRepo.findAll(spec);
+    }
+    ```
+  * For request with params `?id_in=1,2,invalidId` - only valid params will be taken into consideration (invalid params (not the whole specification) will be ignored)
+  * For request with only invalid params `id_in=invalidId1,invalidId2` - an empty result will be returned as there are only invalid parameters (which are ignored).
+
+v2.13.0
+=======
+* added Json request body support. This requires adding `gson` dependency to your project and has some limitations -- see json section of README.md for more details.
+
+v2.12.1
+=======
+* Fixed bug in `SpecificationBuilder` that was creating doubled query conditions.
+* Changed approach for resolving path variables when processing request.
+* From now on, the controllers with global prefixes (configured using `org.springframework.web.servlet.config.annotation.PathMatchConfigurer`) should be properly handled:
+  * For example, apps with following configuration are now supported:
+    ```
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+      configurer.addPathPrefix("/api/{tenantId}", HandlerTypePredicate.forAnnotation(RestController.class));
+    }
+    ```
+    Below spec will be properly resolved for request URI: `/api/123/findCustomers?firstName=John`
+    ```
+    @RestController
+    public static class TestController {
+
+        @GetMapping("/findCustomers")
+        public List<Customer> findCustomersByFirstName(@And(value = {
+        		@Spec(path = "tenantId", pathVar = "tenantId", spec = Equal.class),
+        		@Spec(path = "firstName" param = "firstName", spec = Equal.class)
+        }) Specification<Customer> spec) {
+        	return customerRepository.findAll(spec);
+        }
+    }
+    ```
+   
+v2.12.0
+=======
+* added support for `SpringDoc-OpenAPI` library -- parameters from specification will be shown in generated documentation
+
+v2.11.0
+=======
+* replaced hibernate java persistence api dependency with java persistence api (`org.hibernate.javax.persistence` -> `javax.persistence`)
+* Added `SpecificationBuilder` that allows creating specification apart from web layer.
+
+  For example:
+  * Let's assume the following specification:
+    ```java
+    @Join(path = "orders", alias = "o")
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    public interface CustomerByOrdersSpec implements Specification<Customer> {
+    }
+    ```
+  * To create specifications outside the web layer, you can use the specification builder as follows:
+    ```java
+    Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
+          .withParams("orderItem", "Pizza")
+          .build();            
+    ```
+  * It is recommended to use builder methods that corresponding to the type of argument passed to specification interface, e.g.:
+    * For:
+    ```java
+    @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
+    ``` 
+    you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+    * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+    * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
+    * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
+
+  The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
+
+v2.10.0
 =======
 * fixed bug with not evaluated join fetches in count queries (e.g. during pagination) -- from now on, join fetches in count queries are either skipped (if they are used solely for initialization of lazy collections) or converted to regular joins (if there is any filtering applied on the fetched part). See [issue 138](https://github.com/tkaczmarzyk/specification-arg-resolver/issues/138) for more details.
 * added conversion support for `Timestamp`

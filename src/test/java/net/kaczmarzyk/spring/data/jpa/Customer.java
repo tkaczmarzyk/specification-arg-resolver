@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -28,7 +28,7 @@ import java.util.*;
 
 /**
  * A simple entity for specification testing
- * 
+ *
  * @author Tomasz Kaczmarzyk
  */
 @Entity
@@ -39,7 +39,7 @@ public class Customer {
     private Long id;
 
     private Gender gender;
-    
+
     @Enumerated(EnumType.STRING)
     private Gender genderAsString;
 
@@ -48,7 +48,7 @@ public class Customer {
     private String lastName;
 
     private String nickName;
-    
+
     @Embedded
     private Address address = new Address();
 
@@ -70,25 +70,25 @@ public class Customer {
     private float weightFloat;
     private Double weightDouble;
     private BigDecimal weightBigDecimal;
-    
+
     private boolean gold;
     private Boolean goldObj;
-    
+
     private Instant dateOfNextSpecialOfferInstant;
     private OffsetDateTime dateOfNextSpecialOffer;
-    
+
     private UUID refCode;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Order> orders;
-    
+
     @OneToMany(mappedBy = "customer2", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Order> orders2;
-    
+
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Badge> badges;
-    
-    
+
+
     public Customer() {
     }
 
@@ -167,7 +167,7 @@ public class Customer {
     }
 
     /**
-     * 
+     *
      * @param weight
      * NOTE: weightFloat has 0.1 added, weightDouble has 0.2 added, weightBigDecimal has 0.3 added
      */
@@ -179,37 +179,37 @@ public class Customer {
 		this.weightDouble = weight + 0.2;
 		this.weightBigDecimal = BigDecimal.valueOf(weight).add(new BigDecimal("0.3"));
 	}
-	
+
 	public boolean isGold() {
 		return gold;
 	}
-	
+
 	public void setGold(boolean gold) {
 		this.gold = gold;
 		this.goldObj = gold;
 	}
-	
+
 	public OffsetDateTime getDateOfNextSpecialOffer() {
 		return dateOfNextSpecialOffer;
 	}
-	
+
 	public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
 		this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
 		this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
 	}
-	
+
 	public UUID getRefCode() {
 		return refCode;
 	}
-	
+
 	public void setRefCode(UUID refCode) {
 		this.refCode = refCode;
 	}
-	
+
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
 	}
-	
+
 	public String getNickName() {
 		return nickName;
 	}
@@ -220,14 +220,14 @@ public class Customer {
 	    }
 	    return orders;
 	}
-	
+
 	public Collection<Order> getOrders2() {
 		if (orders2 == null) {
 			orders2 = new HashSet<>();
 		}
 		return orders2;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Customer[" + firstName + " " + lastName + "]";
@@ -260,12 +260,12 @@ public class Customer {
 	public Boolean getGoldObj() {
 		return goldObj;
 	}
-	
+
 	public Set<Badge> getBadges() {
 		if (badges == null) {
 			badges = new HashSet<>();
 		}
 		return badges;
 	}
-	
+
 }

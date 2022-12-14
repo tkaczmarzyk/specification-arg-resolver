@@ -16,11 +16,12 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
@@ -58,24 +59,25 @@ public class Like<T> extends PathSpecification<T> implements WithoutTypeConversi
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!super.equals(o)) {
             return false;
-        Like<?> other = (Like<?>) obj;
-        if (pattern == null) {
-            if (other.pattern != null)
-                return false;
-        } else if (!pattern.equals(other.pattern))
-            return false;
-        return true;
+        }
+        Like<?> like = (Like<?>) o;
+        return Objects.equals(pattern, like.pattern);
     }
 
-	@Override
-	public String toString() {
-		return "Like [pattern=" + pattern + "]";
-	}
+    @Override
+    public String toString() {
+        return "Like[" +
+                "pattern='" + pattern + '\'' +
+                ", path='" + path + '\'' +
+                ']';
+    }
 }

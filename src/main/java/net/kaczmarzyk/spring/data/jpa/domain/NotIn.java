@@ -16,13 +16,14 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
@@ -72,26 +73,27 @@ public class NotIn<T> extends PathSpecification<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!super.equals(o)) {
 			return false;
-		NotIn other = (NotIn) obj;
-		if (!Arrays.equals(allowedValues, other.allowedValues))
-			return false;
-		if (converter == null) {
-			if (other.converter != null)
-				return false;
-		} else if (!converter.equals(other.converter))
-			return false;
-		return true;
+		}
+		NotIn<?> notIn = (NotIn<?>) o;
+		return Arrays.equals(allowedValues, notIn.allowedValues) &&
+				Objects.equals(converter, notIn.converter);
 	}
 
 	@Override
 	public String toString() {
-		return "NotIn [allowedValues=" + Arrays.toString(allowedValues) + "]";
+		return "NotIn[" +
+				"allowedValues=" + Arrays.toString(allowedValues) +
+				", converter=" + converter +
+				", path='" + path + '\'' +
+				']';
 	}
 }
