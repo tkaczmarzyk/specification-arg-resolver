@@ -38,7 +38,7 @@ import static java.util.Objects.nonNull;
  * *
  * * The fallback approach, resolves variables by comparison of:
  * * * actual request path - {@link HttpServletRequest#getPathInfo()} or {@link HttpServletRequest#getRequestURI()} (when getPathInfo() is a null)
- * * * path pattern - it is calculated using information included in the annotations: @RequestMapping, @GetMapping on the method & class level.
+ * * * path pattern - it is calculated using information included in the annotations: @RequestMapping, @GetMapping on the method and class level.
  * * The fallback mechanism does not support URIs consisting from global prefix defined for example via: {@link org.springframework.web.servlet.config.annotation.PathMatchConfigurer#addPathPrefix PathMatchConfigurer::addPathPrefix}
  *
  * @author Tomasz Kaczmarzyk
