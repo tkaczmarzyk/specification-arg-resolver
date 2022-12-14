@@ -46,7 +46,6 @@ public class SpecificationFactory {
 						new ConjunctionSpecificationResolver(simpleSpecificationResolver),
 						new AndSpecificationResolver(simpleSpecificationResolver),
 						new JoinSpecificationResolver(),
-						new JoinsSpecificationResolver(),
 						new JoinFetchSpecificationResolver(),
 						new RepeatedJoinFetchResolver(),
 						new RepeatedJoinResolver()).stream()

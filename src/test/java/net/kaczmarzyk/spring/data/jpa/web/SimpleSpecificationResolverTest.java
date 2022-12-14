@@ -183,7 +183,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2" }));
+        assertThat(resolved).isEqualTo(new Equal(queryCtx, "thePath", new String[] { "theValue", "theValue2" }, defaultConverter));
     }
 
     @Test
@@ -195,7 +195,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<Object> resolved = resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "value1" }));
+        assertThat(resolved).isEqualTo(new Equal(queryCtx, "thePath", new String[] { "value1" }, defaultConverter));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
+        assertThat(resolved).isEqualTo(new Equal<>(queryCtx, "thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }, defaultConverter));
     }
 
     @Test
@@ -281,11 +281,11 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         public void testMethod2(@Spec(path = "thePath", params = "theParameter", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
-        public void testMethod3(@Spec(path = "thePath", params = "theParameter", spec = EqualEnum.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        public void testMethod3(@Spec(path = "thePath", params = "theParameter", spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethod4(
-                @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = EqualEnum.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+                @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethod5(

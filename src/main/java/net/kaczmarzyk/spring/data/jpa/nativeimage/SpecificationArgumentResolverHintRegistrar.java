@@ -32,15 +32,9 @@ public class SpecificationArgumentResolverHintRegistrar implements RuntimeHintsR
 
     private static final Set<Class<?>> SPECIFICATION_CLASSES = Set.of(
             Between.class,
-            DateAfter.class,
-            DateAfterInclusive.class,
-            DateBefore.class,
-            DateBeforeInclusive.class,
-            DateBetween.class,
             EndingWith.class,
             EndingWithIgnoreCase.class,
             Equal.class,
-            EqualEnum.class,
             EqualIgnoreCase.class,
             GreaterThan.class,
             GreaterThanOrEqual.class,

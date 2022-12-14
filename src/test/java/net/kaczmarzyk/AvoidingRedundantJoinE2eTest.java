@@ -38,7 +38,6 @@ import net.kaczmarzyk.spring.data.jpa.Person;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
@@ -47,10 +46,8 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
  */
 public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 
-	@Joins({
-	        @Join(path = "stars", alias = "s"),
-	        @Join(path = "directors", alias = "d")
-	})
+	@Join(path = "stars", alias = "s")
+    @Join(path = "directors", alias = "d")
 	@And({
 	        @Spec(path = "name", params = "name", spec = Like.class),
 	        @Spec(path = "s.name", params = "star", spec = Like.class),

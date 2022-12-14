@@ -32,8 +32,8 @@ import static java.util.Objects.isNull;
 
 public class SimpleSpecificationGenerator {
 
-	public static List<Class<? extends PathSpecification>> LIST_OF_SIMPLE_SPECIFICATION_TYPES = Stream.of(Between.class, DateAfter.class, DateAfterInclusive.class, DateBefore.class,
-			DateBetween.class, EndingWith.class, EndingWithIgnoreCase.class, Equal.class, EqualEnum.class,
+	public static List<Class<? extends PathSpecification>> LIST_OF_SIMPLE_SPECIFICATION_TYPES = Stream.of(Between.class,
+			EndingWith.class, EndingWithIgnoreCase.class, Equal.class,
 			EqualIgnoreCase.class, GreaterThan.class, GreaterThanOrEqual.class, In.class, IsNull.class,
 			LessThan.class, LessThanOrEqual.class, Like.class, LikeIgnoreCase.class, NotEqual.class,
 			NotEqualIgnoreCase.class, NotIn.class, NotLike.class, NotNull.class, Null.class,

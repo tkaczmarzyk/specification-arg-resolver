@@ -29,12 +29,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.DateAfterInclusive;
-import net.kaczmarzyk.spring.data.jpa.domain.DateBeforeInclusive;
+import net.kaczmarzyk.spring.data.jpa.domain.GreaterThanOrEqual;
+import net.kaczmarzyk.spring.data.jpa.domain.LessThanOrEqual;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 /**
+ * (converted to use GreaterThanOrEqual/LessThanOrEqual after dropping Date-specific specification classes)
  *
  * @author Kamil Sutkowski
  */
@@ -52,7 +53,7 @@ public class DateInclusiveE2eTest extends E2eTestBase {
                 @Spec(path = "registrationDate",
                       params = "registeredBefore",
                       config = "dd-MM-yyyy",
-                      spec = DateBeforeInclusive.class) Specification<Customer> spec) {
+                      spec = LessThanOrEqual.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
@@ -62,7 +63,7 @@ public class DateInclusiveE2eTest extends E2eTestBase {
         public Object findCustomersRegisteredAfter(
                 @Spec(path = "registrationDate",
                       params = "registeredAfter",
-                      spec = DateAfterInclusive.class) Specification<Customer> spec) {
+                      spec = GreaterThanOrEqual.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
@@ -73,10 +74,10 @@ public class DateInclusiveE2eTest extends E2eTestBase {
                 @And({
                     @Spec(path = "registrationDate",
                           params = "registeredBefore",
-                          spec = DateBeforeInclusive.class),
+                          spec = LessThanOrEqual.class),
                     @Spec(path = "registrationDate",
                           params = "registeredAfter",
-                          spec = DateAfterInclusive.class)}) Specification<Customer> spec) {
+                          spec = GreaterThanOrEqual.class)}) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }

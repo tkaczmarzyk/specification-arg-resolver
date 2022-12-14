@@ -46,10 +46,8 @@ import static org.mockito.Mockito.when;
 public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
 	// TC-1. interface with @Joins spec
-	@Joins({
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders", alias = "o"),
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders2", alias = "o2", type = LEFT)
-	})
+	@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders", alias = "o")
+	@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders2", alias = "o2", type = LEFT)
 	@Spec(path = "o.itemName", params = "itemName", spec = Equal.class)
 	private interface OrderedItemNameFilter<T> extends Specification<T> {
 	}
@@ -61,9 +59,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 	private interface LastNameGenderFilterExtendedByOrderedItemNameFilter extends OrderedItemNameFilter<Customer> {
 	}
 
-	@Joins({
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "badges", alias = "b")
-	})
+	@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "badges", alias = "b")
 	@Spec(path = "b.badgeType", params = "badgeType", spec = Equal.class)
 	private interface BadgeFilter extends Specification<Customer> {
 	}

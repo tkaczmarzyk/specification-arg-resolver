@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
+ * (converted to use GreaterThan after dropping date-specific specification classes in 3.0.0)
+ * 
  * @author Tomasz Kaczmarzyk
  */
 public class DateAfterTest extends IntegrationTestBase {
@@ -47,14 +49,14 @@ public class DateAfterTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-    	DateAfter<Customer> after13th = new DateAfter<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
+    	GreaterThan<Customer> after13th = new GreaterThan<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
         
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)
             .hasSize(1)
             .containsOnly(moeSzyslak);
         
-        DateAfter<Customer> after10th = new DateAfter<>(queryCtx, "registrationDate", new String[] { "2014-03-10" }, defaultConverter);
+        GreaterThan<Customer> after10th = new GreaterThan<>(queryCtx, "registrationDate", new String[] { "2014-03-10" }, defaultConverter);
         
         result = customerRepo.findAll(after10th);
         assertThat(result)
@@ -64,7 +66,7 @@ public class DateAfterTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-    	DateAfter<Customer> after13th = new DateAfter<>(queryCtx, "registrationDate", new String[] {"13-03-2014"},
+    	GreaterThan<Customer> after13th = new GreaterThan<>(queryCtx, "registrationDate", new String[] {"13-03-2014"},
     			Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
         
         List<Customer> result = customerRepo.findAll(after13th);
@@ -75,11 +77,11 @@ public class DateAfterTest extends IntegrationTestBase {
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateAfter<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        new GreaterThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateAfter<>(queryCtx, "path", new String[] {}, defaultConverter);
+        new GreaterThan<>(queryCtx, "path", new String[] {}, defaultConverter);
     }
 }
