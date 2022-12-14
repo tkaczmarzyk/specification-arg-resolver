@@ -1040,6 +1040,9 @@ For example:
  @Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")
 ```
 
+If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date part will be provided time value will be set to the default value - midnight (UTC time for `OffsetDateTime`).
+
+For example, let us assume that the above specification with the custom config `config="dd-MM-yyyy"` corresponds to the `LocalDateTime` field in a database. Each argument provided to the specification will be converted to the date with the default time (e.g. `14-12-2022` -> `14-12-2022 00:00`)
 
 In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
 

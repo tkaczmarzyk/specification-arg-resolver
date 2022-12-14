@@ -1,8 +1,12 @@
+v2.15.0
+=======
+* added default time setting during conversion from date to time storing formats in `Converter`. Missing time values are filled with zeros (e.g. `LocalDateTime` format specified as `2022-12-14` will be converted to `2022-12-14 00:00`). Similar time setting is implemented for the following formats: `LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`. 
+
 v2.14.0
 =======
 * added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
   * For example, for the following endpoint:
-    ```
+    ```java
     @RequestMapping(value = "/customers", params = { "id" })
     @ResponseBody
     public Object findById(
@@ -12,7 +16,7 @@ v2.14.0
     ```
   * For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all records from the database (without filtering) will be returned.
   * But for the following endpoint with `In.class` specification type:
-    ```
+    ```java
     @RequestMapping(value = "/customers", params = { "id_in" })
     @ResponseBody
     public Object findByIdIn(

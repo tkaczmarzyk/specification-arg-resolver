@@ -89,4 +89,13 @@ public class StringToOffsetDateTimeConverterTest {
 
 	}
 
+	@Test
+	public void appendsDefaultTimeAndOffsetDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		OffsetDateTime offsetDateTime = converterWithCustomFormat.convert("2022-12-13", OffsetDateTime.class);
+
+		assertThat(offsetDateTime)
+				.isEqualTo("2022-12-13T00:00:00.000+00:00");
+	}
+
 }

@@ -87,4 +87,13 @@ public class StringToLocalDateTimeConverterTest {
 
 	}
 
+	@Test
+	public void appendsDefaultTimeDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		LocalDateTime localDateTime = converterWithCustomFormat.convert("2022-12-13", LocalDateTime.class);
+
+		assertThat(localDateTime)
+				.isEqualTo("2022-12-13T00:00:00");
+	}
+
 }
