@@ -24,8 +24,8 @@ import java.lang.reflect.Constructor;
 import java.util.Set;
 
 /**
- * Registers for reflection the constructors of specifications defined in package net.kaczmarzyk.spring.data.jpa.domain.
- *
+ * Registers the constructors of specifications defined in package net.kaczmarzyk.spring.data.jpa.domain (they are invoked by SimpleSpecificationResolver via reflection).
+ * This is needed for using this library in Spring Native builds (otherwise constructors would be considered unused)
  * @author Jakub Radlica
  */
 public class SpecificationArgumentResolverHintRegistrar implements RuntimeHintsRegistrar {

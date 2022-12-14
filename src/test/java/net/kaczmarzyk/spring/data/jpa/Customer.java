@@ -150,15 +150,15 @@ public class Customer {
         this.birthDate = birthDate;
     }
 
-    public String getOccupation() {
-        return occupation;
-    }
+	public String getOccupation() {
+		return occupation;
+	}
 
-    public void setOccupation(String occupation) {
-        this.occupation = occupation;
-    }
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
 
-    public LocalDateTime getLastOrderTime() {
+	public LocalDateTime getLastOrderTime() {
         return lastOrderTime;
     }
 
@@ -171,101 +171,101 @@ public class Customer {
      * @param weight
      * NOTE: weightFloat has 0.1 added, weightDouble has 0.2 added, weightBigDecimal has 0.3 added
      */
-    public void setWeight(int weight) {
-        this.weight = weight;
-        this.weightInt = weight;
-        this.weightLong = weight;
-        this.weightFloat = weight + 0.1f;
-        this.weightDouble = weight + 0.2;
-        this.weightBigDecimal = BigDecimal.valueOf(weight).add(new BigDecimal("0.3"));
-    }
+	public void setWeight(int weight) {
+		this.weight = weight;
+		this.weightInt = weight;
+		this.weightLong = weight;
+		this.weightFloat = weight + 0.1f;
+		this.weightDouble = weight + 0.2;
+		this.weightBigDecimal = BigDecimal.valueOf(weight).add(new BigDecimal("0.3"));
+	}
 
-    public boolean isGold() {
-        return gold;
-    }
+	public boolean isGold() {
+		return gold;
+	}
 
-    public void setGold(boolean gold) {
-        this.gold = gold;
-        this.goldObj = gold;
-    }
+	public void setGold(boolean gold) {
+		this.gold = gold;
+		this.goldObj = gold;
+	}
 
-    public OffsetDateTime getDateOfNextSpecialOffer() {
-        return dateOfNextSpecialOffer;
-    }
+	public OffsetDateTime getDateOfNextSpecialOffer() {
+		return dateOfNextSpecialOffer;
+	}
 
-    public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
-        this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
-        this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
-    }
+	public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
+		this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
+		this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
+	}
 
-    public UUID getRefCode() {
-        return refCode;
-    }
+	public UUID getRefCode() {
+		return refCode;
+	}
 
-    public void setRefCode(UUID refCode) {
-        this.refCode = refCode;
-    }
+	public void setRefCode(UUID refCode) {
+		this.refCode = refCode;
+	}
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
 
-    public String getNickName() {
-        return nickName;
-    }
+	public String getNickName() {
+		return nickName;
+	}
 
-    public Collection<Order> getOrders() {
-        if (orders == null) {
-            orders = new HashSet<>();
-        }
-        return orders;
-    }
+	public Collection<Order> getOrders() {
+	    if (orders == null) {
+	        orders = new HashSet<>();
+	    }
+	    return orders;
+	}
 
-    public Collection<Order> getOrders2() {
-        if (orders2 == null) {
-            orders2 = new HashSet<>();
-        }
-        return orders2;
-    }
+	public Collection<Order> getOrders2() {
+		if (orders2 == null) {
+			orders2 = new HashSet<>();
+		}
+		return orders2;
+	}
 
-    @Override
-    public String toString() {
-        return "Customer[" + firstName + " " + lastName + "]";
-    }
+	@Override
+	public String toString() {
+		return "Customer[" + firstName + " " + lastName + "]";
+	}
 
-    public Gender getGenderAsString() {
-        return genderAsString;
-    }
+	public Gender getGenderAsString() {
+		return genderAsString;
+	}
 
-    public Integer getWeight() {
-        return weight;
-    }
+	public Integer getWeight() {
+		return weight;
+	}
 
-    public int getWeightInt() {
-        return weightInt;
-    }
+	public int getWeightInt() {
+		return weightInt;
+	}
 
-    public long getWeightLong() {
-        return weightLong;
-    }
+	public long getWeightLong() {
+		return weightLong;
+	}
 
-    public float getWeightFloat() {
-        return weightFloat;
-    }
+	public float getWeightFloat() {
+		return weightFloat;
+	}
 
-    public Double getWeightDouble() {
-        return weightDouble;
-    }
+	public Double getWeightDouble() {
+		return weightDouble;
+	}
 
-    public Boolean getGoldObj() {
-        return goldObj;
-    }
+	public Boolean getGoldObj() {
+		return goldObj;
+	}
 
-    public Set<Badge> getBadges() {
-        if (badges == null) {
-            badges = new HashSet<>();
-        }
-        return badges;
-    }
+	public Set<Badge> getBadges() {
+		if (badges == null) {
+			badges = new HashSet<>();
+		}
+		return badges;
+	}
 
 }

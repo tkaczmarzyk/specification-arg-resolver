@@ -17,13 +17,16 @@ package net.kaczmarzyk.spring.data.jpa.nativeimage;
 
 /**
  *
+ * This package provides support for using specification-arg-resolver in Spring Native images for GraalVM.
+ * Due to mechanisms (reflection) used by this library, some addional configuration steps are needed in order to enable such support.
+ *
  * The specification-argument-resolver uses a two mechanisms which are not supported by GraalVM native image by default:
  *
  *  1) Reflection:
  *    * {@link net.kaczmarzyk.spring.data.jpa.web.SimpleSpecificationResolver} uses reflection during creation a specification with defined type.
  *    * "Native Image has partial support for reflection and needs to know ahead-of-time the reflectively accessed program elements." (https://www.graalvm.org/22.0/reference-manual/native-image/Reflection/)
  *    * To enable support for resolving specifications the library user:
- *      a) has to prepare a manual config for all classes (it does have sense but it's possible)
+ *      a) has to prepare a manual config for all classes (it's not convenient for the user however it is technically possible)
  *      b) (preferred) has to import runtime hints registered by {@link net.kaczmarzyk.spring.data.jpa.nativeimage.SpecificationArgumentResolverHintRegistrar}
  *
  *  2) Dynamic proxy:
@@ -35,8 +38,12 @@ package net.kaczmarzyk.spring.data.jpa.nativeimage;
  *    * The GraalVM native-image has a mechanism of automated dynamic proxy detection, however this mechanism does not cover our case.
  *    * To enable support for specifications defined in interfaces the library user:
  *       a) has to prepare a manual config for such classes (see graalvm documentation for details)
- *       b) or has to import runtime hints registered by {@link net.kaczmarzyk.spring.data.jpa.nativeimage.SpecificationArgumentResolverProxyHintRegistrar} - it uses classgraph library to find on classpath interfaces with sar annotations and register for them dynamic proxy hints.
+ *       b) (preffered) has to import runtime hints registered by {@link net.kaczmarzyk.spring.data.jpa.nativeimage.SpecificationArgumentResolverProxyHintRegistrar} - it uses classgraph library to find on classpath interfaces with sar annotations and register for them dynamic proxy hints.
  *
- *  The information about the fundamentals of GraalVM native image could be found in the GraalVM documentation: https://www.graalvm.org/22.0/reference-manual/native-image/
- *  The information about the spring-boot native image support ({@link org.springframework.aot.hint.RuntimeHintsRegistrar} could be found in the spring boot documentation: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#native-image
+ *  The information about the fundamentals of GraalVM native image could be found in the GraalVM documentation:
+ *  * https://www.graalvm.org/22.0/reference-manual/native-image/
+ *
+ *  The information about the spring-boot native image support ({@link org.springframework.aot.hint.RuntimeHintsRegistrar} could be found in the spring boot documentation:
+ *  * https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#native-image
+ *
  */

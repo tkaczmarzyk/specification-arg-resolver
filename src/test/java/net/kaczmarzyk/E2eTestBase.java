@@ -19,7 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.utils.TestLogAppender;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
-import net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert;
 import org.junit.Before;
 
 import java.time.LocalDate;

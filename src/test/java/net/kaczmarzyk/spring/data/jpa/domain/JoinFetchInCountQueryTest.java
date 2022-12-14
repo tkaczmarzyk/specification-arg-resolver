@@ -20,7 +20,7 @@ import static jakarta.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
-import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
+import static net.kaczmarzyk.utils.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.criteria.JoinType;
@@ -33,7 +33,6 @@ import org.springframework.data.jpa.domain.Specification;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
-import net.kaczmarzyk.utils.TestLogAppender;
 
 
 /**

@@ -21,8 +21,14 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 
 /**
- * This RuntimeHintsRegistrar implementation scans classpath and registers jdk proxy for classes annotated with specification-argument-resolver annotations.
+ * Registers the interfaces annotated with specification-argument-resolver annotations. (EnhancerUtil creates proxy for them)
+ * This is needed for using this library in Spring Native builds (the proxy classes have to be generated at the compilation time).
  *
+ * Example of interface annotated with specification-argument-resolver annotations for which the proxy hint should be registered:
+ * {@code
+ *   @Spec(path = "lastName", spec = Equal.class, constVal = "Simpson")
+ * 	 public interface SimpsonSpec extends Specification<Customer> {}
+ * }
  * @author Jakub Radlica
  */
 public abstract class SpecificationArgumentResolverProxyHintRegistrar implements RuntimeHintsRegistrar {

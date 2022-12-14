@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.utils.interceptor;
+package net.kaczmarzyk.utils;
 
 import jakarta.persistence.criteria.JoinType;
-import net.kaczmarzyk.utils.LoggedQuery;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +58,9 @@ public class InterceptedStatementsAssert {
 		return this;
 	}
 
+	public LoggedQueryAssertions<InterceptedStatementsAssert> andQueryAtIndex(Integer index) {
+		return new LoggedQueryAssertions<>(this, new LoggedQuery(logs.get(index)));
+	}
 
 	public InterceptedStatementsAssert hasOnlyOneQueryThatWasExecuted() {
 		return hasSelects(1);
