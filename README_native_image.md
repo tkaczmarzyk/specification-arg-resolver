@@ -43,27 +43,28 @@ The specification-argument-resolver uses two mechanisms that are not supported b
     * You should extend `SpecificationArgumentResolverProxyHintRegistrar.java` and set the packages with interfaces containing specification definitions, and import hints from this registrar.
       This registrar scans the classpath looking for a interfaces with specification-argument-resolver annotations, and register the found interfaces for dynamic proxy.
       Example:
-  ```
-  class ProjectSpecificationArgumentResolverProxyHintRegistrar extends SpecificationArgumentResolverProxyHintRegistrar {
-      protected MyProjectSpecificationArgumentResolverProxyHintRegistrar() {
-          super(
-                  "net.kaczmarzyk" // the name of package containing the interfaces with specification definitions
-          );
+      ```
+      class ProjectSpecificationArgumentResolverProxyHintRegistrar extends SpecificationArgumentResolverProxyHintRegistrar {
+          protected MyProjectSpecificationArgumentResolverProxyHintRegistrar() {
+              super(
+                      "net.kaczmarzyk" // the name of package containing the interfaces with specification definitions
+              );
+          }
       }
-  }
-  ```
-  and then in config:
-  ```
-  @Configuration
-  @ImportRuntimeHints(SpecificationArgumentResolverHintRegistrar.class) //suport for reflection
-  @ImportRuntimeHints(MyProjectSpecificationArgumentResolverProxyHintRegistrar.class) //suport for dynamic proxy
-  public class AppConfig{}
-  ```
+      ```
+      and then in config:
+      ```
+      @Configuration
+      @ImportRuntimeHints(SpecificationArgumentResolverHintRegistrar.class) //suport for reflection
+      @ImportRuntimeHints(MyProjectSpecificationArgumentResolverProxyHintRegistrar.class) //suport for dynamic proxy
+      public class AppConfig{}
+      ```
 
-  The `SpecificationArgumentResolverProxyHintRegistrar.java` requires dependency:
-  ```
-  <dependency>
-      <groupId>io.github.classgraph</groupId>
-      <artifactId>classgraph</artifactId>
-      <version>4.8.X</version>
-  </dependency>
+      The `SpecificationArgumentResolverProxyHintRegistrar.java` requires dependency:
+      ```
+      <dependency>
+          <groupId>io.github.classgraph</groupId>
+          <artifactId>classgraph</artifactId>
+          <version>4.8.X</version>
+      </dependency>
+      ```
