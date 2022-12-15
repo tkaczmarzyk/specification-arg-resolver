@@ -16,15 +16,21 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.kaczmarzyk.utils.ReflectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 public class JsonBodyParamsTest {
 
@@ -159,10 +165,11 @@ public class JsonBodyParamsTest {
 	public void returnsEmptyValueWhenRequestBodyIsNull() {
 		//given
 		String json = "{ \"key1\": { \"key2\": \"value\" }}";
+		MockedStatic<JsonParser> jsonParserMockedStatic = mockStatic(JsonParser.class);
 
 		//when
+		jsonParserMockedStatic.when((MockedStatic.Verification) JsonParser.parseString(json)).thenReturn(null);
 		JsonBodyParams jsonBodyParams = JsonBodyParams.parse(json);
-		ReflectionUtils.set(jsonBodyParams, "requestBody", null);
 		Collection<String> result = jsonBodyParams.getParamValues("key1.innerKey");
 
 		//then

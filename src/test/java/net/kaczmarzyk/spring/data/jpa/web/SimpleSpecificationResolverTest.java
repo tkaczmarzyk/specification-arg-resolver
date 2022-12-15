@@ -274,7 +274,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void throwsIllegalStateExceptionWhenMethodWasNotFound() {
+    public void throwsIllegalStateExceptionWhenIncorrectSpecificationTypeClassWasPassed() {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod9"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
@@ -293,7 +293,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldThrowIllegalStateExceptionWhenDefConfigLengthIsMoreThanOne(){
+    public void shouldThrowIllegalStateExceptionWhenSpecConfigLengthIsMoreThanOne(){
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod11"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
@@ -303,19 +303,6 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
     }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowIllegalStateExceptionWhenExceptionOccurs(){
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod11"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
-
-        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-        resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-    }
-
 
     public static class TestController {
 
@@ -358,6 +345,10 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         public void testMethod11(
                 @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION, config = {"config1", "config2"}) Specification<Object> spec) {
+        }
+
+        public void testMethod12(
+                @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {

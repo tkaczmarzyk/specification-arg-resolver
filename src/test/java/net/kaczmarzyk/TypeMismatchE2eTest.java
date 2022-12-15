@@ -15,7 +15,9 @@
  */
 package net.kaczmarzyk;
 
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.*;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.DEFAULT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -133,7 +135,7 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 	}
 
 	@Test
-	public void returnsDefaultResultIfNoneOfTheValuesAreValidEnums() throws Exception {
+	public void returnsEmptyResultIfDefaultOnTypeMismatchBehaviourSpecified() throws Exception {
 		mockMvc.perform(get("/poly/customers")
 						.param("genderDefault", "ROBOT", "ALIEN")
 						.accept(MediaType.APPLICATION_JSON))
