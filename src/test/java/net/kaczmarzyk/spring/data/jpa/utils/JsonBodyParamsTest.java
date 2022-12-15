@@ -162,21 +162,6 @@ public class JsonBodyParamsTest {
 	}
 
 	@Test
-	public void returnsEmptyValueWhenRequestBodyIsNull() {
-		//given
-		String json = "{ \"key1\": { \"key2\": \"value\" }}";
-		MockedStatic<JsonParser> jsonParserMockedStatic = mockStatic(JsonParser.class);
-
-		//when
-		jsonParserMockedStatic.when((MockedStatic.Verification) JsonParser.parseString(json)).thenReturn(null);
-		JsonBodyParams jsonBodyParams = JsonBodyParams.parse(json);
-		Collection<String> result = jsonBodyParams.getParamValues("key1.innerKey");
-
-		//then
-		Assert.assertTrue(result.isEmpty());
-	}
-
-	@Test
 	public void throwsJsonParseExceptionWhenTryingToGetValueFromJsonWhenMiddleNodeIsArray() {
 		//given
 		String json = "{ \"key\": { \"array\": [{ \"object1\": \"value1\" }, { \"object2\": \"value2\" }]}}";
