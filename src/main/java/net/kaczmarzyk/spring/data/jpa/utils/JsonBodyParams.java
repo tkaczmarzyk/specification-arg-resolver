@@ -43,6 +43,9 @@ public class JsonBodyParams implements BodyParams {
 	}
 
 	private static JsonElement getElementByKey(JsonElement rootElement, String key) {
+		if (rootElement == null){
+			return JsonNull.INSTANCE;
+		}
 		String[] keyParts = key.split(DOT_DELIMITER, 2);
 		if (!rootElement.isJsonObject()) {
 			throw new JsonParseException("Failed parse JSON node with key " + keyParts[0] + ". Should be JSON object");

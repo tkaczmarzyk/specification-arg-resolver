@@ -297,7 +297,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod11"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"example"});
 
         WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
@@ -345,10 +345,6 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         public void testMethod11(
                 @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION, config = {"config1", "config2"}) Specification<Object> spec) {
-        }
-
-        public void testMethod12(
-                @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
