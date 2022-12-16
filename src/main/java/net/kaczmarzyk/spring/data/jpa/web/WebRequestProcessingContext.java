@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.utils.*;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +28,8 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.parseMediaType;
 
 /**
  *
@@ -98,7 +100,8 @@ public class WebRequestProcessingContext implements ProcessingContext {
 	private BodyParams getBodyParams() {
 		if (isNull(bodyParams)) {
 			String contentType = getRequestHeaderValue(CONTENT_TYPE);
-			if (contentType.equals(APPLICATION_JSON_VALUE)) {
+			MediaType mediaType = parseMediaType(contentType);
+			if (APPLICATION_JSON.includes(mediaType)) {
 				this.bodyParams = JsonBodyParams.parse(getRequestBody());
 			} else {
 				throw new IllegalArgumentException("Content-type not supported, content-type=" + contentType);
