@@ -331,7 +331,7 @@ public class Converter {
 				.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
 				.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
 				.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-				.parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
+				.parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
 				.parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
 				.toFormatter();
 	}

@@ -55,7 +55,6 @@ public class StringToOffsetDateTimeConverterTest {
 		);
 	}
 
-
 	@Test
 	public void convertsToOffsetDateTimeUsingCustomFormat() {
 		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSXXXMM-dd\'T\'", EMPTY_RESULT, null);

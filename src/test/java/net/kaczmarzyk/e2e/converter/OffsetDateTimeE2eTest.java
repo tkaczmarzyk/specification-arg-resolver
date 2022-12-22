@@ -227,7 +227,7 @@ public class OffsetDateTimeE2eTest extends E2eTestBase {
 	public void findsByOffsetDateTimeEqualWithCustomDateFormatWithDateOnly() throws Exception {
 		customer("Barry", "Benson")
 				.nickName("Bee")
-				.nextSpecialOffer(OffsetDateTime.of(2022, 12, 13, 0, 0, 0, 0, ofHours(1)))
+				.nextSpecialOffer(OffsetDateTime.of(2022, 12, 13, 0, 0, 0, 0, ofHours(0)))
 				.build(em);
 
 		mockMvc.perform(get("/customers")
