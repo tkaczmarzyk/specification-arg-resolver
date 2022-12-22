@@ -1,6 +1,6 @@
 v2.15.0
 =======
-* added default time setting during conversion from date to time storing formats in `Converter`. Missing time values are filled with zeros (e.g. `LocalDateTime` format specified as `2022-12-14` will be converted to `2022-12-14 00:00`). Similar time setting is implemented for the following formats: `LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`. 
+* added setting default time during conversion from date to time storing formats in `Converter`. Missing time values are filled with zeros (e.g. `LocalDateTime` format specified as `2022-12-14` will be converted to `2022-12-14 00:00`). Similar time setting is implemented for the following formats: `LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`. 
 
 v2.14.0
 =======
