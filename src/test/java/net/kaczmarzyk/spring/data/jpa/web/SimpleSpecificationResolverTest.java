@@ -273,6 +273,37 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2", "val3", "val4", "val5", "val6", "val7" }, converter));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void throwsIllegalStateExceptionWhenIncorrectSpecificationTypeClassWasPassed() {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod9"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"val1", "val2,val3,val4", "val5,val6", "val7"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+    }
+
+    @Test
+    public void shouldReturnTrueIfAnnotationIsSupportedByResolver() {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod10"), 0);
+
+        assertThat(resolver.supports(param.getParameterAnnotations()[0])).isTrue();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowIllegalStateExceptionWhenSpecConfigLengthIsMoreThanOne(){
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod11"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"example"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+    }
+
     public static class TestController {
 
         public void testMethod1(@Spec(path = "thePath", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
@@ -302,6 +333,18 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         public void testMethod8(
                 @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = In.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethod9(
+                @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Specification.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethod10(
+                @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethod11(
+                @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION, config = {"config1", "config2"}) Specification<Object> spec) {
         }
 
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
