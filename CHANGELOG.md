@@ -1,3 +1,7 @@
+v2.14.1
+=======
+* fixed incorrect decoding `content-type` from header
+
 v2.14.0
 =======
 * added support for `jsonPaths` during generation of swagger documentation.
