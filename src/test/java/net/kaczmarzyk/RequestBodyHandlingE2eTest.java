@@ -100,7 +100,7 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
     }
 
     @Test
-    public void findsByIdProvidedInRequestBodyWhenContentTypeContainsParameter() throws Exception {
+    public void findsByIdProvidedInRequestBodyWhenContentTypeContainsEncodingParameter() throws Exception {
         mockMvc.perform(post("/customers/search")
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON_VALUE + ";encoding=UTF-8")
@@ -109,6 +109,30 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
                .andExpect(jsonPath("$").isArray())
                .andExpect(jsonPath("$.length()").value(1))
                .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
+    }
+
+    @Test
+    public void findsByIdProvidedInRequestBodyWhenContentTypeContainsCharsetParameter() throws Exception {
+        mockMvc.perform(post("/customers/search")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+                        .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
+    }
+
+    @Test
+    public void findsByIdProvidedInRequestBodyWhenContentTypeContainsBoundaryParameter() throws Exception {
+        mockMvc.perform(post("/customers/search")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE + ";boundary=something")
+                        .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
     }
 
     @Test
