@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 
@@ -55,6 +56,7 @@ public class Customer {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date registrationDate;
+	private Calendar registrationCalendar;
 
     private LocalDate birthDate;
 
@@ -77,7 +79,9 @@ public class Customer {
     private Boolean goldObj;
     
     private Instant dateOfNextSpecialOfferInstant;
-    private OffsetDateTime dateOfNextSpecialOffer;
+	private Timestamp dateOfNextSpecialOfferTimestamp;
+	private OffsetDateTime dateOfNextSpecialOffer;
+	private ZonedDateTime dateOfNextSpecialOfferZoned;
     
     private UUID refCode;
 
@@ -150,6 +154,9 @@ public class Customer {
 
     public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
+
+	    this.registrationCalendar = Calendar.getInstance();
+	    this.registrationCalendar.setTime(registrationDate);
     }
 
     public LocalDate getBirthDate() {
@@ -206,6 +213,8 @@ public class Customer {
 	public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
 		this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
 		this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
+		this.dateOfNextSpecialOfferTimestamp = Timestamp.from(dateOfNextSpecialOffer.toInstant());
+		this.dateOfNextSpecialOfferZoned = dateOfNextSpecialOffer.toZonedDateTime();
 	}
 	
 	public UUID getRefCode() {

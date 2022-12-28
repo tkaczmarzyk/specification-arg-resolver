@@ -18,15 +18,40 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 
 public class InThePastTest extends ComparableTestBase {
+
+	private static final OffsetDateTime FUTURE_DATE_TIME = OffsetDateTime.now().plusDays(10);
+	private static final OffsetDateTime PAST_DATE_TIME = OffsetDateTime.now().minusMonths(10);
+
+	@Before
+	public void initData() {
+		homerSimpson = customer("Homer", "Simpson")
+				.registrationDate(PAST_DATE_TIME.getYear(), PAST_DATE_TIME.getMonth().getValue(), PAST_DATE_TIME.getDayOfMonth() - 1)
+				.nextSpecialOffer(PAST_DATE_TIME)
+				.birthDate(FUTURE_DATE_TIME.toLocalDate())
+				.lastOrderTime(PAST_DATE_TIME.toLocalDateTime())
+				.build(em);
+		margeSimpson = customer("Marge", "Simpson")
+				.registrationDate(PAST_DATE_TIME.getYear(), PAST_DATE_TIME.getMonth().getValue() - 2, PAST_DATE_TIME.getDayOfMonth())
+				.nextSpecialOffer(FUTURE_DATE_TIME)
+				.birthDate(PAST_DATE_TIME.toLocalDate())
+				.lastOrderTime(PAST_DATE_TIME.toLocalDateTime().minusMonths(2))
+				.build(em);
+		moeSzyslak = customer("Moe", "Szyslak")
+				.registrationDate(FUTURE_DATE_TIME.getYear(), FUTURE_DATE_TIME.getMonth().getValue(), FUTURE_DATE_TIME.getDayOfMonth())
+				.nextSpecialOffer(PAST_DATE_TIME.minusDays(30))
+				.birthDate(PAST_DATE_TIME.toLocalDate().minusDays(10))
+				.lastOrderTime(FUTURE_DATE_TIME.toLocalDateTime())
+				.build(em);
+	}
 
 	@Override
 	protected Specification<Customer> makeUUT(String path, String[] value, Converter converter) {
@@ -35,35 +60,41 @@ public class InThePastTest extends ComparableTestBase {
 
 	@Test
 	public void filtersByInstant() {
-		OffsetDateTime offsetDateTime = OffsetDateTime.of(2021, 01, 01, 12, 12, 12, 44, ZoneOffset.ofHours(2));
-		homerSimpson.setDateOfNextSpecialOffer(offsetDateTime);
-		assertFilterContainsOnlyExpectedMembers("dateOfNextSpecialOfferInstant", homerSimpson);
+		assertFilterContainsOnlyExpectedMembers("dateOfNextSpecialOfferInstant", homerSimpson, moeSzyslak);
 	}
-
 
 	@Test
 	public void filtersByDate() {
-		assertFilterContainsOnlyExpectedMembers("registrationDate", homerSimpson, margeSimpson, moeSzyslak);
+		assertFilterContainsOnlyExpectedMembers("registrationDate", homerSimpson, margeSimpson);
 	}
 
 	@Test
 	public void filtersByLocalDate() {
-		LocalDate localDate = LocalDate.of(1999, 07, 27);
-		homerSimpson.setBirthDate(localDate);
-		assertFilterContainsOnlyExpectedMembers("birthDate", homerSimpson);
+		assertFilterContainsOnlyExpectedMembers("birthDate", margeSimpson, moeSzyslak);
 	}
 
 	@Test
 	public void filtersByLocalDateTime() {
-		LocalDateTime localDateTime = LocalDateTime.of(2022, 12, 1, 12, 12);
-		homerSimpson.setLastOrderTime(localDateTime);
-		assertFilterContainsOnlyExpectedMembers("lastOrderTime", homerSimpson);
+		assertFilterContainsOnlyExpectedMembers("lastOrderTime", homerSimpson, margeSimpson);
 	}
 
 	@Test
 	public void filtersOffsetDateTime() {
-		OffsetDateTime offsetDateTime = OffsetDateTime.of(2021, 01, 01, 12, 12, 12, 44, ZoneOffset.ofHours(2));
-		homerSimpson.setDateOfNextSpecialOffer(offsetDateTime);
-		assertFilterContainsOnlyExpectedMembers("dateOfNextSpecialOffer", homerSimpson);
+		assertFilterContainsOnlyExpectedMembers("dateOfNextSpecialOffer", homerSimpson, moeSzyslak);
+	}
+
+	@Test
+	public void filtersByTimestamp() {
+		assertFilterContainsOnlyExpectedMembers("dateOfNextSpecialOfferTimestamp", homerSimpson, moeSzyslak);
+	}
+
+	@Test
+	public void filtersByZonedDateTime() {
+		assertFilterContainsOnlyExpectedMembers("dateOfNextSpecialOfferZoned", homerSimpson, moeSzyslak);
+	}
+
+	@Test
+	public void filtersByCalendar() {
+		assertFilterContainsOnlyExpectedMembers("registrationCalendar", homerSimpson, margeSimpson);
 	}
 }
