@@ -60,11 +60,11 @@ public class Customer {
 
     private String occupation;
 
-	private Timestamp lastSeen;
+    private Timestamp lastSeen;
 
-	private LocalDateTime lastOrderTime;
+    private LocalDateTime lastOrderTime;
 
-	private Integer weight;
+    private Integer weight;
     private int weightInt;
     private long weightLong;
 
