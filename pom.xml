@@ -227,7 +227,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-common</artifactId>
-			<version>1.6.13</version>
+			<version>1.6.14</version>
 			<optional>true</optional>
 		</dependency>
 
