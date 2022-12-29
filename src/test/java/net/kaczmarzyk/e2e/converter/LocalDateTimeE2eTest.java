@@ -61,13 +61,13 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
             return customerRepo.findAll(spec);
         }
 
-		@RequestMapping(value = "/customers", params = "lastOrderTimeBefore_customFormatWithDateOnly")
-		@ResponseBody
-		public Object findCustomersWithLastOrderBefore_customDateTimePatternWithDateOnly(
-				@Spec(path="lastOrderTime", params="lastOrderTimeBefore_customFormatWithDateOnly", config="yyyy-MM-dd", spec= LessThan.class) Specification<Customer> spec) {
+        @RequestMapping(value = "/customers", params = "lastOrderTimeBefore_customFormatWithDateOnly")
+        @ResponseBody
+        public Object findCustomersWithLastOrderBefore_customDateTimePatternWithDateOnly(
+                @Spec(path="lastOrderTime", params="lastOrderTimeBefore_customFormatWithDateOnly", config="yyyy-MM-dd", spec= LessThan.class) Specification<Customer> spec) {
 
-			return customerRepo.findAll(spec);
-		}
+            return customerRepo.findAll(spec);
+        }
 
         @RequestMapping(value = "/customers", params = "lastOrderTimeAfter")
         @ResponseBody
@@ -83,12 +83,12 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
             return customerRepo.findAll(spec);
         }
 
-		@RequestMapping(value = "/customers", params = "lastOrderTimeAfter_customFormatWithDateOnly")
-		@ResponseBody
-		public Object findCustomersWithLastOrderAfter_customDateTimePatternWithDateOnly(
-				@Spec(path="lastOrderTime", params="lastOrderTimeAfter_customFormatWithDateOnly", config="yyyy-MM-dd", spec= GreaterThan.class) Specification<Customer> spec) {
-			return customerRepo.findAll(spec);
-		}
+        @RequestMapping(value = "/customers", params = "lastOrderTimeAfter_customFormatWithDateOnly")
+        @ResponseBody
+        public Object findCustomersWithLastOrderAfter_customDateTimePatternWithDateOnly(
+                @Spec(path="lastOrderTime", params="lastOrderTimeAfter_customFormatWithDateOnly", config="yyyy-MM-dd", spec= GreaterThan.class) Specification<Customer> spec) {
+            return customerRepo.findAll(spec);
+        }
         
         @RequestMapping(value = "/customers", params = { "lastOrderTimeAfter", "lastOrderTimeBefore" })
         @ResponseBody
@@ -104,19 +104,19 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
             return customerRepo.findAll(spec);
         }
 
-		@RequestMapping(value = "/customers", params = { "lastOrderTimeAfter_customFormatWithDateOnly", "lastOrderTimeBefore_customFormatWithDateOnly" })
-		@ResponseBody
-		public Object findCustomersWithLastOrderTimeBetween_customDateTimePatternWithDateOnly(
-				@Spec(path="lastOrderTime", params={ "lastOrderTimeAfter_customFormatWithDateOnly", "lastOrderTimeBefore_customFormatWithDateOnly" }, config="yyyy-MM-dd", spec= Between.class) Specification<Customer> spec) {
-			return customerRepo.findAll(spec);
-		}
+        @RequestMapping(value = "/customers", params = { "lastOrderTimeAfter_customFormatWithDateOnly", "lastOrderTimeBefore_customFormatWithDateOnly" })
+        @ResponseBody
+        public Object findCustomersWithLastOrderTimeBetween_customDateTimePatternWithDateOnly(
+                @Spec(path="lastOrderTime", params={ "lastOrderTimeAfter_customFormatWithDateOnly", "lastOrderTimeBefore_customFormatWithDateOnly" }, config="yyyy-MM-dd", spec= Between.class) Specification<Customer> spec) {
+            return customerRepo.findAll(spec);
+        }
 
-		@RequestMapping(value = "/customers", params = { "lastOrderTimeEqual" })
-		@ResponseBody
-		public Object findCustomersWithLastOrderTimeEqualToDateWithDefaultTime(
-				@Spec(path="lastOrderTime", params={ "lastOrderTimeEqual" }, config="yyyy-MM-dd", spec= Equal.class) Specification<Customer> spec) {
-			return customerRepo.findAll(spec);
-		}
+        @RequestMapping(value = "/customers", params = { "lastOrderTimeEqual" })
+        @ResponseBody
+        public Object findCustomersWithLastOrderTimeEqualToDateWithDefaultTime(
+                @Spec(path="lastOrderTime", params={ "lastOrderTimeEqual" }, config="yyyy-MM-dd", spec= Equal.class) Specification<Customer> spec) {
+            return customerRepo.findAll(spec);
+        }
     }
 
     @Test
@@ -130,16 +130,16 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$[2]").doesNotExist());
     }
 
-	@Test
-	public void findsByDateTimeBeforeWithCustomDateFormatWithDateOnly() throws Exception {
-		mockMvc.perform(get("/customers")
-						.param("lastOrderTimeBefore_customFormatWithDateOnly", "2017-08-22")
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
-				.andExpect(jsonPath("$[2]").doesNotExist());
-	}
+    @Test
+    public void findsByDateTimeBeforeWithCustomDateFormatWithDateOnly() throws Exception {
+        mockMvc.perform(get("/customers")
+                        .param("lastOrderTimeBefore_customFormatWithDateOnly", "2017-08-22")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
+    }
     
     @Test
     public void findsByDateTimeBeforeWithDefaultDateFormat() throws Exception {
@@ -175,66 +175,66 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$[3]").doesNotExist());
     }
 
-	@Test
-	public void findsByDateTimeAfterWithCustomDateFormatWithDateOnly() throws Exception {
-		mockMvc.perform(get("/customers")
-						.param("lastOrderTimeAfter_customFormatWithDateOnly", "2017-11-21")
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
-				.andExpect(jsonPath("$[3]").doesNotExist());
-	}
+    @Test
+    public void findsByDateTimeAfterWithCustomDateFormatWithDateOnly() throws Exception {
+        mockMvc.perform(get("/customers")
+                        .param("lastOrderTimeAfter_customFormatWithDateOnly", "2017-11-21")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
+                .andExpect(jsonPath("$[3]").doesNotExist());
+    }
     
     @Test
     public void findsByDateTimeBetweenWithDefaultDateFormat() throws Exception {
-    	mockMvc.perform(get("/customers")
-				                .param("lastOrderTimeAfter", "2017-11-21T11:12:59")
-				                .param("lastOrderTimeBefore", "2017-12-14T11:12:59")
-				                .accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
-				.andExpect(jsonPath("$[2]").doesNotExist());
+        mockMvc.perform(get("/customers")
+                                .param("lastOrderTimeAfter", "2017-11-21T11:12:59")
+                                .param("lastOrderTimeBefore", "2017-12-14T11:12:59")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
     }
     
     @Test
     public void findsByDateTimeBetweenWithCustomDateFormat() throws Exception {
-    	mockMvc.perform(get("/customers")
-				                .param("lastOrderTimeAfter_customFormat", "2017/11/21, 11:12")
-				                .param("lastOrderTimeBefore_customFormat", "2017/12/14, 11:12")
-				                .accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
-				.andExpect(jsonPath("$[2]").doesNotExist());
+        mockMvc.perform(get("/customers")
+                                .param("lastOrderTimeAfter_customFormat", "2017/11/21, 11:12")
+                                .param("lastOrderTimeBefore_customFormat", "2017/12/14, 11:12")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
     }
 
-	@Test
-	public void findsByDateTimeBetweenWithCustomDateFormatWithDateOnly() throws Exception {
-		mockMvc.perform(get("/customers")
-						.param("lastOrderTimeAfter_customFormatWithDateOnly", "2017-11-21")
-						.param("lastOrderTimeBefore_customFormatWithDateOnly", "2017-12-14")
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
-				.andExpect(jsonPath("$[2]").doesNotExist());
-	}
+    @Test
+    public void findsByDateTimeBetweenWithCustomDateFormatWithDateOnly() throws Exception {
+        mockMvc.perform(get("/customers")
+                        .param("lastOrderTimeAfter_customFormatWithDateOnly", "2017-11-21")
+                        .param("lastOrderTimeBefore_customFormatWithDateOnly", "2017-12-14")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
+    }
 
-	@Test
-	public void findsByDateTimeEqualWithCustomDateFormatWithDateOnly() throws Exception {
-		customer("Barry", "Benson")
-				.nickName("Bee")
-				.lastOrderTime(LocalDateTime.of(2022, 12, 13, 0, 0,0))
-				.build(em);
+    @Test
+    public void findsByDateTimeEqualWithCustomDateFormatWithDateOnly() throws Exception {
+        customer("Barry", "Benson")
+                .nickName("Bee")
+                .lastOrderTime(LocalDateTime.of(2022, 12, 13, 0, 0,0))
+                .build(em);
 
-		mockMvc.perform(get("/customers")
-						.param("lastOrderTimeEqual", "2022-12-13")
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
-				.andExpect(jsonPath("$[1]").doesNotExist());
-	}
+        mockMvc.perform(get("/customers")
+                        .param("lastOrderTimeEqual", "2022-12-13")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
+                .andExpect(jsonPath("$[1]").doesNotExist());
+    }
 }
