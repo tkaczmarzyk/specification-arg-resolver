@@ -50,7 +50,7 @@ public class NotIn<T> extends PathSpecification<T> {
 	public NotIn(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
 		super(queryContext, path);
 		if (httpParamValues == null || httpParamValues.length < 1) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected at least 1 but was " + Arrays.toString(httpParamValues));
 		}
 		this.allowedValues = httpParamValues;
 		this.converter = converter;

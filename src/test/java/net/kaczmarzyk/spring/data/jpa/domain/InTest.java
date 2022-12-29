@@ -33,6 +33,7 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 
 /**
@@ -41,7 +42,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InTest extends IntegrationTestBase {
 
-    private Customer homerSimpson;
+	private static final String INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE = "Invalid size of 'httpParamValues' array, Expected at least 1 but was ";
+
+	private Customer homerSimpson;
     private Customer margeSimpson;
     private Customer moeSzyslak;
 	private Customer joeQuimby;
@@ -166,9 +169,22 @@ public class InTest extends IntegrationTestBase {
     	assertThat(found).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsMissingArgument() throws ParseException {
-		new In<>(queryCtx, "path", new String[] {}, defaultConverter);
+	@Test
+	public void rejectsNullArgumentArray() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new In<>(queryCtx, "path", null, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "null");
+	}
+
+	@Test
+	public void rejectsMissingArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new In<>(queryCtx, "path", new String[] {}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[]");
 	}
 
 	@Test

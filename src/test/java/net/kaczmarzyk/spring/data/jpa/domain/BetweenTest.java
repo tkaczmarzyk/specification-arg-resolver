@@ -31,11 +31,14 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 /**
  * @author Tomasz Kaczmarzyk
  */
 public class BetweenTest extends IntegrationTestBase {
+
+	private static final String INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE = "expected 2 http params (lower and upper boundaries), but was: ";
 
 	Customer homerSimpson;
     Customer margeSimpson;
@@ -182,20 +185,41 @@ public class BetweenTest extends IntegrationTestBase {
             .containsOnly(margeSimpson);
     }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsMissingArgument() throws ParseException {
-		new Between<>(queryCtx, "path", new String[] {}, defaultConverter);
+	@Test
+	public void rejectsNullArgumentArray() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Between<>(queryCtx, "path", null, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "null");
 	}
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void rejectsTooFewArguments() throws ParseException {
-        new Between<>(queryCtx, "path", new String[] { "2014-03-10" }, defaultConverter);
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void rejectsTooManyArguments() throws ParseException {
-        new Between<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
-    }
+
+	@Test
+	public void rejectsMissingArgument() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Between<>(queryCtx, "path", new String[] {}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[]");
+	}
+
+	@Test
+	public void rejectsTooFewArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Between<>(queryCtx, "path", new String[] { "2014-03-10" }, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[2014-03-10]");
+	}
+
+	@Test
+	public void rejectsTooManyArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Between<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[2014-03-10, 2014-03-11, 2014-03-11]");
+	}
 
 	@Test
 	public void equalsAndHashCodeContract() {
