@@ -1,6 +1,8 @@
 v2.15.0
 =======
 * added support for using datetime formats without time (e.g. `yyyy-MM-dd`) for types that contain time (`LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`). Missing time values are filled with zeros, e.g. when sending `2022-12-14` as `LocalDateTime` parameter, the conversion will result in `2022-12-14 00:00`.
+* introduced `InTheFuture` specification, that supports date-type paths
+* introduced `InThePast` specification, that supports date-type paths
 
 v2.14.1
 =======

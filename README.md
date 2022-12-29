@@ -223,6 +223,12 @@ NOTE: comparisons are dependent on the actual type and the underlying database (
 
 You can configure the date/datetime pattern as with `LessThan` described above.
 
+### InTheFuture, InThePast ###
+
+Filters using comparison operators (`>`, `<`). Supports date-type fields. Compares current db timestamp to the date-type value of field passed in `path`.
+E.g. InTheFuture => `where customer0_.date_of_next_special_offer > localtimestamp()`, InThePast => `where customer0_.date_of_next_special_offer < localtimestamp()`
+
+Usage: `@Spec(path="dateOfTheNextOffer", spec=InTheFuture.class)`.
 
 Combining specs
 ---------------
