@@ -23,10 +23,15 @@ import org.junit.Test;
 
 import java.text.ParseException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
+
 /**
  * @author Mateusz Fedkowicz
  **/
 public class NotEqualIgnoreCaseTest extends NotEqualTest {
+
+	private static final String INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE = "Invalid size of 'httpParamValues' array, Expected 1 but was ";
 
 	@Test
 	public void filtersByStringCaseInsensitive() {
@@ -46,14 +51,31 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 		assertFilterMembers(notFemale, homerSimpson);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsMissingArgument() throws ParseException {
-		new NotEqualIgnoreCase<>(queryCtx, "path", new String[] {}, defaultConverter);
+	@Test
+	public void rejectsNullArgumentArray() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new NotEqualIgnoreCase<>(queryCtx, "path", null, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "null");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsTooManyArguments() throws ParseException {
-		new NotEqualIgnoreCase<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
+	@Test
+	public void rejectsMissingArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new NotEqualIgnoreCase<>(queryCtx, "path", new String[] {}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[]");
+	}
+
+	@Test
+	public void rejectsTooManyArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new NotEqualIgnoreCase<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[2014-03-10, 2014-03-11]");
 	}
 
 	@Test
