@@ -85,4 +85,13 @@ public class StringToInstantConverterTest {
 				"Instant format exception, expected format: yyyy-MM-dd\'T\' HH:mm:ss.SSS XXX"
 		);
 	}
+
+	@Test
+	public void appendsDefaultTimeAndSystemTimeZoneDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		Instant instant = converterWithCustomFormat.convert("2022-12-13", Instant.class);
+
+		assertThat(instant)
+				.isEqualTo("2022-12-13T00:00:00.000Z");
+	}
 }

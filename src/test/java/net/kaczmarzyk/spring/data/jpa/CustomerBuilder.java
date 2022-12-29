@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -64,6 +65,11 @@ public class CustomerBuilder {
 	
 	public CustomerBuilder lastOrderTime(LocalDateTime lastOrderTime) {
 		customer.setLastOrderTime(lastOrderTime);
+		return this;
+	}
+
+	public CustomerBuilder lastSeen(Timestamp timestamp) {
+		customer.setLastSeen(timestamp);
 		return this;
 	}
 	

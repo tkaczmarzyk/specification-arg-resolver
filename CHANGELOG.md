@@ -1,6 +1,9 @@
-v2.14.2
-======
-* Added exception messages for invalid parameter array size in specifications that missed one
+v2.15.0
+=======
+* added support for using datetime formats without time (e.g. `yyyy-MM-dd`) for types that contain time (`LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`). Missing time values are filled with zeros, e.g. when sending `2022-12-14` as `LocalDateTime` parameter, the conversion will result in `2022-12-14 00:00`.
+* introduced `InTheFuture` specification, that supports date-type paths
+* introduced `InThePast` specification, that supports date-type paths
+* added exception messages for invalid parameter array size in specifications that missed one
 
 v2.14.1
 =======
@@ -14,7 +17,7 @@ v2.14.0
   * fixed duplicated parameters when the same parameter was defined in spec and controller method (e.g. when we defined `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`).
 * added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
   * For example, for the following endpoint:
-    ```
+    ```java
     @RequestMapping(value = "/customers", params = { "id" })
     @ResponseBody
     public Object findById(
@@ -24,7 +27,7 @@ v2.14.0
     ```
   * For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all records from the database (without filtering) will be returned.
   * But for the following endpoint with `In.class` specification type:
-    ```
+    ```java
     @RequestMapping(value = "/customers", params = { "id_in" })
     @ResponseBody
     public Object findByIdIn(

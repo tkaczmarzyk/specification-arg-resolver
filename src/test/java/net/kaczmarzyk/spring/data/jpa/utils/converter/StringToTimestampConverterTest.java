@@ -20,6 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValueRejectedException;
 import org.junit.Test;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
@@ -100,6 +101,20 @@ public class StringToTimestampConverterTest {
                 () -> converterWithCustomFormat.convert("2020-15:08:53.28206-16T-invalid-format", Timestamp.class),
                 "Timestamp format exception, expected format: yyyy-HH:mm:ss.SSSMM-dd'T'"
         );
+    }
 
+    @Test
+    public void appendsDefaultTimeDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+        Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+        Timestamp timestamp = converterWithCustomFormat.convert("2022-12-13", Timestamp.class);
+
+        assertThat(timestamp)
+                .hasYear(2022)
+                .hasMonth(12)
+                .hasDayOfMonth(13)
+                .hasHourOfDay(0)
+                .hasMinute(0)
+                .hasSecond(0)
+                .hasMillisecond(0);
     }
 }
