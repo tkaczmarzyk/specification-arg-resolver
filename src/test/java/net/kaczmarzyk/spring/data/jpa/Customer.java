@@ -128,15 +128,15 @@ public class Customer {
         this.genderAsString = gender;
     }
 
-	public Timestamp getLastSeen() {
-		return lastSeen;
-	}
+    public Timestamp getLastSeen() {
+        return lastSeen;
+    }
 
-	public void setLastSeen(Timestamp lastSeen) {
-		this.lastSeen = lastSeen;
-	}
+    public void setLastSeen(Timestamp lastSeen) {
+        this.lastSeen = lastSeen;
+    }
 
-	public Date getRegistrationDate() {
+    public Date getRegistrationDate() {
         return registrationDate;
     }
 
