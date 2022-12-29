@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -41,7 +42,7 @@ public class NotEqual<T> extends PathSpecification<T> {
 	public NotEqual(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
 		super(queryContext, path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected 1 but was " + Arrays.toString(httpParamValues));
 		}
 		this.expectedValue = httpParamValues[0];
 		this.converter = converter;

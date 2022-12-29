@@ -24,6 +24,7 @@ import javax.persistence.criteria.Root;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -54,7 +55,7 @@ public class Between<T> extends PathSpecification<T> {
 	public Between(QueryContext queryContext, String path, String[] args, Converter converter) {
 		super(queryContext, path);
         if (args == null || args.length != 2) {
-            throw new IllegalArgumentException("expected 2 http params (lower and upper boundaries), but was: " + args);
+	        throw new IllegalArgumentException("expected 2 http params (lower and upper boundaries), but was: " + Arrays.toString(args));
         }
         this.converter = converter;
         this.lowerBoundaryStr = args[0];
