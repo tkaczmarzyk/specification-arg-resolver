@@ -65,7 +65,6 @@ public class Customer {
 	private LocalDateTime lastOrderTime;
 
 	private Integer weight;
-
     private int weightInt;
     private long weightLong;
 
