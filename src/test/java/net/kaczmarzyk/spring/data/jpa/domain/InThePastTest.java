@@ -51,6 +51,14 @@ public class InThePastTest extends ComparableTestBase {
 				.birthDate(PAST_DATE_TIME.toLocalDate().minusDays(10))
 				.lastOrderTime(FUTURE_DATE_TIME.toLocalDateTime())
 				.build(em);
+
+		/*
+		 *         | registration | next special offer | birth date | last order time
+		 * ------  | ------------ | ------------------ | ---------- | ----------------
+		 * HOMER   |     PAST     |        PAST        |   FUTURE   |      PAST
+		 * MARGE   |     PAST     |       FUTURE       |    PAST    |      PAST
+		 * MOE     |    FUTURE    |        PAST        |    PAST    |     FUTURE
+		 */
 	}
 
 	@Override

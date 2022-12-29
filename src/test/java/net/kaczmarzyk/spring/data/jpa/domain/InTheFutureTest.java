@@ -51,6 +51,13 @@ public class InTheFutureTest extends ComparableTestBase {
 				.birthDate(FUTURE_DATE_TIME.toLocalDate().plusDays(10))
 				.lastOrderTime(PAST_DATE_TIME.toLocalDateTime())
 				.build(em);
+		/*
+		 *         | registration | next special offer | birth date | last order time
+		 * ------  | ------------ | ------------------ | ---------- | ----------------
+		 * HOMER   |    FUTURE    |       FUTURE       |    PAST    |    FUTURE
+		 * MARGE   |    FUTURE    |       PAST         |   FUTURE   |    FUTURE
+		 * MOE     |    PAST      |      FUTURE        |   FUTURE   |     PAST
+		 */
 	}
 
 	@Override

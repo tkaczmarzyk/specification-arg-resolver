@@ -18,10 +18,19 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Expression;
 
-public class InTheFuture<T> extends ComparableSpecificationWithoutConverter<T> {
+
+/**
+ * <p>Filters with ">" where-clause (e.g. {@code where dateOfBirth > localtimestamp()).</p>
+ * <p>Given date type value in path is compared to current timestamp of the database.</p>
+ *
+ * <p>Supports date type fields.</p>
+ */
+public class InTheFuture<T, TimeType extends Comparable<TimeType>> extends PathSpecification<T> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,8 +39,10 @@ public class InTheFuture<T> extends ComparableSpecificationWithoutConverter<T> {
 	}
 
 	@Override
-	protected <Y extends Comparable<? super Y>> Predicate makePredicate(CriteriaBuilder cb, Expression<? extends Y> x) {
-		Expression<Y> now = (Expression<Y>) cb.function("CURRENT_TIMESTAMP", x.getClass());
-		return cb.greaterThan(x, now);
+	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+		Expression<TimeType> rootPath = path(root);
+		Expression<TimeType> currentTimestamp = (Expression<TimeType>) cb.function("CURRENT_TIMESTAMP", rootPath.getClass());
+
+		return cb.greaterThan(rootPath, currentTimestamp);
 	}
 }
