@@ -53,7 +53,6 @@ public class TimestampE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersWithLastSeenBefore_defaultTimestampPattern(
 				@Spec(path = "lastSeen", params = "lastSeenBefore", spec = LessThan.class) Specification<Customer> spec) {
-
 			return customerRepo.findAll(spec);
 		}
 
@@ -61,7 +60,6 @@ public class TimestampE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersWithLastSeenBefore_customTimestampPattern(
 				@Spec(path = "lastSeen", params = "lastSeenBefore_customFormat", config = "yyyy/MM/dd, HH:mm:ss.SSS", spec = LessThan.class) Specification<Customer> spec) {
-
 			return customerRepo.findAll(spec);
 		}
 
@@ -69,7 +67,6 @@ public class TimestampE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersWithLastSeenBefore_customTimestampPatternWithDateOnly(
 				@Spec(path = "lastSeen", params = "lastSeenBefore_customFormatWithDateOnly", config = "yyyy-MM-dd", spec = LessThan.class) Specification<Customer> spec) {
-
 			return customerRepo.findAll(spec);
 		}
 
@@ -77,7 +74,6 @@ public class TimestampE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersWithLastSeenAfter_defaultTimestampPattern(
 				@Spec(path = "lastSeen", params = "lastSeenAfter", spec = GreaterThan.class) Specification<Customer> spec) {
-
 			return customerRepo.findAll(spec);
 		}
 
@@ -85,7 +81,6 @@ public class TimestampE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersWithLastSeenAfter_customTimestampPattern(
 				@Spec(path = "lastSeen", params = "lastSeenAfter_customFormat", config = "yyyy/MM/dd, HH:mm:ss.SSS", spec = GreaterThan.class) Specification<Customer> spec) {
-
 			return customerRepo.findAll(spec);
 		}
 
@@ -93,40 +88,34 @@ public class TimestampE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersWithLastSeenAfter_customTimestampPatternWithDateOnly(
 				@Spec(path = "lastSeen", params = "lastSeenAfter_customFormatWithDateOnly", config = "yyyy-MM-dd", spec = GreaterThan.class) Specification<Customer> spec) {
-
 			return customerRepo.findAll(spec);
 		}
 
 		@RequestMapping(value = "/customers", params = { "lastSeenAfterTime", "lastSeenBeforeTime" })
 		@ResponseBody
 		public Object findCustomersWithLastSeenBetween_defaultTimestampPattern(
-				@Spec(path = "lastSeen", params = { "lastSeenAfterTime",
-						"lastSeenBeforeTime" }, spec = Between.class) Specification<Customer> spec) {
+				@Spec(path = "lastSeen", params = { "lastSeenAfterTime", "lastSeenBeforeTime" }, spec = Between.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
 
 		@RequestMapping(value = "/customers", params = { "lastSeenAfterTime_customFormat", "lastSeenBeforeTime_customFormat" })
 		@ResponseBody
 		public Object findCustomersWithLastSeenBetween_customTimestampPattern(
-				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormat",
-						"lastSeenBeforeTime_customFormat" }, config = "yyyy/MM/dd, HH:mm:ss.SSS", spec = Between.class) Specification<Customer> spec) {
+				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormat", "lastSeenBeforeTime_customFormat" }, config = "yyyy/MM/dd, HH:mm:ss.SSS", spec = Between.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
 
-		@RequestMapping(value = "/customers", params = { "lastSeenAfterTime_customFormatWithDateOnly",
-				"lastSeenBeforeTime_customFormatWithDateOnly" })
+		@RequestMapping(value = "/customers", params = { "lastSeenAfterTime_customFormatWithDateOnly", "lastSeenBeforeTime_customFormatWithDateOnly" })
 		@ResponseBody
 		public Object findCustomersWithLastSeenBetween_customTimestampPatternWithDateOnly(
-				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormatWithDateOnly",
-						"lastSeenBeforeTime_customFormatWithDateOnly" }, config = "yyyy-MM-dd", spec = Between.class) Specification<Customer> spec) {
+				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormatWithDateOnly", "lastSeenBeforeTime_customFormatWithDateOnly" }, config = "yyyy-MM-dd", spec = Between.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
 
 		@RequestMapping(value = "/customers", params = { "lastSeenEqual" })
 		@ResponseBody
 		public Object findCustomersWithLastSeenEqualToDateWithDefaultTime(
-				@Spec(path = "lastSeen", params = {
-						"lastSeenEqual" }, config = "yyyy-MM-dd", spec = Equal.class) Specification<Customer> spec) {
+				@Spec(path = "lastSeen", params = { "lastSeenEqual" }, config = "yyyy-MM-dd", spec = Equal.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
     }
