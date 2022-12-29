@@ -44,10 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class TimestampE2eTest extends E2eTestBase {
 	@Controller
-    public static class TimestampSpecsController {
+	public static class TimestampSpecsController {
 
-        @Autowired
-        CustomerRepository customerRepo;
+		@Autowired
+		CustomerRepository customerRepo;
 
 		@RequestMapping(value = "/customers", params = "lastSeenBefore")
 		@ResponseBody
@@ -108,7 +108,8 @@ public class TimestampE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/customers", params = { "lastSeenAfterTime_customFormat", "lastSeenBeforeTime_customFormat" })
 		@ResponseBody
 		public Object findCustomersWithLastSeenBetween_customTimestampPattern(
-				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormat", "lastSeenBeforeTime_customFormat" }, config = "yyyy/MM/dd, HH:mm:ss.SSS", spec = Between.class) Specification<Customer> spec) {
+				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormat",
+						"lastSeenBeforeTime_customFormat" }, config = "yyyy/MM/dd, HH:mm:ss.SSS", spec = Between.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
 
@@ -116,14 +117,16 @@ public class TimestampE2eTest extends E2eTestBase {
 				"lastSeenBeforeTime_customFormatWithDateOnly" })
 		@ResponseBody
 		public Object findCustomersWithLastSeenBetween_customTimestampPatternWithDateOnly(
-				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormatWithDateOnly", "lastSeenBeforeTime_customFormatWithDateOnly" }, config = "yyyy-MM-dd", spec = Between.class) Specification<Customer> spec) {
+				@Spec(path = "lastSeen", params = { "lastSeenAfterTime_customFormatWithDateOnly",
+						"lastSeenBeforeTime_customFormatWithDateOnly" }, config = "yyyy-MM-dd", spec = Between.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
 
 		@RequestMapping(value = "/customers", params = { "lastSeenEqual" })
 		@ResponseBody
 		public Object findCustomersWithLastSeenEqualToDateWithDefaultTime(
-				@Spec(path = "lastSeen", params = { "lastSeenEqual" }, config = "yyyy-MM-dd", spec = Equal.class) Specification<Customer> spec) {
+				@Spec(path = "lastSeen", params = {
+						"lastSeenEqual" }, config = "yyyy-MM-dd", spec = Equal.class) Specification<Customer> spec) {
 			return customerRepo.findAll(spec);
 		}
     }
