@@ -55,7 +55,6 @@ public class StringToOffsetDateTimeConverterTest {
 		);
 	}
 
-
 	@Test
 	public void convertsToOffsetDateTimeUsingCustomFormat() {
 		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-HH:mm:ss.SSSXXXMM-dd\'T\'", EMPTY_RESULT, null);
@@ -87,6 +86,15 @@ public class StringToOffsetDateTimeConverterTest {
 				"OffsetDateTime format exception, expected format: yyyy-HH:mm:ss.SSSXXXMM-dd\'T\'"
 		);
 
+	}
+
+	@Test
+	public void appendsDefaultTimeAndOffsetDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		OffsetDateTime offsetDateTime = converterWithCustomFormat.convert("2022-12-13", OffsetDateTime.class);
+
+		assertThat(offsetDateTime)
+				.isEqualTo("2022-12-13T00:00:00.000+00:00");
 	}
 
 }

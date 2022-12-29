@@ -42,7 +42,6 @@ public class StringToDateConverterTest {
 		//then
 		assertThat(converted)
 				.isWithinMonth(11)
-				.isWithinMonth(11)
 				.isWithinDayOfMonth(24)
 				.isWithinYear(2022);
 	}
@@ -193,5 +192,21 @@ public class StringToDateConverterTest {
 				() -> converterWithCustomFormat.convert("11-2022-24-invalid-format", Date.class),
 				"Date format exception, expected format: MM-yyyy-dd"
 		);
+	}
+
+	@Test
+	public void appendsDefaultTimeDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		//when
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		Date converted = converterWithCustomFormat.convert("2022-11-24", Date.class);
+
+		//then
+		assertThat(converted)
+				.isWithinMonth(11)
+				.isWithinDayOfMonth(24)
+				.isWithinYear(2022)
+				.hasHourOfDay(0)
+				.hasMinute(0)
+				.hasMillisecond(0);
 	}
 }

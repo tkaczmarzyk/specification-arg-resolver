@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,10 +60,11 @@ public class Customer {
 
     private String occupation;
 
+    private Timestamp lastSeen;
+
     private LocalDateTime lastOrderTime;
 
     private Integer weight;
-
     private int weightInt;
     private long weightLong;
 
@@ -124,6 +126,14 @@ public class Customer {
     public void setGender(Gender gender) {
         this.gender = gender;
         this.genderAsString = gender;
+    }
+
+    public Timestamp getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(Timestamp lastSeen) {
+        this.lastSeen = lastSeen;
     }
 
     public Date getRegistrationDate() {

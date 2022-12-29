@@ -22,13 +22,12 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -192,7 +191,7 @@ public class Converter {
 	private LocalDateTime convertToLocalDateTime(String value) {
 		String dateFormat = getDateFormat(LocalDateTime.class);
 		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+			DateTimeFormatter formatter = formatterWithDefaultTime(dateFormat);
 			return LocalDateTime.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
 			throw new ValueRejectedException(value, "LocalDateTime format exception, expected format:" + dateFormat);
@@ -282,7 +281,8 @@ public class Converter {
 	public OffsetDateTime convertToOffsetDateTime(String value) {
 		String dateFormat = getDateFormat(OffsetDateTime.class);
 		try {
-			return OffsetDateTime.parse(value, DateTimeFormatter.ofPattern(dateFormat));
+			DateTimeFormatter formatter = formatterWithDefaultTime(dateFormat);
+			return OffsetDateTime.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
 			throw new ValueRejectedException(value, "OffsetDateTime format exception, expected format: " + dateFormat);
 		}
@@ -291,7 +291,7 @@ public class Converter {
 	public Instant convertToInstant(String value) {
 		String dateFormat = getDateFormat(Instant.class);
 		try {
-			return Instant.from(DateTimeFormatter.ofPattern(dateFormat).parse(value));
+			return Instant.from(formatterWithDefaultTime(dateFormat).parse(value));
 		} catch (DateTimeParseException | IllegalArgumentException e) {
 			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat);
 		}
@@ -323,6 +323,17 @@ public class Converter {
 		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(expectedDateFormatPattern)
 				.withResolverStyle(ResolverStyle.STRICT);
 		dateFormatter.parse(date);
+	}
+
+	private DateTimeFormatter formatterWithDefaultTime(String dateFormat) {
+		return new DateTimeFormatterBuilder()
+				.appendPattern(dateFormat)
+				.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+				.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+				.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+				.parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
+				.parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
+				.toFormatter();
 	}
 
 	@Override

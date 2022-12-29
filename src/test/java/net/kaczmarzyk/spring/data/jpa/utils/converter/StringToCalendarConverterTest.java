@@ -107,6 +107,24 @@ public class StringToCalendarConverterTest {
 		);
 	}
 
+	@Test
+	public void appendsDefaultTimeDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		//given
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		Calendar referenceCalendar = convertLocalDateToCalendar(LocalDate.of(2022, 11, 24));
+
+		//when
+		Calendar converted = converterWithCustomFormat.convert("2022-11-24", Calendar.class);
+
+		//then
+		assertThat(converted)
+				.isEqualTo(referenceCalendar);
+		assertThat(converted.getTime())
+				.hasHourOfDay(0)
+				.hasMinute(0)
+				.hasMillisecond(0);
+	}
+
 	private Calendar convertLocalDateToCalendar(LocalDate localDate) {
 		Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		Calendar calendar = Calendar.getInstance();
