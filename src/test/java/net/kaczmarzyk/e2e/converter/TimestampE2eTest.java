@@ -131,17 +131,17 @@ public class TimestampE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[2]").doesNotExist());
 	}
 
-    @Test
-    public void findsByTimestampBeforeWithCustomFormat() throws Exception {
-        mockMvc.perform(get("/customers")
-                                .param("lastSeenBefore_customFormat", "2022/11/01, 09:13:12.000")
-                                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
-                .andExpect(jsonPath("$.[?(@.firstName=='Lisa')]").exists())
-                .andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
-                .andExpect(jsonPath("$[3]").doesNotExist());
-    }
+	@Test
+	public void findsByTimestampBeforeWithCustomFormat() throws Exception {
+		mockMvc.perform(get("/customers")
+						.param("lastSeenBefore_customFormat", "2022/11/01, 09:13:12.000")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Bart')]").exists())
+				.andExpect(jsonPath("$.[?(@.firstName=='Lisa')]").exists())
+				.andExpect(jsonPath("$.[?(@.firstName=='Moe')]").exists())
+				.andExpect(jsonPath("$[3]").doesNotExist());
+	}
 
 	@Test
 	public void findsByTimestampBeforeWithCustomFormatWithDateOnly() throws Exception {
@@ -156,12 +156,12 @@ public class TimestampE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 
-    @Test
-    public void findsByTimestampAfterWithDefaultFormat() throws Exception {
-        mockMvc.perform(get("/customers")
-                                .param("lastSeenAfter", "2022-10-12T22:17:13.000Z")
-                                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+	@Test
+	public void findsByTimestampAfterWithDefaultFormat() throws Exception {
+		mockMvc.perform(get("/customers")
+						.param("lastSeenAfter", "2022-10-12T22:17:13.000Z")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
@@ -169,19 +169,19 @@ public class TimestampE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Minnie')]").exists())
 				.andExpect(jsonPath("$[6]").doesNotExist());
-    }
+	}
 
-    @Test
-    public void findsByTimestampAfterWithCustomFormat() throws Exception {
-        mockMvc.perform(get("/customers")
-                                .param("lastSeenAfter_customFormat", "2022/12/06, 15:06:01.456")
-                                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
-                .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
-                .andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
-                .andExpect(jsonPath("$[3]").doesNotExist());
-    }
+	@Test
+	public void findsByTimestampAfterWithCustomFormat() throws Exception {
+		mockMvc.perform(get("/customers")
+						.param("lastSeenAfter_customFormat", "2022/12/06, 15:06:01.456")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+				.andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
+				.andExpect(jsonPath("$[3]").doesNotExist());
+	}
 
 	@Test
 	public void findsByTimestampAfterWithCustomFormatWithDateOnly() throws Exception {
@@ -235,7 +235,7 @@ public class TimestampE2eTest extends E2eTestBase {
 	public void findsByTimestampEqualWithCustomDateFormatWithDateOnly() throws Exception {
 		customer("Barry", "Benson")
 				.nickName("Bee")
-				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 15, 0, 0,0)))
+				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 15, 0, 0, 0)))
 				.build(em);
 
 		mockMvc.perform(get("/customers")
