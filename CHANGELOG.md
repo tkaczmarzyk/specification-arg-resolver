@@ -1,3 +1,7 @@
+v2.14.1
+=======
+* Added support for `content-type` header containing additional directives like `encoding=UTF-8`/`charset=UTF-8`. Previously, only `application/json` was accepted as `content-type` for request body filters.
+
 v2.14.0
 =======
 * added support for `jsonPaths` during generation of swagger documentation.
