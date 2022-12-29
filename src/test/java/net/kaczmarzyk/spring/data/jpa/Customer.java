@@ -99,37 +99,37 @@ public class Customer {
     }
 
     public Customer(String firstName, String lastName, Gender gender, Date registrationDate, String street) {
-	  this.firstName = firstName;
-	  this.lastName = lastName;
-	  this.gender = gender;
-	  this.genderAsString = gender;
-	  this.registrationDate = registrationDate;
-	  this.address.setStreet(street);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.genderAsString = gender;
+        this.registrationDate = registrationDate;
+        this.address.setStreet(street);
     }
 
     public Long getId() {
-	  return id;
+        return id;
     }
 
     public String getFirstName() {
-	  return firstName;
+        return firstName;
     }
 
     public String getLastName() {
-	  return lastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-	  this.lastName = lastName;
+        this.lastName = lastName;
     }
 
     public Gender getGender() {
-	  return gender;
+        return gender;
     }
 
     public void setGender(Gender gender) {
-	  this.gender = gender;
-	  this.genderAsString = gender;
+        this.gender = gender;
+        this.genderAsString = gender;
     }
 
     public Timestamp getLastSeen() {
@@ -145,42 +145,42 @@ public class Customer {
     }
 
     public Address getAddress() {
-	  return address;
+        return address;
     }
 
     public void setFirstName(String firstName) {
-	  this.firstName = firstName;
+        this.firstName = firstName;
     }
 
     public void setRegistrationDate(Date registrationDate) {
-	  this.registrationDate = registrationDate;
+        this.registrationDate = registrationDate;
 
-	  this.registrationCalendar = Calendar.getInstance();
-	  this.registrationCalendar.setTime(registrationDate);
+        this.registrationCalendar = Calendar.getInstance();
+        this.registrationCalendar.setTime(registrationDate);
     }
 
     public LocalDate getBirthDate() {
-	  return birthDate;
+        return birthDate;
     }
 
     public void setBirthDate(LocalDate birthDate) {
-	  this.birthDate = birthDate;
+        this.birthDate = birthDate;
     }
 
     public String getOccupation() {
-	  return occupation;
+        return occupation;
     }
 
     public void setOccupation(String occupation) {
-	  this.occupation = occupation;
+        this.occupation = occupation;
     }
 
     public LocalDateTime getLastOrderTime() {
-	  return lastOrderTime;
+        return lastOrderTime;
     }
 
     public void setLastOrderTime(LocalDateTime lastOrderTime) {
-	  this.lastOrderTime = lastOrderTime;
+        this.lastOrderTime = lastOrderTime;
     }
 
 	/**
@@ -198,93 +198,93 @@ public class Customer {
 	}
 
     public boolean isGold() {
-	  return gold;
+        return gold;
     }
 
     public void setGold(boolean gold) {
-	  this.gold = gold;
-	  this.goldObj = gold;
+        this.gold = gold;
+        this.goldObj = gold;
     }
 
     public OffsetDateTime getDateOfNextSpecialOffer() {
-	  return dateOfNextSpecialOffer;
+        return dateOfNextSpecialOffer;
     }
 
     public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
-	  this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
-	  this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
-	  this.dateOfNextSpecialOfferTimestamp = Timestamp.from(dateOfNextSpecialOffer.toInstant());
-	  this.dateOfNextSpecialOfferZoned = dateOfNextSpecialOffer.toZonedDateTime();
+        this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
+        this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
+        this.dateOfNextSpecialOfferTimestamp = Timestamp.from(dateOfNextSpecialOffer.toInstant());
+        this.dateOfNextSpecialOfferZoned = dateOfNextSpecialOffer.toZonedDateTime();
     }
 
     public UUID getRefCode() {
-	  return refCode;
+        return refCode;
     }
 
     public void setRefCode(UUID refCode) {
-	  this.refCode = refCode;
+        this.refCode = refCode;
     }
 
     public void setNickName(String nickName) {
-	  this.nickName = nickName;
+        this.nickName = nickName;
     }
 
     public String getNickName() {
-	  return nickName;
+        return nickName;
     }
 
     public Collection<Order> getOrders() {
-	  if (orders == null) {
-		orders = new HashSet<>();
-	  }
-	  return orders;
+        if (orders == null) {
+            orders = new HashSet<>();
+        }
+        return orders;
     }
 
     public Collection<Order> getOrders2() {
-	  if (orders2 == null) {
-		orders2 = new HashSet<>();
-	  }
-	  return orders2;
+        if (orders2 == null) {
+            orders2 = new HashSet<>();
+        }
+        return orders2;
     }
 
     @Override
     public String toString() {
-	  return "Customer[" + firstName + " " + lastName + "]";
+        return "Customer[" + firstName + " " + lastName + "]";
     }
 
     public Gender getGenderAsString() {
-	  return genderAsString;
+        return genderAsString;
     }
 
     public Integer getWeight() {
-	  return weight;
+        return weight;
     }
 
     public int getWeightInt() {
-	  return weightInt;
+        return weightInt;
     }
 
     public long getWeightLong() {
-	  return weightLong;
+        return weightLong;
     }
 
     public float getWeightFloat() {
-	  return weightFloat;
+        return weightFloat;
     }
 
     public Double getWeightDouble() {
-	  return weightDouble;
+        return weightDouble;
     }
 
     public Boolean getGoldObj() {
-	  return goldObj;
+        return goldObj;
     }
 
     public Set<Badge> getBadges() {
-	  if (badges == null) {
-		badges = new HashSet<>();
-	  }
-	  return badges;
+        if (badges == null) {
+            badges = new HashSet<>();
+        }
+        return badges;
     }
 
 }
