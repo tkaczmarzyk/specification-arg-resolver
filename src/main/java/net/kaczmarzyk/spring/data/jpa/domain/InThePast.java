@@ -24,7 +24,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Expression;
 
 /**
- * <p>Filters with ">" where-clause (e.g. {@code where dateOfBirth < localtimestamp()).</p>
+ * <p>Filters with "<" where-clause (e.g. {@code where dateOfBirth < localtimestamp()).</p>
  * <p>Given date type value in path is compared to current timestamp of the database.</p>
  *
  * <p>Supports date type fields.</p>
