@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Queue;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +38,7 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
     Customer homerSimpson;
     Customer margeSimpson;
     Customer moeSzyslak;
-    
+
     @Before
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 07).build(em);
