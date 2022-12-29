@@ -41,7 +41,7 @@ public class InTheFuture<T, TimeType extends Comparable<TimeType>> extends PathS
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		Expression<TimeType> rootPath = path(root);
-		Expression<TimeType> currentTimestamp = (Expression<TimeType>) cb.function("CURRENT_TIMESTAMP", rootPath.getClass());
+		Expression<TimeType> currentTimestamp = (Expression<TimeType>) cb.currentTimestamp();
 
 		return cb.greaterThan(rootPath, currentTimestamp);
 	}
