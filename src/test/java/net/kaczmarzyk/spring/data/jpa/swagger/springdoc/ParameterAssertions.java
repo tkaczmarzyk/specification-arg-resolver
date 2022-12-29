@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.swagger.springdoc;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.assertj.core.api.AbstractAssert;
 
@@ -58,6 +59,13 @@ class ParameterAssertions extends AbstractAssert<ParameterAssertions, Parameter>
 		isNotNull();
 		assertThat(actual.getSchema().getType())
 			.isEqualTo(type);
+		return this;
+	}
+
+	public ParameterAssertions hasSchema(Schema<?> schema) {
+		isNotNull();
+		assertThat(actual.getSchema())
+			.isEqualTo(schema);
 		return this;
 	}
 

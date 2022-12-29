@@ -115,7 +115,7 @@ public Object findCustomersByGender(
 	return customerRepo.findAll(spec);
 }
 ```
-will handle `GET http://myhost/customers?gender=MALE,FEMALE` in exactly the same way as `GET http://myhost/customers?gender=MALE&gender=FEMALE` (as one parameter with two values `["MALE","GENDER"]`). Without specifying `paramSeparator` param `gender=MALE,FEMALE` will be processed as single value: `["MALE,FEMALE"]`.
+will handle `GET http://myhost/customers?gender=MALE,FEMALE` in exactly the same way as `GET http://myhost/customers?gender=MALE&gender=FEMALE` (as one parameter with two values `["MALE","FEMALE"]`). Without specifying `paramSeparator` param `gender=MALE,FEMALE` will be processed as single value: `["MALE,FEMALE"]`.
 
 ### Like ###
 
@@ -1110,8 +1110,7 @@ SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`
 Swagger support
 ------------
 
-Right now specification argument resolver supports only one library -> `Springdoc-openapi`. 
-The current limitation is that parameter may be duplicated when the same argument is defined in specification and other parameter in controller method (e.g. when we define `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`).
+Right now specification argument resolver supports only one library -> `Springdoc-openapi`.
 
 There are two steps in order to enable support for `Springdoc-openapi` library:
 * Add following dependency from `Springdoc-openapi` (tested with `1.6.13` version):
@@ -1188,7 +1187,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.13.0</version>
+    <version>2.14.1</version>
 </dependency>
 ```
 

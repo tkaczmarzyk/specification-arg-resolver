@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.domain;
+package net.kaczmarzyk.spring.data.jpa.web;
 
 import com.jparams.verifier.tostring.ToStringVerifier;
-import nl.jqno.equalsverifier.EqualsVerifier;
-import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
-public class EqualIgnoreCaseTest {
-
-	@Test
-	public void equalsAndHashCodeContract() {
-		EqualsVerifier.forClass(EqualIgnoreCase.class)
-				.usingGetClass()
-				.suppress(Warning.NONFINAL_FIELDS)
-				.verify();
-	}
+public class DefaultQueryContextTest {
 
 	@Test
 	public void toStringVerifier() {
-		ToStringVerifier.forClass(EqualIgnoreCase.class)
-				.withIgnoredFields("queryContext")
+		ToStringVerifier.forClass(DefaultQueryContext.class)
+				.withIgnoredFields("evaluatedJoinFetch", "rootCache")
 				.verify();
 	}
+
 }

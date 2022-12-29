@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,7 +64,7 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
             return customerRepo.findAll(spec);
         }
 
-        @ExceptionHandler(JsonParseException.class)
+        @ExceptionHandler({JsonParseException.class, InvalidMediaTypeException.class})
         @ResponseStatus(HttpStatus.BAD_REQUEST)
         public void handleJsonParsingException() {
         }
@@ -100,11 +101,54 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
     }
 
     @Test
+    public void findsByIdProvidedInRequestBodyWhenContentTypeContainsEncodingParameter() throws Exception {
+        mockMvc.perform(post("/customers/search")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE + ";encoding=UTF-8")
+                            .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$").isArray())
+               .andExpect(jsonPath("$.length()").value(1))
+               .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
+    }
+
+    @Test
+    public void findsByIdProvidedInRequestBodyWhenContentTypeContainsCharsetParameter() throws Exception {
+        mockMvc.perform(post("/customers/search")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+                        .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
+    }
+
+    @Test
+    public void findsByIdProvidedInRequestBodyWhenContentTypeContainsBoundaryParameter() throws Exception {
+        mockMvc.perform(post("/customers/search")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE + ";boundary=something")
+                        .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
+    }
+
+    @Test
     public void returnsBadRequestWhenContentBodyContainsArrayJsonNode() throws Exception {
         mockMvc.perform(post("/customers/search/firstName")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"filters\": { \"firstName\": [{ \"nameValue\": \"" + homerSimpson.getFirstName() + "\" }, { \"nameValue2\": \"" + lisaSimpson.getFirstName() + "\" }]}}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void returnsBadRequestWhenContentTypeIsNotPresent() throws Exception {
+        mockMvc.perform(post("/customers/search")
+                        .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
                 .andExpect(status().isBadRequest());
     }
 

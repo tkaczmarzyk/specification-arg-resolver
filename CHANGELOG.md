@@ -1,9 +1,18 @@
+
 v2.15.0
 =======
-* added setting default time during conversion from date to time storing formats in `Converter`. Missing time values are filled with zeros (e.g. `LocalDateTime` format specified as `2022-12-14` will be converted to `2022-12-14 00:00`). Similar time setting is implemented for the following formats: `LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`. 
+* added support for using datetime formats without time (e.g. `yyyy-MM-dd`) for types that contain time (`LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`). Missing time values are filled with zeros, e.g. when sending `2022-12-14` as `LocalDateTime` parameter, the conversion will result in `2022-12-14 00:00`.
+
+v2.14.1
+=======
+* Added support for `content-type` header containing additional directives like `encoding=UTF-8`/`charset=UTF-8`. Previously, only `application/json` was accepted as `content-type` for request body filters.
 
 v2.14.0
 =======
+* added support for `jsonPaths` during generation of swagger documentation.
+* fixed bugs related to swagger support:
+  * fixed marking `headers` and `pathVars` parameters as required/non-required. From now all `pathVars` are marked as required and `headers` can be marked as required depending on controller method configuration.
+  * fixed duplicated parameters when the same parameter was defined in spec and controller method (e.g. when we defined `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`).
 * added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
   * For example, for the following endpoint:
     ```java

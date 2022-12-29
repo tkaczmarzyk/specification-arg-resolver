@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
@@ -362,6 +363,13 @@ public class JoinFetchTest extends IntegrationTestBase {
         EqualsVerifier.forClass(JoinFetch.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
+    }
+
+    @Test
+    public void toStringVerifier() {
+        ToStringVerifier.forClass(JoinFetch.class)
+                .withIgnoredFields("context", "alias", "distinct")
                 .verify();
     }
 

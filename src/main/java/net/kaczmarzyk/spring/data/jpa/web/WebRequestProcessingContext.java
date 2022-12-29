@@ -15,27 +15,21 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import static java.util.Objects.isNull;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import net.kaczmarzyk.spring.data.jpa.utils.*;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.web.context.request.NativeWebRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.core.MethodParameter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.NativeWebRequest;
-
-import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
-import net.kaczmarzyk.spring.data.jpa.utils.IOUtils;
-import net.kaczmarzyk.spring.data.jpa.utils.JsonBodyParams;
-import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import static java.util.Objects.isNull;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.parseMediaType;
 
 /**
  *
@@ -48,7 +42,6 @@ public class WebRequestProcessingContext implements ProcessingContext {
 
 	private final MethodParameter methodParameter;
 	private final NativeWebRequest webRequest;
-	private String pathPattern;
 	private BodyParams bodyParams;
 
 	private Map<String, String> resolvedPathVariables;
@@ -107,7 +100,8 @@ public class WebRequestProcessingContext implements ProcessingContext {
 	private BodyParams getBodyParams() {
 		if (isNull(bodyParams)) {
 			String contentType = getRequestHeaderValue(CONTENT_TYPE);
-			if (contentType.equals(APPLICATION_JSON_VALUE)) {
+			MediaType mediaType = parseMediaType(contentType);
+			if (APPLICATION_JSON.includes(mediaType)) {
 				this.bodyParams = JsonBodyParams.parse(getRequestBody());
 			} else {
 				throw new IllegalArgumentException("Content-type not supported, content-type=" + contentType);
@@ -126,44 +120,5 @@ public class WebRequestProcessingContext implements ProcessingContext {
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
 		}
-	}
-
-	private String pathPattern() {
-		if (pathPattern != null) {
-			return pathPattern;
-		} else {
-			Class<?> controllerClass = methodParameter.getContainingClass();
-			if (controllerClass.getAnnotation(RequestMapping.class) != null) {
-				RequestMapping controllerMapping = controllerClass.getAnnotation(RequestMapping.class);
-				pathPattern = firstOf(controllerMapping.value(), controllerMapping.path());
-			}
-			
-			String methodPathPattern = null;
-			
-			if (methodParameter.hasMethodAnnotation(RequestMapping.class)) {
-				RequestMapping methodMapping = methodParameter.getMethodAnnotation(RequestMapping.class);
-				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
-			} else if (methodParameter.hasMethodAnnotation(GetMapping.class)) {
-				GetMapping methodMapping = methodParameter.getMethodAnnotation(GetMapping.class);
-				methodPathPattern = firstOf(methodMapping.value(), methodMapping.path());
-			}
-			
-			if (methodPathPattern != null) {
-				pathPattern = pathPattern != null ? pathPattern + methodPathPattern : methodPathPattern;
-			}
-		}
-		if (pathPattern == null) {
-			throw new IllegalStateException("path pattern could not be resolved (searched for @RequestMapping or @GetMapping)");
-		}
-		return pathPattern;
-	}
-
-	private String firstOf(String[] array1, String[] array2) {
-		if (array1.length > 0) {
-			return array1[0];
-		} else if (array2.length > 0) {
-			return array2[0];
-		}
-		return null;
 	}
 }
