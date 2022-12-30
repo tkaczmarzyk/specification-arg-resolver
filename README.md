@@ -978,7 +978,7 @@ Request `POST /customers/find` with the following body is not valid (`JsonParseE
 Type conversions for HTTP parameters
 -------------------
 
-Specification argument resolvers uses conversion mechanism to convert request string params to types of fields for which specifications have been defined.
+Specification argument resolver uses conversion mechanism to convert request string params to types of fields for which specifications have been defined.
 
 Let's consider the following code:
   ```java
@@ -1045,8 +1045,10 @@ For example:
 ```
  @Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")
 ```
-
+###### Date formats
 If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then time value will be set to the default value - midnight (UTC time for `OffsetDateTime`). For example, let us assume that the above specification with the custom config `config="dd-MM-yyyy"` corresponds to the `LocalDateTime` field in a database. Each argument provided to the specification will be converted to the date with the default time (e.g. `14-12-2022` -> `14-12-2022 00:00`)
+
+The formats of the date (datetime) in the database and corresponding Java object should be compatible. Also pay attention to the default format for specific date types (if they store date, time or date and time). Inconsistencies in the date formats may lead to confusing or empty results. For example, the database date object stored in format `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'` and mapped to `Date` Java object cannot be filtered by time until custom config is specified (default config refers only to date `yyyy-MM-dd`). It can be achieved by specifying custom format using `config` property of `@Spec` (e.g. `config="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`).
 
 In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
 
