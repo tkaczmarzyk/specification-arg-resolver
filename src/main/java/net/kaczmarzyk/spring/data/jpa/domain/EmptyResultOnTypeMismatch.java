@@ -22,7 +22,6 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValueRejectedException;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 /**

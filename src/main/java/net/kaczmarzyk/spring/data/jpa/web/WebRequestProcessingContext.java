@@ -15,21 +15,27 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.utils.*;
-import org.springframework.core.MethodParameter;
-import org.springframework.http.MediaType;
-import org.springframework.web.context.request.NativeWebRequest;
+import static java.util.Objects.isNull;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.parseMediaType;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.parseMediaType;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.web.context.request.NativeWebRequest;
+
+import net.kaczmarzyk.spring.data.jpa.utils.BodyParams;
+import net.kaczmarzyk.spring.data.jpa.utils.IOUtils;
+import net.kaczmarzyk.spring.data.jpa.utils.JsonBodyParams;
+import net.kaczmarzyk.spring.data.jpa.utils.PathVariableResolver;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
  *
@@ -118,7 +124,7 @@ public class WebRequestProcessingContext implements ProcessingContext {
 			}
 			return IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
 		} catch (IOException ex) {
-			throw new RuntimeException("Cannot read request body. Detail: " + ex.getMessage());
+			throw new RuntimeException("Cannot read request body", ex);
 		}
 	}
 }

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * @author Andrei Shakarov
  */
-public class IOUtils {
+public final class IOUtils {
 
     private IOUtils() {}
 

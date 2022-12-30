@@ -80,7 +80,7 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 		return isAnnotatedRecursively(methodParameter.getParameterType());
 	}
 
-	private final boolean isAnnotatedRecursively(Class<?> target) {
+	private boolean isAnnotatedRecursively(Class<?> target) {
 		if (target.getAnnotations().length != 0) {
 			for (Class<? extends Annotation> annotationType : specificationFactory.getResolversBySupportedType()) {
 				if (target.getAnnotation(annotationType) != null) {
