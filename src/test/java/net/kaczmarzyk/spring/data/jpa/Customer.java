@@ -83,6 +83,7 @@ public class Customer {
     private OffsetDateTime dateOfNextSpecialOffer;
     private ZonedDateTime dateOfNextSpecialOfferZoned;
 
+    @Column(columnDefinition = "uuid")
     private UUID refCode;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})

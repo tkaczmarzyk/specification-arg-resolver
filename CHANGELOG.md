@@ -1,3 +1,7 @@
+v2.15.1
+======
+* updated spring-boot-dependencies to 2.7.7
+
 v2.15.0
 =======
 * added support for using datetime formats without time (e.g. `yyyy-MM-dd`) for types that contain time (`LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`). Missing time values are filled with zeros, e.g. when sending `2022-12-14` as `LocalDateTime` parameter, the conversion will result in `2022-12-14 00:00`.
