@@ -42,7 +42,7 @@ public class DateBefore<T> extends DateSpecification<T> {
 	private Date date;
 
     public DateBefore(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
-        super(queryContext, path, args, converter);
+        super(queryContext, path, converter);
         if (args == null || args.length != 1) {
             throw new IllegalArgumentException("expected a single http-param, but was: " + args);
         }

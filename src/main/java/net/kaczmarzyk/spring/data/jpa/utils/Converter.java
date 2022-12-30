@@ -68,7 +68,11 @@ public final class Converter {
 		private String rejectedValue;
 		
 		public ValueRejectedException(String rejectedValue, String message) {
-			super(message);
+			this(rejectedValue, message, null);
+		}
+		
+		public ValueRejectedException(String rejectedValue, String message, Exception cause) {
+			super(message, cause);
 			this.rejectedValue = rejectedValue;
 		}
 		
@@ -184,7 +188,7 @@ public final class Converter {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
 			return LocalDate.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "LocalDate format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "LocalDate format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
@@ -194,7 +198,7 @@ public final class Converter {
 			DateTimeFormatter formatter = formatterWithDefaultTime(dateFormat);
 			return LocalDateTime.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "LocalDateTime format exception, expected format:" + dateFormat);
+			throw new ValueRejectedException(value, "LocalDateTime format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
@@ -202,7 +206,7 @@ public final class Converter {
 		try {
 			return Long.valueOf(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
 		}
 	}
 	
@@ -210,7 +214,7 @@ public final class Converter {
 		try {
 			return Double.valueOf(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
 		}
 	}
 	
@@ -218,7 +222,7 @@ public final class Converter {
 		try {
 			return Float.valueOf(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
 		}
 	}
 	
@@ -226,7 +230,7 @@ public final class Converter {
 		try {
 			return new BigDecimal(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
 		}
 	}
 	
@@ -246,7 +250,7 @@ public final class Converter {
 			validateDateFormat(dateFormat, value);
 			return new SimpleDateFormat(dateFormat).parse(value);
 		} catch (ParseException | DateTimeParseException e) {
-			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat, e);
 		}
 	}
 
@@ -258,7 +262,7 @@ public final class Converter {
 			cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
 			return cal;
 		} catch (ParseException | DateTimeParseException e) {
-			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
@@ -274,7 +278,7 @@ public final class Converter {
 		try {
 			return UUID.fromString(value);
 		} catch (IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "unparseable uuid");
+			throw new ValueRejectedException(value, "unparseable uuid", e);
 		}
 	}
 	
@@ -284,7 +288,7 @@ public final class Converter {
 			DateTimeFormatter formatter = formatterWithDefaultTime(dateFormat);
 			return OffsetDateTime.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "OffsetDateTime format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "OffsetDateTime format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
@@ -293,7 +297,7 @@ public final class Converter {
 		try {
 			return Instant.from(formatterWithDefaultTime(dateFormat).parse(value));
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat, e);
 		}
 	}
 
@@ -315,7 +319,7 @@ public final class Converter {
 			Date parsedDate = simpleDateFormat.parse(value);
 			return new Timestamp(parsedDate.getTime());
 		} catch (Exception e) {
-			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat, e);
 		}
 	}
 

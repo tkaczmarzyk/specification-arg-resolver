@@ -43,7 +43,7 @@ public class DateBetween<T> extends DateSpecification<T> {
     private Date before;
     
     public DateBetween(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
-        super(queryContext, path, args, converter);
+        super(queryContext, path, converter);
         if (args == null || args.length != 2) {
             throw new IllegalArgumentException("expected 2 http params (date boundaries), but was: " + args);
         }

@@ -35,7 +35,7 @@ import java.util.Map;
  * @author Jakub Radlica
  * @author Kacper Leśniak (Tratif sp. z o.o.)
  */
-public class SpecificationBuilder<T extends Specification> {
+public final class SpecificationBuilder<T extends Specification> {
 
 	private SpecificationFactory specificationFactory = new SpecificationFactory(null, null);
 
