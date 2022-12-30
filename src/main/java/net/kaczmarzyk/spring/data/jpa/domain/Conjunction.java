@@ -88,7 +88,7 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(innerSpecs, queriesWithInitializedFakes);
+		return Objects.hash(innerSpecs);
 	}
 
 	@Override
@@ -103,8 +103,7 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 			return false;
 		}
 		Conjunction other = (Conjunction) obj;
-		return Objects.equals(innerSpecs, other.innerSpecs)
-				&& Objects.equals(queriesWithInitializedFakes, other.queriesWithInitializedFakes);
+		return Objects.equals(innerSpecs, other.innerSpecs);
 	}
 
 	@Override
