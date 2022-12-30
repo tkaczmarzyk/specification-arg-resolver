@@ -68,7 +68,7 @@ public class SpecificationFactory {
 
 		Specification<Object> spec = specs.size() == 1 ? specs.iterator().next() : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(specs);
 
-		if (context.getParameterType().isAssignableFrom(Specification.class)) {
+		if (context.getParameterType().isAssignableFrom(spec.getClass())) {
 			return spec;
 		} else {
 			return (Specification<?>) EnhancerUtil.wrapWithIfaceImplementation(context.getParameterType(), spec);
