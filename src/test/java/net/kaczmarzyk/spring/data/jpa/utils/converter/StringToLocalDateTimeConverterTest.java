@@ -41,7 +41,7 @@ public class StringToLocalDateTimeConverterTest {
 		assertThrows(
 				Converter.ValueRejectedException.class,
 				() -> converterWithDefaultFormats.convert("06-2020-19T16:50:49", LocalDateTime.class),
-				"LocalDateTime format exception, expected format:yyyy-MM-dd'T'HH:mm:ss"
+				"LocalDateTime format exception, expected format: yyyy-MM-dd'T'HH:mm:ss"
 		);
 	}
 
@@ -50,7 +50,7 @@ public class StringToLocalDateTimeConverterTest {
 		assertThrows(
 				Converter.ValueRejectedException.class,
 				() -> converterWithDefaultFormats.convert("2020-06-19T16:50:49-invalid-format", LocalDateTime.class),
-				"LocalDateTime format exception, expected format:yyyy-MM-dd'T'HH:mm:ss"
+				"LocalDateTime format exception, expected format: yyyy-MM-dd'T'HH:mm:ss"
 		);
 	}
 	
@@ -70,7 +70,7 @@ public class StringToLocalDateTimeConverterTest {
 		assertThrows(
 				Converter.ValueRejectedException.class,
 				() -> converterWithCustomFormat.convert("06-2020-19 T 16:56:49", LocalDateTime.class),
-				"LocalDateTime format exception, expected format:yyyy-MM-dd 'T' HH:mm:ss"
+				"LocalDateTime format exception, expected format: yyyy-MM-dd 'T' HH:mm:ss"
 		);
 		
 	}
@@ -82,7 +82,7 @@ public class StringToLocalDateTimeConverterTest {
 		assertThrows(
 				Converter.ValueRejectedException.class,
 				() -> converterWithCustomFormat.convert("2020-06-19 T 16:56:49-invalid-format", LocalDateTime.class),
-				"LocalDateTime format exception, expected format:yyyy-MM-dd 'T' HH:mm:ss"
+				"LocalDateTime format exception, expected format: yyyy-MM-dd 'T' HH:mm:ss"
 		);
 
 	}
