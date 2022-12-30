@@ -1,6 +1,6 @@
 specification-arg-resolver
 ==========================
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=9GTMPKJ5X83US&no_recurring=1&item_name=Maintaining+specification-arg-resolver+library&currency_code=USD)
+![example workflow](https://github.com/tkaczmarzyk/specification-arg-resolver/actions/workflows/main.yml/badge.svg) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=9GTMPKJ5X83US&no_recurring=1&item_name=Maintaining+specification-arg-resolver+library&currency_code=USD)
 
 An alternative API for filtering data with Spring MVC &amp; Spring Data JPA.
 
