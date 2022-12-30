@@ -77,10 +77,8 @@ abstract class EnhancerUtil {
 		return false;
 	}
 
-	private static final class ReflectionUtils {
+	private abstract class ReflectionUtils {
 
-		private ReflectionUtils() {}
-		
 		@SuppressWarnings("unchecked")
 		static <T> T get(Object target, String fieldname) {
 			try {
