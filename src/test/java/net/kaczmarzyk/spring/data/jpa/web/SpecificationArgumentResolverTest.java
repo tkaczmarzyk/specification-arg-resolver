@@ -22,6 +22,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -47,7 +48,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsNotProxy(resolved);
+
+        assertThat(innerSpecsWithoutProxy(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
@@ -62,7 +65,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsNotProxy(resolved);
+
+        assertThat(innerSpecsWithoutProxy(resolved))
             .hasSize(2)
             .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
             .contains(new Conjunction<>(
@@ -79,7 +84,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsNotProxy(resolved);
+
+        assertThat(innerSpecsWithoutProxy(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -96,7 +103,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsNotProxy(resolved);
+
+        assertThat(innerSpecsWithoutProxy(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -113,7 +122,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsNotProxy(resolved);
+
+        assertThat(innerSpecsWithoutProxy(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -131,6 +142,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsNotProxy(resolved);
+
         assertThat(resolved)
             .isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
     }
@@ -143,6 +156,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
+
+        assertThatSpecIsProxy(resolved);
 
         assertThat(innerSpecs(resolved))
                 .hasSize(2)
@@ -158,6 +173,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
+
+        assertThatSpecIsProxy(resolved);
 
         assertThat(innerSpecs(resolved))
                 .hasSize(2)
@@ -176,6 +193,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
+
+        assertThatSpecIsProxy(resolved);
 
         assertThat(resolved)
             .isInstanceOf(CustomSpecJoinContainer.class);
@@ -213,6 +232,14 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     })
     @Spec(path = "path1", spec = Like.class)
     public static interface CustomSpecJoinContainer extends Specification<Object> {
+    }
+
+    @net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction(
+            @Or(
+                    @Spec(path = "path1", spec = Like.class)
+            )
+    )
+    public static interface ConjunctionSpec extends Specification<Object> {
     }
     
     public static class TestController {
@@ -262,6 +289,15 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
                         @JoinFetch(paths = { "fetch2" }, joinType = JoinType.INNER)
                     })
                 @Spec(path = "path1", spec = Like.class) Specification<Object> spec) {
+        }
+
+        public void testMethod_conjunctionWithOrAndSingleSpec(
+                @net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction(
+                        @Or(
+                                @Spec(path = "path1", spec = Like.class)
+                        )
+                ) Specification<Object> spec) {
+
         }
     }
 }

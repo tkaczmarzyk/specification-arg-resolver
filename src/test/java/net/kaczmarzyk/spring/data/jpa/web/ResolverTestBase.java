@@ -18,13 +18,14 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.utils.ReflectionUtils;
+import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Executable;
 import java.util.Collection;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -56,6 +57,10 @@ public abstract class ResolverTestBase {
 		);
     }
 
+	protected Collection<Specification<Object>> innerSpecsWithoutProxy(Specification<?> resolvedSpec) {
+		return ReflectionUtils.get(resolvedSpec, "innerSpecs");
+	}
+
 	protected Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
 				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "arg$2");
@@ -71,4 +76,12 @@ public abstract class ResolverTestBase {
 	}
 
 	protected abstract Class<?> controllerClass();
+
+	protected void assertThatSpecIsProxy(Specification<?> specification) {
+		assertThat(Enhancer.isEnhanced(specification.getClass())).isTrue();
+	}
+
+	protected void assertThatSpecIsNotProxy(Specification<?> specification) {
+		assertThat(Enhancer.isEnhanced(specification.getClass())).isFalse();
+	}
 }
