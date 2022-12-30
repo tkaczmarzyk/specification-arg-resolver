@@ -52,14 +52,14 @@ v2.12.1
 * Changed approach for resolving path variables when processing request.
 * From now on, the controllers with global prefixes (configured using `org.springframework.web.servlet.config.annotation.PathMatchConfigurer`) should be properly handled:
   * For example, apps with following configuration are now supported:
-    ```
+    ```java
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
       configurer.addPathPrefix("/api/{tenantId}", HandlerTypePredicate.forAnnotation(RestController.class));
     }
     ```
     Below spec will be properly resolved for request URI: `/api/123/findCustomers?firstName=John`
-    ```
+    ```java
     @RestController
     public static class TestController {
 
