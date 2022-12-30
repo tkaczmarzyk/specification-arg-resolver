@@ -22,7 +22,7 @@ import java.util.HashSet;
  *
  * @author Tomasz Kaczmarzyk
  */
-public class TypeUtil {
+public abstract class TypeUtil {
 
 	public static Collection<Class<?>> interfaceTree(Class<?> iface) {
 		if (!iface.isInterface()) {

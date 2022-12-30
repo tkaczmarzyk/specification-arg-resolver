@@ -17,6 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -60,30 +61,25 @@ public class Disjunction<T> implements Specification<T> {
         return combinedSpecs.toPredicate(root, query, cb);
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((innerSpecs == null) ? 0 : innerSpecs.hashCode());
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(innerSpecs);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Disjunction<?> other = (Disjunction<?>) obj;
-        if (innerSpecs == null) {
-            if (other.innerSpecs != null)
-                return false;
-        } else if (!innerSpecs.equals(other.innerSpecs))
-            return false;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Disjunction other = (Disjunction) obj;
+		return Objects.equals(innerSpecs, other.innerSpecs);
+	}
 
 	@Override
 	public String toString() {

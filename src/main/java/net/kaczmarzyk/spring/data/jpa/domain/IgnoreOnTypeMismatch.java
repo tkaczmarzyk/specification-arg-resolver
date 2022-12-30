@@ -68,18 +68,23 @@ public class IgnoreOnTypeMismatch<T> extends EmptyResultOnTypeMismatch<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) {
+        	return true;
+        }
+        if (obj == null) {
+        	return false;
+        }
+        if (getClass() != obj.getClass()) {
+        	return false;
+        }
         IgnoreOnTypeMismatch other = (IgnoreOnTypeMismatch) obj;
         if (getWrappedSpec() == null) {
-            if (other.getWrappedSpec() != null)
-                return false;
-        } else if (!getWrappedSpec().equals(other.getWrappedSpec()))
-            return false;
+            if (other.getWrappedSpec() != null) {
+            	return false;
+            }
+        } else if (!getWrappedSpec().equals(other.getWrappedSpec())) {
+        	return false;
+        }
         return true;
     }
 }

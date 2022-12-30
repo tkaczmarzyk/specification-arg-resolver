@@ -38,7 +38,7 @@ import static java.util.Objects.nonNull;
  * @author Tomasz Kaczmarzyk
  */
 @SuppressWarnings("unchecked")
-public class Converter {
+public final class Converter {
 	
 	public static class ValuesRejectedException extends IllegalArgumentException {
 		
@@ -347,8 +347,12 @@ public class Converter {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		Converter converter = (Converter) o;
 		return Objects.equals(dateFormat, converter.dateFormat) &&
 				onTypeMismatch == converter.onTypeMismatch;

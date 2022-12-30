@@ -18,6 +18,8 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
 
+import java.util.Objects;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
@@ -85,45 +87,23 @@ public class Join<T> implements Specification<T>, Fake {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-		result = prime * result + (distinctQuery ? 1231 : 1237);
-		result = prime * result + ((joinType == null) ? 0 : joinType.hashCode());
-		result = prime * result + ((pathToJoinOn == null) ? 0 : pathToJoinOn.hashCode());
-		result = prime * result + ((queryContext == null) ? 0 : queryContext.hashCode());
-		return result;
+		return Objects.hash(alias, distinctQuery, joinType, pathToJoinOn, queryContext);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Join other = (Join) obj;
-		if (alias == null) {
-			if (other.alias != null)
-				return false;
-		} else if (!alias.equals(other.alias))
-			return false;
-		if (distinctQuery != other.distinctQuery)
-			return false;
-		if (joinType != other.joinType)
-			return false;
-		if (pathToJoinOn == null) {
-			if (other.pathToJoinOn != null)
-				return false;
-		} else if (!pathToJoinOn.equals(other.pathToJoinOn))
-			return false;
-		if (queryContext == null) {
-			if (other.queryContext != null)
-				return false;
-		} else if (!queryContext.equals(other.queryContext))
-			return false;
-		return true;
+		return Objects.equals(alias, other.alias) && distinctQuery == other.distinctQuery && joinType == other.joinType
+				&& Objects.equals(pathToJoinOn, other.pathToJoinOn) && Objects.equals(queryContext, other.queryContext);
 	}
 
 	@Override

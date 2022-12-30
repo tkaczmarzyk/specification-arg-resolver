@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import java.util.Objects;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -68,26 +70,22 @@ public class EmptyResultOnTypeMismatch<T> implements Specification<T> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((wrappedSpec == null) ? 0 : wrappedSpec.hashCode());
-		return result;
+		return Objects.hash(wrappedSpec);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		EmptyResultOnTypeMismatch other = (EmptyResultOnTypeMismatch) obj;
-		if (wrappedSpec == null) {
-			if (other.wrappedSpec != null)
-				return false;
-		} else if (!wrappedSpec.equals(other.wrappedSpec))
-			return false;
-		return true;
+		return Objects.equals(wrappedSpec, other.wrappedSpec);
 	}
+
 }

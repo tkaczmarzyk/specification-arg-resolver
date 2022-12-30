@@ -74,7 +74,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 
 	@Override
 	public Operation customize(Operation operation, HandlerMethod handlerMethod) {
-		if (isNull(operation) || isNull(handlerMethod)) return operation;
+		if (isNull(operation) || isNull(handlerMethod)) {
+			return operation;
+		}
 
 		List<String> requiredParams = extractRequiredParametersFromHandlerMethod(handlerMethod, RequestMapping::params);
 		List<String> requiredHeaders = extractRequiredParametersFromHandlerMethod(handlerMethod, RequestMapping::headers);
@@ -160,7 +162,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 			.flatMap(Arrays::stream)
 			.collect(toList());
 
-		if (jsonPaths.isEmpty()) return empty();
+		if (jsonPaths.isEmpty()) {
+			return empty();
+		}
 
 		Parameter jsonParameter = generateParameterFromParameterIn(QUERY);
 		jsonParameter.setName(JSON_FILTER_PARAMETER_NAME);

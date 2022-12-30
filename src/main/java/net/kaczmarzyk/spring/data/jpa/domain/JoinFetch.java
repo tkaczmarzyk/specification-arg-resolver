@@ -126,8 +126,12 @@ public class JoinFetch<T> implements Specification<T>, Fake {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		JoinFetch<?> joinFetch = (JoinFetch<?>) o;
 		return distinct == joinFetch.distinct &&
 				Objects.equals(context, joinFetch.context) &&

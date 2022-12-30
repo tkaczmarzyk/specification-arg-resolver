@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JsonBodyParams implements BodyParams {
+public final class JsonBodyParams implements BodyParams {
 
 	private static final String DOT_DELIMITER = "\\.";
 
