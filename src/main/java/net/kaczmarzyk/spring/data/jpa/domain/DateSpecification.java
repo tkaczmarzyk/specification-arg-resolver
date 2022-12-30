@@ -30,7 +30,7 @@ abstract class DateSpecification<T> extends PathSpecification<T> {
 	
 	protected Converter converter;
 
-    protected DateSpecification(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
+    protected DateSpecification(QueryContext queryContext, String path, Converter converter) throws ParseException {
         super(queryContext, path);
         this.converter = converter;
     }
