@@ -96,7 +96,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new JoinFetch<>(queryCtx, new String[]{ "orders" }, LEFT, true),
@@ -120,7 +120,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(3)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(
@@ -146,7 +146,7 @@ public class AnnotatedRepeatedJoinFetchSpecInterfaceArgumentResolverTest extends
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(

@@ -91,7 +91,7 @@ public class AnnotatedAndSpecInterfaceArgumentResolverTest extends AnnotatedSpec
 		assertThat(resolved)
 				.isInstanceOf(GenderLastNameAndSpec.class);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new EmptyResultOnTypeMismatch<>(equal(ctx, "gender", "MALE")),
@@ -119,7 +119,7 @@ public class AnnotatedAndSpecInterfaceArgumentResolverTest extends AnnotatedSpec
 		assertThat(resolved)
 				.isInstanceOf(EmptyFilterExtendingTwoInterfacesWithAndFilter.class);
 
-		Collection<Specification<Object>> innerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> innerSpecs = proxiedInnerSpecs(resolved);
 
 		assertThat(innerSpecs)
 				.hasSize(3)

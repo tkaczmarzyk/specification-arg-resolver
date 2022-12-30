@@ -20,7 +20,6 @@ import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
-import net.kaczmarzyk.utils.ReflectionUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
@@ -96,7 +95,7 @@ public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpe
 		assertThat(resolved)
 				.isInstanceOf(OrderedItemNameFilter.class);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "orders", "o", LEFT, true),
@@ -125,7 +124,7 @@ public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpe
 		assertThat(resolved)
 				.isInstanceOf(SpecExtendedByTwoOtherJoinSpecsFilter.class);
 
-		Collection<Specification<Object>> innerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> innerSpecs = proxiedInnerSpecs(resolved);
 
 		Assertions.assertThat(innerSpecs)
 				.hasSize(6)

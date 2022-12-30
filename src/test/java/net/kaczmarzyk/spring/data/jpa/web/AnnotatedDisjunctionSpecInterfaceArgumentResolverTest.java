@@ -126,7 +126,7 @@ public class AnnotatedDisjunctionSpecInterfaceArgumentResolverTest extends Annot
 		assertThat(resolved)
 				.isInstanceOf(SpecExtendedByTwoOtherDisjunctionFilters.class);
 
-		Collection<Specification<Object>> innerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> innerSpecs = proxiedInnerSpecs(resolved);
 
 		Assertions.assertThat(innerSpecs)
 				.hasSize(3)

@@ -237,7 +237,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 
 		Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-		Collection<Specification<Object>> resolvedInnerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> resolvedInnerSpecs = proxiedInnerSpecs(resolved);
 		assertThat(resolvedInnerSpecs)
 				.hasSize(4)
 				.containsOnly(

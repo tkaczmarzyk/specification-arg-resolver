@@ -107,7 +107,7 @@ public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends Anno
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(
@@ -135,7 +135,7 @@ public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends Anno
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(4)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(
@@ -166,7 +166,7 @@ public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends Anno
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(4)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(

@@ -47,6 +47,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsNotProxy(resolved);
+
         assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
@@ -61,6 +63,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
+
+        assertThatSpecIsNotProxy(resolved);
 
         assertThat(innerSpecs(resolved))
             .hasSize(2)
@@ -79,6 +83,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsNotProxy(resolved);
+
         assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
@@ -96,6 +102,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsNotProxy(resolved);
+
         assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
@@ -112,6 +120,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
+
+        assertThatSpecIsNotProxy(resolved);
 
         assertThat(innerSpecs(resolved))
             .hasSize(2)
@@ -131,6 +141,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsNotProxy(resolved);
+
         assertThat(resolved)
             .isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
     }
@@ -144,7 +156,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsProxy(resolved);
+
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
                 .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
@@ -159,7 +173,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsProxy(resolved);
+
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
                 .contains(new Conjunction<>(
@@ -177,10 +193,12 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsProxy(resolved);
+
         assertThat(resolved)
             .isInstanceOf(CustomSpecJoinContainer.class);
 
-        assertThat(innerSpecs(resolved))
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(
                         new Conjunction<>(

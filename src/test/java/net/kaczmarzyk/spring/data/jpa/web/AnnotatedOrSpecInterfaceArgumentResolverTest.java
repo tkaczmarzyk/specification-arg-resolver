@@ -118,7 +118,7 @@ public class AnnotatedOrSpecInterfaceArgumentResolverTest extends AnnotatedSpecI
 		assertThat(resolved)
 				.isInstanceOf(SpecExtendedByTwoOtherOrSpecs.class);
 
-		Collection<Specification<Object>> innerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> innerSpecs = proxiedInnerSpecs(resolved);
 
 		Assertions.assertThat(innerSpecs)
 				.hasSize(3)

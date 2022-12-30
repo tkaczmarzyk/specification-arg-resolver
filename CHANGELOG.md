@@ -2,6 +2,7 @@ v2.15.1
 ======
 * updated spring-boot-dependencies to 2.7.7
 * fixed potential issue with detecting non-emmpty HTTP headers
+* fixed redundant proxy creation for multi-spec specifications when expected type is not a spec-interface
 
 v2.15.0
 =======
