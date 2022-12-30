@@ -163,5 +163,17 @@ public class LocalDateE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
                 .andExpect(jsonPath("$[2]").doesNotExist());
     }
-    
+
+    @Test
+    public void findsByDateBetweenWithCustomDateFormat_test() throws Exception {
+        mockMvc.perform(get("/customers")
+                        .param("birthDateAfter_customFormat", "10/03/1970")
+                        .param("birthDateBefore_customFormat", "14/07/1972")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.[?(@.firstName=='Homer')]").exists())
+                .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+                .andExpect(jsonPath("$[2]").doesNotExist());
+    }
 }
