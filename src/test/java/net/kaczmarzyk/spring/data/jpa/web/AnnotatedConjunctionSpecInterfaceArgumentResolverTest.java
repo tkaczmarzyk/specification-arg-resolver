@@ -19,7 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,7 +28,6 @@ import java.util.Collection;
 
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test cases:
@@ -93,7 +91,7 @@ public class AnnotatedConjunctionSpecInterfaceArgumentResolverTest extends Annot
 		assertThat(resolved)
 				.isInstanceOf(GenderOrLastNameAndRegistrationDateFilter.class);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new Disjunction<>(
@@ -125,7 +123,7 @@ public class AnnotatedConjunctionSpecInterfaceArgumentResolverTest extends Annot
 		assertThat(resolved)
 				.isInstanceOf(EmptyFilterExtendingTwoInterfacesWithConjunctionFilter.class);
 
-		Collection<Specification<Object>> innerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> innerSpecs = proxiedInnerSpecs(resolved);
 
 		assertThat(innerSpecs)
 				.hasSize(3)

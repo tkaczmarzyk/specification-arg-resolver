@@ -22,7 +22,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -50,7 +49,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         assertThatSpecIsNotProxy(resolved);
 
-        assertThat(innerSpecsWithoutProxy(resolved))
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
@@ -67,7 +66,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         assertThatSpecIsNotProxy(resolved);
 
-        assertThat(innerSpecsWithoutProxy(resolved))
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
             .contains(new Conjunction<>(
@@ -86,7 +85,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         assertThatSpecIsNotProxy(resolved);
 
-        assertThat(innerSpecsWithoutProxy(resolved))
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -105,7 +104,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         assertThatSpecIsNotProxy(resolved);
 
-        assertThat(innerSpecsWithoutProxy(resolved))
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -124,7 +123,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         assertThatSpecIsNotProxy(resolved);
 
-        assertThat(innerSpecsWithoutProxy(resolved))
+        assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
             .contains(new Conjunction<Object>(
@@ -159,7 +158,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         assertThatSpecIsProxy(resolved);
 
-        assertThat(innerSpecs(resolved))
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
                 .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
@@ -176,7 +175,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         assertThatSpecIsProxy(resolved);
 
-        assertThat(innerSpecs(resolved))
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
                 .contains(new Conjunction<>(
@@ -199,7 +198,7 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
         assertThat(resolved)
             .isInstanceOf(CustomSpecJoinContainer.class);
 
-        assertThat(innerSpecs(resolved))
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(
                         new Conjunction<>(
@@ -232,14 +231,6 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     })
     @Spec(path = "path1", spec = Like.class)
     public static interface CustomSpecJoinContainer extends Specification<Object> {
-    }
-
-    @net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction(
-            @Or(
-                    @Spec(path = "path1", spec = Like.class)
-            )
-    )
-    public static interface ConjunctionSpec extends Specification<Object> {
     }
     
     public static class TestController {

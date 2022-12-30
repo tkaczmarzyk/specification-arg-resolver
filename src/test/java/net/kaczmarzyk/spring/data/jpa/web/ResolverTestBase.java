@@ -57,11 +57,11 @@ public abstract class ResolverTestBase {
 		);
     }
 
-	protected Collection<Specification<Object>> innerSpecsWithoutProxy(Specification<?> resolvedSpec) {
+	protected Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
 		return ReflectionUtils.get(resolvedSpec, "innerSpecs");
 	}
 
-	protected Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
+	protected Collection<Specification<Object>> proxiedInnerSpecs(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
 				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "arg$2");
 

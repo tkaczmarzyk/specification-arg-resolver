@@ -211,7 +211,7 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 		assertThat(resolved)
 				.isInstanceOf(JoinFilter.class);
 
-		Collection<Specification<Object>> resolvedInnerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> resolvedInnerSpecs = proxiedInnerSpecs(resolved);
 		assertThat(resolvedInnerSpecs)
 				.hasSize(10)
 				.containsOnly(
