@@ -165,7 +165,7 @@ public class LocalDateE2eTest extends E2eTestBase {
     }
 
     @Test
-    public void findsByDateBetweenWithCustomDateFormat_test() throws Exception {
+    public void findsByDateBetweenWithCustomDateFormat_test22() throws Exception {
         mockMvc.perform(get("/customers")
                         .param("birthDateAfter_customFormat", "10/03/1970")
                         .param("birthDateBefore_customFormat", "14/07/1972")
