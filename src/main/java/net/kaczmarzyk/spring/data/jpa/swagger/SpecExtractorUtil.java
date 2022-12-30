@@ -29,7 +29,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * @author Konrad Hajduga (Tratif sp. z o.o.)
  */
-public class SpecExtractorUtil {
+public final class SpecExtractorUtil {
 
 	private static final Map<Class<?>, Function<Annotation, List<Spec>>> NESTED_SPEC_ANNOTATION_EXTRACTORS = new HashMap<>();
 

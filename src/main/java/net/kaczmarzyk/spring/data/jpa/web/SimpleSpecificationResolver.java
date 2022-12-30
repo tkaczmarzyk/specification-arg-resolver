@@ -68,7 +68,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			if (args.isEmpty() && !isZeroArgSpec(def)) {
 				return null;
 			} else {
-				String[] argsArray = args.toArray(new String[args.size()]);
+				String[] argsArray = args.toArray(new String[0]);
 				Specification<Object> spec = newSpecification(def, argsArray, context);
 				return def.onTypeMismatch().wrap(spec);
 			}
@@ -179,7 +179,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		try {
 			return embeddedValueResolver.resolveStringValue(rawSpELValue);
 		} catch (BeansException|ParseException e) {
-			throw new IllegalArgumentException("Invalid SpEL expression: '" + rawSpELValue + "'");
+			throw new IllegalArgumentException("Invalid SpEL expression: '" + rawSpELValue + "'", e);
 		}
 	}
 	
@@ -201,7 +201,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		Collection<String> args = new ArrayList<>();
 		for (String headerKey : specDef.headers()) {
 			String headerValue = context.getRequestHeaderValue(headerKey);
-			boolean isHeaderValueEmpty = headerValue == null || headerValue == "";
+			boolean isHeaderValueEmpty = headerValue == null || "".equals(headerValue);
 			if (!isHeaderValueEmpty) {
 				args.add(headerValue);
 			}

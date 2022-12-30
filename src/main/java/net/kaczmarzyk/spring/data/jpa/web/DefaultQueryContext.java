@@ -31,8 +31,8 @@ import java.util.function.Function;
  */
 public class DefaultQueryContext implements QueryContext {
 
-	private HashMap<String, Function<Root<?>, Join<?, ?>>> contextMap;
-	private HashMap<String, Fetch<?, ?>> evaluatedJoinFetch;
+	private Map<String, Function<Root<?>, Join<?, ?>>> contextMap;
+	private Map<String, Fetch<?, ?>> evaluatedJoinFetch;
 
 	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache;
 
