@@ -290,14 +290,5 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
                     })
                 @Spec(path = "path1", spec = Like.class) Specification<Object> spec) {
         }
-
-        public void testMethod_conjunctionWithOrAndSingleSpec(
-                @net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction(
-                        @Or(
-                                @Spec(path = "path1", spec = Like.class)
-                        )
-                ) Specification<Object> spec) {
-
-        }
     }
 }
