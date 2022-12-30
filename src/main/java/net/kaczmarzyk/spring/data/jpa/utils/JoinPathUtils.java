@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-public class JoinPathUtils {
+public abstract class JoinPathUtils {
 
 	public static boolean pathToJoinContainsAlias(String pathToJoinOn) {
 		return pathToJoinOn.contains(".");

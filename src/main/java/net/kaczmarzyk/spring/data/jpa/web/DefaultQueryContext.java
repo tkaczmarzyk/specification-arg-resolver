@@ -34,7 +34,7 @@ public class DefaultQueryContext implements QueryContext {
 	private Map<String, Function<Root<?>, Join<?, ?>>> contextMap;
 	private Map<String, Fetch<?, ?>> evaluatedJoinFetch;
 
-	private Map<Pair<String, Root>, javax.persistence.criteria.Join<?, ?>> rootCache;
+	private Map<Pair<String, Root>, Join<?, ?>> rootCache;
 
 	public DefaultQueryContext() {
 		this.contextMap = new HashMap<>();
@@ -89,8 +89,12 @@ public class DefaultQueryContext implements QueryContext {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		DefaultQueryContext that = (DefaultQueryContext) o;
 		return Objects.equals(contextMap, that.contextMap) &&
 				Objects.equals(evaluatedJoinFetch, that.evaluatedJoinFetch) &&

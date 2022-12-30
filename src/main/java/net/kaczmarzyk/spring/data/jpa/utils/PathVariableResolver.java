@@ -44,7 +44,7 @@ import static java.util.Objects.nonNull;
  * @author Tomasz Kaczmarzyk
  * @author Jakub Radlica
  */
-public class PathVariableResolver {
+public abstract class PathVariableResolver {
 
     public static Map<String, String> resolvePathVariables(NativeWebRequest nativeWebRequest, MethodParameter methodParameter) {
         Map<String, String> pathVariables = (Map) nativeWebRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, WebRequest.SCOPE_REQUEST);

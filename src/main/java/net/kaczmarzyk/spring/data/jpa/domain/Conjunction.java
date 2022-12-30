@@ -88,27 +88,23 @@ public class Conjunction<T> implements Specification<T>, FakeSpecWrapper<T> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((innerSpecs == null) ? 0 : innerSpecs.hashCode());
-		return result;
+		return Objects.hash(innerSpecs, queriesWithInitializedFakes);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		Conjunction<?> other = (Conjunction<?>) obj;
-		if (innerSpecs == null) {
-			if (other.innerSpecs != null)
-				return false;
-		} else if (!innerSpecs.equals(other.innerSpecs))
-			return false;
-		return true;
+		}
+		Conjunction other = (Conjunction) obj;
+		return Objects.equals(innerSpecs, other.innerSpecs)
+				&& Objects.equals(queriesWithInitializedFakes, other.queriesWithInitializedFakes);
 	}
 
 	@Override

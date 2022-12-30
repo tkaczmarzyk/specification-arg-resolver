@@ -60,9 +60,15 @@ public class NotNull<T> extends PathSpecification<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+        	return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+        	return false;
+        }
+        if (!super.equals(o)) {
+        	return false;
+        }
         NotNull<?> notNull = (NotNull<?>) o;
         return Objects.equals(expectedValue, notNull.expectedValue) &&
                 Objects.equals(converter, notNull.converter);

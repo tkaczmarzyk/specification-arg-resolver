@@ -79,6 +79,8 @@ abstract class EnhancerUtil {
 
 	private static final class ReflectionUtils {
 
+		private ReflectionUtils() {}
+		
 		@SuppressWarnings("unchecked")
 		static <T> T get(Object target, String fieldname) {
 			try {
