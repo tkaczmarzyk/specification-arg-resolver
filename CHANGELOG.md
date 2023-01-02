@@ -1,3 +1,9 @@
+v2.15.2
+======
+* Introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` or `EXCEPTION` (default). 
+* It should be used to specify what should be done when the request is missing path variable, 
+* for example: when one endpoint in the controller contains multiple paths with `pathVars`, then `missingPathVarPolicy` should be set to `IGNORE` in order to avoid exception that should be thrown, because some path variables from other paths could not be resolved.
+
 v2.15.1
 ======
 * updated spring-boot-dependencies to 2.7.7
