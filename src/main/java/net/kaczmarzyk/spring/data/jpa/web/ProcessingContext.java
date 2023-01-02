@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 
 import java.lang.annotation.Annotation;
 
@@ -31,7 +32,11 @@ public interface ProcessingContext {
 
 	String[] getParameterValues(String webParamName);
 
-	String getPathVariableValue(String pathVariableName);
+	default String getPathVariableValue(String pathVariableName) throws InvalidPathVariableRequestedException {
+		return getPathVariableValue(pathVariableName, MissingPathVarPolicy.EXCEPTION);
+	}
+
+	String getPathVariableValue(String pathVariableName, MissingPathVarPolicy missingPathVarPolicy);
 
 	String[] getBodyParamValues(String bodyParamName);
 }

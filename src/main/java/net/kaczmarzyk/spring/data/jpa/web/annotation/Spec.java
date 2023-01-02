@@ -82,7 +82,13 @@ public @interface Spec {
     boolean paramsInSpEL() default false;
 
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
-    
+
+    /**
+     * Attribute is used to specify behaviour on missing path variable.
+     * Missing param policy should be set to IGNORED when controller endpoint contains multiple paths with path variables.
+     */
+    MissingPathVarPolicy missingPathVarPolicy() default MissingPathVarPolicy.EXCEPTION;
+
     String path();
     
     @SuppressWarnings("rawtypes")
