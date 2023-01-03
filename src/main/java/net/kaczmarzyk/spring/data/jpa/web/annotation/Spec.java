@@ -91,10 +91,10 @@ public @interface Spec {
     boolean paramsInSpEL() default false;
 
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
-
+    
     /**
      * <p>Attribute name (or more generally, path in the entity graph) to be filtered.</p>
-     *
+     * 
      * <p>
      * For example, consider a {@code Customer} entity with field {@code String firstName}.
      * If you want to filter customers by id, set {@code @Spec.path} attribute to "id".
