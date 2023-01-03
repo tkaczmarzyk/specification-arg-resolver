@@ -86,6 +86,7 @@ public @interface Spec {
     /**
      * Attribute is used to specify behaviour on missing path variable.
      * Missing param policy should be set to IGNORED when controller endpoint contains multiple paths with path variables.
+     * Feature is related to the following <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/pull/93">pull-request</a>
      */
     MissingPathVarPolicy missingPathVarPolicy() default MissingPathVarPolicy.EXCEPTION;
 
