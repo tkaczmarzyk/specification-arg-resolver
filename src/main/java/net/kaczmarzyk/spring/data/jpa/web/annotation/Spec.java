@@ -38,7 +38,7 @@ public @interface Spec {
      * 
      * <p>For example, setting {@code params} to "name" will mean that you expect {@code ?name=Value} in upcoming HTTP requests.</p>
      * 
-     * <p>If not set (and {@code headers} and {@pathVars} are not used), then defaults to the same name as the filtered attribute of the entity (see {@code path}).
+     * <p>If not set (and {@code headers} and {@code pathVars} are not used), then defaults to the same name as the filtered attribute of the entity (see {@code path}).
      */
     String[] params() default {};
 
