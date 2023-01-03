@@ -23,6 +23,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -33,13 +34,15 @@ import java.util.Objects;
  * <p>If the field type is string or enum, the where-clause is case insensitive</p>
  *
  * @author Mateusz Fedkowicz
+ * @author Tomasz Kaczmarzyk
  **/
-public class NotEqualIgnoreCase<T> extends PathSpecification<T> {
+public class NotEqualIgnoreCase<T> extends PathSpecification<T> implements LocaleAware {
 
 	private static final long serialVersionUID = 2L;
 
 	protected String expectedValue;
 	private Converter converter;
+	private Locale locale;
 
 	public NotEqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
 		super(queryContext, path);
@@ -53,32 +56,40 @@ public class NotEqualIgnoreCase<T> extends PathSpecification<T> {
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		if(path(root).getJavaType().equals(String.class)) {
-			return cb.notEqual(cb.upper(this.<String>path(root)), expectedValue.toUpperCase());
+			return cb.notEqual(cb.upper(this.<String>path(root)), expectedValue.toUpperCase(locale));
 		}
 
 		Class<?> typeOnPath = path(root).getJavaType();
 		return cb.notEqual(path(root), converter.convert(expectedValue, typeOnPath, true));
 	}
-
+	
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		if (!super.equals(o)) {
-			return false;
-		}
-		NotEqualIgnoreCase<?> notEqual = (NotEqualIgnoreCase<?>) o;
-		return Objects.equals(expectedValue, notEqual.expectedValue) &&
-				Objects.equals(converter, notEqual.converter);
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), expectedValue, converter);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(converter, expectedValue, locale);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		NotEqualIgnoreCase other = (NotEqualIgnoreCase) obj;
+		return Objects.equals(converter, other.converter) && Objects.equals(expectedValue, other.expectedValue)
+				&& Objects.equals(locale, other.locale);
 	}
 
 	@Override
@@ -87,6 +98,7 @@ public class NotEqualIgnoreCase<T> extends PathSpecification<T> {
 				"expectedValue='" + expectedValue + '\'' +
 				", converter=" + converter +
 				", path='" + path + '\'' +
+				", locale=" + locale +
 				']';
 	}
 }
