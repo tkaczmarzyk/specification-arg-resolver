@@ -33,6 +33,8 @@ import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.util.Locale;
+
 /**
  * @author Jakub Radlica
  */
@@ -47,7 +49,7 @@ public class SimpleSpecificationResolverDefaultValueIntegrationTest extends Inte
 	
 	@Before
 	public void initializeResolver() {
-		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
+		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext, Locale.getDefault());
 	}
 	
 	@Test

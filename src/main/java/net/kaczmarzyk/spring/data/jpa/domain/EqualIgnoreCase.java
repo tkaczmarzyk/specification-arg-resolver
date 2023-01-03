@@ -23,6 +23,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -33,13 +34,15 @@ import java.util.Objects;
  * <p>If the field type is string or enum, the where-clause is case insensitive</p>
  *
  * @author Ricardo Pardinho
+ * @author Tomasz Kaczmarzyk
  */
-public class EqualIgnoreCase<T> extends PathSpecification<T> {
+public class EqualIgnoreCase<T> extends PathSpecification<T> implements LocaleAware {
 
     private static final long serialVersionUID = 2L;
 
     protected String expectedValue;
     private Converter converter;
+	private Locale locale = Locale.getDefault();
 
     public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
         super(queryContext, path);
@@ -54,36 +57,44 @@ public class EqualIgnoreCase<T> extends PathSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
         if (path(root).getJavaType().equals(String.class)) {
-            return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase());
+            return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase(locale));
         }
 
         Class<?> typeOnPath = path(root).getJavaType();
         return cb.equal(path(root), converter.convert(expectedValue, typeOnPath, true));
     }
-
+    
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-        	return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-        	return false;
-        }
-        if (!super.equals(o)) {
-        	return false;
-        }
-        EqualIgnoreCase<?> that = (EqualIgnoreCase<?>) o;
-        return Objects.equals(expectedValue, that.expectedValue) &&
-                Objects.equals(converter, that.converter);
+    public void setLocale(Locale locale) {
+    	this.locale = locale;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), expectedValue, converter);
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(converter, expectedValue, locale);
+		return result;
+	}
 
-    @Override
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		EqualIgnoreCase other = (EqualIgnoreCase) obj;
+		return Objects.equals(converter, other.converter) && Objects.equals(expectedValue, other.expectedValue)
+				&& Objects.equals(locale, other.locale);
+	}
+
+	@Override
     public String toString() {
-        return "EqualIgnoreCase [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + "]";
+        return "EqualIgnoreCase [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + ", locale=" + locale + "]";
     }
 }

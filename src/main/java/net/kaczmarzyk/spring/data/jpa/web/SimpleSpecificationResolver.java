@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.domain.LocaleAware;
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
@@ -32,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -46,15 +48,16 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
     private final ConversionService conversionService;
     private final EmbeddedValueResolver embeddedValueResolver;
-
-	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext) {
+    private final Locale locale;
+    
+	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext, Locale locale) {
 		this.conversionService = conversionService;
 		this.embeddedValueResolver = applicationContext != null ? new EmbeddedValueResolver(applicationContext.getBeanFactory()) : null;
+		this.locale = locale;
 	}
 	
 	public SimpleSpecificationResolver() {
-		this.conversionService = null;
-		this.embeddedValueResolver = null;
+		this(null, null, Locale.getDefault());
 	}
 	
 	@Override
@@ -120,6 +123,11 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 				}
 			}
 		}
+		
+		if (spec instanceof LocaleAware) {
+			((LocaleAware) spec).setLocale(locale);
+		}
+		
 		return spec;
 	}
 	

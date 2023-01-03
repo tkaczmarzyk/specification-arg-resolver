@@ -20,15 +20,20 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import net.kaczmarzyk.utils.ReflectionUtils;
+
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.Locale;
 
 
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
@@ -303,6 +308,40 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
     }
+    
+    @Test
+    public void passesDefaultSystemLocaleToLocaleAwareSpecification() {
+    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpec"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"i"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+        
+        Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
+        
+        assertThat(localePassedToSpec).isEqualTo(Locale.getDefault());
+    }
+    
+    @Test
+    public void passesCustomLocaleToLocaleAwareSpecification() {
+    	ReflectionUtils.set(resolver, "locale", new Locale("tr", "TR"));
+    	
+    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpec"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"i"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+        
+        Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
+        
+        assertThat(localePassedToSpec).isEqualTo(new Locale("tr", "TR"));
+    }
 
     public static class TestController {
 
@@ -345,6 +384,10 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         public void testMethod11(
                 @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION, config = {"config1", "config2"}) Specification<Object> spec) {
+        }
+        
+        public void testMethodWithLocaleAwareSpec(
+        		@Spec(path = "thePath", params = "theParameter", spec = EqualIgnoreCase.class) Specification<Object> spec) {
         }
 
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {

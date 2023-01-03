@@ -15,6 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import java.lang.annotation.Annotation;
+import java.util.Locale;
+
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
@@ -23,8 +26,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
-import java.lang.annotation.Annotation;
 
 
 /**
@@ -36,19 +37,35 @@ public class SpecificationArgumentResolver implements HandlerMethodArgumentResol
 	private SpecificationFactory specificationFactory;
 
 	public SpecificationArgumentResolver() {
-		 this(null, null);
+		 this(null, null, Locale.getDefault());
 	}
 	
 	public SpecificationArgumentResolver(ConversionService conversionService) {
-		this(conversionService, null);
+		this(conversionService, null, Locale.getDefault());
+	}
+	
+	public SpecificationArgumentResolver(ConversionService conversionService, Locale defaultLocale) {
+		this(conversionService, null, defaultLocale);
+	}
+	
+	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext) {
+		this(conversionService, abstractApplicationContext, Locale.getDefault());
+	}
+	
+	public SpecificationArgumentResolver(Locale defaultLocale) {
+		this(null, null, defaultLocale);
 	}
 	
 	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext) {
 		this(null, applicationContext);
 	}
 	
-	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext) {
-		this.specificationFactory = new SpecificationFactory(conversionService, abstractApplicationContext);
+	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext, Locale defaultLocale) {
+		this(null, applicationContext, defaultLocale);
+	}
+	
+	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext, Locale defaultLocale) {
+		this.specificationFactory = new SpecificationFactory(conversionService, abstractApplicationContext, defaultLocale);
 	}
 	
 
