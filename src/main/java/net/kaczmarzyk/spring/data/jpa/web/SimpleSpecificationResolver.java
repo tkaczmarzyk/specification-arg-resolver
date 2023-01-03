@@ -144,11 +144,17 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
 	private Converter resolveConverter(Spec def) {
 		if (def.config().length == 0) {
-			return Converter.withTypeMismatchBehaviour(def.onTypeMismatch(), conversionService);
+			return Converter.withTypeMismatchBehaviour(def.onTypeMismatch(), conversionService, defaultLocale);
 		}
 		if (def.config().length == 1) {
-			String dateFormat = def.config()[0];
-			return Converter.withDateFormat(dateFormat, def.onTypeMismatch(), conversionService);
+			if (LocaleAware.class.isAssignableFrom(def.spec())) { // if specification is locale-aware, then we assume that config contains locale
+				String localeConfig = def.config()[0];
+				Locale customlocale = LocaleUtils.toLocale(localeConfig);
+				return Converter.withTypeMismatchBehaviour(def.onTypeMismatch(), conversionService, customlocale);
+			} else { // otherwise we assume that config contains date format
+				String dateFormat = def.config()[0];
+				return Converter.withDateFormat(dateFormat, def.onTypeMismatch(), conversionService);
+			}
 		}
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}

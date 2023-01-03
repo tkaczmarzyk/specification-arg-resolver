@@ -40,7 +40,7 @@ import java.util.Locale;
  */
 public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
-	private Converter defaultConverter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+	private Converter defaultConverter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 	
 	@Autowired
 	AbstractApplicationContext abstractApplicationContext;

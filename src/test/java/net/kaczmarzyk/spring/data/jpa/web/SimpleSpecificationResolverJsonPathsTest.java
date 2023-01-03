@@ -33,9 +33,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
+import java.util.Locale;
+
 public class SimpleSpecificationResolverJsonPathsTest extends ResolverTestBase {
 
-	private static final Converter defaultConverter = Converter.withTypeMismatchBehaviour(EXCEPTION, null);
+	private static final Converter defaultConverter = Converter.withTypeMismatchBehaviour(EXCEPTION, null, Locale.getDefault());
 	private static final SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
 	@Test
