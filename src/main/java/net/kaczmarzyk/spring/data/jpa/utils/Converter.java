@@ -110,7 +110,7 @@ public final class Converter {
 		this.dateFormat = dateFormat;
 		this.onTypeMismatch = onTypeMismatch;
 		this.conversionService = conversionService;
-		this.enumMatcherCaseInsensitive = (enumVal, rawValue) -> enumVal.name().toUpperCase().equals(rawValue.toUpperCase(locale));
+		this.enumMatcherCaseInsensitive = (enumVal, rawValue) -> enumVal.name().toUpperCase(locale).equals(rawValue.toUpperCase(locale));
 	}
 	
 	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
