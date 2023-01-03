@@ -40,11 +40,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConverterTest {
 
+	private static enum TurkishCharEnum {
+		I,
+		İ
+	}
+	
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	
-	private static Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
-	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
+	private Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
+	private Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.ENGLISH);
 	
 	@Test
 	public void stringIsPassedThrough() {
@@ -65,6 +70,16 @@ public class ConverterTest {
 	@Test
 	public void convertsToEnumIgnoringCase() {
 		assertThat(converter.convert("fEmAlE", Gender.class, true)).isEqualTo(Gender.FEMALE);
+	}
+	
+	@Test
+	public void convertsToEnumIgnoringCaseAndUsingCustomLocale_converterWithoutDateFormat() {
+		// english locale
+		assertThat(converterWithoutFormat.convert("i", TurkishCharEnum.class, true)).isEqualTo(TurkishCharEnum.I);
+		
+		// Turkish locale
+		converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, new Locale("tr", "TR"));
+		assertThat(converterWithoutFormat.convert("i", TurkishCharEnum.class, true)).isEqualTo(TurkishCharEnum.İ);
 	}
 
 	@Test
