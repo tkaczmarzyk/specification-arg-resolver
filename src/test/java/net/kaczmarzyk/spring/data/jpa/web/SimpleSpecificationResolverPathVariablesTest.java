@@ -57,7 +57,9 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-		resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+		Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+		assertThat(resolved).isNull();
 	}
 
 	@Test
@@ -117,7 +119,9 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-		resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+		Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+		assertThat(resolved).isNull();
 	}
 
 	@Test

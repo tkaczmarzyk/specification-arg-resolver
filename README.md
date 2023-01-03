@@ -837,6 +837,26 @@ public Object findById(
 }
 
 ```
+
+### Support for multiple paths with path variables ###
+
+In order to enable support for endpoint with multiple paths with path variables you should specify `missingPathVarPolicy` and set it to `IGNORE`. 
+By default `missingPathVarPolicy` is set to `EXCEPTION`. Please see code below:
+```java
+@RequestMapping(path = { "/customers/{customerId}", "/customers-ref/{customerRefCode}" })
+@ResponseBody
+public Object getCustomerDetails(
+    @Or({
+            @Spec(path = "id", pathVars = "customerId", spec = Equal.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE),
+            @Spec(path = "refCode", pathVars = "customerRefCode", spec = EqualIgnoreCase.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE)
+    }) Specification<Customer> customerSpecification) {
+
+    return customerRepository.findAll(customerSpecification);
+}
+
+```
+If `missingPathVarPolicy` would be set to `EXCEPTION`, then resolving path variables for the method above will not be possible, because it will always contain at least one unresolved path variable and exception will be thrown. 
+
 Request Header Support
 ---------------------
 
