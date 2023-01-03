@@ -90,10 +90,11 @@ public class WebRequestProcessingContext implements ProcessingContext {
 		if (value != null) {
 			return value;
 		} else {
-			throw new InvalidPathVariableRequestedException(pathVariableName);
+			return "";
 		}
 	}
 
+<<<<<<< HEAD
 	public String getRequestHeaderValue(String headerKey) {
 		return webRequest.getHeader(headerKey);
 	}
@@ -112,10 +113,48 @@ public class WebRequestProcessingContext implements ProcessingContext {
 			} else {
 				throw new IllegalArgumentException("Content-type not supported, content-type=" + contentType);
 			}
+=======
+	private String pathPattern() {
+		if (pathPattern != null) {
+			return pathPattern;
+		} else {
+			Class<?> controllerClass = methodParameter.getContainingClass();
+			if (controllerClass.getAnnotation(RequestMapping.class) != null) {
+				RequestMapping controllerMapping = controllerClass.getAnnotation(RequestMapping.class);
+				pathPattern = getPathFromValueOrPath(controllerMapping.value(), controllerMapping.path());
+			}
+			
+			String methodPathPattern = null;
+			
+			if (methodParameter.hasMethodAnnotation(RequestMapping.class)) {
+				RequestMapping methodMapping = methodParameter.getMethodAnnotation(RequestMapping.class);
+				methodPathPattern = getPathFromValueOrPath(methodMapping.value(), methodMapping.path());
+			} else if (methodParameter.hasMethodAnnotation(GetMapping.class)) {
+				GetMapping methodMapping = methodParameter.getMethodAnnotation(GetMapping.class);
+				methodPathPattern = getPathFromValueOrPath(methodMapping.value(), methodMapping.path());
+			}
+			
+			if (methodPathPattern != null) {
+				pathPattern = pathPattern != null ? pathPattern + methodPathPattern : methodPathPattern;
+			}
+		}
+		if (pathPattern == null) {
+			throw new IllegalStateException("path pattern could not be resolved (searched for @RequestMapping or @GetMapping)");
+		}
+		return pathPattern;
+	}
+
+	private String getPathFromValueOrPath(String[] value, String[] path) {
+		if (value.length > 0) {
+			return getPathMatchingRequestUrl(value);
+		} else if (path.length > 0) {
+			return getPathMatchingRequestUrl(path);
+>>>>>>> 70ead54ebfbe10bdecf257ef152a66e17319b6f6
 		}
 		return bodyParams;
 	}
 
+<<<<<<< HEAD
 	private String getRequestBody() {
 		try {
 			HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
@@ -126,5 +165,40 @@ public class WebRequestProcessingContext implements ProcessingContext {
 		} catch (IOException ex) {
 			throw new RuntimeException("Cannot read request body", ex);
 		}
+=======
+	private String getPathMatchingRequestUrl(String[] paths) {
+		if (paths.length == 1) {
+			return paths[0];
+		}
+		String actualPath = actualWebPath();
+		int index = 0;
+		int matches = 0;
+		for (int i = 0; i < paths.length; i++) {
+			int pairs = countPairs(paths[i], actualPath);
+			if (pairs > matches) {
+				index = i;
+				matches = pairs;
+			}
+		}
+		return paths[index];
+	}
+
+	private int countPairs(String s1, String s2) {
+		int count = 0;
+		int minLength = s1.length() < s2.length() ? s1.length() : s2.length();
+		for (int i = 0; i < minLength; i++) {
+			if (s1.charAt(i) == s2.charAt(i)) {
+				count++;
+			} else {
+				break;
+			}
+		}
+		return count;
+	}
+
+	private String actualWebPath() {
+		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+		return request.getPathInfo() != null ? request.getPathInfo() : request.getRequestURI().substring(request.getContextPath().length());
+>>>>>>> 70ead54ebfbe10bdecf257ef152a66e17319b6f6
 	}
 }
