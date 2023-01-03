@@ -128,14 +128,14 @@ public class AnnotatedConjunctionSpecInterfaceArgumentResolverTest extends Annot
 		assertThat(innerSpecs)
 				.hasSize(3)
 				.containsOnly(
-						new Conjunction<Object>(
+						new Conjunction<>(
 								new Disjunction<>(
 										new EmptyResultOnTypeMismatch<>(equal( ctx, "gender", "MALE")),
 										new EmptyResultOnTypeMismatch<>(equal(ctx, "lastName", "Simpson"))
 								),
 								new EmptyResultOnTypeMismatch<>(in(ctx, "registrationDate", "2014-03-25", "2014-03-20"))
 						),
-						new Conjunction<Object>(new Disjunction<>(new EmptyResultOnTypeMismatch<>(equal(ctx, "firstName", "Homer")))),
+						new Conjunction<>(new Disjunction<>(new EmptyResultOnTypeMismatch<>(equal(ctx, "firstName", "Homer")))),
 						new Like<>(ctx.queryContext(), "nickName", "Hom")
 				);
 	}

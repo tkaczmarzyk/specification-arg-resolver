@@ -15,15 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-<<<<<<< HEAD
-import net.kaczmarzyk.utils.ReflectionUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
-=======
-import org.junit.Test;
->>>>>>> 70ead54ebfbe10bdecf257ef152a66e17319b6f6
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -33,36 +27,36 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Executable;
-import java.util.HashMap;
 
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariablesInRequestAttributes;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.pathVariables;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.entry;
 import static org.assertj.core.api.Assertions.assertThat;
-<<<<<<< HEAD
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-=======
->>>>>>> 70ead54ebfbe10bdecf257ef152a66e17319b6f6
 /**
  * @author Tomasz Kaczmarzyk
  */
 public class WebRequestProcessingContextTest {
 	
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+	
 	@Test
-	public void returnEmptyValueIfPathVariableDoesntExist() {
+	public void throwsExceptionIfPathVariableDoesntExist() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
 		setPathVariablesInRequestAttributes(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("notExisting")).isEqualTo("");
+		thrown.expect(InvalidPathVariableRequestedException.class);
+		thrown.expectMessage("Requested path variable {notExisting} is not present in Controller request mapping annotations");
+		
+		context.getPathVariableValue("notExisting");
 	}
 
 	@Test
@@ -89,7 +83,7 @@ public class WebRequestProcessingContextTest {
 	}
 	
 	@Test
-	public void resolvesPathVariableValue_requestMapping_multi_paths_Second() {
+	public void resolvesPathVariableValue_requestMapping_multi_paths_second() {
 		MockWebRequest req = new MockWebRequest("/employees/777/orders/99");
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_multi_paths", TestController.class), req);
