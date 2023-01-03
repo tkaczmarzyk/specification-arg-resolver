@@ -26,6 +26,8 @@ import java.util.Objects;
 
 
 /**
+ * Base class for {@link Specification} types supported by this library out of the box.
+ * 
  * @author Tomasz Kaczmarzyk
  */
 public abstract class PathSpecification<T> implements Specification<T> {

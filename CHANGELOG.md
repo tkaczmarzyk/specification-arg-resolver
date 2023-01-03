@@ -1,3 +1,7 @@
+v2.16.0
+=======
+* additional Javadocs
+
 v2.15.1
 ======
 * updated spring-boot-dependencies to 2.7.7
