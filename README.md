@@ -849,9 +849,9 @@ public Object getCustomerDetails(
     @Or({
             @Spec(path = "id", pathVars = "customerId", spec = Equal.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE),
             @Spec(path = "refCode", pathVars = "customerRefCode", spec = EqualIgnoreCase.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE)
-    }) Specification<Customer> customerSpecification) {
-
-    return customerRepository.findAll(customerSpecification);
+    }) Specification<Customer> spec){
+	
+    return customerRepo.findAll(spec);
 }
 
 ```
