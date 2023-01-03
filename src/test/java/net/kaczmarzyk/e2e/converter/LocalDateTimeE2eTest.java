@@ -18,10 +18,7 @@ package net.kaczmarzyk.e2e.converter;
 import net.kaczmarzyk.E2eTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Between;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
-import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
+import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +114,22 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
                 @Spec(path="lastOrderTime", params={ "lastOrderTimeEqual" }, config="yyyy-MM-dd", spec= Equal.class) Specification<Customer> spec) {
             return customerRepo.findAll(spec);
         }
+
+		@RequestMapping(value = "/customers", params = "lastOrderEqualDay")
+		@ResponseBody
+		public Object findCustomersWithLastOrderInParticularDay(
+				@Spec(path="lastOrderTime", params="lastOrderEqualDay", spec=EqualDay.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers", params = "lastOrderEqualDay_customPattern")
+		@ResponseBody
+		public Object findCustomersWithLastOrderInParticularDay_customPatternWithDateOnly(
+				@Spec(path="lastOrderTime", params="lastOrderEqualDay_customPattern", config = "yyyy/MM/dd", spec=EqualDay.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
     }
 
     @Test
@@ -230,11 +243,47 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
                 .lastOrderTime(LocalDateTime.of(2022, 12, 13, 0, 0,0))
                 .build(em);
 
-        mockMvc.perform(get("/customers")
-                        .param("lastOrderTimeEqual", "2022-12-13")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
-                .andExpect(jsonPath("$[1]").doesNotExist());
-    }
+		mockMvc.perform(get("/customers")
+						.param("lastOrderTimeEqual", "2022-12-13")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByLastOrderInParticularDayWithDefaultConfig() throws Exception {
+		customer("Barry", "Benson")
+				.lastOrderTime(LocalDateTime.of(2017, 12, 20, 22, 02,23))
+				.build(em);
+		customer("Arisu", "Usagi")
+				.lastOrderTime(LocalDateTime.of(2017, 12, 21, 0, 0,0))
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("lastOrderEqualDay", "2017-12-20T08:45:57")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
+				.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void findsByLastOrderInParticularDayWithCustomConfigIgnoringTime() throws Exception {
+		customer("Barry", "Benson")
+				.lastOrderTime(LocalDateTime.of(2017, 12, 20, 22, 02,23))
+				.build(em);
+		customer("Arisu", "Usagi")
+				.lastOrderTime(LocalDateTime.of(2017, 12, 21, 0, 0,0))
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("lastOrderEqualDay_customPattern", "2017/12/20")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
+				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
+				.andExpect(jsonPath("$[2]").doesNotExist());
+	}
 }
