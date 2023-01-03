@@ -15,15 +15,14 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
-import org.springframework.data.jpa.domain.Specification;
-
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.PathSpecification;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.springframework.data.jpa.domain.Specification;
+
+import net.kaczmarzyk.spring.data.jpa.domain.PathSpecification;
 
 
 /**
