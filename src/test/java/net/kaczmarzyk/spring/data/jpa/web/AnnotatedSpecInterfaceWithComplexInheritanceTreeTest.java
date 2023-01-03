@@ -216,7 +216,7 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 				.hasSize(10)
 				.containsOnly(
 						// DisjunctionFilter
-						new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
+						new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<Object>(
 								new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(
 										new Like<>(ctx.queryContext(), "disjunctionAnd1Path1", "disjunctionAnd1Param1Val"),
 										new EmptyResultOnTypeMismatch<>(new Equal<>(ctx.queryContext(), "disjunctionAnd1Path2", new String[]{ "disjunctionAnd1Param2Val" }, converter))
@@ -239,7 +239,7 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 						// Spec2Filter
 						new Like<>(ctx.queryContext(), "spec2", "spec2Val"),
 						// ConjunctionFilter
-						new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(
+						new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object>(
 								new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
 										new EmptyResultOnTypeMismatch<>(new EqualIgnoreCase<>(ctx.queryContext(), "conjunction1or1spec1", new String[]{ "conjunction1or1spec1Val" }, converter)),
 										new EmptyResultOnTypeMismatch<>(new NotEqualIgnoreCase<>(ctx.queryContext(), "conjunction1or1spec2", new String[]{ "conjunction1or1spec2Val" }, converter))
