@@ -846,12 +846,12 @@ By default `missingPathVarPolicy` is set to `EXCEPTION`. Please see code below:
 @RequestMapping(path = { "/customers/{customerId}", "/customers-ref/{customerRefCode}" })
 @ResponseBody
 public Object getCustomerDetails(
-    @Or({
-            @Spec(path = "id", pathVars = "customerId", spec = Equal.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE),
-            @Spec(path = "refCode", pathVars = "customerRefCode", spec = EqualIgnoreCase.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE)
-    }) Specification<Customer> spec){
+  @Or({
+         @Spec(path = "id", pathVars = "customerId", spec = Equal.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE),
+         @Spec(path = "refCode", pathVars = "customerRefCode", spec = EqualIgnoreCase.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE)
+  }) Specification<Customer> spec){
 	
-    return customerRepo.findAll(spec);
+  return customerRepo.findAll(spec);
 }
 
 ```
