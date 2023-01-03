@@ -20,6 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.EmbeddedValueResolver;
@@ -48,12 +50,12 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
     private final ConversionService conversionService;
     private final EmbeddedValueResolver embeddedValueResolver;
-    private final Locale locale;
+    private final Locale defaultLocale;
     
-	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext, Locale locale) {
+	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext, Locale defaultLocale) {
 		this.conversionService = conversionService;
 		this.embeddedValueResolver = applicationContext != null ? new EmbeddedValueResolver(applicationContext.getBeanFactory()) : null;
-		this.locale = locale;
+		this.defaultLocale = defaultLocale;
 	}
 	
 	public SimpleSpecificationResolver() {
@@ -125,12 +127,21 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		}
 		
 		if (spec instanceof LocaleAware) {
-			((LocaleAware) spec).setLocale(locale);
+			Locale targetLocale = determineLocale(def);
+			((LocaleAware) spec).setLocale(targetLocale);
 		}
 		
 		return spec;
 	}
 	
+	private Locale determineLocale(Spec def) {
+		if (def.config().length == 0) {
+			return defaultLocale;
+		} else {
+			return LocaleUtils.toLocale(def.config()[0]);
+		}
+	}
+
 	private Converter resolveConverter(Spec def) {
 		if (def.config().length == 0) {
 			return Converter.withTypeMismatchBehaviour(def.onTypeMismatch(), conversionService);

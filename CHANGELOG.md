@@ -8,6 +8,10 @@ v2.16.0
   }
   ```
   This matters for case-insensitive specifications (`EqualIgnoreCase` and `LikeIgnoreCase`) which used system default locale in previous versions of the library. If locale is not provided, then system default will be used (exactly as in the previous version).
+* Added ability to set custom `Locale` in `@Spec.config` (this overrides the global default mentioned above):
+  ```java
+  @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
+  ```
 * additional Javadocs
 
 v2.15.1

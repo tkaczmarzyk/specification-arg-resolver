@@ -326,10 +326,28 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
     
     @Test
-    public void passesCustomLocaleToLocaleAwareSpecification() {
-    	ReflectionUtils.set(resolver, "locale", new Locale("tr", "TR"));
+    public void passesGlobalCustomLocaleToLocaleAwareSpecification() {
+    	ReflectionUtils.set(resolver, "defaultLocale", new Locale("tr", "TR"));
     	
     	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpec"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"i"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+        
+        Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
+        
+        assertThat(localePassedToSpec).isEqualTo(new Locale("tr", "TR"));
+    }
+    
+    @Test
+    public void usesCustomLocaleSetInSpecConfigAndPassesItToLocaleAwareSpecification() {
+    	ReflectionUtils.set(resolver, "defaultLocale", new Locale("pl", "PL")); // global custom locale that is going to be overriden by @Spec.config
+    	
+    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpecAndCustomLocaleConfig"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
         when(req.getParameterValues("theParameter")).thenReturn(new String[] {"i"});
@@ -388,6 +406,10 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         
         public void testMethodWithLocaleAwareSpec(
         		@Spec(path = "thePath", params = "theParameter", spec = EqualIgnoreCase.class) Specification<Object> spec) {
+        }
+        
+        public void testMethodWithLocaleAwareSpecAndCustomLocaleConfig(
+        		@Spec(path = "thePath", params = "theParameter", spec = EqualIgnoreCase.class, config = "tr_TR") Specification<Object> spec) {
         }
 
         public void testMethodWithConst1(@Spec(path = "thePath", spec = Equal.class, constVal = "constVal1", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
