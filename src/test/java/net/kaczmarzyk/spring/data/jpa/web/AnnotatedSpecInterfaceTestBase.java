@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import java.util.Locale;
+
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
@@ -24,7 +26,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 
 public abstract class AnnotatedSpecInterfaceTestBase extends ResolverTestBase {
 
-	protected Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	protected Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 	protected SpecificationArgumentResolver specificationArgumentResolver = new SpecificationArgumentResolver();
 
 	public Equal<Object> equal(WebRequestProcessingContext ctx, String path, String value) {

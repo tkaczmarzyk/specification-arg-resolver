@@ -49,7 +49,7 @@ public class SpecificationArgumentResolverHintRegistrarTest {
 
         //additional check that each specification type has been discovered
         assertThat(specificationClasses)
-                .hasSize(27);
+                .hasSize(30);
 
         SpecificationArgumentResolverHintRegistrar hintRegistrar = new SpecificationArgumentResolverHintRegistrar();
 
@@ -58,7 +58,7 @@ public class SpecificationArgumentResolverHintRegistrarTest {
 
         //then
         assertThat(runtimeHints.reflection().typeHints())
-                        .hasSize(27);
+                        .hasSize(30);
 
         specificationClasses.forEach(domainClass -> {
             TypeHint classReflectionHints = runtimeHints.reflection().getTypeHint(domainClass.loadClass());

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
@@ -32,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StringToDateConverterTest {
 
-	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 
 	@Test
 	public void convertsToDateUsingDefaultFormat() {
@@ -41,7 +42,6 @@ public class StringToDateConverterTest {
 
 		//then
 		assertThat(converted)
-				.isWithinMonth(11)
 				.isWithinMonth(11)
 				.isWithinDayOfMonth(24)
 				.isWithinYear(2022);
@@ -193,5 +193,21 @@ public class StringToDateConverterTest {
 				() -> converterWithCustomFormat.convert("11-2022-24-invalid-format", Date.class),
 				"Date format exception, expected format: MM-yyyy-dd"
 		);
+	}
+
+	@Test
+	public void appendsDefaultTimeDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		//when
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		Date converted = converterWithCustomFormat.convert("2022-11-24", Date.class);
+
+		//then
+		assertThat(converted)
+				.isWithinMonth(11)
+				.isWithinDayOfMonth(24)
+				.isWithinYear(2022)
+				.hasHourOfDay(0)
+				.hasMinute(0)
+				.hasMillisecond(0);
 	}
 }

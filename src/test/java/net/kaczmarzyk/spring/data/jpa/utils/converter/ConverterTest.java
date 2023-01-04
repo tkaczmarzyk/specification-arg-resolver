@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
@@ -39,11 +40,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConverterTest {
 
+	private static enum TurkishCharEnum {
+		I,
+		İ
+	}
+	
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 	
-	private static Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
-	private static Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	private Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
+	private Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.ENGLISH);
 	
 	@Test
 	public void stringIsPassedThrough() {
@@ -64,6 +70,16 @@ public class ConverterTest {
 	@Test
 	public void convertsToEnumIgnoringCase() {
 		assertThat(converter.convert("fEmAlE", Gender.class, true)).isEqualTo(Gender.FEMALE);
+	}
+	
+	@Test
+	public void convertsToEnumIgnoringCaseAndUsingCustomLocale_converterWithoutDateFormat() {
+		// english locale
+		assertThat(converterWithoutFormat.convert("i", TurkishCharEnum.class, true)).isEqualTo(TurkishCharEnum.I);
+		
+		// Turkish locale
+		converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, new Locale("tr", "TR"));
+		assertThat(converterWithoutFormat.convert("i", TurkishCharEnum.class, true)).isEqualTo(TurkishCharEnum.İ);
 	}
 
 	@Test
@@ -94,14 +110,14 @@ public class ConverterTest {
 		expected.expect(ValuesRejectedException.class);
 		expected.expect(valuesRejected("ROBOT", "ALIEN"));
 		
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null);
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null, Locale.getDefault());
 		
 		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
 	}
 	
 	@Test
 	public void ignoresRejectedEnumValues() {
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 		
 		List<Gender> result = converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
 		
