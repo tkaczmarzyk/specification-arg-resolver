@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValueRejectedException;
 import org.junit.Test;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
@@ -30,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StringToTimestampConverterTest {
 
-    Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+    Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 
     @Test
     public void convertsToTimestampUsingDefaultFormat() {
@@ -100,6 +102,20 @@ public class StringToTimestampConverterTest {
                 () -> converterWithCustomFormat.convert("2020-15:08:53.28206-16T-invalid-format", Timestamp.class),
                 "Timestamp format exception, expected format: yyyy-HH:mm:ss.SSSMM-dd'T'"
         );
+    }
 
+    @Test
+    public void appendsDefaultTimeDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+        Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+        Timestamp timestamp = converterWithCustomFormat.convert("2022-12-13", Timestamp.class);
+
+        assertThat(timestamp)
+                .hasYear(2022)
+                .hasMonth(12)
+                .hasDayOfMonth(13)
+                .hasHourOfDay(0)
+                .hasMinute(0)
+                .hasSecond(0)
+                .hasMillisecond(0);
     }
 }

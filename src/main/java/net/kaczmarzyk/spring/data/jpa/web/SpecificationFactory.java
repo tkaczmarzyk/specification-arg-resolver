@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ public class SpecificationFactory {
 
 	private Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
-	public SpecificationFactory(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext) {
-		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(conversionService, abstractApplicationContext);
+	public SpecificationFactory(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext, Locale locale) {
+		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(conversionService, abstractApplicationContext, locale);
 
 		resolversBySupportedType = Arrays.asList(
 						simpleSpecificationResolver,
@@ -66,19 +66,13 @@ public class SpecificationFactory {
 			return null;
 		}
 
-		if (specs.size() == 1) {
-			Specification<Object> firstSpecification = specs.iterator().next();
+		Specification<Object> spec = specs.size() == 1 ? specs.iterator().next() : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(specs);
 
-			if (Specification.class == context.getParameterType()) {
-				return firstSpecification;
-			} else {
-				return (Specification<?>) EnhancerUtil.wrapWithIfaceImplementation(context.getParameterType(), firstSpecification);
-			}
+		if (context.getParameterType().isAssignableFrom(spec.getClass())) {
+			return spec;
+		} else {
+			return (Specification<?>) EnhancerUtil.wrapWithIfaceImplementation(context.getParameterType(), spec);
 		}
-
-		Specification<Object> spec = new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(specs);
-
-		return (Specification<?>) EnhancerUtil.wrapWithIfaceImplementation(context.getParameterType(), spec);
 	}
 
 	private List<Specification<Object>> resolveSpec(ProcessingContext context) {

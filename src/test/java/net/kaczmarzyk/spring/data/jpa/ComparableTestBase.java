@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.jpa.domain.Specification;
-
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import org.junit.Before;
+import org.springframework.data.jpa.domain.Specification;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 
 /**
  * Base class for all Comparable Specification tests,
@@ -85,6 +81,10 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	protected Specification<Customer> makeUUT(String path, String value) {
 		return makeUUT(path, value, defaultConverter);
 	}
+
+	protected Specification<Customer> makeUUT(String path) {
+		return makeUUT(path, new String[]{}, null);
+	}
 	
 	/**
 	 * Create the Specification under test, filter with it, and assert the returned Customers
@@ -95,6 +95,10 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 */
 	protected void assertFilterContainsOnlyExpectedMembers(String path, String value, Customer... expectedMembers) {
 		assertFilterMembers(makeUUT(path, value), expectedMembers);
+	}
+
+	protected void assertFilterContainsOnlyExpectedMembers(String path, Customer... expectedMembers) {
+		assertFilterMembers(makeUUT(path), expectedMembers);
 	}
 	
 	/**
@@ -145,25 +149,5 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	 */
 	protected void assertFilterIsEmpty(String path, String value, String dateFormat) {
 		assertFilterEmpty(makeUUT(path, value, Converter.withDateFormat(dateFormat, OnTypeMismatch.EMPTY_RESULT, null)));
-	}
-	
-	@Test
-	public void rejectsNotExistingEnumConstantName() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-		expectedException.expectMessage("could not find value ROBOT for enum class Gender");
-		customerRepo.findAll(makeUUT("gender", "ROBOT"));
-	}
-	
-	@Test
-	public void rejectsNonIntegerArguments() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		assertFilterIsEmpty("weight", "1.1");
-	}
-	
-	@Test
-	public void rejectsNonNumericArguments() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		assertFilterIsEmpty("weightDouble", "one");
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,37 @@
  */
 package net.kaczmarzyk.spring.data.jpa.swagger.springdoc;
 
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+
+import org.springdoc.core.SpringDocUtils;
+import org.springdoc.core.customizers.OperationCustomizer;
+import org.springframework.core.MethodParameter;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.method.HandlerMethod;
+
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ObjectSchema;
@@ -26,26 +57,6 @@ import io.swagger.v3.oas.models.parameters.PathParameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
 import net.kaczmarzyk.spring.data.jpa.swagger.SpecExtractorUtil;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.springdoc.core.SpringDocUtils;
-import org.springdoc.core.customizers.OperationCustomizer;
-import org.springframework.core.MethodParameter;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.method.HandlerMethod;
-
-import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.function.Function;
-
-import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
-import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author Konrad Hajduga (Tratif sp. z o.o.)
@@ -63,7 +74,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 
 	@Override
 	public Operation customize(Operation operation, HandlerMethod handlerMethod) {
-		if (isNull(operation) || isNull(handlerMethod)) return operation;
+		if (isNull(operation) || isNull(handlerMethod)) {
+			return operation;
+		}
 
 		List<String> requiredParams = extractRequiredParametersFromHandlerMethod(handlerMethod, RequestMapping::params);
 		List<String> requiredHeaders = extractRequiredParametersFromHandlerMethod(handlerMethod, RequestMapping::headers);
@@ -149,7 +162,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 			.flatMap(Arrays::stream)
 			.collect(toList());
 
-		if (jsonPaths.isEmpty()) return empty();
+		if (jsonPaths.isEmpty()) {
+			return empty();
+		}
 
 		Parameter jsonParameter = generateParameterFromParameterIn(QUERY);
 		jsonParameter.setName(JSON_FILTER_PARAMETER_NAME);

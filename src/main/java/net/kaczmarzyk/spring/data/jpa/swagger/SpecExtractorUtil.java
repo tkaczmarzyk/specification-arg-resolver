@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,30 @@
  */
 package net.kaczmarzyk.spring.data.jpa.swagger;
 
-import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
-
-import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.function.Function;
-
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+
 /**
  * @author Konrad Hajduga (Tratif sp. z o.o.)
  */
-public class SpecExtractorUtil {
+public final class SpecExtractorUtil {
 
 	private static final Map<Class<?>, Function<Annotation, List<Spec>>> NESTED_SPEC_ANNOTATION_EXTRACTORS = new HashMap<>();
 

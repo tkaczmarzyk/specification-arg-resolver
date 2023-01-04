@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -41,7 +42,7 @@ public class NotEqual<T> extends PathSpecification<T> {
 	public NotEqual(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
 		super(queryContext, path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected 1 but was " + Arrays.toString(httpParamValues));
 		}
 		this.expectedValue = httpParamValues[0];
 		this.converter = converter;
@@ -55,9 +56,15 @@ public class NotEqual<T> extends PathSpecification<T> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		if (!super.equals(o)) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
 		NotEqual<?> notEqual = (NotEqual<?>) o;
 		return Objects.equals(expectedValue, notEqual.expectedValue) &&
 				Objects.equals(converter, notEqual.converter);

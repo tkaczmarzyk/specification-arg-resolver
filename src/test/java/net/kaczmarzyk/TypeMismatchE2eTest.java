@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package net.kaczmarzyk;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.DEFAULT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -89,6 +90,14 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 
 			return customerRepo.findAll(spec);
 		}
+
+		@RequestMapping(value = "/poly/customers", params = { "genderDefault" })
+		@ResponseBody
+		public Object findByGenderIn_defaultOnTypeMismatch(
+				@Spec(path = "gender", params = "genderDefault", spec = In.class, onTypeMismatch = DEFAULT) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
 	}
 	
 	@Test
@@ -123,6 +132,30 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
 			.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
 			.andExpect(jsonPath("$[4]").doesNotExist());
+	}
+
+	@Test
+	public void returnsEmptyResultIfDefaultOnTypeMismatchBehaviourSpecified() throws Exception {
+		mockMvc.perform(get("/poly/customers")
+						.param("genderDefault", "ROBOT", "ALIEN")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0]").doesNotExist());
+	}
+
+	@Test
+	public void filtersOnlyByValidEnumValuesIfDefaultOnTypeMismatchBehaviourSpecified() throws Exception {
+		mockMvc.perform(get("/poly/customers")
+						.param("genderDefault", "MALE", "ROBOT", "ALIEN")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Bart')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Moe')]").exists())
+				.andExpect(jsonPath("$[?(@.firstName=='Ned')]").exists())
+				.andExpect(jsonPath("$[4]").doesNotExist());
 	}
 	
 	@Test

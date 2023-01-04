@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Locale;
+
 /**
  * @author Tomasz Kaczmarzyk
  * @author TP Diffenbach
@@ -68,7 +70,7 @@ public abstract class IntegrationTestBase {
 	@PersistenceContext
 	protected EntityManager em;
 
-	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 
 	protected QueryContext queryCtx = new DefaultQueryContext();
 

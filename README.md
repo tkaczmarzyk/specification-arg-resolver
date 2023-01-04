@@ -1,6 +1,6 @@
 specification-arg-resolver
 ==========================
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=9GTMPKJ5X83US&no_recurring=1&item_name=Maintaining+specification-arg-resolver+library&currency_code=USD)
+![example workflow](https://github.com/tkaczmarzyk/specification-arg-resolver/actions/workflows/main.yml/badge.svg) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=9GTMPKJ5X83US&no_recurring=1&item_name=Maintaining+specification-arg-resolver+library&currency_code=USD)
 
 An alternative API for filtering data with Spring MVC &amp; Spring Data JPA.
 
@@ -29,10 +29,9 @@ You can also take a look on a working Spring Boot app that uses this library: ht
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Json Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
+   * [Locale support](#locale-support) -- information about `Locale` configuration for case-insensitive matching 
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
-   * [Spring native support](#spring-native-image--graalvm-native-image-support) -- information about support for spring native
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
-   * [Cache support](#cache-support) -- information about support for spring cache
    * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
    * [Compatibility notes](#compatibility-notes) -- information about older versions compatible with previous Spring Boot and Java versions
    * [Download binary releases](#download-binary-releases) -- Maven artifact locations
@@ -117,7 +116,7 @@ public Object findCustomersByGender(
 	return customerRepo.findAll(spec);
 }
 ```
-will handle `GET http://myhost/customers?gender=MALE,FEMALE` in exactly the same way as `GET http://myhost/customers?gender=MALE&gender=FEMALE` (as one parameter with two values `["MALE","GENDER"]`). Without specifying `paramSeparator` param `gender=MALE,FEMALE` will be processed as single value: `["MALE,FEMALE"]`.
+will handle `GET http://myhost/customers?gender=MALE,FEMALE` in exactly the same way as `GET http://myhost/customers?gender=MALE&gender=FEMALE` (as one parameter with two values `["MALE","FEMALE"]`). Without specifying `paramSeparator` param `gender=MALE,FEMALE` will be processed as single value: `["MALE,FEMALE"]`.
 
 ### Like ###
 
@@ -137,6 +136,10 @@ Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
 There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWithIgnoreCase` and `EndingWithIgnoreCase`.
 
+Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
+
+A negation for this specification is also available: `NotLikeIgnoreCase`.
+
 ### Equal ###
 
 Compares an attribute of an entity with the value of a HTTP parameter (exact match). E.g. `(..) where gender = FEMALE`.
@@ -152,6 +155,8 @@ A negation for this specification is also available: `NotEqual`.
 ### EqualIgnoreCase ###
 
 Works as `Equal`, but the query is also case-insensitive, could be used for fields of type: `String`, `Enum`.
+
+Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 A negation for this specification is also available: `NotEqualIgnoreCase`.
 
@@ -225,6 +230,12 @@ NOTE: comparisons are dependent on the actual type and the underlying database (
 
 You can configure the date/datetime pattern as with `LessThan` described above.
 
+### InTheFuture, InThePast ###
+
+Filters using comparison operators (`>`, `<`). Supports date-type fields. Compares current db timestamp to the date-type value of field passed in `path`.
+E.g. InTheFuture => `where customer0_.date_of_next_special_offer > localtimestamp()`, InThePast => `where customer0_.date_of_next_special_offer < localtimestamp()`
+
+Usage: `@Spec(path="dateOfTheNextOffer", spec=InTheFuture.class)`.
 
 Combining specs
 ---------------
@@ -867,7 +878,7 @@ Example maven dependency in project pom file:
 <dependency>
     <groupId>com.google.code.gson</groupId>
     <artifactId>gson</artifactId>
-    <version>2.8.9</version>
+    <version>2.10.0</version>
 </dependency>
 ```
 
@@ -974,7 +985,7 @@ Request `POST /customers/find` with the following body is not valid (`JsonParseE
 Type conversions for HTTP parameters
 -------------------
 
-Specification argument resolvers uses conversion mechanism to convert request string params to types of fields for which specifications have been defined.
+Specification argument resolver uses conversion mechanism to convert request string params to types of fields for which specifications have been defined.
 
 Let's consider the following code:
   ```java
@@ -1041,7 +1052,10 @@ For example:
 ```
  @Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")
 ```
+###### Date formats
+If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then time value will be set to the default value - midnight (UTC time for `OffsetDateTime`). For example, let us assume that the above specification with the custom config `config="dd-MM-yyyy"` corresponds to the `LocalDateTime` field in a database. Each argument provided to the specification will be converted to the date with the default time (e.g. `14-12-2022` -> `14-12-2022 00:00`)
 
+The formats of the date in the database (column storing date/time/datetime) and corresponding Java object should be compatible. Also pay attention to the default format for specific date types (if they store date, time or date and time). Inconsistencies in the date formats may lead to confusing or empty results. For example, the database column storing date with time and mapped to `Date` Java object cannot be filtered by time until custom config is specified (default config refers only to date `yyyy-MM-dd`). It can be achieved by specifying custom format using `config` property of `@Spec` (e.g. `config="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`).
 
 In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
 
@@ -1086,6 +1100,24 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
+Locale support
+--------------
+
+Locale is important when using case-insensitive specifications such as `EqualIgnoreCase`. For example, in Turkish, the uppercase form of `i` is `İ` (U+0130, not ASCII) and not `I` (U+0049) as in English.
+
+Specification-arg-resolver uses system-default (`Locale.getDefault()`) locale if no explicit configuration is provided. You can configure custom default locale globally, during argument resolver registration:
+  ```java
+  @Override
+  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+      argumentResolvers.add(new SpecificationArgumentResolver(new Locale("pl", "PL"))); // pl_PL will be used as the default locale
+  }
+  ```
+You can also configure it for each individual specfication definition via `@Spec.config` (this overrides the global default mentioned above):
+  ```java
+  @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
+  ```
+
+
 SpEL support
 ------------
 
@@ -1105,11 +1137,6 @@ Configuration example:
    ```
 
 SpEL expressions can be applied to `@Spec` `constVal`, `defaultVal` and `params`. The first two are described in more detail in corresponding sections above. SpEL support for `params` can be enabled via `@Spec.paramsInSpEL`. It may be useful in rare cases when you want to differentiate HTTP parameter name based on the application configuration or other contextual attributes.
-
-
-Spring native image / GraalVM native image support
-------------
-Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please find more detailed description and guideline [here](README_native_image.md)
 
 Swagger support
 ------------
@@ -1176,8 +1203,7 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v3.0.0` (or newer)                | `17` or higher   | Compiled and tested against Spring Boot `3.0.0`                                         |
-| `v2.X.X`                           | `1.8` or higher  | Compiled and tested against Spring Boot `2.6.13`                                        |
+| `v2.X`                             | `1.8` or higher  | Compiled and tested against Spring Boot `2.7.7`                                         |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
 As far as the features supported in each version, please check the [CHANGELOG.md](https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/CHANGELOG.md)
@@ -1192,7 +1218,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.13.0</version>
+    <version>2.15.1</version>
 </dependency>
 ```
 

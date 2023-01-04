@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,14 @@ import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.util.Locale;
+
 /**
  * @author Jakub Radlica
  */
 public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest extends IntegrationTestBaseWithSARConfiguredWithApplicationContext {
 	
-	private Converter defaultConverter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+	private Converter defaultConverter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 	
 	@Autowired
 	AbstractApplicationContext abstractApplicationContext;
@@ -47,7 +49,7 @@ public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest ext
 	
 	@Before
 	public void initializeResolver() {
-		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext);
+		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext, Locale.getDefault());
 	}
 	
 	@Test
