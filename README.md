@@ -136,6 +136,10 @@ Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
 There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWithIgnoreCase` and `EndingWithIgnoreCase`.
 
+Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
+
+A negation for this specification is also available: `NotLikeIgnoreCase`.
+
 ### Equal ###
 
 Compares an attribute of an entity with the value of a HTTP parameter (exact match). E.g. `(..) where gender = FEMALE`.
@@ -151,6 +155,8 @@ A negation for this specification is also available: `NotEqual`.
 ### EqualIgnoreCase ###
 
 Works as `Equal`, but the query is also case-insensitive, could be used for fields of type: `String`, `Enum`.
+
+Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 A negation for this specification is also available: `NotEqualIgnoreCase`.
 
