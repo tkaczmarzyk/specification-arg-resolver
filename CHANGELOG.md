@@ -1,7 +1,3 @@
-v2.17.0
-=======
-* Introduced new case-insensitive specification `NotLikeIgnoreCase` that works in similar way as `LikeIgnoreCase` but is its negation.
-
 v2.16.0
 =======
 * Added ability to set custom `Locale` during resolver registration:
@@ -17,6 +13,7 @@ v2.16.0
   @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
   ```
 * additional Javadocs
+* Introduced new case-insensitive specification `NotLikeIgnoreCase` that works in similar way as `LikeIgnoreCase` but is its negation.
 
 v2.15.1
 ======

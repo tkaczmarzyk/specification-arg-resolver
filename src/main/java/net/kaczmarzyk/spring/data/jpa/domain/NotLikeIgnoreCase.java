@@ -26,6 +26,9 @@ import java.util.Objects;
 
 /**
  * Filters with {@code path not like %pattern%} where-clause and ignores pattern case
+ *
+ * @author Kacper Leśniak (Tratif sp. z o.o.)
+ *
  */
 public class NotLikeIgnoreCase<T> extends NotLike<T> implements LocaleAware {
 

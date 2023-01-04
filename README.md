@@ -136,7 +136,7 @@ Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
 There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWithIgnoreCase` and `EndingWithIgnoreCase`.
 
-There is an ability to set custom `Locale` in `@Spec.config`. If locale is not provided, then system default will be used.
+Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class, config="pl_PL")` 
 
@@ -157,6 +157,8 @@ A negation for this specification is also available: `NotEqual`.
 ### EqualIgnoreCase ###
 
 Works as `Equal`, but the query is also case-insensitive, could be used for fields of type: `String`, `Enum`.
+
+Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 A negation for this specification is also available: `NotEqualIgnoreCase`.
 

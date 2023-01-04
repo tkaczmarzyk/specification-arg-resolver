@@ -58,6 +58,6 @@ public class NotLikeIgnoreCaseLocaleIntegrationTest extends IntegrationTestBase 
 
         assertThat(simpsonsFound)
                 .hasSize(2)
-                .containsOnly(homerWithLowercaseI, homerWithEnglishCapitalI);
+                .containsOnly(homerWithLowercaseI, homerWithEnglishCapitalI); // homerWithLowercaseI is included because test db does not use Turkish collation
     }
 }
