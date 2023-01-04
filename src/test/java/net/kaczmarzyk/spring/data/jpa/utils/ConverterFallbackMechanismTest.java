@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.*;
 public class ConverterFallbackMechanismTest {
 	
 	ConversionService conversionService = mock(ConversionService.class);
-	Converter converter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, conversionService);
+	Converter converter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, conversionService, Locale.getDefault());
 	
 	@Before
 	public void resetMocks() {
@@ -196,7 +197,7 @@ public class ConverterFallbackMechanismTest {
 
 	@Test
 	public void shouldThrowClassCastExceptionForUnsupportedTypeWhenConversionServiceIsNotPresent() {
-		Converter converter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+		Converter converter = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 
 		ThrowableAssertions.assertThrows(
 				ClassCastException.class,

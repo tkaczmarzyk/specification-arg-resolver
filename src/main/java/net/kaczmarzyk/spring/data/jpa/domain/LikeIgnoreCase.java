@@ -15,6 +15,9 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import java.util.Locale;
+import java.util.Objects;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -26,11 +29,14 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  * Filters with {@code path like %pattern%} where-clause and ignores pattern case
  * 
  * @author Michal Jankowski, Hazecod
+ * @author Tomasz Kaczmarzyk
  *
  */
-public class LikeIgnoreCase<T> extends Like<T> {
+public class LikeIgnoreCase<T> extends Like<T> implements LocaleAware {
 
 	private static final long serialVersionUID = 1L;
+	
+	private Locale locale;
 
 	public LikeIgnoreCase(QueryContext queryCtx, String path, String... args) {
         super(queryCtx, path, args);
@@ -38,7 +44,39 @@ public class LikeIgnoreCase<T> extends Like<T> {
 	
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        return builder.like(builder.upper(this.<String> path(root)), pattern.toUpperCase());
+        return builder.like(builder.upper(this.<String> path(root)), pattern.toUpperCase(locale));
     }
 
+	@Override
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(locale);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		LikeIgnoreCase other = (LikeIgnoreCase) obj;
+		return Objects.equals(locale, other.locale);
+	}
+
+	@Override
+	public String toString() {
+		return "LikeIgnoreCase [locale=" + locale + ", pattern=" + pattern + ", path=" + path + "]";
+	}
 }

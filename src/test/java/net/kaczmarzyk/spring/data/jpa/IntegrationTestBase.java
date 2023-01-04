@@ -41,6 +41,8 @@ import javax.persistence.PersistenceContext;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Locale;
+
 /**
  * @author Tomasz Kaczmarzyk
  * @author TP Diffenbach
@@ -65,7 +67,7 @@ public abstract class IntegrationTestBase {
 	@PersistenceContext
 	protected EntityManager em;
 
-	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 
 	protected QueryContext queryCtx = new DefaultQueryContext();
 

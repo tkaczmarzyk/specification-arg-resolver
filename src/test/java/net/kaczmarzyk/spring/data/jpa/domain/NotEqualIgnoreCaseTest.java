@@ -22,6 +22,7 @@ import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -94,7 +95,9 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 	}
 
 	private <T> NotEqualIgnoreCase<T> notEqualIgnoreCaseSpec(String path, Object expectedValue) {
-		return new NotEqualIgnoreCase<>(queryCtx, path, new String[]{expectedValue.toString()}, defaultConverter);
+		NotEqualIgnoreCase<T> spec = new NotEqualIgnoreCase<>(queryCtx, path, new String[]{expectedValue.toString()}, defaultConverter);
+		spec.setLocale(Locale.getDefault());
+		return spec;
 	}
 
 }
