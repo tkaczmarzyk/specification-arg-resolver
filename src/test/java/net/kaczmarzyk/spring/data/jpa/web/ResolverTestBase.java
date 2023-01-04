@@ -18,7 +18,6 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.utils.ReflectionUtils;
-import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -80,10 +79,10 @@ public abstract class ResolverTestBase {
 	protected abstract Class<?> controllerClass();
 
 	protected void assertThatSpecIsProxy(Specification<?> specification) {
-		assertThat(Enhancer.isEnhanced(specification.getClass())).isTrue();
+		assertThat(Proxy.isProxyClass(specification.getClass())).isTrue();
 	}
 
 	protected void assertThatSpecIsNotProxy(Specification<?> specification) {
-		assertThat(Enhancer.isEnhanced(specification.getClass())).isFalse();
+		assertThat(Proxy.isProxyClass(specification.getClass())).isFalse();
 	}
 }

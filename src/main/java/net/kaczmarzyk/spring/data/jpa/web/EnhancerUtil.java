@@ -18,7 +18,6 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;

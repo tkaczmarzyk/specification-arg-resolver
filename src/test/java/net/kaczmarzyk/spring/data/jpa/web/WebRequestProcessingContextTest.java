@@ -15,11 +15,10 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.utils.ReflectionUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -27,18 +26,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Executable;
-import java.util.HashMap;
 
-import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariablesInRequestAttributes;
-import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.pathVariables;
-import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.entry;
+import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
