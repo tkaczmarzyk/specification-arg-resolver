@@ -221,7 +221,7 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 	}
 	
 	@Test // TC-6.1 interface with @Or spec with multi path vars (nickname path)
-	public void filtersAccordingToInterfaceWithOrMultiPathVars_nickNamePath() throws Exception {
+	public void filtersAccordingToOrSpecificationWithMultiPathVars_nickNamePath() throws Exception {
 		mockMvc.perform(get("/multi-anno-iface-or/Homie/customersByFirstNameOrNickNameFilterMultiPathVars")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isArray())
@@ -230,7 +230,7 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 	}
 
 	@Test // TC-6.2 interface with @Or spec with multi path vars (first name path)
-	public void filtersAccordingToInterfaceWithOrMultiPathVars_firstNamePath() throws Exception {
+	public void filtersAccordingToOrSpecificationWithMultiPathVars_firstNamePath() throws Exception {
 		mockMvc.perform(get("/multi-second-anno-iface-or/Maggie/customersByFirstNameOrNickNameFilterMultiPathVars")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isArray())
