@@ -36,8 +36,8 @@ public class SpecificationFactory {
 
 	private Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
-	public SpecificationFactory(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext) {
-		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(conversionService, abstractApplicationContext);
+	public SpecificationFactory(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext, Locale locale) {
+		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(conversionService, abstractApplicationContext, locale);
 
 		resolversBySupportedType = Arrays.asList(
 						simpleSpecificationResolver,

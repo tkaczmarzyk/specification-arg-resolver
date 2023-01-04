@@ -16,6 +16,8 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.*;
+import net.kaczmarzyk.spring.data.jpa.utils.Converter;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
@@ -31,6 +33,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.persistence.criteria.JoinType;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.UUID;
 
 import static javax.persistence.criteria.JoinType.*;
@@ -216,7 +219,7 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 				.hasSize(10)
 				.containsOnly(
 						// DisjunctionFilter
-						new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
+						new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<Object>(
 								new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(
 										new Like<>(ctx.queryContext(), "disjunctionAnd1Path1", "disjunctionAnd1Param1Val"),
 										new EmptyResultOnTypeMismatch<>(new Equal<>(ctx.queryContext(), "disjunctionAnd1Path2", new String[]{ "disjunctionAnd1Param2Val" }, converter))
@@ -239,14 +242,14 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 						// Spec2Filter
 						new Like<>(ctx.queryContext(), "spec2", "spec2Val"),
 						// ConjunctionFilter
-						new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(
+						new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object>(
 								new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
-										new EmptyResultOnTypeMismatch<>(new EqualIgnoreCase<>(ctx.queryContext(), "conjunction1or1spec1", new String[]{ "conjunction1or1spec1Val" }, converter)),
-										new EmptyResultOnTypeMismatch<>(new NotEqualIgnoreCase<>(ctx.queryContext(), "conjunction1or1spec2", new String[]{ "conjunction1or1spec2Val" }, converter))
+										new EmptyResultOnTypeMismatch<>(newEqualIgnoreCase(ctx.queryContext(), "conjunction1or1spec1", new String[]{ "conjunction1or1spec1Val" }, converter)),
+										new EmptyResultOnTypeMismatch<>(newNotEqualIgnoreCase(ctx.queryContext(), "conjunction1or1spec2", new String[]{ "conjunction1or1spec2Val" }, converter))
 								),
 								new net.kaczmarzyk.spring.data.jpa.domain.Disjunction<>(
-										new EmptyResultOnTypeMismatch<>(new EqualIgnoreCase<>(ctx.queryContext(), "conjunction1or2spec1", new String[]{ "conjunction1or2spec1Val" }, converter)),
-										new EmptyResultOnTypeMismatch<>(new NotEqualIgnoreCase<>(ctx.queryContext(), "conjunction1or2spec2", new String[]{ "conjunction1or2spec2Val" }, converter))
+										new EmptyResultOnTypeMismatch<>(newEqualIgnoreCase(ctx.queryContext(), "conjunction1or2spec1", new String[]{ "conjunction1or2spec1Val" }, converter)),
+										new EmptyResultOnTypeMismatch<>(newNotEqualIgnoreCase(ctx.queryContext(), "conjunction1or2spec2", new String[]{ "conjunction1or2spec2Val" }, converter))
 								),
 								new Like<>(ctx.queryContext(), "conjunction1AndSpec1", "conjunction1AndSpec1Val"),
 								new EmptyResultOnTypeMismatch<>(new Equal<>(ctx.queryContext(), "conjunction1AndSpec2", new String[]{ "conjunction1AndSpec2Val" }, converter))
@@ -273,6 +276,18 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 								new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "repeatedJoin3", "repeatedJoin3alias", RIGHT, false)
 						)
 				);
+	}
+
+	private NotEqualIgnoreCase<Object> newNotEqualIgnoreCase(QueryContext queryContext, String path, String[] args, Converter converter) {
+		NotEqualIgnoreCase<Object> spec = new NotEqualIgnoreCase<>(queryContext, path, args, converter);
+		spec.setLocale(Locale.getDefault());
+		return spec;
+	}
+
+	private EqualIgnoreCase<Object> newEqualIgnoreCase(QueryContext queryContext, String path, String[] args, Converter converter) {
+		EqualIgnoreCase<Object> spec = new EqualIgnoreCase<>(queryContext, path, args, converter);
+		spec.setLocale(Locale.getDefault());
+		return spec;
 	}
 
 	@Test

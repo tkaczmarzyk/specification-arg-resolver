@@ -33,6 +33,7 @@ import javax.persistence.criteria.JoinType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.*;
  */
 public class SpecificationBuilderTest extends IntegrationTestBase {
 
-	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 
 	@And({
 			@Spec(params = "gender", path = "gender", spec = Equal.class),

@@ -1,5 +1,17 @@
 v2.16.0
 =======
+* Added ability to set custom `Locale` during resolver registration:
+  ```java
+  @Override
+  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+      argumentResolvers.add(new SpecificationArgumentResolver(new Locale("pl", "PL"))); // pl_PL will be used as the default locale
+  }
+  ```
+  This matters for case-insensitive specifications (`EqualIgnoreCase`, `NotEqualIgnoreCase`, `LikeIgnoreCase`, `StartingWithIgnoreCase` and `EndingWithIgnoreCase`) which used system default locale in previous versions of the library. If locale is not provided, then system default will be used (exactly as in the previous version).
+* Added ability to set custom `Locale` in `@Spec.config` (this overrides the global default mentioned above):
+  ```java
+  @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
+  ```
 * additional Javadocs
 * introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable. 
   * for more details please check out section `Support for multiple paths with path variables` in `README.md`.
