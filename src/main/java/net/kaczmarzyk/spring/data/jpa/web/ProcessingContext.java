@@ -32,10 +32,6 @@ public interface ProcessingContext {
 
 	String[] getParameterValues(String webParamName);
 
-	default String getPathVariableValue(String pathVariableName) throws InvalidPathVariableRequestedException {
-		return getPathVariableValue(pathVariableName, MissingPathVarPolicy.EXCEPTION);
-	}
-
 	String getPathVariableValue(String pathVariableName, MissingPathVarPolicy missingPathVarPolicy);
 
 	String[] getBodyParamValues(String bodyParamName);

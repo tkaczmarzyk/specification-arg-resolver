@@ -16,6 +16,10 @@
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
 /**
+ * MissingPathVarPolicy is used to specify behaviour when there is at least one missing pathVar.
+ * In most cases it means that the mapping is wrong, so the exception should be thrown.
+ * It is also possible, that user has multiple paths with different pathVars, and then IGNORE is the solution.
+ *
  * @author Tomasz Kaczmarzyk
  * @author Jakub Radlica
  * @author Konrad Hajduga (Tratif sp. z o.o.)
