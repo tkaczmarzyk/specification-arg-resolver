@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.spring.data.jpa.web;
+package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
+/**
+ * MissingPathVarPolicy is used to specify behaviour when there is at least one missing pathVar.
+ * In most cases it means that the mapping is wrong, so the exception should be thrown.
+ * It is also possible, that user has multiple paths with different pathVars, and then IGNORE is the solution.
+ *
+ * @author Tomasz Kaczmarzyk
+ * @author Jakub Radlica
+ * @author Konrad Hajduga (Tratif sp. z o.o.)
+ */
+public enum MissingPathVarPolicy {
 
-import java.lang.annotation.Annotation;
+	IGNORE, EXCEPTION
 
-public interface ProcessingContext {
-
-	Class<?> getParameterType();
-
-	Annotation[] getParameterAnnotations();
-
-	QueryContext queryContext();
-
-	String getRequestHeaderValue(String headerKey);
-
-	String[] getParameterValues(String webParamName);
-
-	String getPathVariableValue(String pathVariableName, MissingPathVarPolicy missingPathVarPolicy);
-
-	String[] getBodyParamValues(String bodyParamName);
 }

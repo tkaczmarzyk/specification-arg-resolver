@@ -15,11 +15,10 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.utils.ReflectionUtils;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -29,16 +28,13 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Executable;
-import java.util.HashMap;
 
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariablesInRequestAttributes;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.pathVariables;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -61,9 +57,9 @@ public class WebRequestProcessingContextTest {
 		thrown.expect(InvalidPathVariableRequestedException.class);
 		thrown.expectMessage("Requested path variable {notExisting} is not present in Controller request mapping annotations");
 		
-		context.getPathVariableValue("notExisting");
+		getPathVariableFromContext(context, "notExisting");
 	}
-	
+
 	@Test
 	public void resolvesPathVariableValue_requestMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
@@ -72,10 +68,10 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
-	
+
 	@Test
 	public void resolvesPathVariableValueWithRegexp_requestMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
@@ -84,8 +80,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_requestMapping_path", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 	
 	@Test
@@ -96,8 +92,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_value", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 	
 	@Test
@@ -108,8 +104,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_requestMapping_value", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 	
 	@Test
@@ -120,8 +116,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_getMapping_path", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 	
 	@Test
@@ -132,8 +128,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_getMapping_path", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 	
 	@Test
@@ -144,8 +140,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_getMapping_value", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 	
 	@Test
@@ -156,8 +152,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_getMapping_value", TestController.class), req);
 		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 
@@ -168,8 +164,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_path", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test
@@ -179,8 +175,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_requestMapping_path", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test
@@ -190,8 +186,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_requestMapping_value", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test
@@ -201,8 +197,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_requestMapping_value", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test
@@ -212,8 +208,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_getMapping_path", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test
@@ -223,8 +219,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_getMapping_path", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test
@@ -234,8 +230,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariable_getMapping_value", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test
@@ -246,8 +242,8 @@ public class WebRequestProcessingContextTest {
 		WebRequestProcessingContext context = new WebRequestProcessingContext(
 				testMethodParameter("testMethodUsingPathVariableWithRegexp_getMapping_value", TestController.class), req);
 
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
+		assertThat(getPathVariableFromContext(context, "customerId")).isEqualTo("888");
+		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -292,7 +288,7 @@ public class WebRequestProcessingContextTest {
 		@RequestMapping(path = "/customers/{customerId}/orders/{orderId}")
 		public void testMethodUsingPathVariable_requestMapping_path(Specification<Object> spec) {
 		}
-		
+
 		@RequestMapping(path = "/customers/{customerId:.*}/orders/{orderId:[0-9]+}")
 		public void testMethodUsingPathVariableWithRegexp_requestMapping_path(Specification<Object> spec) {
 		}
@@ -332,5 +328,9 @@ public class WebRequestProcessingContextTest {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private String getPathVariableFromContext(ProcessingContext processingContext, String pathVariableName) {
+		return processingContext.getPathVariableValue(pathVariableName, MissingPathVarPolicy.EXCEPTION);
 	}
 }
