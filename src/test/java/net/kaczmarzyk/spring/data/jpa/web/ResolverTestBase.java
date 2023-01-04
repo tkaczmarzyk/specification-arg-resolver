@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Executable;
 import java.util.Collection;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class ResolverTestBase {
 
-	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 	
 	protected MethodParameter testMethodParameter(String methodName) {
         return MethodParameter.forExecutable(testMethod(methodName, Specification.class), 0);

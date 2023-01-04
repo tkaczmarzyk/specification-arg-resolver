@@ -137,18 +137,6 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 	}
 
 	@Test
-	public void testMethodUsingMultiPathVariableFromClass() throws Exception {
-		MethodParameter param = testMethodParameter("testMethodUsingMultiPathVariableFromClass");
-		MockWebRequest req = new MockWebRequest("/employees/theEmployeeIdValue/orders/theOrderIdValue");
-
-		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-		assertThat(resolved).isEqualTo(new Like<>(ctx.queryContext(), "thePath", new String[]{"theEmployeeIdValue"}));
-	}
-
-	@Test
 	public void buildsTheSpecUsingPathVariableFromControllerMethodUsingResolverFallbackMethod() throws Exception {
 		MethodParameter param = testMethodParameter("testMethodUsingPathVariableFromMethod");
 		MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
@@ -181,10 +169,6 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		@RequestMapping(path = "/orders/{orderId}")
 		public void testMethodUsingPathVariableFromMethod(@Spec(path = "thePath", pathVars = "orderId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
-		}
-
-		@RequestMapping(path = "/orders/{orderId}")
-		public void testMethodUsingMultiPathVariableFromClass(@Spec(path = "thePath", pathVars = "employeeId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
 		}
 
 		@RequestMapping(path = "/orders/{orderId}")

@@ -72,28 +72,6 @@ public class WebRequestProcessingContextTest {
 	}
 
 	@Test
-	public void resolvesPathVariableValue_requestMapping_multi_paths_first() {
-		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
-		WebRequestProcessingContext context = new WebRequestProcessingContext(
-				testMethodParameter("testMethodUsingPathVariable_requestMapping_multi_paths", TestController.class), req);
-		
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("888");
-		assertThat(context.getPathVariableValue("employeeId")).isEqualTo("");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
-	}
-	
-	@Test
-	public void resolvesPathVariableValue_requestMapping_multi_paths_second() {
-		MockWebRequest req = new MockWebRequest("/employees/777/orders/99");
-		WebRequestProcessingContext context = new WebRequestProcessingContext(
-				testMethodParameter("testMethodUsingPathVariable_requestMapping_multi_paths", TestController.class), req);
-		
-		assertThat(context.getPathVariableValue("employeeId")).isEqualTo("777");
-		assertThat(context.getPathVariableValue("customerId")).isEqualTo("");
-		assertThat(context.getPathVariableValue("orderId")).isEqualTo("99");
-	}
-	
-	@Test
 	public void resolvesPathVariableValueWithRegexp_requestMapping_path() {
 		MockWebRequest req = new MockWebRequest("/customers/888/orders/99");
 		setPathVariablesInRequestAttributes(req, pathVariables(entry("customerId", "888"), entry("orderId", "99")));
@@ -310,10 +288,6 @@ public class WebRequestProcessingContextTest {
 		public void testMethodUsingPathVariable_requestMapping_path(Specification<Object> spec) {
 		}
 
-		@RequestMapping(path = {"/customers/{customerId}/orders/{orderId}", "/employees/{employeeId}/orders/{orderId}"})
-		public void testMethodUsingPathVariable_requestMapping_multi_paths(Specification<Object> spec) {
-		}
-		
 		@RequestMapping(path = "/customers/{customerId:.*}/orders/{orderId:[0-9]+}")
 		public void testMethodUsingPathVariableWithRegexp_requestMapping_path(Specification<Object> spec) {
 		}

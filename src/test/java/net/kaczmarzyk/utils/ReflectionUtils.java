@@ -70,7 +70,22 @@ public final class ReflectionUtils {
             } while (classToBeUsed != Object.class);
             throw new NoSuchFieldException();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("could not find field " + fieldname + " on " + target, e);
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T getFromPath(Object target, String path) {
+    	if (!path.contains(".")) {
+    		return ReflectionUtils.get(target, path);
+    	} else {
+    		int dotIndex = path.indexOf('.');
+    		String firstField = path.substring(0, dotIndex);
+    		String remainingPath = path.substring(dotIndex + 1);
+    		
+    		Object nextNode = ReflectionUtils.get(target, firstField);
+    		
+    		return ReflectionUtils.getFromPath(nextNode, remainingPath);
+    	}
     }
 }
