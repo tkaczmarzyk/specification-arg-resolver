@@ -136,6 +136,12 @@ Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
 There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWithIgnoreCase` and `EndingWithIgnoreCase`.
 
+There is an ability to set custom `Locale` in `@Spec.config`. If locale is not provided, then system default will be used.
+
+Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class, config="pl_PL")` 
+
+A negation for this specification is also available: `NotLikeIgnoreCase`.
+
 ### Equal ###
 
 Compares an attribute of an entity with the value of a HTTP parameter (exact match). E.g. `(..) where gender = FEMALE`.
