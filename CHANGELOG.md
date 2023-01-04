@@ -1,3 +1,7 @@
+v2.17.0
+=======
+* Introduced `EqualDay` specification which allows to filter all records within particular date (day).
+
 v2.16.0
 =======
 * Added ability to set custom `Locale` during resolver registration:
