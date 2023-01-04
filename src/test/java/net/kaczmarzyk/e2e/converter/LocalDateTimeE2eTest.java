@@ -254,9 +254,9 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
 	@Test
 	public void findsByLastOrderInParticularDayWithDefaultConfig() throws Exception {
 		customer("Barry", "Benson")
-				.lastOrderTime(LocalDateTime.of(2017, 12, 20, 22, 02,23))
+				.lastOrderTime(LocalDateTime.of(2017, 12, 19, 23, 59,59))
 				.build(em);
-		customer("Arisu", "Usagi")
+		customer("Adam", "Flayman")
 				.lastOrderTime(LocalDateTime.of(2017, 12, 21, 0, 0,0))
 				.build(em);
 
@@ -265,16 +265,15 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
-				.andExpect(jsonPath("$[2]").doesNotExist());
+				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
 	@Test
 	public void findsByLastOrderInParticularDayWithCustomConfigIgnoringTime() throws Exception {
 		customer("Barry", "Benson")
-				.lastOrderTime(LocalDateTime.of(2017, 12, 20, 22, 02,23))
+				.lastOrderTime(LocalDateTime.of(2017, 12, 19, 23, 59,59))
 				.build(em);
-		customer("Arisu", "Usagi")
+		customer("Adam", "Flayman")
 				.lastOrderTime(LocalDateTime.of(2017, 12, 21, 0, 0,0))
 				.build(em);
 
@@ -283,7 +282,6 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
-				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
-				.andExpect(jsonPath("$[2]").doesNotExist());
+				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 }

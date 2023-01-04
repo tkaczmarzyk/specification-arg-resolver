@@ -254,6 +254,9 @@ public class InstantE2eTest extends E2eTestBase {
 		customer("Barry", "Benson")
 				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
 				.build(em);
+		customer("Adam", "Flayman")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0)))
+				.build(em);
 
 		mockMvc.perform(get("/customers")
 						.param("dateOfNextSpecialOfferInstantEqualDay", "2020-07-19T14:11:00.000+04:00"))
@@ -266,6 +269,9 @@ public class InstantE2eTest extends E2eTestBase {
 	public void findsByInstantEqualDayWithCustomInstantFormatIgnoringTime() throws Exception {
 		customer("Barry", "Benson")
 				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
+				.build(em);
+		customer("Adam", "Flayman")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0)))
 				.build(em);
 
 		mockMvc.perform(get("/customers")

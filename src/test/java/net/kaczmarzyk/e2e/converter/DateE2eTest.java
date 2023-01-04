@@ -131,6 +131,9 @@ public class DateE2eTest extends E2eTestBase {
 		customer("Barry", "Benson")
 				.registrationDate(2014, 3, 16)
 				.build(em);
+		customer("Adam", "Flayman")
+				.registrationDate(2014, 3, 14, 23, 59, 59, 999)
+				.build(em);
 
 		mockMvc.perform(get("/customers")
 						.param("registeredDayEqual", "2014-03-15")
@@ -146,6 +149,9 @@ public class DateE2eTest extends E2eTestBase {
 	public void findsByEqualDayUsingCustomConfigIgnoringTime() throws Exception {
 		customer("Barry", "Benson")
 				.registrationDate(2014, 3, 16)
+				.build(em);
+		customer("Adam", "Flayman")
+				.registrationDate(2014, 3, 14, 23, 59, 59, 999)
 				.build(em);
 
 		mockMvc.perform(get("/customers")

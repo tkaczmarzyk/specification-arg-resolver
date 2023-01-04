@@ -252,7 +252,10 @@ public class OffsetDateTimeE2eTest extends E2eTestBase {
 	@Test
 	public void findsByOffsetDateTimeEqualDayWithDefaultOffsetDateTimeFormat() throws Exception {
 		customer("Barry", "Benson")
-				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(4)))
+				.build(em);
+		customer("Adam", "Flayman")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(4)))
 				.build(em);
 
 		mockMvc.perform(get("/customers")
@@ -263,9 +266,12 @@ public class OffsetDateTimeE2eTest extends E2eTestBase {
 	}
 
 	@Test
-	public void findsByOffsetDateTimeEqualDayWithCustomFormatIgnoringTime() throws Exception {
+	public void findsByOffsetDateTimeEqualDayWithCustomFormatIgnoringTimeAndSettingDefaultOffset() throws Exception {
 		customer("Barry", "Benson")
 				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
+				.build(em);
+		customer("Adam", "Flayman")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0)))
 				.build(em);
 
 		mockMvc.perform(get("/customers")

@@ -7,7 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @SuppressWarnings("unchecked")
-public class DateTimeUtils {
+public abstract class DateTimeUtils {
 
 	private static final String UTC_ZONE_ID = "UTC";
 

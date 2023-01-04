@@ -186,9 +186,9 @@ public class LocalDateE2eTest extends E2eTestBase {
     @Test
     public void findsByEqualDayWithDefaultDateFormat() throws Exception {
         customer("Barry", "Benson")
-                .birthDate(LocalDate.of(1992, 2, 23))
+                .birthDate(LocalDate.of(1992, 2, 22))
                 .build(em);
-        customer("Arisu", "Usagi")
+        customer("Adam", "Flayman")
                 .birthDate(LocalDate.of(1992, 2, 24))
                 .build(em);
 
@@ -198,16 +198,15 @@ public class LocalDateE2eTest extends E2eTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Bart"))
-                .andExpect(jsonPath("$[1].firstName").value("Barry"))
-                .andExpect(jsonPath("$[2]").doesNotExist());
+                .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
     @Test
     public void findsByEqualDayWithCustomDateFormat() throws Exception {
         customer("Barry", "Benson")
-                .birthDate(LocalDate.of(1992, 2, 23))
+                .birthDate(LocalDate.of(1992, 2, 22))
                 .build(em);
-        customer("Arisu", "Usagi")
+        customer("Adam", "Flayman")
                 .birthDate(LocalDate.of(1992, 2, 24))
                         .build(em);
 
@@ -217,7 +216,6 @@ public class LocalDateE2eTest extends E2eTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Bart"))
-                .andExpect(jsonPath("$[1].firstName").value("Barry"))
-                .andExpect(jsonPath("$[2]").doesNotExist());
+                .andExpect(jsonPath("$[1]").doesNotExist());
     }
 }
