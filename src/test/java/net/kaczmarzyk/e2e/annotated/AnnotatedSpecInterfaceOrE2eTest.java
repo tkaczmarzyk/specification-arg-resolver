@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.IGNORE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -128,6 +129,18 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 				LastNameOrNickNameAndGenderOrFirstNameSpec spec) {
 			return customerRepo.findAll(spec);
 		}
+		
+		// TC-6. interface with @Or spec and Multi pathVars
+		@RequestMapping(value = {"/multi-anno-iface-or/{nickName}/customersByFirstNameOrNickNameFilterMultiPathVars",
+				"/multi-second-anno-iface-or/{firstName}/customersByFirstNameOrNickNameFilterMultiPathVars"})
+		@ResponseBody
+		public List<Customer> getCustomersByFirstNameOrNickNameMultiPathVarsSpec(
+				@Or({
+					@Spec(path = "nickName", pathVars = "nickName", spec = Equal.class, missingPathVarPolicy = IGNORE),
+					@Spec(path = "firstName", pathVars = "firstName", spec = Equal.class, missingPathVarPolicy = IGNORE)
+				}) EmptyFilter spec) {
+			return customerRepo.findAll(spec);
+		}
 
 	}
 
@@ -205,6 +218,24 @@ public class AnnotatedSpecInterfaceOrE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[?(@.firstName=='Marge')]").exists())
 				.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
 				.andExpect(jsonPath("$[5]").doesNotExist());
+	}
+	
+	@Test // TC-6.1 interface with @Or spec with multi path vars (nickname path)
+	public void filtersAccordingToOrSpecificationWithMultiPathVars_nickNamePath() throws Exception {
+		mockMvc.perform(get("/multi-anno-iface-or/Homie/customersByFirstNameOrNickNameFilterMultiPathVars")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Homer')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test // TC-6.2 interface with @Or spec with multi path vars (first name path)
+	public void filtersAccordingToOrSpecificationWithMultiPathVars_firstNamePath() throws Exception {
+		mockMvc.perform(get("/multi-second-anno-iface-or/Maggie/customersByFirstNameOrNickNameFilterMultiPathVars")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[?(@.firstName=='Maggie')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 
 }
