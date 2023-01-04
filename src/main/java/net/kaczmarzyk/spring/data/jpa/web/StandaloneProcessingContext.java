@@ -16,13 +16,11 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.EXCEPTION;
+import static java.util.Objects.nonNull;
 
 /**
  * The purpose of this class is to handle non-web specification building.
@@ -88,17 +86,16 @@ public class StandaloneProcessingContext implements ProcessingContext {
 	}
 
 	@Override
-	public String getPathVariableValue(String pathVariableName, MissingPathVarPolicy missingPathVarPolicy) {
+	public String getPathVariableValue(String pathVariableName) {
+		String fallbackValue = getFallbackValue(pathVariableName);
 
-		String pathVariableValue = pathVariableArgs.getOrDefault(
-			pathVariableName,
-			getFallbackValue(pathVariableName));
-
-		if (isNull(pathVariableValue) && missingPathVarPolicy == EXCEPTION) {
+		if (pathVariableArgs.containsKey(pathVariableName)) {
+			return pathVariableArgs.get(pathVariableName);
+		} else if (nonNull(fallbackValue)) {
+			return fallbackValue;
+		} else {
 			throw new InvalidPathVariableRequestedException(pathVariableName);
 		}
-
-		return pathVariableValue;
 	}
 
 	@Override
