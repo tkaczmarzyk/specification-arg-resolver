@@ -138,8 +138,6 @@ There are also other variants which apply the wildcard only on the beginning or 
 
 Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
-Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class, config="pl_PL")` 
-
 A negation for this specification is also available: `NotLikeIgnoreCase`.
 
 ### Equal ###
