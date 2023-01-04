@@ -49,8 +49,7 @@ public final class SpecificationBuilder<T extends Specification> {
 	private Map<String, String[]> bodyParams = new HashMap<>();
 
 	private SpecificationBuilder(Class<T> specInterface) {
-		this.specInterface = specInterface;
-		this.specificationFactory = new SpecificationFactory(null, null, Locale.getDefault());
+		this(specInterface, Locale.getDefault());
 	}
 	
 	private SpecificationBuilder(Class<T> specInterface, Locale defaultLocale) {
