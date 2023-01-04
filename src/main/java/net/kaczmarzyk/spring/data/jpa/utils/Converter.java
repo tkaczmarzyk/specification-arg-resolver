@@ -99,18 +99,18 @@ public final class Converter {
 
 	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseSensitive = (enumVal, rawValue) -> enumVal.name().equals(rawValue);
 
-	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseInsensitive =
-			(enumVal, rawValue) -> enumVal.name().toUpperCase().equals(rawValue.toUpperCase());
+	private BiFunction<Enum<?>, String, Boolean> enumMatcherCaseInsensitive;
 
 	private String dateFormat;
 	private OnTypeMismatch onTypeMismatch;
 	
 	private ConversionService conversionService;
 	
-	private Converter(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
+	private Converter(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService, Locale locale) {
 		this.dateFormat = dateFormat;
 		this.onTypeMismatch = onTypeMismatch;
 		this.conversionService = conversionService;
+		this.enumMatcherCaseInsensitive = (enumVal, rawValue) -> enumVal.name().toUpperCase(locale).equals(rawValue.toUpperCase(locale));
 	}
 	
 	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
@@ -368,11 +368,11 @@ public final class Converter {
 	}
 	
 	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
-		return new Converter(dateFormat, onTypeMismatch, conversionService);
+		return new Converter(dateFormat, onTypeMismatch, conversionService, Locale.getDefault());
 	}
 	
-	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
-		return new Converter(null, onTypeMismatch, conversionService);
+	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch, ConversionService conversionService, Locale locale) {
+		return new Converter(null, onTypeMismatch, conversionService, locale);
 	}
 	
 }

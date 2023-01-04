@@ -32,6 +32,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -49,7 +50,7 @@ public abstract class IntegrationTestBaseWithConfiguredConversionService {
     @PersistenceContext
     protected EntityManager em;
 	
-    protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+    protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 	
 	@Autowired
 	WebApplicationContext wac;

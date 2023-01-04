@@ -21,6 +21,7 @@ import net.kaczmarzyk.spring.data.jpa.web.StandaloneProcessingContext;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ import java.util.Map;
  */
 public final class SpecificationBuilder<T extends Specification> {
 
-	private SpecificationFactory specificationFactory = new SpecificationFactory(null, null);
+	private SpecificationFactory specificationFactory;
 
 	private Class<T> specInterface;
 
@@ -48,7 +49,12 @@ public final class SpecificationBuilder<T extends Specification> {
 	private Map<String, String[]> bodyParams = new HashMap<>();
 
 	private SpecificationBuilder(Class<T> specInterface) {
+		this(specInterface, Locale.getDefault());
+	}
+	
+	private SpecificationBuilder(Class<T> specInterface, Locale defaultLocale) {
 		this.specInterface = specInterface;
+		this.specificationFactory = new SpecificationFactory(null, null, defaultLocale);
 	}
 
 	public static <T extends Specification<?>> SpecificationBuilder<T> specification(Class<T> specInterface) {

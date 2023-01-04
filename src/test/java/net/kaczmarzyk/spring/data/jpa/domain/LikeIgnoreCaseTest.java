@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,12 +49,14 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
     @Test
     public void filtersFirstLevelPropertyIgnoringCase() {
         LikeIgnoreCase<Customer> lastNameSimpson = new LikeIgnoreCase<>(queryCtx, "lastName", "sIMPSOn");
+        lastNameSimpson.setLocale(Locale.getDefault());
         List<Customer> result = customerRepo.findAll(lastNameSimpson);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
         
         LikeIgnoreCase<Customer> firstNameWithO = new LikeIgnoreCase<>(queryCtx, "firstName", "o");
+        firstNameWithO.setLocale(Locale.getDefault());
         result = customerRepo.findAll(firstNameWithO);
         assertThat(result)
             .hasSize(2)
@@ -63,6 +66,7 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
     @Test
     public void filtersByNestedPropertyIgnoringCase() {
         LikeIgnoreCase<Customer> streetWithEvergreen = new LikeIgnoreCase<>(queryCtx, "address.street", "EvErGReeN");
+        streetWithEvergreen.setLocale(Locale.getDefault());
         List<Customer> result = customerRepo.findAll(streetWithEvergreen);
         assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     }

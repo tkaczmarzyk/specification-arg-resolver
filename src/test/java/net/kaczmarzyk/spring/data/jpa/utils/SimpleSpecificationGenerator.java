@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,7 +46,7 @@ public class SimpleSpecificationGenerator {
 	public static final Integer SEED_1 = 1;
 	public static final Integer SEED_2 = 2;
 
-	private static Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	private static Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 	private static DefaultQueryContext queryCtx = new DefaultQueryContext();
 
 	private static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";

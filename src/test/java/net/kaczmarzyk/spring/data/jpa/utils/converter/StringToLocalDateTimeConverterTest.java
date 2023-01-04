@@ -19,6 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
@@ -26,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringToLocalDateTimeConverterTest {
 	
-	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 	
 	@Test
 	public void convertsToLocalDateTimeUsingDefaultFormat() {
