@@ -211,10 +211,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 	private Collection<String> resolveSpecArgumentsFromPathVariables(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<>();
 		for (String pathVar : specDef.pathVars()) {
-			String pathVariableValue = context.getPathVariableValue(pathVar, specDef.missingPathVarPolicy());
-			if (pathVariableValue != null) {
-				args.add(pathVariableValue);
-			}
+			args.add(context.getPathVariableValue(pathVar));
 		}
 		return args;
 	}

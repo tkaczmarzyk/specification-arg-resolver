@@ -15,7 +15,6 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -243,9 +242,5 @@ public abstract class WebRequestProcessingContextPathVariableResolverTestBase {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	protected String getPathVariableFromContext(ProcessingContext processingContext, String pathVariableName) {
-		return processingContext.getPathVariableValue(pathVariableName, MissingPathVarPolicy.EXCEPTION);
 	}
 }

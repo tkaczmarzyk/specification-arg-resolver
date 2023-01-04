@@ -21,9 +21,6 @@ v2.16.0
   ```
 * additional Javadocs
 * Introduced new case-insensitive specification `NotLikeIgnoreCase` that works in similar way as `LikeIgnoreCase` but is its negation.
-* introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable.
-  * for more details please check out section `Support for multiple paths with path variables` in `README.md`.
-* additional Javadocs
 
 v2.15.1
 ======

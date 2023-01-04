@@ -844,26 +844,6 @@ public Object findById(
 }
 
 ```
-
-### Support for multiple paths with different path variables ###
-
-When a path variable is missing then exception is thrown (typically it means that the mapping is incorrect). I.e. by default `@Spec` annotation has `missingPathVarPolicy` set to `EXCEPTION`. If you want to use multiple paths with different `pathVars`, then most probably you should set it to `IGNORE`. See the example below:
-
-```java
-@RequestMapping(path = { "/customers/{customerId}", "/customers-ref/{customerRefCode}" })
-@ResponseBody
-public Object getCustomerDetails(
-  @Or({
-         @Spec(path = "id", pathVars = "customerId", spec = Equal.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE),
-         @Spec(path = "refCode", pathVars = "customerRefCode", spec = EqualIgnoreCase.class, missingPathVarPolicy = MissingPathVarPolicy.IGNORE)
-  }) Specification<Customer> spec){
-	
-  return customerRepo.findAll(spec);
-}
-
-```
-If missingPathVarPolicy was set to `EXCEPTION`, then resolving path variables for the method above would not be possible, as it would always contain at least one unresolved path variable. 
-
 Request Header Support
 ---------------------
 

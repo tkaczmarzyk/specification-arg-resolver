@@ -24,7 +24,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.IGNORE;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.entry;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariablesInRequestAttributes;
@@ -47,19 +46,6 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
 		resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-	}
-
-	@Test
-	public void doesNotThrowExceptionIfPathVariableNotPresentAndMissingPathVarPolicyIsSetToIgnore() {
-		MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariableWithMissingPathVarPolicySetToIgnore");
-		MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
-		setPathVariablesInRequestAttributes(req, pathVariables(entry("customerId", "theCustomerIdValue"), entry("orderId", "theOrderIdValue")));
-
-		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-		Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-		assertThat(resolved).isNull();
 	}
 
 	@Test
@@ -102,26 +88,13 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 	}
 
 	@Test(expected = InvalidPathVariableRequestedException.class)
-	public void throwsExceptionIfPathVariableIsNotPresentUsingResolverFallbackMethod() throws Exception {
+	public void throwsExceptionIfPathVariableNotPresentUsingResolverFallbackMethod() throws Exception {
 		MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariable");
 		MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
 		resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-	}
-
-	@Test
-	public void doesNotThrowExceptionIfPathVariableIsNotPresentAndMissingPathVarPolicyIsSetToIgnoreUsingResolverFallbackMethod() {
-		MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariableWithMissingPathVarPolicySetToIgnore");
-		MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
-		setPathVariablesInRequestAttributes(req, pathVariables(entry("customerId", "theCustomerIdValue"), entry("orderId", "theOrderIdValue")));
-
-		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-		Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-		assertThat(resolved).isNull();
 	}
 
 	@Test
@@ -179,12 +152,6 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 		@RequestMapping(path = "/orders/{orderId}")
 		public void testMethodUsingNotExistingPathVariable(
 				@Spec(path = "thePath", pathVars = "invoiceId", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
-
-		}
-
-		@RequestMapping(path = "/orders/{orderId}")
-		public void testMethodUsingNotExistingPathVariableWithMissingPathVarPolicySetToIgnore(
-				@Spec(path = "thePath", pathVars = "invoiceId", spec = Like.class, onTypeMismatch = EXCEPTION, missingPathVarPolicy = IGNORE) Specification<Object> spec) {
 
 		}
 	}
