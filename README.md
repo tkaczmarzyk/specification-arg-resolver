@@ -841,9 +841,7 @@ public Object findById(
 
 ### Support for multiple paths with different path variables ###
 
-When a path variable is missing then exception is thrown (typically it means that the mapping is incorrect).
-By default `@Spec` annotation has `missingPathVarPolicy` set to `EXCEPTION`, but if you want to use multiple paths with different `pathVars`, then most probably `IGNORE` is the solution.
-See example below:
+When a path variable is missing then exception is thrown (typically it means that the mapping is incorrect). I.e. by default `@Spec` annotation has `missingPathVarPolicy` set to `EXCEPTION`. If you want to use multiple paths with different `pathVars`, then most probably you should set it to `IGNORE`. See the example below:
 
 ```java
 @RequestMapping(path = { "/customers/{customerId}", "/customers-ref/{customerRefCode}" })
