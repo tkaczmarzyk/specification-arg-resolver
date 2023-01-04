@@ -1,6 +1,8 @@
 v2.16.0
 =======
 * additional Javadocs
+* introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable. 
+  * for more details please check out section `Support for multiple paths with path variables` in `README.md`.
 
 v2.15.1
 ======
