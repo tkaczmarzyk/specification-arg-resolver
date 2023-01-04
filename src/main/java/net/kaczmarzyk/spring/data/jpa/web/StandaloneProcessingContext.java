@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.EXCEPTION;
 
 /**
  * The purpose of this class is to handle non-web specification building.
@@ -86,16 +88,17 @@ public class StandaloneProcessingContext implements ProcessingContext {
 	}
 
 	@Override
-	public String getPathVariableValue(String pathVariableName) {
-		String fallbackValue = getFallbackValue(pathVariableName);
+	public String getPathVariableValue(String pathVariableName, MissingPathVarPolicy missingPathVarPolicy) {
 
-		if (pathVariableArgs.containsKey(pathVariableName)) {
-			return pathVariableArgs.get(pathVariableName);
-		} else if (nonNull(fallbackValue)) {
-			return fallbackValue;
-		} else {
+		String pathVariableValue = pathVariableArgs.getOrDefault(
+			pathVariableName,
+			getFallbackValue(pathVariableName));
+
+		if (isNull(pathVariableValue) && missingPathVarPolicy == EXCEPTION) {
 			throw new InvalidPathVariableRequestedException(pathVariableName);
 		}
+
+		return pathVariableValue;
 	}
 
 	@Override

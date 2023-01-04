@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,32 +87,32 @@ public class EqualEnum<T> extends PathSpecification<T> {
                 }
             }
         }
-        if (searchedNamesCopy.size() > 0) {
+        if (!searchedNamesCopy.isEmpty()) {
             throw new IllegalArgumentException("The following enum constants do not exists: " + StringUtils.join(searchedNamesCopy, ", "));
         }
         return matchingEnumConstants;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + Arrays.hashCode(searchedNames);
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Arrays.hashCode(searchedNames);
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        EqualEnum<?> other = (EqualEnum<?>) obj;
-        if (!Arrays.equals(searchedNames, other.searchedNames))
-            return false;
-        return true;
-    }
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		EqualEnum other = (EqualEnum) obj;
+		return Arrays.equals(searchedNames, other.searchedNames);
+	}
 }

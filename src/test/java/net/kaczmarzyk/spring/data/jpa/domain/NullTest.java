@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 
 /**
@@ -35,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gerald Humphries
  */
 public class NullTest extends IntegrationTestBase {
+
+	private static final String INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE = "Invalid size of 'httpParamValues' array, Expected 1 but was ";
 
 	Customer bartSimpson;
 	Customer lisaSimpson;
@@ -63,14 +66,31 @@ public class NullTest extends IntegrationTestBase {
 		assertThat(found).hasSize(1).containsOnly(bartSimpson);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsMissingArgument() throws ParseException {
-		new Null<>(queryCtx, "path", new String[] {}, defaultConverter);
+	@Test
+	public void rejectsNullArgumentArray() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Null<>(queryCtx, "path", null, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "null");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsTooManyArguments() throws ParseException {
-		new Null<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
+	@Test
+	public void rejectsMissingArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Null<>(queryCtx, "path", new String[] {}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[]");
+	}
+
+	@Test
+	public void rejectsTooManyArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Null<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[2014-03-10, 2014-03-11]");
 	}
 
 	@Test

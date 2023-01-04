@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,7 +57,7 @@ public class StandaloneProcessingContextTest {
 
 	@Test
 	public void shouldSearchValueInFallbackMapWhenValueIsNotPresentInArgumentSpecificMap() {
-		String fallbackValueForPathVariable = context.getPathVariableValue("fallback");
+		String fallbackValueForPathVariable = context.getPathVariableValue("fallback", MissingPathVarPolicy.EXCEPTION);
 		String[] fallbackValueForParams = context.getParameterValues("fallback");
 		String fallbackValueForHeader = context.getRequestHeaderValue("fallback");
 		String[] fallbackValueForJsonPath = context.getBodyParamValues("fallback");
@@ -69,12 +70,12 @@ public class StandaloneProcessingContextTest {
 
 	@Test
 	public void shouldReturnPathVariableValue() {
-		assertThat(context.getPathVariableValue("pathVar")).isEqualTo("example");
+		assertThat(context.getPathVariableValue("pathVar", MissingPathVarPolicy.EXCEPTION)).isEqualTo("example");
 	}
 
 	@Test
 	public void shouldThrowInvalidPathVariableRequestedExceptionWhenPathVariableDoesNotExist() {
-		assertThrows(InvalidPathVariableRequestedException.class, () -> context.getPathVariableValue("notExisting"));
+		assertThrows(InvalidPathVariableRequestedException.class, () -> context.getPathVariableValue("notExisting", MissingPathVarPolicy.EXCEPTION));
 	}
 
 	@Test

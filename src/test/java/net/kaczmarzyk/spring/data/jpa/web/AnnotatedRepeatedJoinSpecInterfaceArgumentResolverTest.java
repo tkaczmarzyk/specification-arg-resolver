@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends Anno
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(2)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(
@@ -135,7 +135,7 @@ public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends Anno
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(4)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(
@@ -166,7 +166,7 @@ public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends Anno
 
 		Specification<?> resolved = (Specification<?>) specificationArgumentResolver.resolveArgument(param, null, req, null);
 
-		assertThat(innerSpecs(resolved))
+		assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(4)
 				.containsExactlyInAnyOrder(
 						new Conjunction<>(

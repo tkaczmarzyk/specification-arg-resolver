@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
+import net.kaczmarzyk.spring.data.jpa.ComparableWithConverterTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -29,7 +29,7 @@ import org.springframework.data.jpa.domain.Specification;
  * 
  * @author TP Diffenbach
  */
-public class GreaterThanOrEqualTest extends ComparableTestBase {
+public class GreaterThanOrEqualTest extends ComparableWithConverterTestBase {
     
 	@Override
     protected Specification<Customer> makeUUT(String path, String[] value, Converter converter) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.domain.LocaleAware;
 import net.kaczmarzyk.spring.data.jpa.domain.ZeroArgSpecification;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.EmbeddedValueResolver;
@@ -32,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -46,15 +50,16 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 
     private final ConversionService conversionService;
     private final EmbeddedValueResolver embeddedValueResolver;
-
-	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext) {
+    private final Locale defaultLocale;
+    
+	public SimpleSpecificationResolver(ConversionService conversionService, AbstractApplicationContext applicationContext, Locale defaultLocale) {
 		this.conversionService = conversionService;
 		this.embeddedValueResolver = applicationContext != null ? new EmbeddedValueResolver(applicationContext.getBeanFactory()) : null;
+		this.defaultLocale = defaultLocale;
 	}
 	
 	public SimpleSpecificationResolver() {
-		this.conversionService = null;
-		this.embeddedValueResolver = null;
+		this(null, null, Locale.getDefault());
 	}
 	
 	@Override
@@ -68,7 +73,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 			if (args.isEmpty() && !isZeroArgSpec(def)) {
 				return null;
 			} else {
-				String[] argsArray = args.toArray(new String[args.size()]);
+				String[] argsArray = args.toArray(new String[0]);
 				Specification<Object> spec = newSpecification(def, argsArray, context);
 				return def.onTypeMismatch().wrap(spec);
 			}
@@ -120,16 +125,36 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 				}
 			}
 		}
+		
+		if (spec instanceof LocaleAware) {
+			Locale targetLocale = determineLocale(def);
+			((LocaleAware) spec).setLocale(targetLocale);
+		}
+		
 		return spec;
 	}
 	
+	private Locale determineLocale(Spec def) {
+		if (def.config().length == 0) {
+			return defaultLocale;
+		} else {
+			return LocaleUtils.toLocale(def.config()[0]);
+		}
+	}
+
 	private Converter resolveConverter(Spec def) {
 		if (def.config().length == 0) {
-			return Converter.withTypeMismatchBehaviour(def.onTypeMismatch(), conversionService);
+			return Converter.withTypeMismatchBehaviour(def.onTypeMismatch(), conversionService, defaultLocale);
 		}
 		if (def.config().length == 1) {
-			String dateFormat = def.config()[0];
-			return Converter.withDateFormat(dateFormat, def.onTypeMismatch(), conversionService);
+			if (LocaleAware.class.isAssignableFrom(def.spec())) { // if specification is locale-aware, then we assume that config contains locale
+				String localeConfig = def.config()[0];
+				Locale customlocale = LocaleUtils.toLocale(localeConfig);
+				return Converter.withTypeMismatchBehaviour(def.onTypeMismatch(), conversionService, customlocale);
+			} else { // otherwise we assume that config contains date format
+				String dateFormat = def.config()[0];
+				return Converter.withDateFormat(dateFormat, def.onTypeMismatch(), conversionService);
+			}
 		}
 		throw new IllegalStateException("config should contain only one value -- a date format"); // TODO support other config values as well
 	}
@@ -179,14 +204,17 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		try {
 			return embeddedValueResolver.resolveStringValue(rawSpELValue);
 		} catch (BeansException|ParseException e) {
-			throw new IllegalArgumentException("Invalid SpEL expression: '" + rawSpELValue + "'");
+			throw new IllegalArgumentException("Invalid SpEL expression: '" + rawSpELValue + "'", e);
 		}
 	}
 	
 	private Collection<String> resolveSpecArgumentsFromPathVariables(ProcessingContext context, Spec specDef) {
 		Collection<String> args = new ArrayList<>();
 		for (String pathVar : specDef.pathVars()) {
-			args.add(context.getPathVariableValue(pathVar));
+			String pathVariableValue = context.getPathVariableValue(pathVar, specDef.missingPathVarPolicy());
+			if (pathVariableValue != null) {
+				args.add(pathVariableValue);
+			}
 		}
 		return args;
 	}
@@ -201,7 +229,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		Collection<String> args = new ArrayList<>();
 		for (String headerKey : specDef.headers()) {
 			String headerValue = context.getRequestHeaderValue(headerKey);
-			boolean isHeaderValueEmpty = headerValue == null || headerValue == "";
+			boolean isHeaderValueEmpty = headerValue == null || "".equals(headerValue);
 			if (!isHeaderValueEmpty) {
 				args.add(headerValue);
 			}
