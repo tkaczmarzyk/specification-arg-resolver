@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import static java.util.Objects.isNull;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.EXCEPTION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.parseMediaType;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -81,17 +83,17 @@ public class WebRequestProcessingContext implements ProcessingContext {
 	}
 
 	@Override
-	public String getPathVariableValue(String pathVariableName) {
+	public String getPathVariableValue(String pathVariableName, MissingPathVarPolicy missingPathVarPolicy) {
 		if (resolvedPathVariables == null) {
 			resolvedPathVariables = PathVariableResolver.resolvePathVariables(webRequest, methodParameter);
 		}
 
 		String value = resolvedPathVariables.get(pathVariableName);
-		if (value != null) {
-			return value;
-		} else {
+		if (value == null && missingPathVarPolicy == EXCEPTION) {
 			throw new InvalidPathVariableRequestedException(pathVariableName);
 		}
+
+		return value;
 	}
 
 	public String getRequestHeaderValue(String headerKey) {
