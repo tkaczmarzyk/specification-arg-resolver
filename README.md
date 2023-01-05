@@ -207,6 +207,20 @@ to handle HTTP requests such as:
 
 to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
 
+### IsNotEmpty ###
+
+An inversion of `IsEmpty` described above, for better readability in some scenarios.
+
+For example, consider an `orders` table which contains association to `customers` table (one customer can have multiple orders). Then, you can introduce this mapping:
+
+    @Spec(path="orders", spec=IsNotEmpty.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/trusted-customers
+
+to return information if the customer is a trusted client (has some orders - `orders` is not empty)
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.

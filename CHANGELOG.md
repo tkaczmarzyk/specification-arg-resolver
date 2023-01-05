@@ -1,3 +1,8 @@
+v2.16.1
+=======
+* Introduced new specification:
+  * `isNotEmpty` - this specification filters out elements that have not empty collection of elements, that is defined under `path` in `@Spec` annotation.
+
 v2.16.0
 =======
 * Added ability to set custom `Locale` during resolver registration:

@@ -95,6 +95,9 @@ public class Customer {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Badge> badges;
 
+    @ElementCollection
+    @CollectionTable(name = "customer_phone_numbers", joinColumns = @JoinColumn(name = "id"))
+    private Set<String> phoneNumbers;
 
     public Customer() {
     }
@@ -288,4 +291,14 @@ public class Customer {
         return badges;
     }
 
+    public Set<String> getPhoneNumbers() {
+        if (phoneNumbers == null) {
+            phoneNumbers = new HashSet<>();
+        }
+        return phoneNumbers;
+    }
+
+    public void addPhoneNumber(String phoneNumber) {
+        getPhoneNumbers().add(phoneNumber);
+    }
 }

@@ -131,6 +131,13 @@ public class CustomerBuilder {
 		}
 		return this;
 	}
+
+	public CustomerBuilder phoneNumbers(String... phoneNumbers) {
+		for(String phoneNumber: phoneNumbers) {
+			customer.addPhoneNumber(phoneNumber);
+		}
+		return this;
+	}
 	
 	public Customer build(EntityManager em) {
 		em.persist(customer);
