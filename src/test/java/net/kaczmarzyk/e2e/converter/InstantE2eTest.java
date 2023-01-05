@@ -18,10 +18,7 @@ package net.kaczmarzyk.e2e.converter;
 import net.kaczmarzyk.E2eTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Between;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
-import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
+import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,6 +112,20 @@ public class InstantE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersWithDateOfNextSpecialOfferEqual_customInstantFormatWithDateOnly(
 				@Spec(path = "dateOfNextSpecialOfferInstant", params = "dateOfNextSpecialOfferInstantEqual_customFormat", config = "yyyy-MM-dd", spec = Equal.class) Specification<Customer> spec) {
+			return customerRepository.findAll(spec);
+		}
+
+		@RequestMapping(params = "dateOfNextSpecialOfferInstantEqualDay")
+		@ResponseBody
+		public Object findCustomersWithDateOfNextSpecialOfferEqualDay_defaultInstantFormat(
+				@Spec(path = "dateOfNextSpecialOfferInstant", params = "dateOfNextSpecialOfferInstantEqualDay", spec = EqualDay.class) Specification<Customer> spec) {
+			return customerRepository.findAll(spec);
+		}
+
+		@RequestMapping(params = "dateOfNextSpecialOfferInstantEqualDay_customFormat")
+		@ResponseBody
+		public Object findCustomersWithDateOfNextSpecialOfferEqualDay_customInstantFormat(
+				@Spec(path = "dateOfNextSpecialOfferInstant", params = "dateOfNextSpecialOfferInstantEqualDay_customFormat", config = "yyyy-MM-dd", spec = EqualDay.class) Specification<Customer> spec) {
 			return customerRepository.findAll(spec);
 		}
 	}
@@ -235,6 +246,38 @@ public class InstantE2eTest extends E2eTestBase {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByInstantEqualDayWithDefaultInstantFormat() throws Exception {
+		customer("Barry", "Benson")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
+				.build(em);
+		customer("Adam", "Flayman")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0))) //date as close to midnight as possible. Due to the test database datetime precision specifying more nanoseconds will cause rounding to the next hour
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("dateOfNextSpecialOfferInstantEqualDay", "2020-07-19T14:11:00.000+04:00"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByInstantEqualDayWithCustomInstantFormatIgnoringTime() throws Exception {
+		customer("Barry", "Benson")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
+				.build(em);
+		customer("Adam", "Flayman")
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0))) //date as close to midnight as possible. Due to the test database datetime precision specifying more nanoseconds will cause rounding to the next hour
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("dateOfNextSpecialOfferInstantEqualDay_customFormat", "2020-07-19"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Ned')]").exists())
 				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
 }
