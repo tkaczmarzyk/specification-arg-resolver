@@ -38,7 +38,7 @@ public class DateTimeUtilsTest {
 
 		//then
 		assertThat(startOfDayLocalDateTime)
-				.isEqualTo(LocalDateTime.of(2022,12, 28, 0,0, 0, 0));
+				.isEqualTo(LocalDateTime.of(2022, 12, 28, 0,0, 0, 0));
 	}
 
 	@Test
@@ -141,114 +141,114 @@ public class DateTimeUtilsTest {
 	}
 
 	@Test
-	public void shouldReturnEndOfDayForLocalDateTime() {
+	public void shouldReturnStartOfNextDayForLocalDateTime() {
 		//given
 		LocalDateTime date = LocalDateTime.of(2022, 12, 28, 15, 22, 42, 11);
 
 		//when
-		LocalDateTime endOfDayLocalDateTime = DateTimeUtils.endOfDay(date);
+		LocalDateTime startOfNextDayLocalDateTime = DateTimeUtils.startOfNextDay(date);
 
 		//then
-		assertThat(endOfDayLocalDateTime)
-				.isEqualTo(LocalDateTime.of(2022,12, 28, 23,59, 59, 999999999));
+		assertThat(startOfNextDayLocalDateTime)
+				.isEqualTo(LocalDateTime.of(2022,12, 29, 0,0, 0, 0));
 	}
 
 	@Test
-	public void shouldReturnEndOfDayForCalendar() {
+	public void shouldReturnStartOfNextDayForCalendar() {
 		//given
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2022, DECEMBER, 28, 15, 55, 49);
 
 		//when
-		Calendar endOfDayCalendar = DateTimeUtils.endOfDay(calendar);
+		Calendar startOfNextDayCalendar = DateTimeUtils.startOfNextDay(calendar);
 
 		//then
-		assertThat(endOfDayCalendar.getTime())
+		assertThat(startOfNextDayCalendar.getTime())
 				.isWithinYear(2022)
 				.isWithinMonth(12)
-				.isWithinDayOfMonth(28)
-				.hasHourOfDay(23)
-				.hasMinute(59)
-				.hasSecond(59)
-				.hasMillisecond(999);
+				.isWithinDayOfMonth(29)
+				.hasHourOfDay(0)
+				.hasMinute(0)
+				.hasSecond(0)
+				.hasMillisecond(0);
 	}
 
 	@Test
-	public void shouldReturnTheSameLocalDateWhenDeterminingEndOfDay() {
+	public void shouldReturnNextDayForLocalDate() {
 		//given
 		LocalDate date = LocalDate.of(2022, 12, 28);
 
 		//when
-		LocalDate endOfDayLocalDate = DateTimeUtils.endOfDay(date);
+		LocalDate nextDayLocalDate = DateTimeUtils.startOfNextDay(date);
 
 		//then
-		assertThat(endOfDayLocalDate)
-				.isEqualTo(date);
+		assertThat(nextDayLocalDate)
+				.isEqualTo(LocalDate.of(2022, 12, 29));
 	}
 
 	@Test
-	public void shouldReturnEndOfDayForOffsetDateTime() {
+	public void shouldReturnStartOfNextDayForOffsetDateTime() {
 		//given
 		OffsetDateTime date = OffsetDateTime.of(2022, 12, 28, 15, 22, 42, 11233, ofHours(4));
 
 		//when
-		OffsetDateTime endOfDayOffsetDateTime = DateTimeUtils.endOfDay(date);
+		OffsetDateTime startOfNextDayOffsetDateTime = DateTimeUtils.startOfNextDay(date);
 
 		//then
-		assertThat(endOfDayOffsetDateTime)
-				.isEqualTo(OffsetDateTime.of(2022, 12, 28, 23, 59, 59, 999999999, ofHours(4)));
+		assertThat(startOfNextDayOffsetDateTime)
+				.isEqualTo(OffsetDateTime.of(2022, 12, 29, 0, 0, 0, 0, ofHours(4)));
 	}
 
 	@Test
-	public void shouldReturnEndOfDayForInstant() {
+	public void shouldReturnStartOfNextDayForInstant() {
 		//given
 		Instant date = OffsetDateTime.of(2022, 12, 28, 15, 22, 42, 11233, ofHours(0)).toInstant();
 
 		//when
-		Instant endOfDayInstant = DateTimeUtils.endOfDay(date);
+		Instant startOfNextDayInstant = DateTimeUtils.startOfNextDay(date);
 
 		//then
-		assertThat(endOfDayInstant)
-				.isEqualTo(OffsetDateTime.of(2022, 12, 28, 23, 59, 59, 999999999, ofHours(0)).toInstant());
+		assertThat(startOfNextDayInstant)
+				.isEqualTo(OffsetDateTime.of(2022, 12, 29, 0, 0, 0, 0, ofHours(0)).toInstant());
 	}
 
 	@Test
-	public void shouldReturnEndOfDayForDate() {
+	public void shouldReturnStartOfNextDayForDate() {
 		//given
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2022, DECEMBER, 28, 15, 55, 49);
 		Date date = calendar.getTime();
 
 		//when
-		Date endOfDayDate = DateTimeUtils.endOfDay(date);
+		Date startOfNextDayDate = DateTimeUtils.startOfNextDay(date);
 
 		//then
-		assertThat(endOfDayDate)
+		assertThat(startOfNextDayDate)
 				.isWithinYear(2022)
 				.isWithinMonth(12)
-				.isWithinDayOfMonth(28)
-				.hasHourOfDay(23)
-				.hasMinute(59)
-				.hasSecond(59)
-				.hasMillisecond(999);
+				.isWithinDayOfMonth(29)
+				.hasHourOfDay(0)
+				.hasMinute(0)
+				.hasSecond(0)
+				.hasMillisecond(0);
 	}
 
 	@Test
-	public void shouldReturnEndOfDayForTimestamp() {
+	public void shouldReturnStartOfNextDayForTimestamp() {
 		//given
 		Timestamp date = Timestamp.valueOf(LocalDateTime.of(2022, 12, 28, 15, 22, 42, 11));
 
 		//when
-		Timestamp endOfDayTimestamp = DateTimeUtils.endOfDay(date);
+		Timestamp startOfNextDayTimestamp = DateTimeUtils.startOfNextDay(date);
 
 		//then
-		assertThat(endOfDayTimestamp)
+		assertThat(startOfNextDayTimestamp)
 				.hasYear(2022)
 				.hasMonth(12)
-				.hasDayOfMonth(28)
-				.hasHourOfDay(23)
-				.hasMinute(59)
-				.hasSecond(59)
-				.hasMillisecond(999);
+				.hasDayOfMonth(29)
+				.hasHourOfDay(0)
+				.hasMinute(0)
+				.hasSecond(0)
+				.hasMillisecond(0);
 	}
 }

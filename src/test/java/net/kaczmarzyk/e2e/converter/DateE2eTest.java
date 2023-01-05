@@ -153,6 +153,9 @@ public class DateE2eTest extends E2eTestBase {
 		customer("Adam", "Flayman")
 				.registrationDate(2014, 3, 14, 23, 59, 59, 999)
 				.build(em);
+		customer("Vanessa", "Bloom")
+				.registrationDate(2014, 3, 15, 12, 32, 45, 856)
+				.build(em);
 
 		mockMvc.perform(get("/customers")
 						.param("registeredDayEqualCustomConfig", "2014-03-15T12:34:19")
@@ -161,6 +164,7 @@ public class DateE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[0].firstName").value("Homer"))
 				.andExpect(jsonPath("$[1].firstName").value("Moe"))
-				.andExpect(jsonPath("$[2]").doesNotExist());
+				.andExpect(jsonPath("$[2].firstName").value("Vanessa"))
+				.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 }

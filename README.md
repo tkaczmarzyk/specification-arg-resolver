@@ -144,7 +144,7 @@ Supports multiple data types: numbers, booleans, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=Equal.class)`.
 
-The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below). If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then the default time value (midnight - UTC time for `OffsetDateTime`) will be used for checking equality. To filter all results within particular date (day) use `EqualDay` specification.
+The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below). If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then the default time value (midnight - UTC time for `OffsetDateTime`) will be used for checking equality. To include all results within particular date (day) use `EqualDay` specification.
 
 A negation for this specification is also available: `NotEqual`.
 
@@ -207,7 +207,7 @@ Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple 
 
 Usage: `@Spec(path="creationDate", spec=LessThan.class)`.
 
-For temporal values, the default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")`. When specifying the date format without the time part for datetime types, the missing time values will be filled with zeros.  
+For temporal values, the default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")`. When the date format is specified without the time part for datetime types, the missing time values will be filled with zeros.  
 
 NOTE: comparisons are dependent on the underlying database.
  * Comparisons of floats and doubles (especially floats) may be incorrect due to precision loss.
@@ -233,11 +233,11 @@ Usage: `@Spec(path="dateOfTheNextOffer", spec=InTheFuture.class)`.
 
 ### EqualDay ###
 
-Supports date-type fields. Filters the results that are within the particular date (day). Internally uses `Between` specification with range within one day from `00:00:00` to `23:59:59`. When datetime format with a time part will be specified and provided, then the time part will be ignored. For example, providing `2022-12-20T08:45:57` parameter for `LocalDateTime` field will result with filtering with range from `2022-12-20T00:00:00` to `2022-12-20T23:59:59`.  
+Supports date-type fields. Matches the day part of a date-time attribute, ignoring the time. Filters with range within one day from `00:00:00` (inclusive) to `00:00:00` of the next day (exclusive). When datetime format with a time part will be specified and provided, then the time part will be ignored. For example, providing `2022-12-20T08:45:57` parameter for `LocalDateTime` field will result with filtering with range from `2022-12-20T00:00:00` (inclusive) to `2022-12-21T00:00:00` (exclusive).  
 
 Usage: `@Spec(path="lastOrderTime", spec=EqualDay.class)`.
 
-For types that store only date like `LocalDate` the specification behaves the same as `Equal`.
+For types that store just date (without time) like `LocalDate` the specification behaves the same as `Equal`.
 
 For more information related to date-types see [Supported Conversions](#supported-conversions) and [Date Formats](#date-formats).
 

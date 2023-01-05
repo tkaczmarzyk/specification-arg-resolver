@@ -19,12 +19,20 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import javax.persistence.criteria.*;
+import java.util.Arrays;
 import java.util.Objects;
 
-import static net.kaczmarzyk.spring.data.jpa.utils.DateTimeUtils.endOfDay;
+import static net.kaczmarzyk.spring.data.jpa.utils.DateTimeUtils.startOfNextDay;
 import static net.kaczmarzyk.spring.data.jpa.utils.DateTimeUtils.startOfDay;
 
-
+/**
+ * <p>Matches the day part of a date-time attribute, ignoring the time.
+ * Internally uses `Between` specification with range within one day from `00:00:00` (inclusive) to `00:00:00` of the next day (exclusive).</p>
+ *
+ * <p>Supports date-type fields.</p>
+ *
+ * @author Hubert Gotfryd (Tratif sp. z o.o.)
+ */
 public class EqualDay<T> extends PathSpecification<T> {
 
 	private static final long serialVersionUID = 1L;
@@ -35,7 +43,7 @@ public class EqualDay<T> extends PathSpecification<T> {
 	public EqualDay(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
 		super(queryContext, path);
 		if (httpParamValues == null || httpParamValues.length != 1) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected 1 but was " + Arrays.toString(httpParamValues));
 		}
 		this.converter = converter;
 		this.expectedDay = httpParamValues[0];
@@ -46,10 +54,10 @@ public class EqualDay<T> extends PathSpecification<T> {
 		Expression<Comparable<Object>> targetExpression = path(root);
 		Class<?> typeOnPath = targetExpression.getJavaType();
 
-		Object targetDayDate = converter.convert(expectedDay, typeOnPath);
-		Object lowerBoundary = startOfDay(targetDayDate);
-		Object upperBoundary = endOfDay(targetDayDate);
-		return criteriaBuilder.between(targetExpression, (Comparable<Object>) lowerBoundary, (Comparable<Object>) upperBoundary);
+		Object targetDayDate = converter.convert(expectedDay, typeOnPath);;
+		Predicate lowerBoundaryPredicate = criteriaBuilder.greaterThanOrEqualTo(targetExpression, (Comparable<Object>) startOfDay(targetDayDate));
+		Predicate upperBoundaryPredicate = criteriaBuilder.lessThan(targetExpression, (Comparable<Object>) startOfNextDay(targetDayDate));
+		return criteriaBuilder.and(lowerBoundaryPredicate, upperBoundaryPredicate);
 	}
 
 	@Override
@@ -71,5 +79,14 @@ public class EqualDay<T> extends PathSpecification<T> {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), expectedDay, converter);
+	}
+
+	@Override
+	public String toString() {
+		return "EqualDay[" +
+				"expectedDay='" + expectedDay + '\'' +
+				", converter=" + converter +
+				", path='" + super.path + '\'' +
+				']';
 	}
 }

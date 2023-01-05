@@ -264,9 +264,9 @@ public class TimestampE2eTest extends E2eTestBase {
 		customer("Barry", "Benson")
 				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 11, 30, 23, 59, 59)))
 				.build(em);
-        customer("Adam", "Flayman")
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 2, 0, 0, 0)))
-                .build(em);
+		customer("Adam", "Flayman")
+				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 2, 0, 0, 0)))
+				.build(em);
 
 		mockMvc.perform(get("/customers")
 						.param("lastSeenEqualDay", "2022-12-01T22:17:13.000Z")
@@ -281,9 +281,9 @@ public class TimestampE2eTest extends E2eTestBase {
 		customer("Barry", "Benson")
 				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 11, 30, 23, 59, 59)))
 				.build(em);
-        customer("Adam", "Flayman")
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 2, 0, 0, 0)))
-                .build(em);
+		customer("Adam", "Flayman")
+				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 2, 0, 0, 0)))
+				.build(em);
 
 		mockMvc.perform(get("/customers")
 						.param("lastSeenEqualDay_customFormat", "2022-12-01")
