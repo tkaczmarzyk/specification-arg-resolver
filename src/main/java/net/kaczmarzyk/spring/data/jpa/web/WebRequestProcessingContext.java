@@ -26,7 +26,7 @@ import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 import org.springframework.core.MethodParameter;

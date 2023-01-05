@@ -1,3 +1,10 @@
+v3.0.0
+=======
+* Migrated project to spring boot 3.0 and java 17
+  * Spring boot 3.0 is based on Hibernate version 6.X because in this version of hibernate all query results are distinct by default. This shouldn't affect most projects, but please be extra careful if you've ever used a spec with the `distinct=false` attribute.
+* Added support for spring native-image.
+  * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details
+
 v2.16.0
 =======
 * Added ability to set custom `Locale` during resolver registration:
@@ -12,8 +19,9 @@ v2.16.0
   ```java
   @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
   ```
+* additional Javadocs
 * Introduced new case-insensitive specification `NotLikeIgnoreCase` that works in similar way as `LikeIgnoreCase` but is its negation.
-* introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable. 
+* introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable.
   * for more details please check out section `Support for multiple paths with path variables` in `README.md`.
 * additional Javadocs
 

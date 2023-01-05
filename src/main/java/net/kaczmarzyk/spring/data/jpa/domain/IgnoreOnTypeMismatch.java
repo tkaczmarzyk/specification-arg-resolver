@@ -15,13 +15,12 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.springframework.data.jpa.domain.Specification;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 /**
  * <p>Wrapper that turns a {@code Specification} into a one that ignores wrapped specification containing mismatched parameter

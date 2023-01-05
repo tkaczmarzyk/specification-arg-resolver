@@ -15,11 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.ListPagingAndSortingRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**
  * @author Tomasz Kaczmarzyk
  */
-public interface CustomerRepository extends PagingAndSortingRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
+public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
 }

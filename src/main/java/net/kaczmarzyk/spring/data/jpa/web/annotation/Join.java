@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.lang.annotation.*;
 
 /**
@@ -39,7 +39,12 @@ public @interface Join {
 	String alias();
 	
 	/**
-	 * Whether the query should return distinct results or not
+	 * Hibernate since version 6.0 deduplicates results (https://github.com/hibernate/hibernate-orm/blob/6.0/migration-guide.adoc#query-sqm-distinct)
+	 * defining distinct does not have sense for non-paged queries.
+	 * For the paged and count queries the distinct should be set to true (default behaviour) in main cases.
+	 *
+	 * The setting distinct to false could have sense only in particular cases by developers who are aware about the hibernate entity deduplication mechanisms
+	 * and related spring limitations.
 	 */
 	boolean distinct() default true;
 	

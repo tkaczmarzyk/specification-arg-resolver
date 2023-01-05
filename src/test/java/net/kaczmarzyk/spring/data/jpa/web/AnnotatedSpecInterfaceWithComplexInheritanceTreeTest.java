@@ -31,12 +31,12 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
 
-import static javax.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.*;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 

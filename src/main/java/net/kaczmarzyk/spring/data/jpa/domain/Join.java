@@ -15,20 +15,19 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
-import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Objects;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
-import org.springframework.data.jpa.domain.Specification;
-
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -77,7 +76,7 @@ public class Join<T> implements Specification<T>, Fake {
                 queryContext.putLazyVal(
                         alias,
                         (r) -> {
-                        	javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
+                        	jakarta.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
                         	return evaluated.join(extractedPathToJoin, joinType);
                         }
                 );

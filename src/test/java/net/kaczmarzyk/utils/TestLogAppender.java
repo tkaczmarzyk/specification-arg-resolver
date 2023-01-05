@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.LogbackException;
 import ch.qos.logback.core.filter.Filter;
@@ -33,10 +35,10 @@ import ch.qos.logback.core.status.Status;
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class TestLogAppender<E> implements Appender<E> {
+public class TestLogAppender extends AppenderBase<ILoggingEvent> {
 
 	private static final List<String> LOGS = new ArrayList<>();
-	
+
 	public static List<String> getInterceptedLogs() {
 		return new ArrayList<>(LOGS);
 	}
@@ -44,87 +46,9 @@ public class TestLogAppender<E> implements Appender<E> {
 	public static void clearInterceptedLogs() {
 		LOGS.clear();
 	}
-	
-	@Override
-	public void start() {
-	}
 
 	@Override
-	public void stop() {
+	protected void append(ILoggingEvent iLoggingEvent) {
+		LOGS.add(iLoggingEvent.getMessage());
 	}
-
-	@Override
-	public boolean isStarted() {
-		return true;
-	}
-
-	@Override
-	public void setContext(Context context) {
-	}
-
-	@Override
-	public Context getContext() {
-		return null;
-	}
-
-	@Override
-	public void addStatus(Status status) {
-	}
-
-	@Override
-	public void addInfo(String msg) {
-	}
-
-	@Override
-	public void addInfo(String msg, Throwable ex) {
-	}
-
-	@Override
-	public void addWarn(String msg) {
-	}
-
-	@Override
-	public void addWarn(String msg, Throwable ex) {
-	}
-
-	@Override
-	public void addError(String msg) {
-	}
-
-	@Override
-	public void addError(String msg, Throwable ex) {
-	}
-
-	@Override
-	public void addFilter(Filter<E> newFilter) {
-	}
-
-	@Override
-	public void clearAllFilters() {
-	}
-
-	@Override
-	public List<Filter<E>> getCopyOfAttachedFiltersList() {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public FilterReply getFilterChainDecision(E event) {
-		return FilterReply.NEUTRAL;
-	}
-
-	@Override
-	public String getName() {
-		return TestLogAppender.class.getName();
-	}
-
-	@Override
-	public void doAppend(E event) throws LogbackException {
-		TestLogAppender.LOGS.add(event.toString());
-	}
-
-	@Override
-	public void setName(String name) {
-	}
-
 }

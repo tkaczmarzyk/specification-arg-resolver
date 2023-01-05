@@ -15,11 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.MethodInterceptor;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 
 
 /**
@@ -27,78 +29,78 @@ import java.lang.reflect.Field;
  */
 abstract class EnhancerUtil {
 
-	@SuppressWarnings("unchecked")
-	static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
-    	Enhancer enhancer = new Enhancer();
-		enhancer.setSuperclass(iface);
-		enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
-			if ("toString".equals(method.getName())) {
-				return iface.getSimpleName() + "[" + method.invoke(targetSpec, args) + "]";
-			}
-			if ("equals".equals(method.getName())) {
-				return EnhancerUtil.equals(iface, targetSpec, args);
-			}
-			if("hashCode".equals(method.getName())) {
-				return targetSpec.hashCode();
-			}
-			return proxy.invoke(targetSpec, args);
-		});
-		return (T) enhancer.create();
-	}
+    @SuppressWarnings("unchecked")
+    static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
+        return (T) java.lang.reflect.Proxy.newProxyInstance(
+                EnhancerUtil.class.getClassLoader(),
+                new Class[]{iface},
+                (proxy, method, args) -> switch (method.getName()) {
+                    case "toPredicate" -> targetSpec.toPredicate(
+                            (Root<Object>) args[0],
+                            (CriteriaQuery<?>) args[1],
+                            (CriteriaBuilder) args[2]
+                    );
+                    case "toString" -> iface.getSimpleName() + "[" + targetSpec.toString() + "]";
+                    case "equals" -> EnhancerUtil.equals(iface, targetSpec, args);
+                    case "hashCode" -> targetSpec.hashCode();
+                    default ->
+                            throw new UnsupportedOperationException("The method " + method.getName() + " is not supported in proxy class!");
+                });
+    }
 
-	private static boolean equals(Class<?> iface, Specification<Object> targetSpec, Object[] args) {
-		if (args.length != 1 || args[0] == null) {
-			return false;
-		}
+    private static boolean equals(Class<?> iface, Specification<Object> targetSpec, Object[] args) {
+        if (args.length != 1 || args[0] == null) {
+            return false;
+        }
 
-		// The argument is not equal to the actual object if it is not a glib enhanced object
-		if (!Enhancer.isEnhanced(args[0].getClass())) {
-			return false;
-		}
+        // The argument is not equal to the actual object if it is not a glib enhanced object
+        if (!Proxy.isProxyClass(args[0].getClass())) {
+            return false;
+        }
 
-		// The argument is not equal to the actual object if it is not a direct implementation of the actual interface
-		if (!isAnObjectThatDirectImplementsGivenInterface(args[0], iface)) {
-			return false;
-		}
+        // The argument is not equal to the actual object if it is not a direct implementation of the actual interface
+        if (!isAnObjectThatDirectImplementsGivenInterface(args[0], iface)) {
+            return false;
+        }
 
-		return ReflectionUtils.get(ReflectionUtils.get(args[0], "CGLIB$CALLBACK_0"), "arg$2").equals(targetSpec);
-	}
+        return ReflectionUtils.get(Proxy.getInvocationHandler(args[0]), "arg$1").equals(targetSpec);
+    }
 
-	private static boolean isAnObjectThatDirectImplementsGivenInterface(Object object, Class<?> expectedType) {
-		return arrayContains(object.getClass().getInterfaces(), expectedType);
-	}
+    private static boolean isAnObjectThatDirectImplementsGivenInterface(Object object, Class<?> expectedType) {
+        return arrayContains(object.getClass().getInterfaces(), expectedType);
+    }
 
-	private static boolean arrayContains(Class<?>[] array, Class<?> valueToFind) {
-		for(Class<?> arrayValue: array) {
-			if(arrayValue.equals(valueToFind)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private static boolean arrayContains(Class<?>[] array, Class<?> valueToFind) {
+        for (Class<?> arrayValue : array) {
+            if (arrayValue.equals(valueToFind)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private static final class ReflectionUtils {
+    private static final class ReflectionUtils {
 
-		@SuppressWarnings("unchecked")
-		static <T> T get(Object target, String fieldname) {
-			try {
-				Class<?> classToBeUsed = target.getClass();
-				do {
-					try {
-						Field f = classToBeUsed.getDeclaredField(fieldname);
-						f.setAccessible(true);
-						return (T) f.get(target);
-					} catch (NoSuchFieldException err) {
-						classToBeUsed = classToBeUsed.getSuperclass();
-						if (classToBeUsed == Object.class) {
-							throw err;
-						}
-					}
-				} while (classToBeUsed != Object.class);
-				throw new NoSuchFieldException();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+        @SuppressWarnings("unchecked")
+        static <T> T get(Object target, String fieldname) {
+            try {
+                Class<?> classToBeUsed = target.getClass();
+                do {
+                    try {
+                        Field f = classToBeUsed.getDeclaredField(fieldname);
+                        f.setAccessible(true);
+                        return (T) f.get(target);
+                    } catch (NoSuchFieldException err) {
+                        classToBeUsed = classToBeUsed.getSuperclass();
+                        if (classToBeUsed == Object.class) {
+                            throw err;
+                        }
+                    }
+                } while (classToBeUsed != Object.class);
+                throw new NoSuchFieldException();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
