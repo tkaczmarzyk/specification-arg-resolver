@@ -1,6 +1,6 @@
 v2.16.0
 =======
-* Introduced `EqualDay` specification which allows to filter all records within particular date (day).
+* Introduced `EqualDay` specification which allows finding all records within particular date (day), ignoring time.
 * Added ability to set custom `Locale` during resolver registration:
   ```java
   @Override
