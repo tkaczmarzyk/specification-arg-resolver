@@ -255,7 +255,7 @@ public class InstantE2eTest extends E2eTestBase {
 				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
 				.build(em);
 		customer("Adam", "Flayman")
-				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0)))
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0))) //date as close to midnight as possible. Due to the test database datetime precision specifying more nanoseconds will cause rounding to the next hour
 				.build(em);
 
 		mockMvc.perform(get("/customers")
@@ -271,7 +271,7 @@ public class InstantE2eTest extends E2eTestBase {
 				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 20, 0, 0, 0, 0, ofHours(0)))
 				.build(em);
 		customer("Adam", "Flayman")
-				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0)))
+				.nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 23, 59, 59, 999999000, ofHours(0))) //date as close to midnight as possible. Due to the test database datetime precision specifying more nanoseconds will cause rounding to the next hour
 				.build(em);
 
 		mockMvc.perform(get("/customers")

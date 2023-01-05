@@ -53,7 +53,7 @@ public abstract class DateTimeUtils {
 	public static <T> T startOfNextDay(Object dateObject) {
 		Class<?> expectedClass = dateObject.getClass();
 		if (Calendar.class.isAssignableFrom(expectedClass)) {
-			Calendar startOfNextDayCalendar = atStartOfDayFor(((Calendar) dateObject));
+			Calendar startOfNextDayCalendar = atStartOfDayFor((Calendar) dateObject);
 			startOfNextDayCalendar.add(DATE, 1);
 			return (T) startOfNextDayCalendar;
 		} else if (LocalDateTime.class.isAssignableFrom(expectedClass)) {

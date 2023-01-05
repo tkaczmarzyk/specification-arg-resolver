@@ -18,7 +18,11 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Expression;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -54,7 +58,7 @@ public class EqualDay<T> extends PathSpecification<T> {
 		Expression<Comparable<Object>> targetExpression = path(root);
 		Class<?> typeOnPath = targetExpression.getJavaType();
 
-		Object targetDayDate = converter.convert(expectedDay, typeOnPath);;
+		Object targetDayDate = converter.convert(expectedDay, typeOnPath);
 		Predicate lowerBoundaryPredicate = criteriaBuilder.greaterThanOrEqualTo(targetExpression, (Comparable<Object>) startOfDay(targetDayDate));
 		Predicate upperBoundaryPredicate = criteriaBuilder.lessThan(targetExpression, (Comparable<Object>) startOfNextDay(targetDayDate));
 		return criteriaBuilder.and(lowerBoundaryPredicate, upperBoundaryPredicate);
