@@ -908,7 +908,7 @@ Example maven dependency in project pom file:
 <dependency>
     <groupId>com.google.code.gson</groupId>
     <artifactId>gson</artifactId>
-    <version>2.10.0</version>
+    <version>2.10.1</version>
 </dependency>
 ```
 
