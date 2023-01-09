@@ -48,14 +48,14 @@ public class IsNotEmptyTest extends IntegrationTestBase {
 
 	@Test
 	public void filtersByOneToManyAssociation() {
-		IsNotEmpty<Customer> streetWithEvergreen = new IsNotEmpty<>(queryCtx, "orders");
+		IsNotEmpty<Customer> streetWithEvergreen = new IsNotEmpty<>(queryCtx, "orders", new String[0]);
 		List<Customer> result = customerRepo.findAll(streetWithEvergreen);
 		assertThat(result).hasSize(2).containsOnly(margeSimpson, moeSzyslak);
 	}
 
 	@Test
 	public void filtersByElementCollectionAssociation() {
-		IsNotEmpty<Customer> streetWithEvergreen = new IsNotEmpty<>(queryCtx, "phoneNumbers");
+		IsNotEmpty<Customer> streetWithEvergreen = new IsNotEmpty<>(queryCtx, "phoneNumbers", new String[0]);
 		List<Customer> result = customerRepo.findAll(streetWithEvergreen);
 		assertThat(result).hasSize(1).containsOnly(homerSimpson);
 	}

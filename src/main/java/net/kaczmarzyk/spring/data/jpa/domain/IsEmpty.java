@@ -22,28 +22,31 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+
 /**
- * <p>Filters with is not empty where-clause - if collection from association is not empty (e.g. {@code where customer.orders is not empty}).</p>
+ * <p>Filters with "is empty" where-clause for collections (e.g. {@code where customer.orders is empty}).</p>
  *
- * @author Konrad Hajduga (Tratif sp. z o.o.)
+ * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p
+ *
+ * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
-public class IsNotEmpty<T> extends PathSpecification<T> implements WithoutTypeConversion, ZeroArgSpecification {
+public class IsEmpty<T> extends PathSpecification<T> implements WithoutTypeConversion, ZeroArgSpecification {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public IsNotEmpty(QueryContext queryContext, String path, String[] args) {
-		super(queryContext, path);
-	}
+    public IsEmpty(QueryContext queryContext, String path, String[] args) {
+        super(queryContext, path);
+    }
 
-	@Override
-	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-		return builder.isNotEmpty(this.path(root));
-	}
+    @Override
+    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        return criteriaBuilder.isEmpty(path(root));
+    }
 
-	@Override
-	public String toString() {
-		return "IsNotEmpty[" +
-			"path='" + path + '\'' +
-			']';
-	}
+    @Override
+    public String toString() {
+        return "IsEmpty[" +
+                "path='" + path + '\'' +
+                ']';
+    }
 }

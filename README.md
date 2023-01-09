@@ -207,6 +207,19 @@ to handle HTTP requests such as:
 
 to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
 
+### IsEmpty ###
+Filters with `is empty` where-clause for collections that are defined under `path` in `@Spec` annotation (e.g. ` where customer.orders is empty`). Does not require any http-parameters to be present, i.e. represents constant part of the query.
+
+For example, for `orders` table which contains association to `customers` table (one customer can have multiple orders) the following mapping can be introduced:
+
+    @Spec(path="orders", spec=IsEmpty.class)
+
+to handle HTTP request such as:
+
+    GET http://myhost/customersWithoutOrders
+
+to return customers without orders (with empty collection of orders).
+
 ### IsNotEmpty ###
 
 An inversion of `IsEmpty` described above, for better readability in some scenarios.
