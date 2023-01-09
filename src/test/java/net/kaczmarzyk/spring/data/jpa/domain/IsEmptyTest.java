@@ -42,7 +42,7 @@ public class IsEmptyTest extends IntegrationTestBase {
     @Before
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").phoneNumbers("123456789").build(em);
-        maggieSimpson = customer("Homer", "Simpson").phoneNumbers("444444444").build(em);
+        maggieSimpson = customer("Maggie", "Simpson").phoneNumbers("444444444").build(em);
         margeSimpson = customer("Marge", "Simpson").orders(order("ring")).build(em);
         moeSzyslak = customer("Moe", "Szyslak").orders(order("snowboard")).build(em);
     }

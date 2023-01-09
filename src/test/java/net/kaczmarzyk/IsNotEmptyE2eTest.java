@@ -90,7 +90,7 @@ public class IsNotEmptyE2eTest extends E2eTestBase {
     }
 
     @Test
-    public void findsByEmptyCustomerPhoneNumbers_elementCollectionWithSimpleNonEntityValues() throws Exception {
+    public void findsByNotEmptyCustomerPhoneNumbers_elementCollectionWithSimpleNonEntityValues() throws Exception {
         mockMvc.perform(get("/customersWithNotEmptyPhoneNumbers")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
