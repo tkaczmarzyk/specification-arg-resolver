@@ -26,7 +26,7 @@ import javax.persistence.criteria.Root;
 /**
  * <p>Filters with "is empty" where-clause for collections (e.g. {@code where customer.orders is empty}).</p>
  *
- * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p
+ * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p>
  *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
