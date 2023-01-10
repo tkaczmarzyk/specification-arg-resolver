@@ -1,7 +1,7 @@
 v2.17.0
 =======
 * Introduced new specifications:
-  * `isEmpty`, `isNotEmpty` - this specifications filter out elements that have empty (not empty) collection of elements, that is defined under `path` in `@Spec` annotation.
+  * `isEmpty`, `isNotEmpty` - these specifications filter out elements that have empty (not empty) collection of elements, that is defined under `path` in `@Spec` annotation.
 
 v2.16.0
 =======
