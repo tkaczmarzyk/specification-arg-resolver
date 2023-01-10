@@ -43,8 +43,8 @@ abstract class EnhancerUtil {
                     case "toString" -> iface.getSimpleName() + "[" + targetSpec.toString() + "]";
                     case "equals" -> EnhancerUtil.equals(iface, targetSpec, args);
                     case "hashCode" -> targetSpec.hashCode();
-                    default ->
-                            throw new UnsupportedOperationException("The method " + method.getName() + " is not supported in proxy class!");
+                    default -> targetSpec.getClass().getMethod(method.getName(), method.getParameterTypes())
+                            .invoke(targetSpec, args);
                 });
     }
 
