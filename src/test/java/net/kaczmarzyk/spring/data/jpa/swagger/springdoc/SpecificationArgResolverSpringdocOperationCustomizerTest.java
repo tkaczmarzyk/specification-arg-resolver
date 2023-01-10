@@ -20,6 +20,7 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import org.junit.Before;
@@ -550,6 +551,14 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		}
 
+	}
+
+	@RequestMapping(value = "/{param}")
+	private static class TestControllerWithClassParams {
+
+		public void specWithRequestParam(@Spec(path = "", headers = "param", spec = Equal.class) Specification<Object> spec) {
+
+		}
 	}
 
 	@Or({

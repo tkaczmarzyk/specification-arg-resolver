@@ -163,6 +163,23 @@ public class ConverterTest {
 	public void convertsValueWithoutDecimalPointToDoublePrimitive() {
 		assertThat(converter.convert("10", double.class)).isEqualTo(10d);
 	}
+
+	@Test
+	public void convertsValueToCharPrimitive() {
+		assertThat(converter.convert("a", char.class)).isEqualTo('a');
+	}
+
+	@Test
+	public void convertsValueToChar() {
+		assertThat(converter.convert("A", Character.class)).isEqualTo('A');
+	}
+
+	@Test
+	public void rejectsValueThatIsLongerThan1WhenConvertingToChar() {
+		assertThrows(
+				ValueRejectedException.class,
+				() -> converter.convert("ABC", char.class));
+	}
 	
 	@Test
 	public void convertsToBigDecimal() {
