@@ -1,3 +1,7 @@
+v2.17.0
+========
+* Introduced converter for `char` primitive and `Character` class 
+
 v2.16.0
 =======
 * Introduced `EqualDay` specification which allows finding all records within particular date (day), ignoring time.

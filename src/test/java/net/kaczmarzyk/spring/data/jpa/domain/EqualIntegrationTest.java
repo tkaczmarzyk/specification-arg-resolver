@@ -132,6 +132,18 @@ public class EqualIntegrationTest extends IntegrationTestBase {
     	
     	assertThat(found).hasSize(1).containsOnly(joeQuimby);
     }
+
+	@Test
+	public void filtersByCharValue() {
+		Equal<Customer> gender = new Equal<>(queryCtx, "genderAsChar", new String[] { "M" }, defaultConverter);
+		assertFilterMembers(gender, homerSimpson, moeSzyslak);
+	}
+
+	@Test
+	public void filtersByCharacterValue() {
+		Equal<Customer> gender = new Equal<>(queryCtx, "genderAsCharacter", new String[] { "F" }, defaultConverter);
+		assertFilterMembers(gender, margeSimpson);
+	}
     
     @Test
     public void filtersByString() {

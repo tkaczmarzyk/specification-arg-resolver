@@ -52,14 +52,32 @@ public class EqualIgnoreCaseIntegrationTest extends EqualIntegrationTest {
 
     @Test
     public void filtersByEnumCaseInsensitive() {
-        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "fEmAlE" }, defaultConverter);
-        List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
+        EqualIgnoreCase<Customer> genderFemale = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "fEmAlE" }, defaultConverter);
+        List<Customer> simpsonsFound = customerRepo.findAll(genderFemale);
         assertThat(simpsonsFound).hasSize(1).containsOnly(margeSimpson);
 
 
-        EqualIgnoreCase<Customer> firstName = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "mAlE" }, defaultConverter);
-        List<Customer> moeFound = customerRepo.findAll(firstName);
+        EqualIgnoreCase<Customer> genderMale = new EqualIgnoreCase<>(queryCtx, "gender", new String[] { "mAlE" }, defaultConverter);
+        List<Customer> moeFound = customerRepo.findAll(genderMale);
         assertThat(moeFound).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
+    }
+
+    @Test
+    public void filtersByCharPrimitiveCaseInsensitive() {
+        EqualIgnoreCase<Customer> genderFemale = new EqualIgnoreCase<>(queryCtx, "genderAsChar", new String[] { "f" }, defaultConverter);
+        assertFilterMembers(genderFemale, margeSimpson);
+
+        EqualIgnoreCase<Customer> genderMale = new EqualIgnoreCase<>(queryCtx, "genderAsChar", new String[] { "m" }, defaultConverter);
+        assertFilterMembers(genderMale, homerSimpson, moeSzyslak);
+    }
+
+    @Test
+    public void filtersByCharacterCaseInsensitive() {
+        EqualIgnoreCase<Customer> genderFemale = new EqualIgnoreCase<>(queryCtx, "genderAsCharacter", new String[] { "f" }, defaultConverter);
+        assertFilterMembers(genderFemale, margeSimpson);
+
+        EqualIgnoreCase<Customer> genderMale = new EqualIgnoreCase<>(queryCtx, "genderAsCharacter", new String[] { "m" }, defaultConverter);
+        assertFilterMembers(genderMale, homerSimpson, moeSzyslak);
     }
 
     @Test
