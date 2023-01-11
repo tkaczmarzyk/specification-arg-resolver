@@ -1,4 +1,4 @@
-v2.16.1
+v2.17.0
 ========
 * Introduced converter for `char` primitive and `Character` class 
 
