@@ -215,9 +215,7 @@ Supports collection data types specified under `path` in `Spec` annotation. Prov
 
 Usage: `@Spec(path="orders", params="emptyOrders", spec=Empty.class)`.
 
-If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsEmpty` or `IsNotEmpty` specifications.
-
-Alternatively, you can use `constVal` attribute of `Spec` annotation.
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsEmpty` or `IsNotEmpty` specifications. Alternatively, you can use `Empty` with `constVal` attribute of `Spec` annotation.
 
 For example `@Spec(path="orders", spec=Empty.class, constVal="true")` will filter for results with empty `orders` collection.
 
