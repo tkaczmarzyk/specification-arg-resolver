@@ -25,7 +25,7 @@ import javax.persistence.criteria.Root;
 /**
  * <p>Filters using `false` value for a boolean type field, i.e. tests for a false value.</p>
  *
- * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p
+ * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p>
  *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
