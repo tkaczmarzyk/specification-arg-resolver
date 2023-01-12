@@ -59,7 +59,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .lastOrderTime(LocalDateTime.of(2016, 8, 21, 14, 51,0))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 6, 16, 16, 17, 0, 0, ofHours(9)))
                 .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 13, 11, 54, 23, 0)))
-                .golden()
+                .notGolden()
                 .build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 20)
                 .gender(FEMALE)

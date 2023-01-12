@@ -81,13 +81,14 @@ public class IsFalseE2eTest extends E2eTestBase {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Marge"))
-                .andExpect(jsonPath("$[1].firstName").value("Lisa"))
-                .andExpect(jsonPath("$[2].firstName").value("Moe"))
-                .andExpect(jsonPath("$[3].firstName").value("Minnie"))
-                .andExpect(jsonPath("$[4].firstName").value("Vanessa"))
-                .andExpect(jsonPath("$[5].firstName").value("Adam"))
-                .andExpect(jsonPath("$[6]").doesNotExist());
+                .andExpect(jsonPath("$[0].firstName").value("Homer"))
+                .andExpect(jsonPath("$[1].firstName").value("Marge"))
+                .andExpect(jsonPath("$[2].firstName").value("Lisa"))
+                .andExpect(jsonPath("$[3].firstName").value("Moe"))
+                .andExpect(jsonPath("$[4].firstName").value("Minnie"))
+                .andExpect(jsonPath("$[5].firstName").value("Vanessa"))
+                .andExpect(jsonPath("$[6].firstName").value("Adam"))
+                .andExpect(jsonPath("$[7]").doesNotExist());
     }
 
     @Test
@@ -100,12 +101,13 @@ public class IsFalseE2eTest extends E2eTestBase {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Marge"))
-                .andExpect(jsonPath("$[1].firstName").value("Lisa"))
-                .andExpect(jsonPath("$[2].firstName").value("Moe"))
-                .andExpect(jsonPath("$[3].firstName").value("Minnie"))
-                .andExpect(jsonPath("$[4].firstName").value("Vanessa"))
-                .andExpect(jsonPath("$[5].firstName").value("Larry"))
-                .andExpect(jsonPath("$[6]").doesNotExist());
+                .andExpect(jsonPath("$[0].firstName").value("Homer"))
+                .andExpect(jsonPath("$[1].firstName").value("Marge"))
+                .andExpect(jsonPath("$[2].firstName").value("Lisa"))
+                .andExpect(jsonPath("$[3].firstName").value("Moe"))
+                .andExpect(jsonPath("$[4].firstName").value("Minnie"))
+                .andExpect(jsonPath("$[5].firstName").value("Vanessa"))
+                .andExpect(jsonPath("$[6].firstName").value("Larry"))
+                .andExpect(jsonPath("$[7]").doesNotExist());
     }
 }
