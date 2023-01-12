@@ -102,6 +102,10 @@ public class Customer {
     @CollectionTable(name = "customer_phone_numbers", joinColumns = @JoinColumn(name = "id"))
     private Set<String> phoneNumbers;
 
+    @ElementCollection
+    @CollectionTable(name = "customer_lucky_numbers", joinColumns = @JoinColumn(name = "id"))
+    private Set<Long> luckyNumbers = new HashSet<>();
+
     public Customer() {
     }
 
@@ -303,6 +307,14 @@ public class Customer {
             phoneNumbers = new HashSet<>();
         }
         return phoneNumbers;
+    }
+
+    public Set<Long> getLuckyNumbers() {
+        return luckyNumbers;
+    }
+
+    public  void addLuckyNumber(Long luckyNumber) {
+        getLuckyNumbers().add(luckyNumber);
     }
 
     public void addPhoneNumber(String phoneNumber) {
