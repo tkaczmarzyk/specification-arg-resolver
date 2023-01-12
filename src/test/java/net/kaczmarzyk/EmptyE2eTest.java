@@ -45,7 +45,7 @@ public class EmptyE2eTest extends E2eTestBase {
         @Autowired
         CustomerRepository customerRepo;
 
-        @RequestMapping(value = "/customers")
+        @RequestMapping(value = "/customerOrders")
         @ResponseBody
         public Object findByEmptyOrders(
                 @Spec(path="orders", params="emptyOrders", spec=Empty.class) Specification<Customer> spec) {
@@ -53,7 +53,7 @@ public class EmptyE2eTest extends E2eTestBase {
             return customerRepo.findAll(spec);
         }
 
-        @RequestMapping(value = "/customers")
+        @RequestMapping(value = "/customerPhoneNumbers")
         @ResponseBody
         public Object findByEmptyPhoneNumbers(
                 @Spec(path="phoneNumbers", params="emptyPhoneNumbers", spec=Empty.class) Specification<Customer> spec) {
@@ -82,7 +82,7 @@ public class EmptyE2eTest extends E2eTestBase {
 
     @Test
     public void findsByEmptyCustomerOrders_oneToManyAssociation() throws Exception {
-        mockMvc.perform(get("/customers")
+        mockMvc.perform(get("/customerOrders")
                         .param("emptyOrders", "true")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -97,7 +97,7 @@ public class EmptyE2eTest extends E2eTestBase {
 
     @Test
     public void findsByEmptyCustomerPhoneNumbers_elementCollectionWithSimpleNonEntityValues() throws Exception {
-        mockMvc.perform(get("/customers")
+        mockMvc.perform(get("/customerPhoneNumbers")
                         .param("emptyPhoneNumbers", "true")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -116,7 +116,7 @@ public class EmptyE2eTest extends E2eTestBase {
 
     @Test
     public void findsByNotEmptyCustomerOrders_oneToManyAssociation() throws Exception {
-        mockMvc.perform(get("/customers")
+        mockMvc.perform(get("/customerOrders")
                         .param("emptyOrders", "false")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -131,7 +131,7 @@ public class EmptyE2eTest extends E2eTestBase {
 
     @Test
     public void findsByNotEmptyCustomerPhoneNumbers_elementCollectionWithSimpleNonEntityValues() throws Exception {
-        mockMvc.perform(get("/customers")
+        mockMvc.perform(get("/customerPhoneNumbers")
                         .param("emptyPhoneNumbers", "false")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -156,7 +156,7 @@ public class EmptyE2eTest extends E2eTestBase {
 
     @Test
     public void findsWithNoFilteringIfHttpParamIsMissing() throws Exception {
-        mockMvc.perform(get("/customers")
+        mockMvc.perform(get("/customerOrders")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
