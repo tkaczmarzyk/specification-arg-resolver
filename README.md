@@ -235,6 +235,22 @@ to return customers without orders (with empty collection of orders).
 
 A negation for this specification is also available: `IsNotEmpty`.
 
+### IsTrue ###
+
+Filters with `true` value of particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query.
+
+For example, consider `gold` field which indicates special `customer`. Then, you can introduce the following mapping:
+
+    @Spec(path="gold", spec=IsTrue.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/goldenCustomers
+
+to return all special customers (with `gold` field set to `true`).
+
+A negation for this specification is also available: `IsFalse`.
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.
