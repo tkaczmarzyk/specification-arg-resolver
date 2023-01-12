@@ -207,6 +207,34 @@ to handle HTTP requests such as:
 
 to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
 
+### Empty ###
+
+Filters using `is empty` or `is not empty`, depending on the value of the parameter passed in. A value of `true` will filter for `is empty` and a value of `false` will filter for `is not empty` collections (e.g. ` where customer.orders is empty`).
+
+Supports collection data types specified under `path` in `Spec` annotation. Provided HTTP parameter must be a Boolean. You should use params attribute to make it clear that the parameter is filtering for results with empty (not empty) particular collection.
+
+Usage: `@Spec(path="orders", params="emptyOrders", spec=Empty.class)`.
+
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsEmpty` or `IsNotEmpty` specifications. Alternatively, you can use `Empty` with `constVal` attribute of `Spec` annotation.
+
+For example `@Spec(path="orders", spec=Empty.class, constVal="true")` will filter for results with empty `orders` collection.
+
+### IsEmpty ###
+
+Filters with `is empty` where-clause for collections that are defined under `path` in `Spec` annotation (e.g. ` where customer.orders is empty`). Does not require any http-parameters to be present, i.e. represents constant part of the query.
+
+For example, for `orders` table which contains association to `customers` table (one customer can have multiple orders) the following mapping can be introduced:
+
+    @Spec(path="orders", spec=IsEmpty.class)
+
+to handle HTTP request such as:
+
+    GET http://myhost/customersWithoutOrders
+
+to return customers without orders (with empty collection of orders).
+
+A negation for this specification is also available: `IsNotEmpty`.
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.
