@@ -18,10 +18,7 @@ package net.kaczmarzyk.e2e.converter;
 import net.kaczmarzyk.E2eTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Between;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
-import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
+import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,12 +109,28 @@ public class TimestampE2eTest extends E2eTestBase {
             return customerRepo.findAll(spec);
         }
 
-        @RequestMapping(value = "/customers", params = { "lastSeenEqual" })
-        @ResponseBody
-        public Object findCustomersWithLastSeenEqualToDateWithDefaultTime(
-                @Spec(path = "lastSeen", params = { "lastSeenEqual" }, config = "yyyy-MM-dd", spec = Equal.class) Specification<Customer> spec) {
-            return customerRepo.findAll(spec);
-        }
+		@RequestMapping(value = "/customers", params = { "lastSeenEqual" })
+		@ResponseBody
+		public Object findCustomersWithLastSeenEqualToDateWithDefaultTime(
+				@Spec(path="lastSeen", params={ "lastSeenEqual" }, config="yyyy-MM-dd", spec= Equal.class) Specification<Customer> spec) {
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers", params = "lastSeenEqualDay")
+		@ResponseBody
+		public Object findCustomersWithLastSeenEqualDay_defaultTimestampPattern(
+				@Spec(path="lastSeen", params="lastSeenEqualDay", spec = EqualDay.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers", params = "lastSeenEqualDay_customFormat")
+		@ResponseBody
+		public Object findCustomersWithLastSeenEqualDay_customTimestampPattern(
+				@Spec(path="lastSeen", params="lastSeenEqualDay_customFormat", config = "yyyy-MM-dd", spec = EqualDay.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
     }
 
     @Test
@@ -238,11 +251,45 @@ public class TimestampE2eTest extends E2eTestBase {
                 .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 15, 0, 0, 0)))
                 .build(em);
 
-        mockMvc.perform(get("/customers")
-                        .param("lastSeenEqual", "2022-12-15")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
-                .andExpect(jsonPath("$[1]").doesNotExist());
-    }
+		mockMvc.perform(get("/customers")
+						.param("lastSeenEqual", "2022-12-15")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.[?(@.firstName=='Barry')]").exists())
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByTimestampEqualDayWithDefaultFormat() throws Exception {
+		customer("Barry", "Benson")
+				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 11, 30, 23, 59, 59)))
+				.build(em);
+		customer("Adam", "Flayman")
+				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 2, 0, 0, 0)))
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("lastSeenEqualDay", "2022-12-01T22:17:13.000Z")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].firstName").value("Minnie"))
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByTimestampEqualDayWithCustomFormatIgnoringTime() throws Exception {
+		customer("Barry", "Benson")
+				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 11, 30, 23, 59, 59)))
+				.build(em);
+		customer("Adam", "Flayman")
+				.lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 2, 0, 0, 0)))
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("lastSeenEqualDay_customFormat", "2022-12-01")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].firstName").value("Minnie"))
+				.andExpect(jsonPath("$[1]").doesNotExist());
+	}
 }
