@@ -32,12 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
-public class IsEmptyTest extends IntegrationTestBase {
+public class EmptyTest extends IntegrationTestBase {
 
     private Customer homerSimpson;
     private Customer maggieSimpson;
     private Customer margeSimpson;
     private Customer moeSzyslak;
+    private Customer barryBenson;
 
     @Before
     public void initData() {
@@ -45,12 +46,13 @@ public class IsEmptyTest extends IntegrationTestBase {
         maggieSimpson = customer("Maggie", "Simpson").phoneNumbers("444444444").build(em);
         margeSimpson = customer("Marge", "Simpson").orders(order("ring")).build(em);
         moeSzyslak = customer("Moe", "Szyslak").orders(order("snowboard")).build(em);
+        barryBenson = customer("Barry", "Benson").orders(order("ball")).phoneNumbers("222222222").build(em);
     }
 
     @Test
-    public void filtersByOneToManyAssociation() {
+    public void filtersByEmptyOrders_oneToManyAssociation() {
         //given
-        IsEmpty<Customer> emptyOrders = new IsEmpty<>(queryCtx, "orders", new String[0]);
+        Empty<Customer> emptyOrders = new Empty<>(queryCtx, "orders", new String[]{"true"}, defaultConverter);
 
         //when
         List<Customer> result = customerRepo.findAll(emptyOrders);
@@ -62,9 +64,9 @@ public class IsEmptyTest extends IntegrationTestBase {
     }
 
     @Test
-    public void filtersByElementCollectionWithSimpleNonEntityValues() {
+    public void filtersByEmptyPhoneNumbers_elementCollectionWithSimpleNonEntityValues() {
         //given
-        IsEmpty<Customer> emptyPhoneNumbers = new IsEmpty<>(queryCtx, "phoneNumbers", new String[0]);
+        Empty<Customer> emptyPhoneNumbers = new Empty<>(queryCtx, "phoneNumbers", new String[]{"true"}, defaultConverter);
 
         //when
         List<Customer> result = customerRepo.findAll(emptyPhoneNumbers);
@@ -76,9 +78,37 @@ public class IsEmptyTest extends IntegrationTestBase {
     }
 
     @Test
+    public void filtersByNotEmptyOrders_oneToManyAssociation() {
+        //given
+        Empty<Customer> notEmptyOrders = new Empty<>(queryCtx, "orders", new String[]{"false"}, defaultConverter);
+
+        //when
+        List<Customer> result = customerRepo.findAll(notEmptyOrders);
+
+        //then
+        assertThat(result)
+                .hasSize(3)
+                .containsOnly(margeSimpson, moeSzyslak, barryBenson);
+    }
+
+    @Test
+    public void filtersByNotEmptyPhoneNumbers_elementCollectionWithSimpleNonEntityValues() {
+        //given
+        Empty<Customer> notEmptyPhoneNumbers = new Empty<>(queryCtx, "phoneNumbers", new String[]{"false"}, defaultConverter);
+
+        //when
+        List<Customer> result = customerRepo.findAll(notEmptyPhoneNumbers);
+
+        //then
+        assertThat(result)
+                .hasSize(3)
+                .containsOnly(homerSimpson, maggieSimpson, barryBenson);
+    }
+
+    @Test
     public void equalsAndHashCodeContract() {
         //when + then
-        EqualsVerifier.forClass(IsEmpty.class)
+        EqualsVerifier.forClass(Empty.class)
                 .usingGetClass()
                 .suppress(Warning.NONFINAL_FIELDS)
                 .verify();
@@ -87,7 +117,7 @@ public class IsEmptyTest extends IntegrationTestBase {
     @Test
     public void toStringVerifier() {
         //when + then
-        ToStringVerifier.forClass(IsEmpty.class)
+        ToStringVerifier.forClass(Empty.class)
                 .withIgnoredFields("queryContext")
                 .verify();
     }

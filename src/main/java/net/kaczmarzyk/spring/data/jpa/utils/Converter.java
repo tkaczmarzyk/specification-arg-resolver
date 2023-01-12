@@ -152,6 +152,8 @@ public final class Converter {
 			return (T) convertToFloat(value);
 		} else if (isAssignableFromAnyOf(expectedClass, double.class, Double.class)) {
 			return (T) convertToDouble(value);
+		} else if (isAssignableFromAnyOf(expectedClass, char.class, Character.class)) {
+			return (T) convertToChar(value, ignoreCase);
 		} else if (expectedClass.isAssignableFrom(LocalDateTime.class)) {
 			return (T) convertToLocalDateTime(value);
 		} else if (expectedClass.isAssignableFrom(LocalDate.class)) {
@@ -215,6 +217,14 @@ public final class Converter {
 			return Double.valueOf(value);
 		} catch (NumberFormatException e) {
 			throw new ValueRejectedException(value, "number format exception", e);
+		}
+	}
+
+	private Character convertToChar(String value, boolean ignoreCase) {
+		if (value.length() == 1) {
+			return ignoreCase ? Character.toUpperCase(value.charAt(0)) : value.charAt(0);
+		} else {
+			throw new ValueRejectedException(value, "value is not a single character exception");
 		}
 	}
 	

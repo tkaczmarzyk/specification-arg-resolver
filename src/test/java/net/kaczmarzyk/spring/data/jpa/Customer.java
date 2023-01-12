@@ -45,6 +45,9 @@ public class Customer {
     @Enumerated(EnumType.STRING)
     private Gender genderAsString;
 
+    private char genderAsChar;
+    private Character genderAsCharacter;
+
     private String firstName;
 
     private String lastName;
@@ -106,6 +109,8 @@ public class Customer {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
+        this.genderAsChar = gender.name().charAt(0);
+        this.genderAsCharacter = this.genderAsChar;
         this.genderAsString = gender;
         this.registrationDate = registrationDate;
         this.address.setStreet(street);
@@ -134,6 +139,8 @@ public class Customer {
     public void setGender(Gender gender) {
         this.gender = gender;
         this.genderAsString = gender;
+        this.genderAsChar = gender.name().charAt(0);
+        this.genderAsCharacter = this.genderAsChar;
     }
 
     public Timestamp getLastSeen() {

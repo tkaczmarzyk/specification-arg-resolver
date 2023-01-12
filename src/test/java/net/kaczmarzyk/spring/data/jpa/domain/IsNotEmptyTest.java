@@ -35,9 +35,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class IsNotEmptyTest extends IntegrationTestBase {
 
-	Customer homerSimpson;
-	Customer margeSimpson;
-	Customer moeSzyslak;
+	private Customer homerSimpson;
+	private Customer margeSimpson;
+	private Customer moeSzyslak;
 
 	@Before
 	public void initData() {

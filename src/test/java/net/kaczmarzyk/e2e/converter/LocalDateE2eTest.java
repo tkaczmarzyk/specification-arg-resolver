@@ -15,11 +15,14 @@
  */
 package net.kaczmarzyk.e2e.converter;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import net.kaczmarzyk.E2eTestBase;
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
+import net.kaczmarzyk.spring.data.jpa.domain.EqualDay;
+import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
+import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,12 +31,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.Between;
-import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
-import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import java.time.LocalDate;
+
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class LocalDateE2eTest extends E2eTestBase {
@@ -87,6 +90,22 @@ public class LocalDateE2eTest extends E2eTestBase {
         @ResponseBody
         public Object findByBirhDateBetweenWithCustomFormat(
                 @Spec(path="birthDate", params={ "birthDateAfter_customFormat", "birthDateBefore_customFormat"}, config="dd/MM/yyyy", spec=Between.class) Specification<Customer> spec) {
+
+            return customerRepo.findAll(spec);
+        }
+
+        @RequestMapping(value = "/customers", params = "birthEqualDay")
+        @ResponseBody
+        public Object findByBirthEqualDay_defaultDateFormat(
+                @Spec(path="birthDate", params="birthEqualDay", spec=EqualDay.class) Specification<Customer> spec) {
+
+            return customerRepo.findAll(spec);
+        }
+
+        @RequestMapping(value = "/customers", params = "birthEqualDay_customDateFormat")
+        @ResponseBody
+        public Object findByBirthEqualDay_customDateFormat(
+                @Spec(path="birthDate", params="birthEqualDay_customDateFormat", config = "dd/MM/yyyy", spec=EqualDay.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
         }
@@ -163,5 +182,40 @@ public class LocalDateE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
                 .andExpect(jsonPath("$[2]").doesNotExist());
     }
-    
+
+    @Test
+    public void findsByEqualDayWithDefaultDateFormat() throws Exception {
+        customer("Barry", "Benson")
+                .birthDate(LocalDate.of(1992, 2, 22))
+                .build(em);
+        customer("Adam", "Flayman")
+                .birthDate(LocalDate.of(1992, 2, 24))
+                .build(em);
+
+        mockMvc.perform(get("/customers")
+                        .param("birthEqualDay", "1992-02-23")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].firstName").value("Bart"))
+                .andExpect(jsonPath("$[1]").doesNotExist());
+    }
+
+    @Test
+    public void findsByEqualDayWithCustomDateFormat() throws Exception {
+        customer("Barry", "Benson")
+                .birthDate(LocalDate.of(1992, 2, 22))
+                .build(em);
+        customer("Adam", "Flayman")
+                .birthDate(LocalDate.of(1992, 2, 24))
+                        .build(em);
+
+        mockMvc.perform(get("/customers")
+                        .param("birthEqualDay_customDateFormat", "23/02/1992")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].firstName").value("Bart"))
+                .andExpect(jsonPath("$[1]").doesNotExist());
+    }
 }
