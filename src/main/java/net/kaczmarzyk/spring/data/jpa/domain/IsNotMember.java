@@ -24,6 +24,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * <p>Filters with particular member not existing in collection defined under `path` in `@Spec` annotation.</p>
@@ -49,5 +50,35 @@ public class IsNotMember<T> extends PathSpecification<T> {
         Class<?> typeOnPath = ((PluralAttributePath<Object>) path(root)).getAttribute().getElementType().getJavaType();
         Object member = converter.convert(expectedValue, typeOnPath);
         return criteriaBuilder.isNotMember(member, path(root));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        IsNotMember<?> isNotMember = (IsNotMember<?>) o;
+        return Objects.equals(expectedValue, isNotMember.expectedValue) &&
+                Objects.equals(converter, isNotMember.converter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), expectedValue, converter);
+    }
+
+    @Override
+    public String toString() {
+        return "IsNotMember[" +
+                "expectedValue='" + expectedValue + '\'' +
+                ", converter=" + converter +
+                ", path='" + path + '\'' +
+                ']';
     }
 }

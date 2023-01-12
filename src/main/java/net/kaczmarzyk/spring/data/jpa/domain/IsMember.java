@@ -24,6 +24,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * <p>Filters with particular member in collection defined under `path` in `@Spec` annotation.</p>
@@ -49,5 +50,35 @@ public class IsMember<T> extends PathSpecification<T> {
         Class<?> typeOnPath = ((PluralAttributePath<Object>) path(root)).getAttribute().getElementType().getJavaType();
         Object expectedMember = converter.convert(expectedValue, typeOnPath);
         return criteriaBuilder.isMember(expectedMember, path(root));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        IsMember<?> isMember = (IsMember<?>) o;
+        return Objects.equals(expectedValue, isMember.expectedValue) &&
+                Objects.equals(converter, isMember.converter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), expectedValue, converter);
+    }
+
+    @Override
+    public String toString() {
+        return "IsMember[" +
+                "expectedValue='" + expectedValue + '\'' +
+                ", converter=" + converter +
+                ", path='" + path + '\'' +
+                ']';
     }
 }

@@ -15,8 +15,11 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,5 +91,22 @@ public class IsNotMemberTest extends IntegrationTestBase {
         assertThat(result)
                 .hasSize(3)
                 .containsOnly(homerSimpson, moeSzyslak, barryBenson);
+    }
+
+    @Test
+    public void equalsAndHashCodeContract() {
+        //when + then
+        EqualsVerifier.forClass(IsNotMember.class)
+                .usingGetClass()
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
+    }
+
+    @Test
+    public void toStringVerifier() {
+        //when + then
+        ToStringVerifier.forClass(IsNotMember.class)
+                .withIgnoredFields("queryContext")
+                .verify();
     }
 }

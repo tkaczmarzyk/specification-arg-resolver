@@ -271,6 +271,24 @@ to return all special customers (with `gold` field set to `true`).
 
 A negation for this specification is also available: `IsFalse`.
 
+### IsMember ###
+
+Filters with particular member in collection defined under `path` in `@Spec` annotation.
+
+Supports collections of multiple data types: numbers, booleans, strings, dates, enums.
+
+For example, for `luckyNumbers` table which contains association to `customers` table (one customer can have multiple lucky numbers) the following mapping can be introduced:
+
+    @Spec(path="luckyNumbers", params = "luckyNumber", spec=IsMember.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customers?luckyNumber=777
+
+to return customers with particular lucky number.
+
+A negation for this specification is also available: `IsNotMember`.
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.
