@@ -23,7 +23,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
- * <p>Filters by checking if a boolean type field of entity has "false" value, i.e. tests for a false value.</p>
+ * <p>Filters using `false` value for a boolean type field, i.e. tests for a false value.</p>
  *
  * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p
  *

@@ -235,6 +235,26 @@ to return customers without orders (with empty collection of orders).
 
 A negation for this specification is also available: `IsNotEmpty`.
 
+### True ###
+
+Filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in (e.g. ` where customer.gold = true`).
+
+The HTTP parameter and data type of the corresponding field specified in `path` must be a Boolean.
+
+For example, consider `gold` field which indicates special `customer`. Then, you can introduce the following mapping: 
+
+    @Spec(path="gold", params = "golden", spec=True.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customers?golden=true
+
+to return golden customers (with `gold` field set to `true`).
+
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsTrue` or `IsFalse` specifications. Alternatively, you can use `True` with `constVal` attribute of `Spec` annotation.
+
+For example `@Spec(path="gold", spec=True.class, constVal="true")` will filter for golden customers.
+
 ### IsTrue ###
 
 Filters with `true` value of particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query.
