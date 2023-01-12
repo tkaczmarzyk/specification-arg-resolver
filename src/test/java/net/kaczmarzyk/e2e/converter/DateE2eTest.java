@@ -15,11 +15,14 @@
  */
 package net.kaczmarzyk.e2e.converter;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import net.kaczmarzyk.E2eTestBase;
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
+import net.kaczmarzyk.spring.data.jpa.domain.EqualDay;
+import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
+import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,12 +31,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
-import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
-import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class DateE2eTest extends E2eTestBase {
@@ -64,6 +65,22 @@ public class DateE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findCustomersRegisteredBetween(
 				@Spec(path="registrationDate", params={"registeredAfter", "registeredBefore"}, spec=DateBetween.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers", params = "registeredDayEqual")
+		@ResponseBody
+		public Object findCustomersRegisteredDayEqualWithDefaultConfig(
+				@Spec(path="registrationDate", params="registeredDayEqual", spec=EqualDay.class) Specification<Customer> spec) {
+
+			return customerRepo.findAll(spec);
+		}
+
+		@RequestMapping(value = "/customers", params = "registeredDayEqualCustomConfig")
+		@ResponseBody
+		public Object findCustomersRegisteredDayEqualWithCustomConfigContainingTime(
+				@Spec(path="registrationDate", params="registeredDayEqualCustomConfig", config="yyyy-MM-dd\'T\'HH:mm:ss", spec=EqualDay.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}
@@ -107,5 +124,47 @@ public class DateE2eTest extends E2eTestBase {
 			.andExpect(jsonPath("$[1].firstName").value("Maggie"))
 			.andExpect(jsonPath("$[2].firstName").value("Minnie"))
 			.andExpect(jsonPath("$[3]").doesNotExist());
+	}
+
+	@Test
+	public void findsByEqualDayUsingDefaultConfig() throws Exception {
+		customer("Barry", "Benson")
+				.registrationDate(2014, 3, 16)
+				.build(em);
+		customer("Adam", "Flayman")
+				.registrationDate(2014, 3, 14, 23, 59, 59, 999)
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("registeredDayEqual", "2014-03-15")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0].firstName").value("Homer"))
+				.andExpect(jsonPath("$[1].firstName").value("Moe"))
+				.andExpect(jsonPath("$[2]").doesNotExist());
+	}
+
+	@Test
+	public void findsByEqualDayUsingCustomConfigIgnoringTime() throws Exception {
+		customer("Barry", "Benson")
+				.registrationDate(2014, 3, 16)
+				.build(em);
+		customer("Adam", "Flayman")
+				.registrationDate(2014, 3, 14, 23, 59, 59, 999)
+				.build(em);
+		customer("Vanessa", "Bloom")
+				.registrationDate(2014, 3, 15, 12, 32, 45, 856)
+				.build(em);
+
+		mockMvc.perform(get("/customers")
+						.param("registeredDayEqualCustomConfig", "2014-03-15T12:34:19")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$[0].firstName").value("Homer"))
+				.andExpect(jsonPath("$[1].firstName").value("Moe"))
+				.andExpect(jsonPath("$[2].firstName").value("Vanessa"))
+				.andExpect(jsonPath("$[3]").doesNotExist());
 	}
 }
