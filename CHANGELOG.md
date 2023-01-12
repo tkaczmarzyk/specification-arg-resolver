@@ -5,6 +5,7 @@ v2.17.0
   * `isEmpty`, `isNotEmpty` - these specifications filter out elements that have empty (not empty) collection of elements, that is defined under `path` in `@Spec` annotation.
   * `Empty` - this specification filters for collections using `is empty` or `is not empty`, depending on the value of the parameter passed in (e.g. ` where customer.orders is empty`).
   * `isTrue`, `isFalse` - these specifications filter with `true`/`false` value of particular field defined under `path` in `@Spec` annotation.
+  * `True` - this specification filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in.
 
 v2.16.0
 =======
