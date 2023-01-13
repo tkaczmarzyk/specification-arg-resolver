@@ -104,7 +104,7 @@ public class Customer {
 
     @ElementCollection
     @CollectionTable(name = "customer_lucky_numbers", joinColumns = @JoinColumn(name = "id"))
-    private Set<Long> luckyNumbers = new HashSet<>();
+    private Set<Long> luckyNumbers;
 
     public Customer() {
     }
@@ -310,6 +310,9 @@ public class Customer {
     }
 
     public Set<Long> getLuckyNumbers() {
+        if (luckyNumbers == null) {
+            luckyNumbers = new HashSet<>();
+        }
         return luckyNumbers;
     }
 
