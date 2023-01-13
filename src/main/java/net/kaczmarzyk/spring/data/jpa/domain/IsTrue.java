@@ -23,7 +23,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
- * <p>Filters using `true` value for a boolean type field, i.e. tests for a true value.</p>
+ * <p>Filters using `true` value for a boolean type field, i.e. tests for a true value.
+ * The same effect can be achieved with `Equal` specification and `@Spec.constVal` set to `true`.
+ * `IsTrue` is just a convenience class that can make the code more explicit.</p>
  *
  * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p>
  *

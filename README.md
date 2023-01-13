@@ -239,7 +239,7 @@ A negation for this specification is also available: `IsNotEmpty`.
 
 ### True ###
 
-Filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in (e.g. ` where customer.gold = true`).
+Filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in (e.g. ` where customer.gold = true`). This can be also achieved with `Equal`. `True` is a convenience-class to emphasize boolean attributes.
 
 The HTTP parameter and data type of the corresponding field specified in `path` must be a Boolean.
 
@@ -259,7 +259,7 @@ For example `@Spec(path="gold", spec=True.class, constVal="true")` will filter f
 
 ### IsTrue ###
 
-Filters with `true` value of particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query.
+Filters with `true` value of particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query. The same effect can be achieved with `Equal` specification and `@Spec.constVal` set to `true`. `IsTrue` is just a convenience class that can make the code more explicit.
 
 For example, consider `gold` field which indicates special `customer`. Then, you can introduce the following mapping:
 
@@ -275,11 +275,11 @@ A negation for this specification is also available: `IsFalse`.
 
 ### IsMember ###
 
-Filters with particular member in collection defined under `path` in `@Spec` annotation.
+Checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).
 
-Supports collections of multiple data types: numbers, booleans, strings, dates, enums.
+Supports collections of multiple data types: numbers, booleans, strings, dates, enums. Only `@ElementCollection` annotation with basic data types is supported (collections of `Embeddable` objects or `@OneToMany` relationships with other entities are not supported).
 
-For example, for `luckyNumbers` table which contains association to `customers` table (one customer can have multiple lucky numbers) the following mapping can be introduced:
+For example, let's assume a `Customer` entity with `luckyNumbers` collection attribute (one customer can have multiple lucky numbers). The following mapping can be introduced:
 
     @Spec(path="luckyNumbers", params = "luckyNumber", spec=IsMember.class)
 

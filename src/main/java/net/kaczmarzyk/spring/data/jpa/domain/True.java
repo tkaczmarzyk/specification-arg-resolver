@@ -32,7 +32,6 @@ import java.util.Objects;
  *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
-
 public class True<T> extends PathSpecification<T> {
 
     private static final long serialVersionUID = 1L;

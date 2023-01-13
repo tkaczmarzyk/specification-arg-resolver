@@ -27,13 +27,13 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * <p>Filters with particular member in collection defined under `path` in `@Spec` annotation.</p>
+ * <p>Checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).</p>
  *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 public class IsMember<T> extends PathSpecification<T> {
 
-    private String expectedValue;
+    private String expectedMember;
     private Converter converter;
 
     public IsMember(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
@@ -41,15 +41,15 @@ public class IsMember<T> extends PathSpecification<T> {
         if (httpParamValues == null || httpParamValues.length != 1) {
             throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected 1 but was " + Arrays.toString(httpParamValues));
         }
-        this.expectedValue = httpParamValues[0];
+        this.expectedMember = httpParamValues[0];
         this.converter = converter;
     }
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Class<?> typeOnPath = ((PluralAttributePath<Object>) path(root)).getAttribute().getElementType().getJavaType();
-        Object expectedMember = converter.convert(expectedValue, typeOnPath);
-        return criteriaBuilder.isMember(expectedMember, path(root));
+        Object convertedExpectedMember = converter.convert(expectedMember, typeOnPath);
+        return criteriaBuilder.isMember(convertedExpectedMember, path(root));
     }
 
     @Override
@@ -64,19 +64,19 @@ public class IsMember<T> extends PathSpecification<T> {
             return false;
         }
         IsMember<?> isMember = (IsMember<?>) o;
-        return Objects.equals(expectedValue, isMember.expectedValue) &&
+        return Objects.equals(expectedMember, isMember.expectedMember) &&
                 Objects.equals(converter, isMember.converter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), expectedValue, converter);
+        return Objects.hash(super.hashCode(), expectedMember, converter);
     }
 
     @Override
     public String toString() {
         return "IsMember[" +
-                "expectedValue='" + expectedValue + '\'' +
+                "expectedMember='" + expectedMember + '\'' +
                 ", converter=" + converter +
                 ", path='" + path + '\'' +
                 ']';

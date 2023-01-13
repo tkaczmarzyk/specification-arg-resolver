@@ -27,13 +27,13 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * <p>Filters with particular member not existing in collection defined under `path` in `@Spec` annotation.</p>
+ * <p>Checks if the value passed as HTTP parameter is not a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).</p>
  *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 public class IsNotMember<T> extends PathSpecification<T> {
 
-    private String expectedValue;
+    private String unwantedMember;
     private Converter converter;
 
     public IsNotMember(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
@@ -41,15 +41,15 @@ public class IsNotMember<T> extends PathSpecification<T> {
         if (httpParamValues == null || httpParamValues.length != 1) {
             throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected 1 but was " + Arrays.toString(httpParamValues));
         }
-        this.expectedValue = httpParamValues[0];
+        this.unwantedMember = httpParamValues[0];
         this.converter = converter;
     }
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Class<?> typeOnPath = ((PluralAttributePath<Object>) path(root)).getAttribute().getElementType().getJavaType();
-        Object member = converter.convert(expectedValue, typeOnPath);
-        return criteriaBuilder.isNotMember(member, path(root));
+        Object convertedUnwantedMember = converter.convert(unwantedMember, typeOnPath);
+        return criteriaBuilder.isNotMember(convertedUnwantedMember, path(root));
     }
 
     @Override
@@ -64,19 +64,19 @@ public class IsNotMember<T> extends PathSpecification<T> {
             return false;
         }
         IsNotMember<?> isNotMember = (IsNotMember<?>) o;
-        return Objects.equals(expectedValue, isNotMember.expectedValue) &&
+        return Objects.equals(unwantedMember, isNotMember.unwantedMember) &&
                 Objects.equals(converter, isNotMember.converter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), expectedValue, converter);
+        return Objects.hash(super.hashCode(), unwantedMember, converter);
     }
 
     @Override
     public String toString() {
         return "IsNotMember[" +
-                "expectedValue='" + expectedValue + '\'' +
+                "unwantedMember='" + unwantedMember + '\'' +
                 ", converter=" + converter +
                 ", path='" + path + '\'' +
                 ']';
