@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * <p>Filers with "is not empty" or "is empty" where clause for collections (e.g. {@code customer.orders is not empty}).</p>
+ * <p>Filers with "is not empty" (when parameter value is "true") or "is empty" (when parameter value is "false") where clause for collections (e.g. {@code customer.orders is not empty}).</p>
  *
  * <p>Requires boolean parameter.</p>
  *
