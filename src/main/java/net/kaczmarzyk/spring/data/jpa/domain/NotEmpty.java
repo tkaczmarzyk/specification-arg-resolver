@@ -26,20 +26,20 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * <p>Filers with "is empty" (when parameter value is "true") or "is not empty" (when parameter value is "false") where clause for collections (e.g. {@code customer.orders is empty}).</p>
+ * <p>Filers with "is not empty" (when parameter value is "true") or "is empty" (when parameter value is "false") where clause for collections (e.g. {@code customer.orders is not empty}).</p>
  *
  * <p>Requires boolean parameter.</p>
  *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
-public class Empty<T> extends PathSpecification<T> {
+public class NotEmpty<T> extends PathSpecification<T> {
 
     private static final long serialVersionUID = 1L;
 
     protected String expectedValue;
     private Converter converter;
 
-    public Empty(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
+    public NotEmpty(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
         super(queryContext, path);
         if (httpParamValues == null || httpParamValues.length != 1) {
             throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected 1 but was " + Arrays.toString(httpParamValues));
@@ -51,9 +51,9 @@ public class Empty<T> extends PathSpecification<T> {
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         if (converter.convert(expectedValue, Boolean.class)) {
-            return criteriaBuilder.isEmpty(path(root));
-        } else {
             return criteriaBuilder.isNotEmpty(path(root));
+        } else {
+            return criteriaBuilder.isEmpty(path(root));
         }
     }
 
@@ -68,9 +68,9 @@ public class Empty<T> extends PathSpecification<T> {
         if (!super.equals(o)) {
             return false;
         }
-        Empty<?> aEmpty = (Empty<?>) o;
-        return Objects.equals(expectedValue, aEmpty.expectedValue) &&
-                Objects.equals(converter, aEmpty.converter);
+        NotEmpty<?> aNotEmpty = (NotEmpty<?>) o;
+        return Objects.equals(expectedValue, aNotEmpty.expectedValue) &&
+                Objects.equals(converter, aNotEmpty.converter);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Empty<T> extends PathSpecification<T> {
 
     @Override
     public String toString() {
-        return "Empty[" +
+        return "NotEmpty[" +
                 "expectedValue='" + expectedValue + '\'' +
                 ", converter=" + converter +
                 ", path='" + path + '\'' +

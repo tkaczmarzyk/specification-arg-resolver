@@ -3,7 +3,8 @@ v2.17.0
 * Introduced converter for `char` primitive and `Character` class
 * Introduced new specifications:
   * `isEmpty`, `isNotEmpty` - these specifications filter out elements that have empty (not empty) collection of elements, that is defined under `path` in `@Spec` annotation.
-  * `Empty` - this specification filters for collections using `is empty` or `is not empty`, depending on the value of the parameter passed in (e.g. ` where customer.orders is empty`).
+  * `Empty` - this specification filters for collections using `is empty` or `is not empty`, depending on the value of the parameter passed in (e.g. ` where customer.orders is empty`). 
+  * `NotEmpty` - it is a negation for `Empty` specification.
   * `isTrue`, `isFalse` - these specifications filter with `true`/`false` value of particular field defined under `path` in `@Spec` annotation.
   * `True` - this specification filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in.
   * `isMember`, `isNotMember` - filters with particular member in collection defined under `path` in `@Spec` annotation.
