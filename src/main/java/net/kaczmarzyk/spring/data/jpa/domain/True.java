@@ -26,7 +26,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * <p>Filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in</p>
+ * <p>Filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in.
+ * This can be also achieved with `Equal` specification. `True` is a convenience-class to emphasize boolean attributes.</p>
  *
  * <p>Requires boolean parameter.</p>
  *
