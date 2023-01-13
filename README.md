@@ -219,6 +219,8 @@ If you want the query to be static, i.e. not depend on any HTTP param, you can u
 
 For example `@Spec(path="orders", spec=Empty.class, constVal="true")` will filter for results with empty `orders` collection.
 
+A negation for this specification is also available: `NotEmpty`.
+
 ### IsEmpty ###
 
 Filters with `is empty` where-clause for collections that are defined under `path` in `Spec` annotation (e.g. ` where customer.orders is empty`). Does not require any http-parameters to be present, i.e. represents constant part of the query.
