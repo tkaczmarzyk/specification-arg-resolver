@@ -237,6 +237,60 @@ to return customers without orders (with empty collection of orders).
 
 A negation for this specification is also available: `IsNotEmpty`.
 
+### True ###
+
+Filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in (e.g. ` where customer.gold = true`). This can be also achieved with `Equal`. `True` is a convenience-class to emphasize boolean attributes.
+
+The HTTP parameter and data type of the corresponding field specified in `path` must be a Boolean.
+
+For example, consider `gold` field which indicates special `customer`. Then, you can introduce the following mapping: 
+
+    @Spec(path="gold", params = "golden", spec=True.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customers?golden=true
+
+to return golden customers (with `gold` field set to `true`).
+
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsTrue` or `IsFalse` specifications. Alternatively, you can use `True` with `constVal` attribute of `Spec` annotation.
+
+For example `@Spec(path="gold", spec=True.class, constVal="true")` will filter for golden customers.
+
+### IsTrue ###
+
+Filters with `true` value of particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query. The same effect can be achieved with `Equal` specification and `@Spec.constVal` set to `true`. `IsTrue` is just a convenience class that can make the code more explicit.
+
+For example, consider `gold` field which indicates special `customer`. Then, you can introduce the following mapping:
+
+    @Spec(path="gold", spec=IsTrue.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/goldenCustomers
+
+to return all special customers (with `gold` field set to `true`).
+
+A negation for this specification is also available: `IsFalse`.
+
+### IsMember ###
+
+Checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).
+
+Supports collections of multiple data types: numbers, booleans, strings, dates, enums. Only `@ElementCollection` annotation with basic data types is supported (collections of `Embeddable` objects or `@OneToMany` relationships with other entities are not supported).
+
+For example, let's assume a `Customer` entity with `luckyNumbers` collection attribute (one customer can have multiple lucky numbers). The following mapping can be introduced:
+
+    @Spec(path="luckyNumbers", params = "luckyNumber", spec=IsMember.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customers?luckyNumber=777
+
+to return customers with particular lucky number.
+
+A negation for this specification is also available: `IsNotMember`.
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.

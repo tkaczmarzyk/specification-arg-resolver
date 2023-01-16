@@ -142,6 +142,13 @@ public class CustomerBuilder {
 		}
 		return this;
 	}
+
+	public CustomerBuilder luckyNumbers(Long... luckyNumbers) {
+		for(Long luckyNumber : luckyNumbers) {
+			customer.addLuckyNumber(luckyNumber);
+		}
+		return this;
+	}
 	
 	public Customer build(EntityManager em) {
 		em.persist(customer);
