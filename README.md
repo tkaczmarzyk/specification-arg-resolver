@@ -257,6 +257,8 @@ If you want the query to be static, i.e. not depend on any HTTP param, you can u
 
 For example `@Spec(path="gold", spec=True.class, constVal="true")` will filter for golden customers.
 
+A negation for this specification is also available: `False`.
+
 ### IsTrue ###
 
 Filters with `true` value of particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query. The same effect can be achieved with `Equal` specification and `@Spec.constVal` set to `true`. `IsTrue` is just a convenience class that can make the code more explicit.
