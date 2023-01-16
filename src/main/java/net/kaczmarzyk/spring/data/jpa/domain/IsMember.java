@@ -22,9 +22,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Objects;
+
+import static net.kaczmarzyk.spring.data.jpa.utils.ClassTypeReflectionUtils.getElementTypeFromPath;
 
 /**
  * <p>Checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).</p>
@@ -47,13 +48,7 @@ public class IsMember<T> extends PathSpecification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        Class<?> typeOnPath;
-        try {
-            String typeOnPathClassName = ((ParameterizedType) path(root).getParentPath().getJavaType().getDeclaredField(path).getGenericType()).getActualTypeArguments()[0].getTypeName();
-            typeOnPath = Class.forName(typeOnPathClassName);
-        } catch (NoSuchFieldException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        Class<?> typeOnPath = getElementTypeFromPath(path, path(root));
         Object convertedExpectedMember = converter.convert(expectedMember, typeOnPath);
         return criteriaBuilder.isMember(convertedExpectedMember, path(root));
     }
