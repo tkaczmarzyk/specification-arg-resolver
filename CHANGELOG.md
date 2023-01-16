@@ -7,8 +7,8 @@ v2.17.0
   * `NotEmpty` - it is a negation for `Empty` specification.
   * `isTrue`, `isFalse` - these specifications filter with `true`/`false` value of particular field defined under `path` in `@Spec` annotation.
   * `True` - this specification filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in.
-  * `isMember`, `isNotMember` - checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).
   * `False` - it is a negation for `True` specification.
+  * `isMember`, `isNotMember` - checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).
 
 v2.16.0
 =======
