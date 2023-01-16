@@ -17,12 +17,12 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import org.hibernate.query.criteria.internal.path.PluralAttributePath;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -47,7 +47,13 @@ public class IsMember<T> extends PathSpecification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        Class<?> typeOnPath = ((PluralAttributePath<Object>) path(root)).getAttribute().getElementType().getJavaType();
+        Class<?> typeOnPath;
+        try {
+            String typeOnPathClassName = ((ParameterizedType) path(root).getParentPath().getJavaType().getDeclaredField(path).getGenericType()).getActualTypeArguments()[0].getTypeName();
+            typeOnPath = Class.forName(typeOnPathClassName);
+        } catch (NoSuchFieldException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         Object convertedExpectedMember = converter.convert(expectedMember, typeOnPath);
         return criteriaBuilder.isMember(convertedExpectedMember, path(root));
     }
