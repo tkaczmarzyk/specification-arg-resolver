@@ -21,5 +21,4 @@ public class EqualDayTest {
 			.withIgnoredFields("queryContext")
 			.verify();
 	}
-
 }
