@@ -1243,7 +1243,7 @@ To build specification outside the web-layer the `SpecificationBuilder` should b
     * To create specifications outside the web layer, you can use the specification builder as follows:
       ```java
       Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
-            .withParams("orderItem", "Pizza")
+            .withParam("orderItem", "Pizza")
             .build();            
       ```
     * It is recommended to use builder methods that corresponding to the type of argument type passed to specification interface, e.g.:
@@ -1251,8 +1251,8 @@ To build specification outside the web-layer the `SpecificationBuilder` should b
       ```java
       @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
       ``` 
-      you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
-        * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+      you should use `withParam(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+        * `params = <args>` => `withParam(<argName>, <values...>)`, single param argument can provide multiple values
         * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
         * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
 
