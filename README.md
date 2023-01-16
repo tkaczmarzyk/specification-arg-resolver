@@ -148,7 +148,7 @@ Supports multiple data types: numbers, booleans, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=Equal.class)`.
 
-The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
+The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below). If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then the default time value (midnight - UTC time for `OffsetDateTime`) will be used for checking equality. To include all results within particular date (day) use `EqualDay` specification.
 
 A negation for this specification is also available: `NotEqual`.
 
@@ -207,13 +207,43 @@ to handle HTTP requests such as:
 
 to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
 
+### Empty ###
+
+Filters using `is empty` or `is not empty`, depending on the value of the parameter passed in. A value of `true` will filter for `is empty` and a value of `false` will filter for `is not empty` collections (e.g. ` where customer.orders is empty`).
+
+Supports collection data types specified under `path` in `Spec` annotation. Provided HTTP parameter must be a Boolean. You should use params attribute to make it clear that the parameter is filtering for results with empty (not empty) particular collection.
+
+Usage: `@Spec(path="orders", params="emptyOrders", spec=Empty.class)`.
+
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsEmpty` or `IsNotEmpty` specifications. Alternatively, you can use `Empty` with `constVal` attribute of `Spec` annotation.
+
+For example `@Spec(path="orders", spec=Empty.class, constVal="true")` will filter for results with empty `orders` collection.
+
+A negation for this specification is also available: `NotEmpty`.
+
+### IsEmpty ###
+
+Filters with `is empty` where-clause for collections that are defined under `path` in `Spec` annotation (e.g. ` where customer.orders is empty`). Does not require any http-parameters to be present, i.e. represents constant part of the query.
+
+For example, for `orders` table which contains association to `customers` table (one customer can have multiple orders) the following mapping can be introduced:
+
+    @Spec(path="orders", spec=IsEmpty.class)
+
+to handle HTTP request such as:
+
+    GET http://myhost/customersWithoutOrders
+
+to return customers without orders (with empty collection of orders).
+
+A negation for this specification is also available: `IsNotEmpty`.
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.
 
 Usage: `@Spec(path="creationDate", spec=LessThan.class)`.
 
-For temporal values, the default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")`.
+For temporal values, the default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")`. When the date format is specified without the time part for datetime types, the missing time values will be filled with zeros.  
 
 NOTE: comparisons are dependent on the underlying database.
  * Comparisons of floats and doubles (especially floats) may be incorrect due to precision loss.
@@ -236,6 +266,16 @@ Filters using comparison operators (`>`, `<`). Supports date-type fields. Compar
 E.g. InTheFuture => `where customer0_.date_of_next_special_offer > localtimestamp()`, InThePast => `where customer0_.date_of_next_special_offer < localtimestamp()`
 
 Usage: `@Spec(path="dateOfTheNextOffer", spec=InTheFuture.class)`.
+
+### EqualDay ###
+
+Supports date-type fields. Matches the day part of a date-time attribute, ignoring the time. Filters with range within one day from `00:00:00` (inclusive) to `00:00:00` of the next day (exclusive). When datetime format with a time part will be specified and provided, then the time part will be ignored. For example, providing `2022-12-20T08:45:57` parameter for `LocalDateTime` field will result with filtering with range from `2022-12-20T00:00:00` (inclusive) to `2022-12-21T00:00:00` (exclusive).  
+
+Usage: `@Spec(path="lastOrderTime", spec=EqualDay.class)`.
+
+For types that store just date (without time) like `LocalDate` the specification behaves the same as `Equal`.
+
+For more information related to date-types see [Supported Conversions](#supported-conversions) and [Date Formats](#date-formats).
 
 Combining specs
 ---------------
@@ -898,7 +938,7 @@ Example maven dependency in project pom file:
 <dependency>
     <groupId>com.google.code.gson</groupId>
     <artifactId>gson</artifactId>
-    <version>2.10.0</version>
+    <version>2.10.1</version>
 </dependency>
 ```
 
@@ -1240,7 +1280,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.15.1</version>
+    <version>2.16.0</version>
 </dependency>
 ```
 
