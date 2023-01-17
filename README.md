@@ -1165,7 +1165,7 @@ Right now specification argument resolver supports only one library -> `Springdo
 
 There are two steps in order to enable support for `Springdoc-openapi` library:
 * Add dependency from `Springdoc-openapi`:
-  * For dependencies older than `specification-arg-resolver 3.0.0`, please use `springdoc-openapi-common` (tested with `1.6.13` version):
+  * For versions older than `specification-arg-resolver 3.0.0`, please use `springdoc-openapi-common` (tested with `1.6.13` version):
     ```xml
     <dependency>
         <groupId>org.springdoc</groupId>
