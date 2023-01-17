@@ -18,7 +18,7 @@ package net.kaczmarzyk.e2e.converter;
 import net.kaczmarzyk.E2eTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.EqualDay;
 import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
@@ -64,7 +64,7 @@ public class DateE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/customers", params = {"registeredBefore", "registeredAfter"})
 		@ResponseBody
 		public Object findCustomersRegisteredBetween(
-				@Spec(path="registrationDate", params={"registeredAfter", "registeredBefore"}, spec=DateBetween.class) Specification<Customer> spec) {
+				@Spec(path="registrationDate", params={"registeredAfter", "registeredBefore"}, spec=Between.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}
