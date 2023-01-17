@@ -38,6 +38,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
 import net.kaczmarzyk.utils.TestLogAppender;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
@@ -71,6 +72,7 @@ public class JoinTest extends IntegrationTestBase {
 		em.clear();
 		
 		TestLogAppender.clearInterceptedLogs();
+		HibernateStatementInspector.clearInterceptedStatements();
 	}
 
 	@Test
@@ -207,9 +209,9 @@ public class JoinTest extends IntegrationTestBase {
 		List<Customer> found = customerRepo.findAll(joinOrders);
 		
 		assertThat(found)
-			.hasSize(4)
+			.hasSize(3)  // hibernate 6+ makes query distinct anyway
 			.extracting(Customer::getFirstName)
-			.containsOnly("Bart", "Homer", "Homer", "Marge");
+			.containsOnly("Bart", "Homer", "Marge");
 		
 		assertThatInterceptedStatements()
 			.hasSelects(1)
@@ -224,9 +226,9 @@ public class JoinTest extends IntegrationTestBase {
 		List<Customer> found = customerRepo.findAll(Specification.where(leftJoinOrders).and(innerJoinTags));
 		
 		assertThat(found)
-			.hasSize(4)
+			.hasSize(3) // hibernate 6+ makes query distinct anyway
 			.extracting(Customer::getFirstName)
-			.containsOnly("Bart", "Homer", "Homer", "Marge");
+			.containsOnly("Bart", "Homer", "Marge");
 		
 		assertThatInterceptedStatements()
 			.hasSelects(1)

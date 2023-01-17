@@ -21,7 +21,7 @@ import jakarta.persistence.*;
 @Table(name = "item_tags")
 public class ItemTag {
 
-	@Id @GeneratedValue
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(unique = true)
