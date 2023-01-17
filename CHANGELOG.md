@@ -5,6 +5,7 @@ v3.0.0
 * Added support for spring native-image.
   * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details
 * Modified Springdoc-openapi dependency to be compatible with spring boot 3.0
+* Refactored `IsMember`, `IsNotMember` specifications - they no longer use reflection explicitly. 
 
 v2.17.0
 =======
