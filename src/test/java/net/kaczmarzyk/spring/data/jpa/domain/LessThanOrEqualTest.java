@@ -54,6 +54,20 @@ public class LessThanOrEqualTest extends ComparableWithConverterTestBase {
 
         assertFilterContainsOnlyExpectedMembers("genderAsString", "OTHER", homerSimpson, moeSzyslak, margeSimpson);
     }
+
+	@Test
+	public void filtersByCharPrimitive() {
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "M", margeSimpson, homerSimpson, moeSzyslak, joeQuimby);
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "N", margeSimpson, homerSimpson, moeSzyslak, joeQuimby);
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "A", joeQuimby);
+	}
+
+	@Test
+	public void filtersByCharacter() {
+		assertFilterContainsOnlyExpectedMembers("genderAsCharacter", "M", margeSimpson, homerSimpson, moeSzyslak);
+		assertFilterContainsOnlyExpectedMembers("genderAsCharacter", "N", margeSimpson, homerSimpson, moeSzyslak);
+		assertFilterIsEmpty("genderAsCharacter", "A");
+	}
     
     @Test
     public void filtersByLongValue() {

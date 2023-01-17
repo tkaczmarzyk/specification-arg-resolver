@@ -28,7 +28,7 @@ import java.util.Map;
  * SpecificationBuilder allows creating specification apart from web layer.
  * It is recommended to use builder methods that corresponding to the type of argument passed to specification.
  * <ul>
- * <li> {@code params = <args> => withParams(<argName>, <values...>)}, single param argument can provide multiple values </li>
+ * <li> {@code params = <args> => withParam(<argName>, <values...>)}, single param argument can provide multiple values </li>
  * <li> {@code pathVars = <args> => withPathVar(<argName>, <value>)}, single pathVar argument can provide single value </li>
  * <li> {@code headers = <args> => withHeader(<argName>, <value>)}, single header argument can provide single value </li>
  * </ul>

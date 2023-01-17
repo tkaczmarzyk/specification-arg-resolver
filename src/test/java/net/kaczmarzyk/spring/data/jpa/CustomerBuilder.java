@@ -74,14 +74,18 @@ public class CustomerBuilder {
 	}
 
 	public CustomerBuilder registrationDate(int year, int month, int day) {
+		return registrationDate(year, month, day, 0, 0, 0 ,0);
+	}
+
+	public CustomerBuilder registrationDate(int year, int month, int day, int hour, int minute, int second, int millisecond) {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.YEAR, year);
 		cal.set(Calendar.MONTH, month - 1);
 		cal.set(Calendar.DAY_OF_MONTH, day);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+		cal.set(Calendar.MILLISECOND, millisecond);
 		customer.setRegistrationDate(cal.getTime());
 		return this;
 	}
@@ -128,6 +132,20 @@ public class CustomerBuilder {
 	public CustomerBuilder badges(String... badgeTypes) {
 		for (String badgeType : badgeTypes) {
 			new Badge(customer, badgeType);
+		}
+		return this;
+	}
+
+	public CustomerBuilder phoneNumbers(String... phoneNumbers) {
+		for(String phoneNumber: phoneNumbers) {
+			customer.addPhoneNumber(phoneNumber);
+		}
+		return this;
+	}
+
+	public CustomerBuilder luckyNumbers(Long... luckyNumbers) {
+		for(Long luckyNumber : luckyNumbers) {
+			customer.addLuckyNumber(luckyNumber);
 		}
 		return this;
 	}

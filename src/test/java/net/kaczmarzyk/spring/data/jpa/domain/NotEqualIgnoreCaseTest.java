@@ -52,6 +52,25 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 		assertFilterMembers(notFemale, homerSimpson);
 	}
 
+
+	@Test
+	public void filtersByCharPrimitiveCaseInsensitive() {
+		NotEqualIgnoreCase<Customer> notFemale = new NotEqualIgnoreCase<>(queryCtx, "genderAsChar", new String[] { "f" }, defaultConverter);
+		assertFilterMembers(notFemale, homerSimpson, joeQuimby);
+
+		NotEqualIgnoreCase<Customer> notMale = new NotEqualIgnoreCase<>(queryCtx, "genderAsChar", new String[] { "m" }, defaultConverter);
+		assertFilterMembers(notMale, margeSimpson, joeQuimby);
+	}
+
+	@Test
+	public void filtersByCharacterCaseInsensitive() {
+		NotEqualIgnoreCase<Customer> notFemale = new NotEqualIgnoreCase<>(queryCtx, "genderAsCharacter", new String[] { "f" }, defaultConverter);
+		assertFilterMembers(notFemale, homerSimpson);
+
+		NotEqualIgnoreCase<Customer> notMale = new NotEqualIgnoreCase<>(queryCtx, "genderAsCharacter", new String[] { "m" }, defaultConverter);
+		assertFilterMembers(notMale, margeSimpson);
+	}
+
 	@Test
 	public void rejectsNullArgumentArray() {
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,

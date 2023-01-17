@@ -148,7 +148,7 @@ Supports multiple data types: numbers, booleans, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=Equal.class)`.
 
-The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below).
+The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below). If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then the default time value (midnight - UTC time for `OffsetDateTime`) will be used for checking equality. To include all results within particular date (day) use `EqualDay` specification.
 
 A negation for this specification is also available: `NotEqual`.
 
@@ -207,13 +207,99 @@ to handle HTTP requests such as:
 
 to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
 
+### Empty ###
+
+Filters using `is empty` or `is not empty`, depending on the value of the parameter passed in. A value of `true` will filter for `is empty` and a value of `false` will filter for `is not empty` collections (e.g. ` where customer.orders is empty`).
+
+Supports collection data types specified under `path` in `Spec` annotation. Provided HTTP parameter must be a Boolean. You should use params attribute to make it clear that the parameter is filtering for results with empty (not empty) particular collection.
+
+Usage: `@Spec(path="orders", params="emptyOrders", spec=Empty.class)`.
+
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsEmpty` or `IsNotEmpty` specifications. Alternatively, you can use `Empty` with `constVal` attribute of `Spec` annotation.
+
+For example `@Spec(path="orders", spec=Empty.class, constVal="true")` will filter for results with empty `orders` collection.
+
+A negation for this specification is also available: `NotEmpty`.
+
+### IsEmpty ###
+
+Filters with `is empty` where-clause for collections that are defined under `path` in `Spec` annotation (e.g. ` where customer.orders is empty`). Does not require any http-parameters to be present, i.e. represents constant part of the query.
+
+For example, for `orders` table which contains association to `customers` table (one customer can have multiple orders) the following mapping can be introduced:
+
+    @Spec(path="orders", spec=IsEmpty.class)
+
+to handle HTTP request such as:
+
+    GET http://myhost/customersWithoutOrders
+
+to return customers without orders (with empty collection of orders).
+
+A negation for this specification is also available: `IsNotEmpty`.
+
+### True ###
+
+Filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in (e.g. ` where customer.gold = true`). This can be also achieved with `Equal`. `True` is a convenience-class to emphasize boolean attributes.
+
+The HTTP parameter and data type of the corresponding field specified in `path` must be a Boolean.
+
+For example, consider `gold` field which indicates special `customer`. Then, you can introduce the following mapping: 
+
+    @Spec(path="gold", params = "golden", spec=True.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customers?golden=true
+
+to return golden customers (with `gold` field set to `true`).
+
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsTrue` or `IsFalse` specifications. Alternatively, you can use `True` with `constVal` attribute of `Spec` annotation.
+
+For example `@Spec(path="gold", spec=True.class, constVal="true")` will filter for golden customers.
+
+A negation for this specification is also available: `False`.
+
+### IsTrue ###
+
+Filters with `true` value of particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query. The same effect can be achieved with `Equal` specification and `@Spec.constVal` set to `true`. `IsTrue` is just a convenience class that can make the code more explicit.
+
+For example, consider `gold` field which indicates special `customer`. Then, you can introduce the following mapping:
+
+    @Spec(path="gold", spec=IsTrue.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/goldenCustomers
+
+to return all special customers (with `gold` field set to `true`).
+
+A negation for this specification is also available: `IsFalse`.
+
+### IsMember ###
+
+Checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).
+
+Supports collections of multiple data types: numbers, booleans, strings, dates, enums. Only `@ElementCollection` annotation with basic data types is supported (collections of `Embeddable` objects or `@OneToMany` relationships with other entities are not supported).
+
+For example, let's assume a `Customer` entity with `luckyNumbers` collection attribute (one customer can have multiple lucky numbers). The following mapping can be introduced:
+
+    @Spec(path="luckyNumbers", params = "luckyNumber", spec=IsMember.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customers?luckyNumber=777
+
+to return customers with particular lucky number.
+
+A negation for this specification is also available: `IsNotMember`.
+
 ### GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual ###
 
 Filters using a comparison operator (`>`, `>=`, `<` or `<=`). Supports multiple field types: strings, numbers, booleans, enums, dates. Field types must be Comparable (e.g, implement the Comparable interface); this is a JPA constraint.
 
 Usage: `@Spec(path="creationDate", spec=LessThan.class)`.
 
-For temporal values, the default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")`.
+For temporal values, the default date format is `yyyy-MM-dd`. You can override it by providing a config value to the annotation: `@Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")`. When the date format is specified without the time part for datetime types, the missing time values will be filled with zeros.  
 
 NOTE: comparisons are dependent on the underlying database.
  * Comparisons of floats and doubles (especially floats) may be incorrect due to precision loss.
@@ -236,6 +322,16 @@ Filters using comparison operators (`>`, `<`). Supports date-type fields. Compar
 E.g. InTheFuture => `where customer0_.date_of_next_special_offer > localtimestamp()`, InThePast => `where customer0_.date_of_next_special_offer < localtimestamp()`
 
 Usage: `@Spec(path="dateOfTheNextOffer", spec=InTheFuture.class)`.
+
+### EqualDay ###
+
+Supports date-type fields. Matches the day part of a date-time attribute, ignoring the time. Filters with range within one day from `00:00:00` (inclusive) to `00:00:00` of the next day (exclusive). When datetime format with a time part will be specified and provided, then the time part will be ignored. For example, providing `2022-12-20T08:45:57` parameter for `LocalDateTime` field will result with filtering with range from `2022-12-20T00:00:00` (inclusive) to `2022-12-21T00:00:00` (exclusive).  
+
+Usage: `@Spec(path="lastOrderTime", spec=EqualDay.class)`.
+
+For types that store just date (without time) like `LocalDate` the specification behaves the same as `Equal`.
+
+For more information related to date-types see [Supported Conversions](#supported-conversions) and [Date Formats](#date-formats).
 
 Combining specs
 ---------------
@@ -898,7 +994,7 @@ Example maven dependency in project pom file:
 <dependency>
     <groupId>com.google.code.gson</groupId>
     <artifactId>gson</artifactId>
-    <version>2.10.0</version>
+    <version>2.10.1</version>
 </dependency>
 ```
 
@@ -1069,15 +1165,17 @@ List of supported conversions:
 
 To use a custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
 For example:
+
 ```
  @Spec(path="creationDate", spec=LessThan.class, config="dd-MM-yyyy")
 ```
+
+In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
+
 ###### Date formats
 If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then time value will be set to the default value - midnight (UTC time for `OffsetDateTime`). For example, let us assume that the above specification with the custom config `config="dd-MM-yyyy"` corresponds to the `LocalDateTime` field in a database. Each argument provided to the specification will be converted to the date with the default time (e.g. `14-12-2022` -> `14-12-2022 00:00`)
 
 The formats of the date in the database (column storing date/time/datetime) and corresponding Java object should be compatible. Also pay attention to the default format for specific date types (if they store date, time or date and time). Inconsistencies in the date formats may lead to confusing or empty results. For example, the database column storing date with time and mapped to `Date` Java object cannot be filtered by time until custom config is specified (default config refers only to date `yyyy-MM-dd`). It can be achieved by specifying custom format using `config` property of `@Spec` (e.g. `config="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`).
-
-In case of missing converter, [fallback mechanism](#custom-converters) will be used if one has been configured otherwise `ClassCastException` will be thrown.
 
 ##### Custom converters
 The converter includes a fallback mechanism based on [Spring](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/convert/ConversionService.html) `ConversionService`, which is invoked when required conversion is not supported by any default converter. If the `ConversionService` supports required conversion it will be performed, otherwise a `ClassCastException` will be thrown. 
@@ -1201,7 +1299,7 @@ To build specification outside the web-layer the `SpecificationBuilder` should b
     * To create specifications outside the web layer, you can use the specification builder as follows:
       ```java
       Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
-            .withParams("orderItem", "Pizza")
+            .withParam("orderItem", "Pizza")
             .build();            
       ```
     * It is recommended to use builder methods that corresponding to the type of argument type passed to specification interface, e.g.:
@@ -1209,8 +1307,8 @@ To build specification outside the web-layer the `SpecificationBuilder` should b
       ```java
       @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
       ``` 
-      you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
-        * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+      you should use `withParam(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+        * `params = <args>` => `withParam(<argName>, <values...>)`, single param argument can provide multiple values
         * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
         * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
 
@@ -1238,7 +1336,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.15.1</version>
+    <version>2.17.0</version>
 </dependency>
 ```
 
