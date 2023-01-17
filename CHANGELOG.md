@@ -4,6 +4,57 @@ v3.0.0
   * Spring boot 3.0 is based on Hibernate version 6.X because in this version of hibernate all query results are distinct by default. This shouldn't affect most projects, but please be extra careful if you've ever used a spec with the `distinct=false` attribute.
 * Added support for spring native-image.
   * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details
+* Modified Springdoc-openapi dependency to be compatible with spring boot 3.0
+* Refactored `IsMember`, `IsNotMember` specifications - they no longer use reflection explicitly. 
+
+v2.17.0
+=======
+* Introduced converter for `char` primitive and `Character` class
+* Introduced new specifications:
+  * `isEmpty`, `isNotEmpty` - these specifications filter out elements that have empty (not empty) collection of elements, that is defined under `path` in `@Spec` annotation.
+  * `Empty` - this specification filters for collections using `is empty` or `is not empty`, depending on the value of the parameter passed in (e.g. ` where customer.orders is empty`).
+  * `NotEmpty` - it is a negation for `Empty` specification.
+  * `isTrue`, `isFalse` - these specifications filter with `true`/`false` value of particular field defined under `path` in `@Spec` annotation.
+  * `True` - this specification filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in.
+  * `False` - it is a negation for `True` specification.
+  * `isMember`, `isNotMember` - checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).
+
+v2.16.0
+=======
+* Introduced `EqualDay` specification which allows finding all records within particular date (day), ignoring time.
+* Added ability to set custom `Locale` during resolver registration:
+  ```java
+  @Override
+  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+      argumentResolvers.add(new SpecificationArgumentResolver(new Locale("pl", "PL"))); // pl_PL will be used as the default locale
+  }
+  ```
+  This matters for case-insensitive specifications (`EqualIgnoreCase`, `NotEqualIgnoreCase`, `LikeIgnoreCase`, `StartingWithIgnoreCase` and `EndingWithIgnoreCase`) which used system default locale in previous versions of the library. If locale is not provided, then system default will be used (exactly as in the previous version).
+* Added ability to set custom `Locale` in `@Spec.config` (this overrides the global default mentioned above):
+  ```java
+  @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
+  ```
+* Introduced new case-insensitive specification `NotLikeIgnoreCase` that works in similar way as `LikeIgnoreCase` but is its negation.
+* introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable.
+  * for more details please check out section `Support for multiple paths with path variables` in `README.md`.
+* additional Javadocs
+
+v2.15.1
+======
+* updated spring-boot-dependencies to 2.7.7
+* fixed potential issue with detecting non-empty HTTP headers
+* fixed redundant proxy creation for multi-spec specifications when expected type is not a spec-interface
+
+v2.15.0
+=======
+* added support for using datetime formats without time (e.g. `yyyy-MM-dd`) for types that contain time (`LocalDateTime`, `Timestamp`, `Instant`, `OffsetDateTime`). Missing time values are filled with zeros, e.g. when sending `2022-12-14` as `LocalDateTime` parameter, the conversion will result in `2022-12-14 00:00`.
+* introduced `InTheFuture` specification, that supports date-type paths
+* introduced `InThePast` specification, that supports date-type paths
+* added exception messages for invalid parameter array size in specifications that missed one
+
+v2.14.1
+=======
+* Added support for `content-type` header containing additional directives like `encoding=UTF-8`/`charset=UTF-8`. Previously, only `application/json` was accepted as `content-type` for request body filters.
 
 v2.14.0
 =======
@@ -13,7 +64,7 @@ v2.14.0
   * fixed duplicated parameters when the same parameter was defined in spec and controller method (e.g. when we defined `firstName` parameter in our `@Spec` and also in `@RequestParam("firstName")`).
 * added `OnTypeMismatch.IGNORE` which ignores specification containing mismatched parameter (except `spec = In.class` - in this specification only mismatched parameter values are ignored, but other ones which are valid are used to build a Specification).
   * For example, for the following endpoint:
-    ```
+    ```java
     @RequestMapping(value = "/customers", params = { "id" })
     @ResponseBody
     public Object findById(
@@ -23,7 +74,7 @@ v2.14.0
     ```
   * For request with mismatched `id` param (e.g. `?id=invalidId`) the whole specification will be ignored and all records from the database (without filtering) will be returned.
   * But for the following endpoint with `In.class` specification type:
-    ```
+    ```java
     @RequestMapping(value = "/customers", params = { "id_in" })
     @ResponseBody
     public Object findByIdIn(
@@ -44,14 +95,14 @@ v2.12.1
 * Changed approach for resolving path variables when processing request.
 * From now on, the controllers with global prefixes (configured using `org.springframework.web.servlet.config.annotation.PathMatchConfigurer`) should be properly handled:
   * For example, apps with following configuration are now supported:
-    ```
+    ```java
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
       configurer.addPathPrefix("/api/{tenantId}", HandlerTypePredicate.forAnnotation(RestController.class));
     }
     ```
     Below spec will be properly resolved for request URI: `/api/123/findCustomers?firstName=John`
-    ```
+    ```java
     @RestController
     public static class TestController {
 
@@ -85,7 +136,7 @@ v2.11.0
   * To create specifications outside the web layer, you can use the specification builder as follows:
     ```java
     Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
-          .withParams("orderItem", "Pizza")
+          .withParam("orderItem", "Pizza")
           .build();            
     ```
   * It is recommended to use builder methods that corresponding to the type of argument passed to specification interface, e.g.:
@@ -93,8 +144,8 @@ v2.11.0
     ```java
     @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
     ``` 
-    you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
-    * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+    you should use `withParam(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+    * `params = <args>` => `withParam(<argName>, <values...>)`, single param argument can provide multiple values
     * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
     * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -32,18 +34,20 @@ import java.util.Objects;
  * <p>If the field type is string or enum, the where-clause is case insensitive</p>
  *
  * @author Ricardo Pardinho
+ * @author Tomasz Kaczmarzyk
  */
-public class EqualIgnoreCase<T> extends PathSpecification<T> {
+public class EqualIgnoreCase<T> extends PathSpecification<T> implements LocaleAware {
 
     private static final long serialVersionUID = 2L;
 
     protected String expectedValue;
     private Converter converter;
+	private Locale locale = Locale.getDefault();
 
     public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
         super(queryContext, path);
         if (httpParamValues == null || httpParamValues.length != 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid size of 'httpParamValues' array, Expected 1 but was " + Arrays.toString(httpParamValues));
         }
         this.expectedValue = httpParamValues[0];
         this.converter = converter;
@@ -53,7 +57,7 @@ public class EqualIgnoreCase<T> extends PathSpecification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
         if (path(root).getJavaType().equals(String.class)) {
-            return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase());
+            return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase(locale));
         }
 
         Class<?> typeOnPath = path(root).getJavaType();
@@ -61,22 +65,36 @@ public class EqualIgnoreCase<T> extends PathSpecification<T> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        EqualIgnoreCase<?> that = (EqualIgnoreCase<?>) o;
-        return Objects.equals(expectedValue, that.expectedValue) &&
-                Objects.equals(converter, that.converter);
+    public void setLocale(Locale locale) {
+    	this.locale = locale;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), expectedValue, converter);
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(converter, expectedValue, locale);
+		return result;
+	}
 
-    @Override
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		EqualIgnoreCase other = (EqualIgnoreCase) obj;
+		return Objects.equals(converter, other.converter) && Objects.equals(expectedValue, other.expectedValue)
+				&& Objects.equals(locale, other.locale);
+	}
+
+	@Override
     public String toString() {
-        return "EqualIgnoreCase [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + "]";
+        return "EqualIgnoreCase [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + ", locale=" + locale + "]";
     }
 }

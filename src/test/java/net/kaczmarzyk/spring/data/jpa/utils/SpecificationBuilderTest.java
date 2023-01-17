@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -48,7 +49,7 @@ import static org.mockito.Mockito.*;
  */
 public class SpecificationBuilderTest extends IntegrationTestBase {
 
-	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 
 	@And({
 			@Spec(params = "gender", path = "gender", spec = Equal.class),

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class DateBetween<T> extends DateSpecification<T> {
     private Date before;
     
     public DateBetween(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
-        super(queryContext, path, args, converter);
+        super(queryContext, path, converter);
         if (args == null || args.length != 2) {
             throw new IllegalArgumentException("expected 2 http params (date boundaries), but was: " + args);
         }

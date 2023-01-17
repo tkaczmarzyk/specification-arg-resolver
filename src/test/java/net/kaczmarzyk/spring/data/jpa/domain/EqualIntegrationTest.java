@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 
 /**
@@ -37,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Maciej Szewczyszyn
  */
 public class EqualIntegrationTest extends IntegrationTestBase {
+
+	private static final String INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE = "Invalid size of 'httpParamValues' array, Expected 1 but was ";
 
     protected Customer homerSimpson;
     protected Customer margeSimpson;
@@ -129,6 +132,18 @@ public class EqualIntegrationTest extends IntegrationTestBase {
     	
     	assertThat(found).hasSize(1).containsOnly(joeQuimby);
     }
+
+	@Test
+	public void filtersByCharValue() {
+		Equal<Customer> gender = new Equal<>(queryCtx, "genderAsChar", new String[] { "M" }, defaultConverter);
+		assertFilterMembers(gender, homerSimpson, moeSzyslak);
+	}
+
+	@Test
+	public void filtersByCharacterValue() {
+		Equal<Customer> gender = new Equal<>(queryCtx, "genderAsCharacter", new String[] { "F" }, defaultConverter);
+		assertFilterMembers(gender, margeSimpson);
+	}
     
     @Test
     public void filtersByString() {
@@ -178,13 +193,30 @@ public class EqualIntegrationTest extends IntegrationTestBase {
     	assertFilterMembers(homerWeightFloat, homerSimpson);
     }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsMissingArguments() {
-		new Equal<>(queryCtx, "path", new String[] {}, defaultConverter);
+	@Test
+	public void rejectsNullArgumentArray() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Equal<>(queryCtx, "path", null, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "null");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
+	public void rejectsMissingArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Equal<>(queryCtx, "path", new String[] {}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[]");
+	}
+
+	@Test
 	public void rejectsTooManyArguments() {
-		new Equal<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new Equal<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[2014-03-10, 2014-03-11]");
 	}
 }

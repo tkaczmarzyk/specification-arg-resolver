@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.springframework.data.jpa.domain.Specification;
+
+import net.kaczmarzyk.spring.data.jpa.domain.PathSpecification;
 
 
 /**
@@ -31,6 +33,13 @@ import java.lang.annotation.Target;
 @Target({ ElementType.PARAMETER, ElementType.TYPE })
 public @interface Spec {
 
+    /**
+     * <p>HTTP query parameter name (or names) to be used for matching with entity attributes.</p>
+     *
+     * <p>For example, setting {@code params} to "name" will mean that you expect {@code ?name=Value} in upcoming HTTP requests.</p>
+     *
+     * <p>If not set (and {@code headers} and {@code pathVars} are not used), then defaults to the same name as the filtered attribute of the entity (see {@code path}).
+     */
     String[] params() default {};
 
     /**
@@ -43,7 +52,7 @@ public @interface Spec {
     String[] headers() default {};
 
     /**
-     * Please remember about adding required Maven dependenecy to your project before using jsonPaths. See see <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a> for details. 
+     * Please remember about adding required Maven dependenecy to your project before using jsonPaths. See <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a> for details.
      */
     String[] jsonPaths() default {};
     
@@ -83,8 +92,30 @@ public @interface Spec {
 
     OnTypeMismatch onTypeMismatch() default OnTypeMismatch.EMPTY_RESULT;
     
+    /**
+     * <p>Attribute name (or more generally, path in the entity graph) to be filtered.</p>
+     *
+     * <p>
+     * For example, consider a {@code Customer} entity with field {@code String firstName}.
+     * If you want to filter customers by id, set {@code @Spec.path} attribute to "id".
+     * </p>
+     */
     String path();
-    
+
+    /**
+     * Attribute is used to specify behaviour on missing path variable.
+     * Missing param policy should be set to IGNORE when controller endpoint contains multiple paths with different path variables.
+     * For more details see <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md#support-for-multiple-paths-with-different-path-variables">README.md</a>
+     */
+    MissingPathVarPolicy missingPathVarPolicy() default MissingPathVarPolicy.EXCEPTION;
+
+    /**
+     * Type of the filter to apply. This should be class that implements {@link Specification} interface.
+     * Use one of the built-in classes or implement your own. Built-in classes typically extend {@link PathSpecification}
+     * and are described in <a href="https://github.com/tkaczmarzyk/specification-arg-resolver/blob/master/README.md">README.md</a>
+     *
+     * @see PathSpecification
+     */
     @SuppressWarnings("rawtypes")
     Class<? extends Specification> spec();
 

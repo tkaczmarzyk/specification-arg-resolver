@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import jakarta.persistence.criteria.Root;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -54,7 +55,7 @@ public class Between<T> extends PathSpecification<T> {
 	public Between(QueryContext queryContext, String path, String[] args, Converter converter) {
 		super(queryContext, path);
         if (args == null || args.length != 2) {
-            throw new IllegalArgumentException("expected 2 http params (lower and upper boundaries), but was: " + args);
+			throw new IllegalArgumentException("expected 2 http params (lower and upper boundaries), but was: " + Arrays.toString(args));
         }
         this.converter = converter;
         this.lowerBoundaryStr = args[0];
@@ -75,9 +76,15 @@ public class Between<T> extends PathSpecification<T> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		if (!super.equals(o)) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
 		Between<?> between = (Between<?>) o;
 		return Objects.equals(lowerBoundaryStr, between.lowerBoundaryStr) &&
 				Objects.equals(upperBoundaryStr, between.upperBoundaryStr) &&

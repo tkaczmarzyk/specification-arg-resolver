@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Collection;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,7 +129,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 	public static interface GrandChildInterface extends ChildInterface, Chil2dInterface {
 	}
 
-	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+	Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 
 	public static class TestController {
 		public void methodWithSimpleSpec(IfaceWithSimpleSpec arg) {}
@@ -237,7 +238,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 
 		Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-		Collection<Specification<Object>> resolvedInnerSpecs = innerSpecs(resolved);
+		Collection<Specification<Object>> resolvedInnerSpecs = proxiedInnerSpecs(resolved);
 		assertThat(resolvedInnerSpecs)
 				.hasSize(4)
 				.containsOnly(

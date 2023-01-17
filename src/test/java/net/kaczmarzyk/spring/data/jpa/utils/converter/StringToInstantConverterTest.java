@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter.ValueRejectedException;
 import org.junit.Test;
 
 import java.time.Instant;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
@@ -27,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringToInstantConverterTest {
 	
-	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 	
 	@Test
 	public void convertsToInstantUsingDefaultFormat() {
@@ -84,5 +85,14 @@ public class StringToInstantConverterTest {
 				() -> converterWithCustomFormat.convert("2020-06-16T 15:08:53.282 +05:00-invalid-format", Instant.class),
 				"Instant format exception, expected format: yyyy-MM-dd\'T\' HH:mm:ss.SSS XXX"
 		);
+	}
+
+	@Test
+	public void appendsDefaultTimeAndSystemTimeZoneDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		Instant instant = converterWithCustomFormat.convert("2022-12-13", Instant.class);
+
+		assertThat(instant)
+				.isEqualTo("2022-12-13T00:00:00.000Z");
 	}
 }

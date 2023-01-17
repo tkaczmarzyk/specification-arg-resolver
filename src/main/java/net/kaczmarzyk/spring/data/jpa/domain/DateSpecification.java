@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ abstract class DateSpecification<T> extends PathSpecification<T> {
 	
 	protected Converter converter;
 
-    protected DateSpecification(QueryContext queryContext, String path, String[] args, Converter converter) throws ParseException {
+    protected DateSpecification(QueryContext queryContext, String path, Converter converter) throws ParseException {
         super(queryContext, path);
         this.converter = converter;
     }
