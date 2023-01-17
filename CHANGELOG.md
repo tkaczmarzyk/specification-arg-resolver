@@ -4,10 +4,13 @@ v3.0.0
   * Spring boot 3.0 is based on Hibernate version 6.X because in this version of hibernate all query results are distinct by default. This shouldn't affect most projects, but please be extra careful if you've ever used a spec with the `distinct=false` attribute.
 * Added support for spring native-image.
   * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details.
+
+v2.17.0
+=======
 * Introduced converter for `char` primitive and `Character` class
 * Introduced new specifications:
   * `isEmpty`, `isNotEmpty` - these specifications filter out elements that have empty (not empty) collection of elements, that is defined under `path` in `@Spec` annotation.
-  * `Empty` - this specification filters for collections using `is empty` or `is not empty`, depending on the value of the parameter passed in (e.g. ` where customer.orders is empty`). 
+  * `Empty` - this specification filters for collections using `is empty` or `is not empty`, depending on the value of the parameter passed in (e.g. ` where customer.orders is empty`).
   * `NotEmpty` - it is a negation for `Empty` specification.
   * `isTrue`, `isFalse` - these specifications filter with `true`/`false` value of particular field defined under `path` in `@Spec` annotation.
   * `True` - this specification filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in.
@@ -29,7 +32,6 @@ v2.16.0
   ```java
   @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
   ```
-* additional Javadocs
 * Introduced new case-insensitive specification `NotLikeIgnoreCase` that works in similar way as `LikeIgnoreCase` but is its negation.
 * introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable.
   * for more details please check out section `Support for multiple paths with path variables` in `README.md`.
