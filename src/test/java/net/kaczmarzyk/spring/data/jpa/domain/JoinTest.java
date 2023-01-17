@@ -15,16 +15,16 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static jakarta.persistence.criteria.JoinType.LEFT;
 import static jakarta.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.ItemTagBuilder.itemTag;
 import static net.kaczmarzyk.spring.data.jpa.OrderBuilder.order;
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
+import static net.kaczmarzyk.utils.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import static net.kaczmarzyk.utils.InterceptedStatementsAssert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,6 @@ import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.ItemTag;
-import net.kaczmarzyk.utils.TestLogAppender;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
@@ -71,7 +70,6 @@ public class JoinTest extends IntegrationTestBase {
 		em.flush();
 		em.clear();
 		
-		TestLogAppender.clearInterceptedLogs();
 		HibernateStatementInspector.clearInterceptedStatements();
 	}
 
