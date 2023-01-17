@@ -41,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
 	// TC-1. interface with repeated @Join spec
-	@Join(path = "orders", alias = "o", type = LEFT)
-	@Join(path = "badges", alias = "b")
+	@Join(path = "orders", alias = "o")
+	@Join(path = "badges", alias = "b", type = INNER)
 	@And({
 			@Spec(path = "o.itemName", params = "itemName", spec = Equal.class),
 			@Spec(path = "b.badgeType", params = "badgeType", spec = Equal.class)

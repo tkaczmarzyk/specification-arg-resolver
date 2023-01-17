@@ -48,5 +48,5 @@ public @interface Join {
 	 */
 	boolean distinct() default true;
 	
-	JoinType type() default JoinType.INNER;
+	JoinType type() default JoinType.LEFT;
 }

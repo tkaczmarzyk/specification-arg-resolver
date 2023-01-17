@@ -6,6 +6,7 @@ v3.0.0
   * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details
 * Modified Springdoc-openapi dependency to be compatible with spring boot 3.0
 * Refactored `IsMember`, `IsNotMember` specifications - they no longer use reflection explicitly. 
+* changed default join type in `@Join` from `INNER` to `LEFT`
 * Changed join lazy evaluation:
   * Inner joins are now evaluatedeven if there is no filtering applied on the joined part due to a missing HTTP param (as inner join may narrow down query results)
   * For non-distinct queries, all joins are now evaluated eagerly (even if there is no filtering applied on the joined part)

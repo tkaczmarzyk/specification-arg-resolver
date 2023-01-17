@@ -44,8 +44,8 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 
 	// TC-1. interface with @Joins spec
 	@Joins({
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders", alias = "o"),
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders2", alias = "o2", type = LEFT)
+			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders", alias = "o", type = INNER),
+			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders2", alias = "o2")
 	})
 	@Spec(path = "o.itemName", params = "itemName", spec = Equal.class)
 	private interface OrderedItemNameFilter<T> extends Specification<T> {
@@ -59,7 +59,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 	}
 
 	@Joins({
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "badges", alias = "b")
+			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "badges", alias = "b", type = INNER)
 	})
 	@Spec(path = "b.badgeType", params = "badgeType", spec = Equal.class)
 	private interface BadgeFilter extends Specification<Customer> {
