@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-import javax.persistence.criteria.Path;
+import jakarta.persistence.criteria.Path;
 import java.lang.reflect.ParameterizedType;
 
 /**
