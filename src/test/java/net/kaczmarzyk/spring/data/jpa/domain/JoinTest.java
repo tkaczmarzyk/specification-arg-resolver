@@ -67,10 +67,10 @@ public class JoinTest extends IntegrationTestBase {
 				.build(em);
 
 		em.createQuery("select o from Order o where o.id > 1"); // dummy query to fill Hibernate Query Plan so that LoggedQueryAssertions can track all queries in the test
-        em.flush();
-        em.clear();
-        
-        TestLogAppender.clearInterceptedLogs();
+		em.flush();
+		em.clear();
+		
+		TestLogAppender.clearInterceptedLogs();
 	}
 
 	@Test
