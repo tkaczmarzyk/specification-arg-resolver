@@ -1262,14 +1262,22 @@ Swagger support
 Right now specification argument resolver supports only one library -> `Springdoc-openapi`.
 
 There are two steps in order to enable support for `Springdoc-openapi` library:
-* Add following dependency from `Springdoc-openapi` (tested with `1.6.13` version):
-```xml
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-common</artifactId>
-</dependency>
-```
-
+* Add dependency from `Springdoc-openapi`:
+  * For `specification-arg-resolver 3.0.0` and newer, please use `springdoc-openapi-starter-common` (tested with `2.0.2` version):
+    ```xml
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-common</artifactId>
+    </dependency>
+    ```
+  * For versions older than `specification-arg-resolver 3.0.0`, please use `springdoc-openapi-common` (tested with `1.6.13` version):
+    ```xml
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-common</artifactId>
+    </dependency>
+    ```
+    
 * Create `@Bean` of type `SpecificationArgResolverSpringdocOperationCustomizer` in your app configuration:
 ```java
 @Bean

@@ -3,7 +3,8 @@ v3.0.0
 * Migrated project to spring boot 3.0 and java 17
   * Spring boot 3.0 is based on Hibernate version 6.X because in this version of hibernate all query results are distinct by default. This shouldn't affect most projects, but please be extra careful if you've ever used a spec with the `distinct=false` attribute.
 * Added support for spring native-image.
-  * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details.
+  * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details
+* Modified Springdoc-openapi dependency to be compatible with spring boot 3.0
 
 v2.17.0
 =======
