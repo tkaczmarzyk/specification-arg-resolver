@@ -33,7 +33,7 @@ v2.16.0
 v2.15.1
 ======
 * updated spring-boot-dependencies to 2.7.7
-* fixed potential issue with detecting non-emmpty HTTP headers
+* fixed potential issue with detecting non-empty HTTP headers
 * fixed redundant proxy creation for multi-spec specifications when expected type is not a spec-interface
 
 v2.15.0
@@ -127,7 +127,7 @@ v2.11.0
   * To create specifications outside the web layer, you can use the specification builder as follows:
     ```java
     Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
-          .withParams("orderItem", "Pizza")
+          .withParam("orderItem", "Pizza")
           .build();            
     ```
   * It is recommended to use builder methods that corresponding to the type of argument passed to specification interface, e.g.:
@@ -135,8 +135,8 @@ v2.11.0
     ```java
     @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
     ``` 
-    you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
-    * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+    you should use `withParam(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+    * `params = <args>` => `withParam(<argName>, <values...>)`, single param argument can provide multiple values
     * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
     * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
 
