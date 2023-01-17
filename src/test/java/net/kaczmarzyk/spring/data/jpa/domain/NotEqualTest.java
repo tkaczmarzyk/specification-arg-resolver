@@ -131,6 +131,18 @@ public class NotEqualTest extends IntegrationTestBase {
 	}
 
 	@Test
+	public void filtersByCharValue() {
+		NotEqual<Customer> gender = new NotEqual<>(queryCtx, "genderAsChar", new String[] { "M" }, defaultConverter);
+		assertFilterMembers(gender, margeSimpson, joeQuimby);
+	}
+
+	@Test
+	public void filtersByCharacterValue() {
+		NotEqual<Customer> gender = new NotEqual<>(queryCtx, "genderAsCharacter", new String[] { "F" }, defaultConverter);
+		assertFilterMembers(gender, homerSimpson);
+	}
+
+	@Test
 	public void filtersByDouble() {
 		NotEqual<Customer> notHomerWeight = notEqualSpec("weightDouble", homerSimpson.getWeightDouble());
 		assertFilterMembers(notHomerWeight, margeSimpson, joeQuimby);

@@ -6,8 +6,21 @@ v3.0.0
   * Specification-arg-resolver can be used in GraalVM native images, but it requires several additional configuration steps. This is due to the fact that this library relies on Java reflection heavily. Please see [README_native_image.md](README_native_image.md) for the details
 * Modified Springdoc-openapi dependency to be compatible with spring boot 3.0
 
+v2.17.0
+=======
+* Introduced converter for `char` primitive and `Character` class
+* Introduced new specifications:
+  * `isEmpty`, `isNotEmpty` - these specifications filter out elements that have empty (not empty) collection of elements, that is defined under `path` in `@Spec` annotation.
+  * `Empty` - this specification filters for collections using `is empty` or `is not empty`, depending on the value of the parameter passed in (e.g. ` where customer.orders is empty`).
+  * `NotEmpty` - it is a negation for `Empty` specification.
+  * `isTrue`, `isFalse` - these specifications filter with `true`/`false` value of particular field defined under `path` in `@Spec` annotation.
+  * `True` - this specification filters using `true` or `false` for a boolean type field, depending on the value of the parameter passed in.
+  * `False` - it is a negation for `True` specification.
+  * `isMember`, `isNotMember` - checks if the value passed as HTTP parameter is a member of a collection attribute of an entity (defined under `path` in `@Spec` annotation).
+
 v2.16.0
 =======
+* Introduced `EqualDay` specification which allows finding all records within particular date (day), ignoring time.
 * Added ability to set custom `Locale` during resolver registration:
   ```java
   @Override
@@ -20,7 +33,6 @@ v2.16.0
   ```java
   @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
   ```
-* additional Javadocs
 * Introduced new case-insensitive specification `NotLikeIgnoreCase` that works in similar way as `LikeIgnoreCase` but is its negation.
 * introduced `missingPathVarPolicy` to `@Spec` annotation with available values: `IGNORE` and `EXCEPTION` (default). New policy is intended to configure behaviour on missing path variable.
   * for more details please check out section `Support for multiple paths with path variables` in `README.md`.
@@ -29,7 +41,7 @@ v2.16.0
 v2.15.1
 ======
 * updated spring-boot-dependencies to 2.7.7
-* fixed potential issue with detecting non-emmpty HTTP headers
+* fixed potential issue with detecting non-empty HTTP headers
 * fixed redundant proxy creation for multi-spec specifications when expected type is not a spec-interface
 
 v2.15.0
@@ -123,7 +135,7 @@ v2.11.0
   * To create specifications outside the web layer, you can use the specification builder as follows:
     ```java
     Specification<Customer> spec = SpecificationBuilder.specification(CustomerByOrdersSpec.class) // good candidate for static import
-          .withParams("orderItem", "Pizza")
+          .withParam("orderItem", "Pizza")
           .build();            
     ```
   * It is recommended to use builder methods that corresponding to the type of argument passed to specification interface, e.g.:
@@ -131,8 +143,8 @@ v2.11.0
     ```java
     @Spec(paths = "o.itemName", params = "orderItem", spec=Like.class)
     ``` 
-    you should use `withparams(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
-    * `params = <args>` => `withParams(<argName>, <values...>)`, single param argument can provide multiple values
+    you should use `withParam(<argName>, <values...>)` method. Each argument type (param, header, path variable) has its own corresponding builder method:
+    * `params = <args>` => `withParam(<argName>, <values...>)`, single param argument can provide multiple values
     * `pathVars = <args>` => `withPathVar(<argName>, <value>)`, single pathVar argument can provide single value
     * `headers = <args>` => `withHeader(<argName>, <value>)`, single header argument can provide single value
 

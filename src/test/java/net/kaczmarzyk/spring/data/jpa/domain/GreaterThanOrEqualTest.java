@@ -50,7 +50,21 @@ public class GreaterThanOrEqualTest extends ComparableWithConverterTestBase {
         assertFilterContainsOnlyExpectedMembers("genderAsString", "FEMALE", margeSimpson, homerSimpson, moeSzyslak);
         assertFilterIsEmpty("genderAsString", "OTHER");
     }
-    
+
+	@Test
+	public void filtersByCharPrimitive() {
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "M", homerSimpson, moeSzyslak);
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "L", homerSimpson, moeSzyslak);
+		assertFilterIsEmpty("genderAsChar", "N");
+	}
+
+	@Test
+	public void filtersByCharacter() {
+		assertFilterContainsOnlyExpectedMembers("genderAsCharacter", "M", homerSimpson, moeSzyslak);
+		assertFilterContainsOnlyExpectedMembers("genderAsCharacter", "L", homerSimpson, moeSzyslak);
+		assertFilterIsEmpty("genderAsChar", "N");
+	}
+
     @Test
     public void filtersByLongValue() {
     	assertFilterContainsOnlyExpectedMembers("id", moeSzyslak.getId().toString(), moeSzyslak, joeQuimby);
