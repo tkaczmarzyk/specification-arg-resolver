@@ -51,6 +51,7 @@ public class SpecificationArgumentResolverHintRegistrar implements RuntimeHintsR
             IsMember.class,
             IsNotMember.class,
             IsNull.class,
+            IsNotNull.class,
             IsTrue.class,
             LessThan.class,
             LessThanOrEqual.class,
