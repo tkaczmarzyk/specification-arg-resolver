@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class ResolverTestBase {
 
 	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
+	protected Converter defaultConverterForPathVars = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null, Locale.getDefault());
 	
 	protected MethodParameter testMethodParameter(String methodName) {
         return MethodParameter.forExecutable(testMethod(methodName, Specification.class), 0);

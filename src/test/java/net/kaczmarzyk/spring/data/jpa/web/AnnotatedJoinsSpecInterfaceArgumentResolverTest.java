@@ -43,10 +43,8 @@ import static org.mockito.Mockito.mock;
 public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
 	// TC-1. interface with @Joins spec
-	@Joins({
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders", alias = "o", type = INNER),
+			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders", alias = "o", type = INNER)
 			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "orders2", alias = "o2")
-	})
 	@Spec(path = "o.itemName", params = "itemName", spec = Equal.class)
 	private interface OrderedItemNameFilter<T> extends Specification<T> {
 	}
@@ -58,9 +56,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 	private interface LastNameGenderFilterExtendedByOrderedItemNameFilter extends OrderedItemNameFilter<Customer> {
 	}
 
-	@Joins({
-			@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "badges", alias = "b", type = INNER)
-	})
+	@net.kaczmarzyk.spring.data.jpa.web.annotation.Join(path = "badges", alias = "b", type = INNER)
 	@Spec(path = "b.badgeType", params = "badgeType", spec = Equal.class)
 	private interface BadgeFilter extends Specification<Customer> {
 	}
@@ -134,7 +130,7 @@ public class AnnotatedJoinsSpecInterfaceArgumentResolverTest extends AnnotatedSp
 		Assertions.assertThat(proxiedInnerSpecs(resolved))
 				.hasSize(6)
 				.containsOnly(
-						new Conjunction<>(new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "badges", "b", JoinType.INNER, true)),
+						new net.kaczmarzyk.spring.data.jpa.domain.Join<>(ctx.queryContext(), "badges", "b", JoinType.INNER, true),
 						new EmptyResultOnTypeMismatch<>(equal(ctx, "b.badgeType", "Beef Eater")),
 						new Conjunction<>(
 								new EmptyResultOnTypeMismatch<>(in(ctx, "gender", "MALE")),

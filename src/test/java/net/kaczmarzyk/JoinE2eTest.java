@@ -92,10 +92,8 @@ public class JoinE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findByOrdersAndBadges(
 
-				@Joins({
-						@Join(path = "orders", alias = "o"),
-						@Join(path = "badges", alias = "b")
-				})
+				@Join(path = "orders", alias = "o")
+				@Join(path = "badges", alias = "b")
 				@Or({
 						@Spec(path = "o.itemName", params = "order", spec = Like.class),
 						@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)

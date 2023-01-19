@@ -15,6 +15,20 @@
  */
 package net.kaczmarzyk.e2e.annotated;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.persistence.criteria.JoinType;
 /**
  * Copyright 2014-2020 the original author or authors.
  *
@@ -34,27 +48,15 @@ import net.kaczmarzyk.E2eTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Joins;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.persistence.criteria.JoinType;
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 /**
+ * This test case was originally written for Joins container annotation. 
+ * In 3.0, Joins was removed. The test was updated to use repeated Join annotations instead.
+ * 
  * Test cases:
  * TC-1. interface with @Joins spec
  * TC-2. interface with @Joins spec extending param spec
@@ -65,10 +67,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AnnotatedSpecInterfaceJoinsE2eTest extends E2eTestBase {
 
 	// TC-1. interface with @Joins spec
-	@Joins({
-			@Join(path = "orders", alias = "o", type = JoinType.LEFT),
-			@Join(path = "badges", alias = "b", type = JoinType.LEFT)
-	})
+	@Join(path = "orders", alias = "o", type = JoinType.LEFT)
+	@Join(path = "badges", alias = "b", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", params = "order", spec = Like.class),
 			@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
@@ -81,10 +81,8 @@ public class AnnotatedSpecInterfaceJoinsE2eTest extends E2eTestBase {
 	}
 
 	// TC-4. interface without any spec extending interface with @Joins spec
-	@Joins({
-			@Join(path = "orders", alias = "o", type = JoinType.LEFT),
-			@Join(path = "badges", alias = "b", type = JoinType.LEFT)
-	})
+	@Join(path = "orders", alias = "o", type = JoinType.LEFT)
+	@Join(path = "badges", alias = "b", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", params = "order", spec = Like.class),
 			@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
@@ -94,18 +92,14 @@ public class AnnotatedSpecInterfaceJoinsE2eTest extends E2eTestBase {
 	}
 
 	// TC-5. interface with @Joins spec extending other interface with @Joins spec
-	@Joins({
-			@Join(path = "badges", alias = "b", type = JoinType.LEFT)
-	})
+	@Join(path = "badges", alias = "b", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
 	})
 	private static interface BadgeTypeFilter extends Specification<Customer> {
 	}
 
-	@Joins({
-			@Join(path = "orders", alias = "o", type = JoinType.LEFT)
-	})
+	@Join(path = "orders", alias = "o", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", params = "order", spec = Like.class)
 	})
@@ -137,10 +131,8 @@ public class AnnotatedSpecInterfaceJoinsE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/anno-iface-joins/customersByEmptyFilterExtendingParamSpec")
 		@ResponseBody
 		public List<Customer> getCustomersByItemNameOrBadgeType(
-				@Joins({
-						@Join(path = "orders", alias = "o", type = JoinType.LEFT),
-						@Join(path = "badges", alias = "b", type = JoinType.LEFT)
-				})
+				@Join(path = "orders", alias = "o", type = JoinType.LEFT)
+				@Join(path = "badges", alias = "b", type = JoinType.LEFT)
 				@Or({
 						@Spec(path = "o.itemName", params = "order", spec = Like.class),
 						@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)

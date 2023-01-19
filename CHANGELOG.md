@@ -18,6 +18,11 @@ v3.0.0
   * Inner joins are now evaluated even if there is no filtering applied on the joined part due to a missing HTTP param (as inner join may narrow down query results)
   * For non-distinct queries, all joins are now evaluated eagerly (even if there is no filtering applied on the joined part). Reminder for Hibernate users: from Hibernate 6 onwards, all queries are distinct anyway
   * in all other situations, left and right joins are not evaluated unless there is filtering on the joined part (and the corresponding HTTP param is present)
+* Removed all deprecated items, including:
+  * `DateAfter`, `DateAfterInclusive`, `DateBefore`, `DateBeforeInclusive` - use `GreaterThan`, `GreaterThanOrEqual`, `LessThan` or `LessThanOrEqual`
+  * `DateBetween` - use `Between`
+  * `EqualEnum` - use `Equal`
+  * `@Joins` container annotation - use repeated `@Join` and `@JoinFetch`
 
 v2.17.0
 =======

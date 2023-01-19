@@ -96,13 +96,9 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 	interface DisjunctionFilter extends FilterWithRepeatedJoinAnnotations {
 	}
 
-	@Joins(
-			value = {
-					@Join(path = "joins1join1", alias = "joins1join1alias", distinct = true, type = LEFT),
-					@Join(path = "joins1join2", alias = "joins1join2alias", distinct = false, type = JoinType.RIGHT),
-					@Join(path = "joins1join3", alias = "joins1join3alias", distinct = true, type = INNER)
-			}
-	)
+	@Join(path = "joins1join1", alias = "joins1join1alias", distinct = true, type = LEFT)
+	@Join(path = "joins1join2", alias = "joins1join2alias", distinct = false, type = JoinType.RIGHT)
+	@Join(path = "joins1join3", alias = "joins1join3alias", distinct = true, type = INNER)
 	interface JoinsFilter extends Specification<Object> {
 	}
 

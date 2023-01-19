@@ -15,14 +15,11 @@
  */
 package net.kaczmarzyk.e2e.converter;
 
-import net.kaczmarzyk.E2eTestBase;
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
-import net.kaczmarzyk.spring.data.jpa.domain.EqualDay;
-import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
-import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,10 +28,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import net.kaczmarzyk.E2eTestBase;
+import net.kaczmarzyk.spring.data.jpa.Customer;
+import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
+import net.kaczmarzyk.spring.data.jpa.domain.EqualDay;
+import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
+import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 
 public class DateE2eTest extends E2eTestBase {
@@ -64,7 +65,7 @@ public class DateE2eTest extends E2eTestBase {
 		@RequestMapping(value = "/customers", params = {"registeredBefore", "registeredAfter"})
 		@ResponseBody
 		public Object findCustomersRegisteredBetween(
-				@Spec(path="registrationDate", params={"registeredAfter", "registeredBefore"}, spec=DateBetween.class) Specification<Customer> spec) {
+				@Spec(path="registrationDate", params={"registeredAfter", "registeredBefore"}, spec=Between.class) Specification<Customer> spec) {
 
 			return customerRepo.findAll(spec);
 		}

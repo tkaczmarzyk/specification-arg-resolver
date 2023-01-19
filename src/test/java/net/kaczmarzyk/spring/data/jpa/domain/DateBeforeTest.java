@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
+ * (In 3.0, DateBefore was removed in favour of LessThan)
+ * 
  * @author Tomasz Kaczmarzyk
  */
 public class DateBeforeTest extends IntegrationTestBase {
@@ -47,14 +49,14 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateBefore<Customer> before13th = new DateBefore<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
+        LessThan<Customer> before13th = new LessThan<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
         
         List<Customer> result = customerRepo.findAll(before13th);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
         
-        DateBefore<Customer> before10th = new DateBefore<>(queryCtx, "registrationDate", new String[] {"2014-03-10"}, defaultConverter);
+        LessThan<Customer> before10th = new LessThan<>(queryCtx, "registrationDate", new String[] {"2014-03-10"}, defaultConverter);
         
         result = customerRepo.findAll(before10th);
         assertThat(result)
@@ -64,7 +66,7 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-        DateBefore<Customer> before13th = new DateBefore<>(queryCtx, "registrationDate", new String[] {"13-03-2014"},
+    	LessThan<Customer> before13th = new LessThan<>(queryCtx, "registrationDate", new String[] {"13-03-2014"},
         		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
         
         List<Customer> result = customerRepo.findAll(before13th);
@@ -75,11 +77,11 @@ public class DateBeforeTest extends IntegrationTestBase {
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateBefore<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        new LessThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateBefore<>(queryCtx, "path", new String[] {}, defaultConverter);
+        new LessThan<>(queryCtx, "path", new String[] {}, defaultConverter);
     }
 }

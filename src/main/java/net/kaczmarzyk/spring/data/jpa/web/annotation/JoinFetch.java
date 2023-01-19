@@ -22,7 +22,7 @@ import java.lang.annotation.*;
 /**
  * Specifies paths to be join-fetched in the query
  * 
- * Can be repeated, to specify multiple fetches. See {@link Joins} container annotation.
+ * Can be repeated, to specify multiple fetches.
  * 
  * @author Tomasz Kaczmarzyk
  * @author Gerald Humphries
