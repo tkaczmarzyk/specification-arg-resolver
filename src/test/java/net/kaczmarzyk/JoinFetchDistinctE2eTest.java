@@ -168,8 +168,9 @@ public class JoinFetchDistinctE2eTest extends E2eTestBase {
 	}
 
 	/**
-	 * Below tests should not pass, however it pass due to the bug: https://hibernate.atlassian.net/browse/HHH-15852.
-	 * We expect that the join and join fetch behaviour for not-distinct paged queries should be the same.
+	 * Warning: Hibernate makes all queries distinct.
+	 * Also, it discourages from using join fetches in paginated queries: https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-limit-offset
+	 * This in combination with Spring Data causes inconsistencies (as some queries are executed with distinct true and other with distinct false as a result)
 	 * @throws Exception
 	 */
 	@Test

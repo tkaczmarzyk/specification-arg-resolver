@@ -169,6 +169,12 @@ public class JoinDistinctE2eTest extends E2eTestBase {
 				.hasOneClause("distinct");
 	}
 
+	/**
+	 * Warning: Hibernate makes all queries distinct.
+	 * Also, it discourages from using join fetches in paginated queries: https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-limit-offset
+	 * This in combination with Spring Data causes inconsistencies (as some queries are executed with distinct true and other with distinct false as a result)
+	 * @throws Exception
+	 */
 	@Test
 	public void returnsTheDeduplicatedEntitiesDespiteTheFactThatQueryIsNotDistinctForPagedQueryWhenDistinctAttributeIsSetToFalse() throws Exception {
 		mockMvc.perform(get("/join-distinct/customers/paged/distinct-false")
