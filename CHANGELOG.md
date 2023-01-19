@@ -7,6 +7,14 @@ v3.0.0
 * Modified Springdoc-openapi dependency to be compatible with spring boot 3.0
 * Refactored `IsMember`, `IsNotMember` specifications - they no longer use reflection explicitly. 
 * changed default join type in `@Join` from `INNER` to `LEFT`
+  I.e. if you have been using `@Join` with default join type:
+  ```java
+  @Join(path="addresses", alias="a")
+  ```
+  Then, if you want to keep INNER join behaviour, you need to make it explicit (otherwise it will be LEFT):
+  ```java
+  @Join(path="addresses", alias="a", type=JoinType.INNER)
+  ```
 * Changed join lazy evaluation:
   * Inner joins are now evaluatedeven if there is no filtering applied on the joined part due to a missing HTTP param (as inner join may narrow down query results)
   * For non-distinct queries, all joins are now evaluated eagerly (even if there is no filtering applied on the joined part)
