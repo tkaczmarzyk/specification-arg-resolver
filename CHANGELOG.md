@@ -17,7 +17,7 @@ v3.0.0
 * Changed join lazy evaluation:
   * Inner joins are now evaluated even if there is no filtering applied on the joined part due to a missing HTTP param (as inner join may narrow down query results)
   * For non-distinct queries, all joins are now evaluated eagerly (even if there is no filtering applied on the joined part). Reminder for Hibernate users: from Hibernate 6 onwards, all queries are distinct anyway
-  * in all other situations, left and right joins are not evaluated unless there is filtering on the joined part (and the corresponding HTTP param is present)
+  * in all other situations, joins are not evaluated unless there is filtering on the joined part (and the corresponding HTTP param is present)
 
 v2.17.0
 =======
