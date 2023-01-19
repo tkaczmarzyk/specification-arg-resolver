@@ -11,7 +11,7 @@ You can also take a look on working Spring Boot apps that use this library:
     * this includes demonstration of Native Images for GraalVM
   * for Spring Boot 2: https://github.com/tkaczmarzyk/specification-arg-resolver-example.
 
-* Table of contents 
+## Table of contents 
    * [Basic usage](#basic-usage) -- quick start with the lib
       * [Enabling spec annotations in your Spring app](#enabling-spec-annotations-in-your-spring-app)
    * [Simple specifications](#simple-specifications) -- basic specs, such as `Equal`, `Like`, `GreaterThan` etc.
