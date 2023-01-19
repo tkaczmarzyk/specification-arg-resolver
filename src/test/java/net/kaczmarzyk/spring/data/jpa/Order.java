@@ -29,7 +29,7 @@ import static jakarta.persistence.CascadeType.REMOVE;
 @Table(name = "orders")
 public class Order {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String itemName;
