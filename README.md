@@ -473,9 +473,9 @@ public Object findByOrderedItem(
 
 ```
 
-The default join type is `INNER`. You can use `type` attribute of the annotation to specify different value.
+The default join type is `LEFT`. You can use `type` attribute of the annotation to specify different value.
 
-Using `@Join` annotation makes the query distinct by default. While it is the best approach for most of the cases, you can override it by using `distinct` attribute of the annotation.
+Using `@Join` annotation makes the query distinct by default. While it is the best approach for most of the cases, you can override it by using `distinct` attribute of the annotation. Warning for Hibernate users: from Hibernate version 6 onwards, all queries are distinct anyway and there is no way to change it.
 
 You can specify multiple different joins, for example:
 
@@ -557,6 +557,12 @@ public Object findCustomersByOrderedItemTag(
 ```
 
 You can use join annotations with custom [annotated specification interfaces](#annotated-specification-interfaces).
+
+## Join evaluation
+
+Inner joins are always evaluated eagerly, even if there is no filtering applied on the joined part (e.g. due to a missing HTTP parameter associated with the specification). This is due to the fact, that inner joins may narrow the result set (entities with empty associations will be ommited). Warning: this behaviour was different in pre 3.X version, see CHANGELOG.md for more details if you are still using 2.X.
+
+Left and right joins are lazily evaluated for distinct queries, i.e. if the HTTP parameter associated with the specification is not present, join will not be performed (as it would be meaningless). For non-distinct queries evaluation will be eager, as such join may expand the result set (duplicated entities might be returned in the result set). Again, this does not matter for Hibernate 6+ users.
 
 Join fetch
 ----------
