@@ -6,7 +6,10 @@ An alternative API for filtering data with Spring MVC &amp; Spring Data JPA.
 
 A thorough introduction and the original rationale behind this component can be found my blog: http://blog.kaczmarzyk.net/2014/03/23/alternative-api-for-filtering-data-with-spring-mvc-and-spring-data/. In this file you can find a summary of all the current features and some API examples.
 
-You can also take a look on a working Spring Boot app that uses this library: https://github.com/tkaczmarzyk/specification-arg-resolver-example.
+You can also take a look on working Spring Boot apps that use this library:
+* for Spring Boot 3: https://github.com/tratif/specification-arg-resolver-example-springboot3
+  * this includes demonstration of Native Images for GraalVM
+* for Spring Boot 2: https://github.com/tkaczmarzyk/specification-arg-resolver-example.
 
 * Table of contents 
    * [Basic usage](#basic-usage) -- quick start with the lib
@@ -1351,6 +1354,7 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
+| `v3.X`                             | `17` or higher   | Compiled and tested against Spring Boot `3.0.0`                                         |
 | `v2.X`                             | `1.8` or higher  | Compiled and tested against Spring Boot `2.7.7`                                         |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
