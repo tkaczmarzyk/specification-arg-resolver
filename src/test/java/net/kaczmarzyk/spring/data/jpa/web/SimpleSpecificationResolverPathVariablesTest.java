@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 
-import net.kaczmarzyk.spring.data.jpa.domain.DateBetween;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.junit.Test;
@@ -98,7 +98,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-		assertThat(resolved).isEqualTo(new DateBetween<>(ctx.queryContext(), "thePath", new String[]{"2019-01-25", "2019-01-27"}, defaultConverter));
+		assertThat(resolved).isEqualTo(new Between<>(ctx.queryContext(), "thePath", new String[]{"2019-01-25", "2019-01-27"}, defaultConverterForPathVars));
 	}
 
 	@Test(expected = InvalidPathVariableRequestedException.class)
@@ -157,7 +157,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-		assertThat(resolved).isEqualTo(new DateBetween<>(ctx.queryContext(), "thePath", new String[]{"2019-01-25", "2019-01-27"}, defaultConverter));
+		assertThat(resolved).isEqualTo(new Between<>(ctx.queryContext(), "thePath", new String[]{"2019-01-25", "2019-01-27"}, defaultConverterForPathVars));
 	}
 
 	@RequestMapping(path = "/customers/{customerId}")
@@ -173,7 +173,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		@RequestMapping(path = "/orders/{orderId}")
 		public void testMethodUsingMultiplePathVariables(
-				@Spec(path = "thePath", pathVars = {"customerId", "orderId"}, spec = DateBetween.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+				@Spec(path = "thePath", pathVars = {"customerId", "orderId"}, spec = Between.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
 		}
 
 		@RequestMapping(path = "/orders/{orderId}")

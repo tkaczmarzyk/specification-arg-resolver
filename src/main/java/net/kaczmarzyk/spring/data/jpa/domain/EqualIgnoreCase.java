@@ -18,10 +18,10 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -63,7 +63,7 @@ public class EqualIgnoreCase<T> extends PathSpecification<T> implements LocaleAw
         Class<?> typeOnPath = path(root).getJavaType();
         return cb.equal(path(root), converter.convert(expectedValue, typeOnPath, true));
     }
-    
+
     @Override
     public void setLocale(Locale locale) {
     	this.locale = locale;

@@ -15,14 +15,14 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web.annotation;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.lang.annotation.*;
 
 
 /**
  * Specifies paths to be join-fetched in the query
  * 
- * Can be repeated, to specify multiple fetches. See {@link Joins} container annotation.
+ * Can be repeated, to specify multiple fetches.
  * 
  * @author Tomasz Kaczmarzyk
  * @author Gerald Humphries
@@ -37,6 +37,12 @@ public @interface JoinFetch {
     String alias() default "";
     
     JoinType joinType() default JoinType.LEFT;
-    
+
+    /**
+     * Hibernate since version 6.0 deduplicates results (https://github.com/hibernate/hibernate-orm/blob/6.0/migration-guide.adoc#query-sqm-distinct).
+     * For the paged and count queries the distinct should be set to true (default behaviour) in main cases.
+     *
+     * Changing distinct to false (when using Hibernate) makes sense only in count queries -- in all other cases it will lead to unexpected behaviour.
+     */
     boolean distinct() default true;
 }

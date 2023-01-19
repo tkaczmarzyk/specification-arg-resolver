@@ -22,8 +22,8 @@ import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
-import net.kaczmarzyk.utils.interceptor.HibernateStatementInterceptor;
-import static net.kaczmarzyk.utils.interceptor.InterceptedStatementsAssert.assertThatInterceptedStatements;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
+import static net.kaczmarzyk.utils.InterceptedStatementsAssert.assertThatInterceptedStatements;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -92,10 +92,8 @@ public class JoinE2eTest extends E2eTestBase {
 		@ResponseBody
 		public Object findByOrdersAndBadges(
 
-				@Joins({
-						@Join(path = "orders", alias = "o"),
-						@Join(path = "badges", alias = "b")
-				})
+				@Join(path = "orders", alias = "o")
+				@Join(path = "badges", alias = "b")
 				@Or({
 						@Spec(path = "o.itemName", params = "order", spec = Like.class),
 						@Spec(path = "b.badgeType", params = "badge", spec = Equal.class)
@@ -200,7 +198,7 @@ public class JoinE2eTest extends E2eTestBase {
 	@Test
 	public void reusesEvaluatedJoinForManySpecs() throws Exception {
 		em.flush();
-		HibernateStatementInterceptor.clearInterceptedStatements();
+		HibernateStatementInspector.clearInterceptedStatements();
 
 		mockMvc.perform(get("/join/customers")
 				.param("order1", "Beer")

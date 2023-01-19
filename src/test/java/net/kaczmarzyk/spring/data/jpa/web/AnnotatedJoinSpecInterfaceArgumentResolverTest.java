@@ -26,13 +26,13 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.util.Collection;
 
-import static javax.persistence.criteria.JoinType.LEFT;
+import static jakarta.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.LEFT;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test cases:
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
 	// TC-1. interface with @Join spec
-	@Join(path = "orders", alias = "o", type = LEFT)
+	@Join(path = "orders", alias = "o")
 	@Spec(path = "o.itemName", params = "itemName", spec = Equal.class)
 	private interface OrderedItemNameFilter<T> extends Specification<T> {
 	}
@@ -56,7 +56,7 @@ public class AnnotatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpe
 	private interface LastNameGenderFilterExtendedByOrderedItemNameFilter extends OrderedItemNameFilter<Customer> {
 	}
 
-	@Join(path = "badges", alias = "b")
+	@Join(path = "badges", alias = "b", type = INNER)
 	@Spec(path = "b.badgeType", params = "badgeType", spec = Equal.class)
 	private interface BadgeFilter extends Specification<Customer> {
 	}

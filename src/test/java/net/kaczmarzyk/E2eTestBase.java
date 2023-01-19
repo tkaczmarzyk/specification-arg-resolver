@@ -17,7 +17,7 @@ package net.kaczmarzyk;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import net.kaczmarzyk.utils.TestLogAppender;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.Before;
 
 import java.sql.Timestamp;
@@ -139,7 +139,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 6, 15, 6, 2, 0)))
                 .build(em);
 
-        TestLogAppender.clearInterceptedLogs();
+        HibernateStatementInspector.clearInterceptedStatements();
     }
 
 

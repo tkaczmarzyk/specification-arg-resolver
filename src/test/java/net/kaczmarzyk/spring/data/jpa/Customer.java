@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -37,7 +37,7 @@ import java.util.*;
 public class Customer {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Gender gender;

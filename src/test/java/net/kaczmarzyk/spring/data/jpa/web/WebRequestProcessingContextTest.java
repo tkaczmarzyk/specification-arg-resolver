@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,13 +27,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.Executable;
 
-import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariablesInRequestAttributes;
-import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.pathVariables;
-import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.entry;
+import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

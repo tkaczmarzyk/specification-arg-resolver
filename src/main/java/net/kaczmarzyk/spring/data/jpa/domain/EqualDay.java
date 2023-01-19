@@ -15,19 +15,19 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Expression;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Expression;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static net.kaczmarzyk.spring.data.jpa.utils.DateTimeUtils.startOfNextDay;
 import static net.kaczmarzyk.spring.data.jpa.utils.DateTimeUtils.startOfDay;
+import static net.kaczmarzyk.spring.data.jpa.utils.DateTimeUtils.startOfNextDay;
 
 /**
  * <p>Matches the day part of a date-time attribute, ignoring the time.

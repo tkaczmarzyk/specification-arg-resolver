@@ -31,12 +31,12 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
 
-import static javax.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.*;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -96,13 +96,9 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 	interface DisjunctionFilter extends FilterWithRepeatedJoinAnnotations {
 	}
 
-	@Joins(
-			value = {
-					@Join(path = "joins1join1", alias = "joins1join1alias", distinct = true, type = LEFT),
-					@Join(path = "joins1join2", alias = "joins1join2alias", distinct = false, type = JoinType.RIGHT),
-					@Join(path = "joins1join3", alias = "joins1join3alias", distinct = true)
-			}
-	)
+	@Join(path = "joins1join1", alias = "joins1join1alias", distinct = true, type = LEFT)
+	@Join(path = "joins1join2", alias = "joins1join2alias", distinct = false, type = JoinType.RIGHT)
+	@Join(path = "joins1join3", alias = "joins1join3alias", distinct = true, type = INNER)
 	interface JoinsFilter extends Specification<Object> {
 	}
 
