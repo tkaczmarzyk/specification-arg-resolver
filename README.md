@@ -558,7 +558,7 @@ public Object findCustomersByOrderedItemTag(
 
 You can use join annotations with custom [annotated specification interfaces](#annotated-specification-interfaces).
 
-## Join evaluation
+### Join evaluation
 
 Inner joins are always evaluated eagerly, even if there is no filtering applied on the joined part (e.g. due to a missing HTTP parameter associated with the specification). This is due to the fact, that inner joins may narrow the result set (entities with empty associations will be ommited). Warning: this behaviour was different in pre 3.X version, see CHANGELOG.md for more details if you are still using 2.X.
 
