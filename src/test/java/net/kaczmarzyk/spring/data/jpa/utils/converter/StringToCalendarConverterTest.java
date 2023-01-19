@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
@@ -32,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StringToCalendarConverterTest {
 
-	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 
 	@Test
 	public void convertsToCalendarUsingDefaultFormat() {
@@ -105,6 +106,24 @@ public class StringToCalendarConverterTest {
 				() -> converterWithCustomFormat.convert("11-2022-24-invalid-format", Calendar.class),
 				"Date format exception, expected format: MM-yyyy-dd"
 		);
+	}
+
+	@Test
+	public void appendsDefaultTimeDuringConversionIfConverterHasOnlyDateFormatSpecified() {
+		//given
+		Converter converterWithCustomFormat = Converter.withDateFormat("yyyy-MM-dd", EMPTY_RESULT, null);
+		Calendar referenceCalendar = convertLocalDateToCalendar(LocalDate.of(2022, 11, 24));
+
+		//when
+		Calendar converted = converterWithCustomFormat.convert("2022-11-24", Calendar.class);
+
+		//then
+		assertThat(converted)
+				.isEqualTo(referenceCalendar);
+		assertThat(converted.getTime())
+				.hasHourOfDay(0)
+				.hasMinute(0)
+				.hasMillisecond(0);
 	}
 
 	private Calendar convertLocalDateToCalendar(LocalDate localDate) {

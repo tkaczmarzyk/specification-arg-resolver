@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,24 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.text.ParseException;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.text.ParseException;
-import java.util.List;
-import java.util.Queue;
-
-import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
+ * (In 3.0 DateAfterInclusive was removed in favour of GreaterThanOrEqual)
+ * 
  * @author Kamil Sutkowski
  */
 public class DateAfterInclusiveTest extends IntegrationTestBase {
@@ -48,21 +50,21 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
+        GreaterThanOrEqual<Customer> after13th = new GreaterThanOrEqual<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
 
         List<Customer> result = customerRepo.findAll(after13th);
         assertThat(result)
                 .hasSize(1)
                 .containsOnly(moeSzyslak);
 
-        DateAfterInclusive<Customer> after12th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-12" }, defaultConverter);
+        GreaterThanOrEqual<Customer> after12th = new GreaterThanOrEqual<>(queryCtx, "registrationDate", new String[] { "2014-03-12" }, defaultConverter);
 
         result = customerRepo.findAll(after12th);
         assertThat(result)
                 .hasSize(2)
                 .containsOnly(moeSzyslak, margeSimpson);
 
-        DateAfterInclusive<Customer> after10th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-10" }, defaultConverter);
+        GreaterThanOrEqual<Customer> after10th = new GreaterThanOrEqual<>(queryCtx, "registrationDate", new String[] { "2014-03-10" }, defaultConverter);
 
         result = customerRepo.findAll(after10th);
         assertThat(result)
@@ -72,7 +74,7 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-        DateAfterInclusive<Customer> after13th = new DateAfterInclusive<>(queryCtx, "registrationDate", new String[] { "13-03-2014" },
+        GreaterThanOrEqual<Customer> after13th = new GreaterThanOrEqual<>(queryCtx, "registrationDate", new String[] { "13-03-2014" },
         		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 
         List<Customer> result = customerRepo.findAll(after13th);
@@ -83,11 +85,11 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateAfterInclusive<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
+        new GreaterThanOrEqual<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateAfterInclusive<>(queryCtx, "path", new String[] {}, defaultConverter);
+        new GreaterThanOrEqual<>(queryCtx, "path", new String[] {}, defaultConverter);
     }
 }

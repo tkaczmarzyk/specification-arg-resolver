@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ import net.kaczmarzyk.spring.data.jpa.web.StandaloneProcessingContext;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * SpecificationBuilder allows creating specification apart from web layer.
  * It is recommended to use builder methods that corresponding to the type of argument passed to specification.
  * <ul>
- * <li> {@code params = <args> => withParams(<argName>, <values...>)}, single param argument can provide multiple values </li>
+ * <li> {@code params = <args> => withParam(<argName>, <values...>)}, single param argument can provide multiple values </li>
  * <li> {@code pathVars = <args> => withPathVar(<argName>, <value>)}, single pathVar argument can provide single value </li>
  * <li> {@code headers = <args> => withHeader(<argName>, <value>)}, single header argument can provide single value </li>
  * </ul>
@@ -35,9 +36,9 @@ import java.util.Map;
  * @author Jakub Radlica
  * @author Kacper Leśniak (Tratif sp. z o.o.)
  */
-public class SpecificationBuilder<T extends Specification> {
+public final class SpecificationBuilder<T extends Specification> {
 
-	private SpecificationFactory specificationFactory = new SpecificationFactory(null, null);
+	private SpecificationFactory specificationFactory;
 
 	private Class<T> specInterface;
 
@@ -48,7 +49,12 @@ public class SpecificationBuilder<T extends Specification> {
 	private Map<String, String[]> bodyParams = new HashMap<>();
 
 	private SpecificationBuilder(Class<T> specInterface) {
+		this(specInterface, Locale.getDefault());
+	}
+	
+	private SpecificationBuilder(Class<T> specInterface, Locale defaultLocale) {
 		this.specInterface = specInterface;
+		this.specificationFactory = new SpecificationFactory(null, null, defaultLocale);
 	}
 
 	public static <T extends Specification<?>> SpecificationBuilder<T> specification(Class<T> specInterface) {

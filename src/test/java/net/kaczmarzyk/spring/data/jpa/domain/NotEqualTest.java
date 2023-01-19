@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,16 @@ import java.text.ParseException;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.Gender.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 
 /**
  * @author Mateusz Fedkowicz
  */
 public class NotEqualTest extends IntegrationTestBase {
+
+	private static final String INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE = "Invalid size of 'httpParamValues' array, Expected 1 but was ";
 
 	protected Customer homerSimpson;
 	protected Customer margeSimpson;
@@ -127,6 +131,18 @@ public class NotEqualTest extends IntegrationTestBase {
 	}
 
 	@Test
+	public void filtersByCharValue() {
+		NotEqual<Customer> gender = new NotEqual<>(queryCtx, "genderAsChar", new String[] { "M" }, defaultConverter);
+		assertFilterMembers(gender, margeSimpson, joeQuimby);
+	}
+
+	@Test
+	public void filtersByCharacterValue() {
+		NotEqual<Customer> gender = new NotEqual<>(queryCtx, "genderAsCharacter", new String[] { "F" }, defaultConverter);
+		assertFilterMembers(gender, homerSimpson);
+	}
+
+	@Test
 	public void filtersByDouble() {
 		NotEqual<Customer> notHomerWeight = notEqualSpec("weightDouble", homerSimpson.getWeightDouble());
 		assertFilterMembers(notHomerWeight, margeSimpson, joeQuimby);
@@ -159,14 +175,31 @@ public class NotEqualTest extends IntegrationTestBase {
 		return new NotEqual<>(queryCtx, path, new String[]{expectedValue.toString()}, converter);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsMissingArgument() throws ParseException {
-		new NotEqual<>(queryCtx, "path", new String[] {}, defaultConverter);
+	@Test
+	public void rejectsNullArgumentArray() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new NotEqual<>(queryCtx, "path", null, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "null");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void rejectsTooManyArguments() throws ParseException {
-		new NotEqual<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
+	@Test
+	public void rejectsMissingArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new NotEqual<>(queryCtx, "path", new String[] {}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[]");
+	}
+
+	@Test
+	public void rejectsTooManyArguments() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+				() -> new NotEqual<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter));
+
+		assertThat(exception.getMessage())
+				.isEqualTo(INVALID_PARAMETER_ARRAY_SIZE_EXCEPTION_MESSAGE + "[2014-03-10, 2014-03-11]");
 	}
 
 	@Test

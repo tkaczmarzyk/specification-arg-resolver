@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 
 import java.lang.annotation.Annotation;
 
@@ -31,7 +32,7 @@ public interface ProcessingContext {
 
 	String[] getParameterValues(String webParamName);
 
-	String getPathVariableValue(String pathVariableName);
+	String getPathVariableValue(String pathVariableName, MissingPathVarPolicy missingPathVarPolicy);
 
 	String[] getBodyParamValues(String bodyParamName);
 }

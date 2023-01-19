@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class SpecificationArgumentResolverHintRegistrarTest {
 
         //additional check that each specification type has been discovered
         assertThat(specificationClasses)
-                .hasSize(27);
+                .hasSize(35);
 
         SpecificationArgumentResolverHintRegistrar hintRegistrar = new SpecificationArgumentResolverHintRegistrar();
 
@@ -58,7 +58,7 @@ public class SpecificationArgumentResolverHintRegistrarTest {
 
         //then
         assertThat(runtimeHints.reflection().typeHints())
-                        .hasSize(27);
+                        .hasSize(35);
 
         specificationClasses.forEach(domainClass -> {
             TypeHint classReflectionHints = runtimeHints.reflection().getTypeHint(domainClass.loadClass());

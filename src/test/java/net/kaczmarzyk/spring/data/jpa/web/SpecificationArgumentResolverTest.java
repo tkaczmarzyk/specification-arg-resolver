@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsNotProxy(resolved);
+
         assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
@@ -61,6 +63,8 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
+        assertThatSpecIsNotProxy(resolved);
+
         assertThat(innerSpecs(resolved))
             .hasSize(2)
             .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
@@ -70,65 +74,14 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
     }
     
     @Test
-    public void resolvesJoinContainerWithJoinFetch() throws Exception {
-    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod_joinContainerWithJoinFetch"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new DefaultQueryContext();
-        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
-
-        Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
-
-        assertThat(innerSpecs(resolved))
-            .hasSize(2)
-            .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
-            .contains(new Conjunction<Object>(
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1" }, JoinType.LEFT, true),
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch2" }, JoinType.INNER, true)));
-    }
-    
-    @Test
-    public void resolvesJoinContainerWithRegularJoin() throws Exception {
-    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod_joinContainerWithRegularJoin"), 0);
-    	FakeWebRequest req = new FakeWebRequest();
-        QueryContext queryCtx = new DefaultQueryContext();
-        req.setParameterValues("path1", "value1");
-
-        Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
-
-        assertThat(innerSpecs(resolved))
-            .hasSize(2)
-            .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
-            .contains(new Conjunction<Object>(
-            		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join1", "alias1", JoinType.INNER, true),
-            		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join2", "alias2", JoinType.LEFT, false)));
-    }
-    
-    @Test
-    public void resolvesJoinContainerWithRegularAndFetchJoins() throws Exception {
-    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod_joinContainerWithRegularAndFetchJoins"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new DefaultQueryContext();
-        when(req.getParameterValues("path1")).thenReturn(new String[] { "value1" });
-
-        Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
-
-        assertThat(innerSpecs(resolved))
-            .hasSize(2)
-            .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
-            .contains(new Conjunction<Object>(
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1" }, JoinType.LEFT, true),
-            		new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch2" }, JoinType.INNER, true),
-            		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join1", "alias1", JoinType.INNER, true),
-            		new net.kaczmarzyk.spring.data.jpa.domain.Join<Object>(queryCtx, "join2", "alias2", JoinType.LEFT, false)));
-    }
-    
-    @Test
     public void resolvesJoinFetchEvenIfOtherSpecificationIsNotPresent() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         QueryContext queryCtx = new DefaultQueryContext();
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
+
+        assertThatSpecIsNotProxy(resolved);
 
         assertThat(resolved)
             .isEqualTo(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
@@ -143,7 +96,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsProxy(resolved);
+
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(new Like<Object>(queryCtx, "path1", new String[] { "value1" }))
                 .contains(new net.kaczmarzyk.spring.data.jpa.domain.JoinFetch<Object>(queryCtx, new String[] { "fetch1", "fetch2" }, JoinType.LEFT, true));
@@ -158,7 +113,9 @@ public class SpecificationArgumentResolverTest extends ResolverTestBase {
 
         Specification<?> resolved = (Specification<?>) resolver.resolveArgument(param, null, req, null);
 
-        assertThat(innerSpecs(resolved))
+        assertThatSpecIsProxy(resolved);
+
+        assertThat(proxiedInnerSpecs(resolved))
                 .hasSize(2)
                 .contains(new Like<>(queryCtx, "path1", new String[]{ "value1" }))
                 .contains(new Conjunction<>(

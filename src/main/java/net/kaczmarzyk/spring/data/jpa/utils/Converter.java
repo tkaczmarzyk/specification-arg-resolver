@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,12 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -39,7 +38,7 @@ import static java.util.Objects.nonNull;
  * @author Tomasz Kaczmarzyk
  */
 @SuppressWarnings("unchecked")
-public class Converter {
+public final class Converter {
 	
 	public static class ValuesRejectedException extends IllegalArgumentException {
 		
@@ -69,7 +68,11 @@ public class Converter {
 		private String rejectedValue;
 		
 		public ValueRejectedException(String rejectedValue, String message) {
-			super(message);
+			this(rejectedValue, message, null);
+		}
+		
+		public ValueRejectedException(String rejectedValue, String message, Exception cause) {
+			super(message, cause);
 			this.rejectedValue = rejectedValue;
 		}
 		
@@ -96,18 +99,18 @@ public class Converter {
 
 	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseSensitive = (enumVal, rawValue) -> enumVal.name().equals(rawValue);
 
-	private static BiFunction<Enum<?>, String, Boolean> enumMatcherCaseInsensitive =
-			(enumVal, rawValue) -> enumVal.name().toUpperCase().equals(rawValue.toUpperCase());
+	private BiFunction<Enum<?>, String, Boolean> enumMatcherCaseInsensitive;
 
 	private String dateFormat;
 	private OnTypeMismatch onTypeMismatch;
 	
 	private ConversionService conversionService;
 	
-	private Converter(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
+	private Converter(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService, Locale locale) {
 		this.dateFormat = dateFormat;
 		this.onTypeMismatch = onTypeMismatch;
 		this.conversionService = conversionService;
+		this.enumMatcherCaseInsensitive = (enumVal, rawValue) -> enumVal.name().toUpperCase(locale).equals(rawValue.toUpperCase(locale));
 	}
 	
 	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
@@ -149,6 +152,8 @@ public class Converter {
 			return (T) convertToFloat(value);
 		} else if (isAssignableFromAnyOf(expectedClass, double.class, Double.class)) {
 			return (T) convertToDouble(value);
+		} else if (isAssignableFromAnyOf(expectedClass, char.class, Character.class)) {
+			return (T) convertToChar(value, ignoreCase);
 		} else if (expectedClass.isAssignableFrom(LocalDateTime.class)) {
 			return (T) convertToLocalDateTime(value);
 		} else if (expectedClass.isAssignableFrom(LocalDate.class)) {
@@ -185,17 +190,17 @@ public class Converter {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
 			return LocalDate.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "LocalDate format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "LocalDate format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
 	private LocalDateTime convertToLocalDateTime(String value) {
 		String dateFormat = getDateFormat(LocalDateTime.class);
 		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+			DateTimeFormatter formatter = formatterWithDefaultTime(dateFormat);
 			return LocalDateTime.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "LocalDateTime format exception, expected format:" + dateFormat);
+			throw new ValueRejectedException(value, "LocalDateTime format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
@@ -203,7 +208,7 @@ public class Converter {
 		try {
 			return Long.valueOf(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
 		}
 	}
 	
@@ -211,7 +216,15 @@ public class Converter {
 		try {
 			return Double.valueOf(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
+		}
+	}
+
+	private Character convertToChar(String value, boolean ignoreCase) {
+		if (value.length() == 1) {
+			return ignoreCase ? Character.toUpperCase(value.charAt(0)) : value.charAt(0);
+		} else {
+			throw new ValueRejectedException(value, "value is not a single character exception");
 		}
 	}
 	
@@ -219,7 +232,7 @@ public class Converter {
 		try {
 			return Float.valueOf(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
 		}
 	}
 	
@@ -227,7 +240,7 @@ public class Converter {
 		try {
 			return new BigDecimal(value);
 		} catch (NumberFormatException e) {
-			throw new ValueRejectedException(value, "number format exception");
+			throw new ValueRejectedException(value, "number format exception", e);
 		}
 	}
 	
@@ -247,7 +260,7 @@ public class Converter {
 			validateDateFormat(dateFormat, value);
 			return new SimpleDateFormat(dateFormat).parse(value);
 		} catch (ParseException | DateTimeParseException e) {
-			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat, e);
 		}
 	}
 
@@ -259,7 +272,7 @@ public class Converter {
 			cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
 			return cal;
 		} catch (ParseException | DateTimeParseException e) {
-			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
@@ -275,25 +288,26 @@ public class Converter {
 		try {
 			return UUID.fromString(value);
 		} catch (IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "unparseable uuid");
+			throw new ValueRejectedException(value, "unparseable uuid", e);
 		}
 	}
 	
 	public OffsetDateTime convertToOffsetDateTime(String value) {
 		String dateFormat = getDateFormat(OffsetDateTime.class);
 		try {
-			return OffsetDateTime.parse(value, DateTimeFormatter.ofPattern(dateFormat));
+			DateTimeFormatter formatter = formatterWithDefaultTime(dateFormat);
+			return OffsetDateTime.parse(value, formatter);
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "OffsetDateTime format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "OffsetDateTime format exception, expected format: " + dateFormat, e);
 		}
 	}
 	
 	public Instant convertToInstant(String value) {
 		String dateFormat = getDateFormat(Instant.class);
 		try {
-			return Instant.from(DateTimeFormatter.ofPattern(dateFormat).parse(value));
+			return Instant.from(formatterWithDefaultTime(dateFormat).parse(value));
 		} catch (DateTimeParseException | IllegalArgumentException e) {
-			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Instant format exception, expected format: " + dateFormat, e);
 		}
 	}
 
@@ -315,7 +329,7 @@ public class Converter {
 			Date parsedDate = simpleDateFormat.parse(value);
 			return new Timestamp(parsedDate.getTime());
 		} catch (Exception e) {
-			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat);
+			throw new ValueRejectedException(value, "Timestamp format exception, expected format: " + dateFormat, e);
 		}
 	}
 
@@ -323,6 +337,17 @@ public class Converter {
 		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(expectedDateFormatPattern)
 				.withResolverStyle(ResolverStyle.STRICT);
 		dateFormatter.parse(date);
+	}
+
+	private DateTimeFormatter formatterWithDefaultTime(String dateFormat) {
+		return new DateTimeFormatterBuilder()
+				.appendPattern(dateFormat)
+				.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+				.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+				.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+				.parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
+				.parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
+				.toFormatter();
 	}
 
 	@Override
@@ -336,8 +361,12 @@ public class Converter {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		Converter converter = (Converter) o;
 		return Objects.equals(dateFormat, converter.dateFormat) &&
 				onTypeMismatch == converter.onTypeMismatch;
@@ -349,11 +378,11 @@ public class Converter {
 	}
 	
 	public static Converter withDateFormat(String dateFormat, OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
-		return new Converter(dateFormat, onTypeMismatch, conversionService);
+		return new Converter(dateFormat, onTypeMismatch, conversionService, Locale.getDefault());
 	}
 	
-	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch, ConversionService conversionService) {
-		return new Converter(null, onTypeMismatch, conversionService);
+	public static Converter withTypeMismatchBehaviour(OnTypeMismatch onTypeMismatch, ConversionService conversionService, Locale locale) {
+		return new Converter(null, onTypeMismatch, conversionService, locale);
 	}
 	
 }

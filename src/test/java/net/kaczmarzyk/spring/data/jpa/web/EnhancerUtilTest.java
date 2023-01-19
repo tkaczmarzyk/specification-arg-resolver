@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import net.kaczmarzyk.spring.data.jpa.domain.Conjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Disjunction;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.utils.SimpleSpecificationGenerator;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.SimpleSpecificationGenerator.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnhancerUtilTest {
 
@@ -39,25 +39,25 @@ public class EnhancerUtilTest {
 			CustomSpecInterface firstSpecEnhanced = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstSpec);
 			CustomSpecInterface secondSpecEnhanced = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, secondSpec);
 
-			Assertions.assertThat(firstSpec).isEqualTo(firstSpec);
-			Assertions.assertThat(firstSpec).isEqualTo(secondSpec);
-			Assertions.assertThat(firstSpec).isNotEqualTo(firstSpecEnhanced);
-			Assertions.assertThat(firstSpec).isNotEqualTo(secondSpecEnhanced);
+			assertThat(firstSpec).isEqualTo(firstSpec);
+			assertThat(firstSpec).isEqualTo(secondSpec);
+			assertThat(firstSpec).isNotEqualTo(firstSpecEnhanced);
+			assertThat(firstSpec).isNotEqualTo(secondSpecEnhanced);
 
-			Assertions.assertThat(secondSpec).isEqualTo(secondSpec);
-			Assertions.assertThat(secondSpec).isEqualTo(secondSpec);
-			Assertions.assertThat(secondSpec).isNotEqualTo(firstSpecEnhanced);
-			Assertions.assertThat(secondSpec).isNotEqualTo(secondSpecEnhanced);
+			assertThat(secondSpec).isEqualTo(secondSpec);
+			assertThat(secondSpec).isEqualTo(secondSpec);
+			assertThat(secondSpec).isNotEqualTo(firstSpecEnhanced);
+			assertThat(secondSpec).isNotEqualTo(secondSpecEnhanced);
 
-			Assertions.assertThat(firstSpecEnhanced).isNotEqualTo(firstSpec);
-			Assertions.assertThat(firstSpecEnhanced).isNotEqualTo(secondSpec);
-			Assertions.assertThat(firstSpecEnhanced).isEqualTo(firstSpecEnhanced);
-			Assertions.assertThat(firstSpecEnhanced).isEqualTo(secondSpecEnhanced);
+			assertThat(firstSpecEnhanced).isNotEqualTo(firstSpec);
+			assertThat(firstSpecEnhanced).isNotEqualTo(secondSpec);
+			assertThat(firstSpecEnhanced).isEqualTo(firstSpecEnhanced);
+			assertThat(firstSpecEnhanced).isEqualTo(secondSpecEnhanced);
 
-			Assertions.assertThat(secondSpecEnhanced).isNotEqualTo(firstSpec);
-			Assertions.assertThat(secondSpecEnhanced).isNotEqualTo(secondSpec);
-			Assertions.assertThat(secondSpecEnhanced).isEqualTo(firstSpecEnhanced);
-			Assertions.assertThat(secondSpecEnhanced).isEqualTo(secondSpecEnhanced);
+			assertThat(secondSpecEnhanced).isNotEqualTo(firstSpec);
+			assertThat(secondSpecEnhanced).isNotEqualTo(secondSpec);
+			assertThat(secondSpecEnhanced).isEqualTo(firstSpecEnhanced);
+			assertThat(secondSpecEnhanced).isEqualTo(secondSpecEnhanced);
 		});
 	}
 
@@ -73,7 +73,7 @@ public class EnhancerUtilTest {
 		CustomSpecInterface secondConjunctionEnhanced =
 				EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, secondConjunction);
 
-		Assertions.assertThat(firstConjunctionEnhanced).isEqualTo(firstConjunctionEnhanced);
+		assertThat(firstConjunctionEnhanced).isEqualTo(firstConjunctionEnhanced);
 	}
 
 	@Test
@@ -88,25 +88,25 @@ public class EnhancerUtilTest {
 		CustomSpecInterface secondConjunctionEnhanced =
 				EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, secondConjunction);
 
-		Assertions.assertThat(firstConjunction).isEqualTo(firstConjunction);
-		Assertions.assertThat(firstConjunction).isEqualTo(secondConjunction);
-		Assertions.assertThat(firstConjunction).isNotEqualTo(firstConjunctionEnhanced);
-		Assertions.assertThat(firstConjunction).isNotEqualTo(secondConjunctionEnhanced);
+		assertThat(firstConjunction).isEqualTo(firstConjunction);
+		assertThat(firstConjunction).isEqualTo(secondConjunction);
+		assertThat(firstConjunction).isNotEqualTo(firstConjunctionEnhanced);
+		assertThat(firstConjunction).isNotEqualTo(secondConjunctionEnhanced);
 
-		Assertions.assertThat(secondConjunction).isEqualTo(firstConjunction);
-		Assertions.assertThat(secondConjunction).isEqualTo(secondConjunction);
-		Assertions.assertThat(secondConjunction).isNotEqualTo(firstConjunctionEnhanced);
-		Assertions.assertThat(secondConjunction).isNotEqualTo(secondConjunctionEnhanced);
+		assertThat(secondConjunction).isEqualTo(firstConjunction);
+		assertThat(secondConjunction).isEqualTo(secondConjunction);
+		assertThat(secondConjunction).isNotEqualTo(firstConjunctionEnhanced);
+		assertThat(secondConjunction).isNotEqualTo(secondConjunctionEnhanced);
 
-		Assertions.assertThat(firstConjunctionEnhanced).isNotEqualTo(firstConjunction);
-		Assertions.assertThat(firstConjunctionEnhanced).isNotEqualTo(secondConjunction);
-		Assertions.assertThat(firstConjunctionEnhanced).isEqualTo(firstConjunctionEnhanced);
-		Assertions.assertThat(firstConjunctionEnhanced).isEqualTo(secondConjunctionEnhanced);
+		assertThat(firstConjunctionEnhanced).isNotEqualTo(firstConjunction);
+		assertThat(firstConjunctionEnhanced).isNotEqualTo(secondConjunction);
+		assertThat(firstConjunctionEnhanced).isEqualTo(firstConjunctionEnhanced);
+		assertThat(firstConjunctionEnhanced).isEqualTo(secondConjunctionEnhanced);
 
-		Assertions.assertThat(secondConjunctionEnhanced).isNotEqualTo(firstConjunction);
-		Assertions.assertThat(secondConjunctionEnhanced).isNotEqualTo(secondConjunction);
-		Assertions.assertThat(secondConjunctionEnhanced).isEqualTo(firstConjunctionEnhanced);
-		Assertions.assertThat(secondConjunctionEnhanced).isEqualTo(secondConjunctionEnhanced);
+		assertThat(secondConjunctionEnhanced).isNotEqualTo(firstConjunction);
+		assertThat(secondConjunctionEnhanced).isNotEqualTo(secondConjunction);
+		assertThat(secondConjunctionEnhanced).isEqualTo(firstConjunctionEnhanced);
+		assertThat(secondConjunctionEnhanced).isEqualTo(secondConjunctionEnhanced);
 	}
 
 	@Test
@@ -117,25 +117,25 @@ public class EnhancerUtilTest {
 		Disjunction<Object> secondDisjunction = new Disjunction<>(testSimpleSpecifications());
 		CustomSpecInterface secondDisjunctionEnhanced = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, secondDisjunction);
 
-		Assertions.assertThat(firstDisjunction).isEqualTo(firstDisjunction);
-		Assertions.assertThat(firstDisjunction).isEqualTo(secondDisjunction);
-		Assertions.assertThat(firstDisjunction).isNotEqualTo(firstDisjunctionEnhanced);
-		Assertions.assertThat(firstDisjunction).isNotEqualTo(secondDisjunctionEnhanced);
+		assertThat(firstDisjunction).isEqualTo(firstDisjunction);
+		assertThat(firstDisjunction).isEqualTo(secondDisjunction);
+		assertThat(firstDisjunction).isNotEqualTo(firstDisjunctionEnhanced);
+		assertThat(firstDisjunction).isNotEqualTo(secondDisjunctionEnhanced);
 
-		Assertions.assertThat(secondDisjunction).isEqualTo(firstDisjunction);
-		Assertions.assertThat(secondDisjunction).isEqualTo(secondDisjunction);
-		Assertions.assertThat(secondDisjunction).isNotEqualTo(firstDisjunctionEnhanced);
-		Assertions.assertThat(secondDisjunction).isNotEqualTo(secondDisjunctionEnhanced);
+		assertThat(secondDisjunction).isEqualTo(firstDisjunction);
+		assertThat(secondDisjunction).isEqualTo(secondDisjunction);
+		assertThat(secondDisjunction).isNotEqualTo(firstDisjunctionEnhanced);
+		assertThat(secondDisjunction).isNotEqualTo(secondDisjunctionEnhanced);
 
-		Assertions.assertThat(firstDisjunctionEnhanced).isNotEqualTo(firstDisjunction);
-		Assertions.assertThat(firstDisjunctionEnhanced).isNotEqualTo(secondDisjunction);
-		Assertions.assertThat(firstDisjunctionEnhanced).isEqualTo(firstDisjunctionEnhanced);
-		Assertions.assertThat(firstDisjunctionEnhanced).isEqualTo(secondDisjunctionEnhanced);
+		assertThat(firstDisjunctionEnhanced).isNotEqualTo(firstDisjunction);
+		assertThat(firstDisjunctionEnhanced).isNotEqualTo(secondDisjunction);
+		assertThat(firstDisjunctionEnhanced).isEqualTo(firstDisjunctionEnhanced);
+		assertThat(firstDisjunctionEnhanced).isEqualTo(secondDisjunctionEnhanced);
 
-		Assertions.assertThat(secondDisjunctionEnhanced).isNotEqualTo(firstDisjunction);
-		Assertions.assertThat(secondDisjunctionEnhanced).isNotEqualTo(secondDisjunction);
-		Assertions.assertThat(secondDisjunctionEnhanced).isEqualTo(firstDisjunctionEnhanced);
-		Assertions.assertThat(secondDisjunctionEnhanced).isEqualTo(secondDisjunctionEnhanced);
+		assertThat(secondDisjunctionEnhanced).isNotEqualTo(firstDisjunction);
+		assertThat(secondDisjunctionEnhanced).isNotEqualTo(secondDisjunction);
+		assertThat(secondDisjunctionEnhanced).isEqualTo(firstDisjunctionEnhanced);
+		assertThat(secondDisjunctionEnhanced).isEqualTo(secondDisjunctionEnhanced);
 	}
 
 	@Test
@@ -145,7 +145,7 @@ public class EnhancerUtilTest {
 		CustomSpecInterface customSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstSpec);
 		CustomSpecInterface2 secondSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface2.class, firstSpec);
 
-		Assertions.assertThat(customSpecInterface).isNotEqualTo(secondSpecInterface);
+		assertThat(customSpecInterface).isNotEqualTo(secondSpecInterface);
 	}
 
 	@Test
@@ -156,7 +156,7 @@ public class EnhancerUtilTest {
 		CustomSpecInterface customSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstSpec);
 		CustomSpecInterface secondSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, secondSpec);
 
-		Assertions.assertThat(customSpecInterface).isNotEqualTo(secondSpecInterface);
+		assertThat(customSpecInterface).isNotEqualTo(secondSpecInterface);
 	}
 
 	@Test
@@ -167,7 +167,44 @@ public class EnhancerUtilTest {
 		CustomSpecInterface customSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstSpec);
 		CustomSpecInterface secondSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(SpecExtendingCustomSpecInterface.class, secondSpec);
 
-		Assertions.assertThat(customSpecInterface).isNotEqualTo(secondSpecInterface);
+		assertThat(customSpecInterface).isNotEqualTo(secondSpecInterface);
+	}
+
+	@Test
+	public void equalsContract_enhancedInterfaceIsNotEqualToNull() {
+		Specification<Object> firstSpec = testSpecification(Equal.class);
+
+		CustomSpecInterface customSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstSpec);
+
+		assertThat(customSpecInterface).isNotEqualTo(null);
+	}
+
+	@Test
+	public void tryToInvokeOriginalSpecificationMethodAsFallbackWhenProxyDoesNotDefineCallbackForGivenMethod_and() {
+		Specification<Object> firstSpec = testSpecification(Equal.class);
+		Specification<Object> secondSpec = testSpecification(Equal.class);
+
+		CustomSpecInterface customSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstSpec);
+		CustomSpecInterface secondSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(SpecExtendingCustomSpecInterface.class, secondSpec);
+
+		Specification<Object> and = customSpecInterface.and(secondSpecInterface);
+
+		assertThat(and)
+				.isNotNull();
+	}
+
+	@Test
+	public void tryToInvokeOriginalSpecificationMethodAsFallbackWhenProxyDoesNotDefineCallbackForGivenMethod_or() {
+		Specification<Object> firstSpec = testSpecification(Equal.class);
+		Specification<Object> secondSpec = testSpecification(Equal.class);
+
+		CustomSpecInterface customSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(CustomSpecInterface.class, firstSpec);
+		CustomSpecInterface secondSpecInterface = EnhancerUtil.wrapWithIfaceImplementation(SpecExtendingCustomSpecInterface.class, secondSpec);
+
+		Specification<Object> and = customSpecInterface.or(secondSpecInterface);
+
+		assertThat(and)
+				.isNotNull();
 	}
 
 	private List<Specification<Object>> testSimpleSpecifications() {

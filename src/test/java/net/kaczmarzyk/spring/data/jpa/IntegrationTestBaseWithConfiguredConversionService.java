@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -49,7 +50,7 @@ public abstract class IntegrationTestBaseWithConfiguredConversionService {
     @PersistenceContext
     protected EntityManager em;
 	
-    protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null);
+    protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
 	
 	@Autowired
 	WebApplicationContext wac;

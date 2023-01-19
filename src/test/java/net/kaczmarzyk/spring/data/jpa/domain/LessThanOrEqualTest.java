@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
+import net.kaczmarzyk.spring.data.jpa.ComparableWithConverterTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -29,7 +29,7 @@ import org.springframework.data.jpa.domain.Specification;
  * 
  * @author TP Diffenbach
  */
-public class LessThanOrEqualTest extends ComparableTestBase {
+public class LessThanOrEqualTest extends ComparableWithConverterTestBase {
 
 	@Override
     protected Specification<Customer> makeUUT(String path, String[] value, Converter config) {
@@ -54,6 +54,20 @@ public class LessThanOrEqualTest extends ComparableTestBase {
 
         assertFilterContainsOnlyExpectedMembers("genderAsString", "OTHER", homerSimpson, moeSzyslak, margeSimpson);
     }
+
+	@Test
+	public void filtersByCharPrimitive() {
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "M", margeSimpson, homerSimpson, moeSzyslak, joeQuimby);
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "N", margeSimpson, homerSimpson, moeSzyslak, joeQuimby);
+		assertFilterContainsOnlyExpectedMembers("genderAsChar", "A", joeQuimby);
+	}
+
+	@Test
+	public void filtersByCharacter() {
+		assertFilterContainsOnlyExpectedMembers("genderAsCharacter", "M", margeSimpson, homerSimpson, moeSzyslak);
+		assertFilterContainsOnlyExpectedMembers("genderAsCharacter", "N", margeSimpson, homerSimpson, moeSzyslak);
+		assertFilterIsEmpty("genderAsCharacter", "A");
+	}
     
     @Test
     public void filtersByLongValue() {

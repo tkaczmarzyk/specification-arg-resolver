@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
@@ -26,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringToLocalDateConverterTest {
 	
-	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null);
+	Converter converterWithDefaultFormats = Converter.withTypeMismatchBehaviour(EMPTY_RESULT, null, Locale.getDefault());
 	
 	@Test
 	public void convertsToLocalDateTimeUsingDefaultFormat() {

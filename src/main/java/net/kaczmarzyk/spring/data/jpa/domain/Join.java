@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,18 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.*;
+import java.util.Objects;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
+
+import java.util.function.Function;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -52,7 +60,7 @@ public class Join<T> implements Specification<T>, Fake {
 
 		if (!pathToJoinContainsAlias(pathToJoinOn)) {
                         if(!queryContext.existsJoin(alias, root)) {
-                            queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+                        	putValToQueryContext(alias, root, (r) -> r.join(pathToJoinOn, joinType));
                         }
 		} else {
 			String[] pathToJoinOnSplittedByDot = pathToJoinSplittedByDot(pathToJoinOn);
@@ -67,8 +75,9 @@ public class Join<T> implements Specification<T>, Fake {
 			}
 
 			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
-                queryContext.putLazyVal(
+				putValToQueryContext(
                         alias,
+                        root,
                         (r) -> {
                         	jakarta.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
                         	return evaluated.join(extractedPathToJoin, joinType);
@@ -78,47 +87,38 @@ public class Join<T> implements Specification<T>, Fake {
 		return null;
 	}
 
+	private void putValToQueryContext(String alias, Root<T> root, Function<Root<?>, jakarta.persistence.criteria.Join<?, ?>> lazyVal) {
+		// generally we want to evaluate join lazily
+		// because most typical scenario tends to be a LEFT join with distinct = true
+		// and in such scenario if there is no filtering on the joined part (e.g. no related http param was sent)
+		// then we can optimize behaviour by not joining at all
+		queryContext.putLazyVal(alias, lazyVal);
+		// but inner joins or non-distinct queries must have them evaluated eagerly
+		// because they affect query result even when there is no filtering applied
+		if (!distinctQuery || joinType == JoinType.INNER) {
+			queryContext.getEvaluated(alias, root);
+		}
+	}
+
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-		result = prime * result + (distinctQuery ? 1231 : 1237);
-		result = prime * result + ((joinType == null) ? 0 : joinType.hashCode());
-		result = prime * result + ((pathToJoinOn == null) ? 0 : pathToJoinOn.hashCode());
-		result = prime * result + ((queryContext == null) ? 0 : queryContext.hashCode());
-		return result;
+		return Objects.hash(alias, distinctQuery, joinType, pathToJoinOn, queryContext);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Join other = (Join) obj;
-		if (alias == null) {
-			if (other.alias != null)
-				return false;
-		} else if (!alias.equals(other.alias))
-			return false;
-		if (distinctQuery != other.distinctQuery)
-			return false;
-		if (joinType != other.joinType)
-			return false;
-		if (pathToJoinOn == null) {
-			if (other.pathToJoinOn != null)
-				return false;
-		} else if (!pathToJoinOn.equals(other.pathToJoinOn))
-			return false;
-		if (queryContext == null) {
-			if (other.queryContext != null)
-				return false;
-		} else if (!queryContext.equals(other.queryContext))
-			return false;
-		return true;
+		return Objects.equals(alias, other.alias) && distinctQuery == other.distinctQuery && joinType == other.joinType
+				&& Objects.equals(pathToJoinOn, other.pathToJoinOn) && Objects.equals(queryContext, other.queryContext);
 	}
 
 	@Override

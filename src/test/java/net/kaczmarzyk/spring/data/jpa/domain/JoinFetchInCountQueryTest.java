@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,11 +61,6 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         bartSimpson = customer("Bart", "Simpson")
                 .orders(order("Comic Books").withTags(books))
                 .build(em);
-
-
-        em.createQuery("select o from Order o where o.id > 1"); // dummy query to fill Hibernate Query Plan so that LoggedQueryAssertions can track all queries in the test
-        em.flush();
-        em.clear();
 
         HibernateStatementInspector.clearInterceptedStatements();
     }
@@ -220,7 +215,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     public void skipsJoinNotUsedForFilteringButExecutesTheOneUsedForFiltering() {
         JoinFetch<Customer> fetch1 = new JoinFetch<Customer>(queryCtx, new String[]{"orders"}, "o1", LEFT, true);
         Specification<Customer> filter1 = new Like<>(queryCtx, "o1.itemName", "Duff");
-        JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[]{"orders2"}, "o2", JoinType.INNER, true);
+        JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[]{"orders2"}, "o2", LEFT, true);
 
         Specification<Customer> fullSpec = Specification.where(fetch1).and(fetch2).and(filter1);
 

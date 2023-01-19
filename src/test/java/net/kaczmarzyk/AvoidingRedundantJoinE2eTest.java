@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.persistence.criteria.JoinType;
 import net.kaczmarzyk.spring.data.jpa.Movie;
 import net.kaczmarzyk.spring.data.jpa.MovieRepository;
 import net.kaczmarzyk.spring.data.jpa.Person;
@@ -39,6 +39,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 
 
 /**
@@ -46,8 +47,8 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
  */
 public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 
-	@Join(path = "stars", alias = "s")
-    @Join(path = "directors", alias = "d")
+    @Join(path = "stars", alias = "s", type = JoinType.LEFT)
+    @Join(path = "directors", alias = "d", type = JoinType.LEFT)
 	@And({
 	        @Spec(path = "name", params = "name", spec = Like.class),
 	        @Spec(path = "s.name", params = "star", spec = Like.class),
@@ -94,24 +95,25 @@ public class AvoidingRedundantJoinE2eTest extends E2eTestBase {
 
 		assertThatInterceptedStatements()
 						.hasSelects(1)
-						.hasNumberOfTableJoins("movie_stars", 1)
-						.hasNumberOfTableJoins("movie_directors", 1);
+						.hasNumberOfTableJoins("movie_stars", JoinType.LEFT, 1)
+						.hasNumberOfTableJoins("movie_directors", JoinType.LEFT, 1);
 	}
 	
 	@Test
-	public void performsJoinOnlyIfUsedInFiltering() throws Exception {
+	public void performsLeftJoinOnlyIfUsedInFiltering() throws Exception {
 		mockMvc.perform(get("/movies?star=Homer"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.totalElements").value(2));
 
 		assertThatInterceptedStatements()
 				.hasSelects(1)
-				.hasNumberOfTableJoins("movie_stars", 1)
-				.hasNumberOfTableJoins("movie_directors", 0);
+				.hasNumberOfJoins(2)
+				.hasNumberOfTableJoins("movie_stars", JoinType.LEFT, 1)
+				.hasNumberOfTableJoins("movie_directors", JoinType.LEFT, 0);
 	}
 	
 	@Test
-	public void doesNotJoinAtAllIfFilteringNotAppliedOnJoinPaths() throws Exception {
+	public void doesNotJoinAtAllIfFilteringNotAppliedOnLeftJoinPaths() throws Exception {
 		mockMvc.perform(get("/movies"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.totalElements").value(3));
