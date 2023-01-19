@@ -188,7 +188,7 @@ The data type of the field specified in `path` can be anything, but the HTTP par
 
 Usage: `@Spec(path="activationDate", params="activationDateNull" spec=Null.class)`.
 
-If you want the query to be static, i.e. not depend on any HTTP param you can use `IsNull` or `IsNotNull` specifications. Alternatively, you can use `Null` with `constVal` attribute of `Spec` annotation:
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsNull` or `IsNotNull` specifications. Alternatively, you can use `Null` with `constVal` attribute of `Spec` annotation:
 
 For example `@Spec(path="nickname", spec=Null.class, constVal="true")` will always add `nickname is null` to the query.
 
