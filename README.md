@@ -188,7 +188,7 @@ The data type of the field specified in `path` can be anything, but the HTTP par
 
 Usage: `@Spec(path="activationDate", params="activationDateNull" spec=Null.class)`.
 
-If you want the query to be static, i.e. not depend on any HTTP param, use `constVal` attribute of `Spec` annotation:
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsNull` or `IsNotNull` specifications. Alternatively, you can use `Null` with `constVal` attribute of `Spec` annotation:
 
 For example `@Spec(path="nickname", spec=Null.class, constVal="true")` will always add `nickname is null` to the query.
 
@@ -206,6 +206,22 @@ to handle HTTP requests such as:
     GET http://myhost/customers?isDeleted=false
 
 to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
+
+### IsNull ###
+
+Filters with `is null` where clause for particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query. The same effect can be achieved with `Null` specification and `@Spec.constVal` set to `true`. `IsNull` is just a convenience class that can make the code more explicit.
+
+For example, consider `nickName` field. Then, you can introduce the following mapping:
+
+    @Spec(path="nickName", spec=IsNull.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customersWithoutNickname
+
+to return customers without nickname (`nickName` field with `null` value).
+
+A negation for this specification is also available: `IsNotNull`.
 
 ### Empty ###
 

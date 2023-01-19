@@ -24,6 +24,11 @@ v3.0.0
   * `EqualEnum` - use `Equal`
   * `@Joins` container annotation - use repeated `@Join` and `@JoinFetch`
 
+v2.18.0
+=======
+* `IsNull` specification is no longer deprecated
+* Introduced `IsNotNull` specification.
+
 v2.17.0
 =======
 * Introduced converter for `char` primitive and `Character` class

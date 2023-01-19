@@ -29,10 +29,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p>
  *
  * @author Tomasz Kaczmarzyk
- *
- * @deprecated Consider using {@link net.kaczmarzyk.spring.data.jpa.domain.Null Null}
  */
-@Deprecated
 public class IsNull<T> extends PathSpecification<T> implements ZeroArgSpecification {
 
 	private static final long serialVersionUID = 1L;
