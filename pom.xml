@@ -328,11 +328,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>net.bytebuddy</groupId>
-			<artifactId>byte-buddy</artifactId>
-			<version>1.12.13</version>
-		</dependency>
-		<dependency>
 			<groupId>com.jparams</groupId>
 			<artifactId>to-string-verifier</artifactId>
 			<version>1.4.8</version>
