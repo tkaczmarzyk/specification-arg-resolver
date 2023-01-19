@@ -1,3 +1,7 @@
+v2.18.0
+=======
+* Introduced `IsNotNull` specification.
+
 v2.17.0
 =======
 * Introduced converter for `char` primitive and `Character` class

@@ -15,32 +15,37 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-
-
 /**
- * <p>Filers with "is null" where clause (e.g. {@code where nickName is null}).</p>
+ * <p>Filers with "is not null" where clause (e.g. {@code where nickName is not null}).</p>
  *
  * <p>Does not require any http-parameters to be present, i.e. represents constant part of the query.</p>
  *
- * @author Tomasz Kaczmarzyk
+ * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
-public class IsNull<T> extends PathSpecification<T> implements ZeroArgSpecification {
+public class IsNotNull<T> extends PathSpecification<T> implements ZeroArgSpecification {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public IsNull(QueryContext queryContext, String path, String[] args) {
-		super(queryContext, path);
-	}
+    public IsNotNull(QueryContext queryContext, String path, String[] args) {
+        super(queryContext, path);
+    }
 
-	@Override
-	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		return cb.isNull(path(root));
-	}
+    @Override
+    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        return criteriaBuilder.isNotNull(path(root));
+    }
 
+    @Override
+    public String toString() {
+        return "IsNotNull[" +
+                "path='" + path + '\'' +
+                ']';
+    }
 }
