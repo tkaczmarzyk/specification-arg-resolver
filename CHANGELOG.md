@@ -72,7 +72,6 @@ v2.15.0
 v2.14.1
 =======
 * Added support for `content-type` header containing additional directives like `encoding=UTF-8`/`charset=UTF-8`. Previously, only `application/json` was accepted as `content-type` for request body filters.
->>>>>>> 3.0
 
 v2.14.0
 =======
