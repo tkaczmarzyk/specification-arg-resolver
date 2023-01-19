@@ -58,8 +58,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecification extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", pathVars = "orderIn", spec = In.class),
 			@Spec(path = "t.name", headers = "tag", spec = Equal.class)
@@ -67,8 +67,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithPathVar extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", params = "orderIn", spec = In.class),
 			@Spec(path = "t.name", headers = "tag", spec = Equal.class)
@@ -76,8 +76,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithParam extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t")
 	@Or({
 			@Spec(path = "o.itemName", headers = "orderIn", spec = In.class),
 			@Spec(path = "t.name", params = "tag", spec = Equal.class)
@@ -85,8 +85,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithHeader extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", jsonPaths = "orderIn", spec = In.class),
 			@Spec(path = "t.name", jsonPaths = "tag", spec = Equal.class)
