@@ -31,7 +31,7 @@ abstract class EnhancerUtil {
 
     @SuppressWarnings("unchecked")
     static <T> T wrapWithIfaceImplementation(final Class<T> iface, final Specification<Object> targetSpec) {
-        return (T) java.lang.reflect.Proxy.newProxyInstance(
+        return (T) Proxy.newProxyInstance(
                 EnhancerUtil.class.getClassLoader(),
                 new Class[]{iface},
                 (proxy, method, args) -> switch (method.getName()) {

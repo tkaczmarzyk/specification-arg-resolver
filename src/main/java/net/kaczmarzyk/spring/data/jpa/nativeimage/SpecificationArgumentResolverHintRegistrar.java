@@ -15,13 +15,49 @@
  */
 package net.kaczmarzyk.spring.data.jpa.nativeimage;
 
-import net.kaczmarzyk.spring.data.jpa.domain.*;
+import java.lang.reflect.Constructor;
+import java.util.Set;
+
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 
-import java.lang.reflect.Constructor;
-import java.util.Set;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
+import net.kaczmarzyk.spring.data.jpa.domain.Empty;
+import net.kaczmarzyk.spring.data.jpa.domain.EndingWith;
+import net.kaczmarzyk.spring.data.jpa.domain.EndingWithIgnoreCase;
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
+import net.kaczmarzyk.spring.data.jpa.domain.EqualDay;
+import net.kaczmarzyk.spring.data.jpa.domain.EqualIgnoreCase;
+import net.kaczmarzyk.spring.data.jpa.domain.False;
+import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
+import net.kaczmarzyk.spring.data.jpa.domain.GreaterThanOrEqual;
+import net.kaczmarzyk.spring.data.jpa.domain.In;
+import net.kaczmarzyk.spring.data.jpa.domain.InTheFuture;
+import net.kaczmarzyk.spring.data.jpa.domain.InThePast;
+import net.kaczmarzyk.spring.data.jpa.domain.IsEmpty;
+import net.kaczmarzyk.spring.data.jpa.domain.IsFalse;
+import net.kaczmarzyk.spring.data.jpa.domain.IsMember;
+import net.kaczmarzyk.spring.data.jpa.domain.IsNotEmpty;
+import net.kaczmarzyk.spring.data.jpa.domain.IsNotMember;
+import net.kaczmarzyk.spring.data.jpa.domain.IsNotNull;
+import net.kaczmarzyk.spring.data.jpa.domain.IsNull;
+import net.kaczmarzyk.spring.data.jpa.domain.IsTrue;
+import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
+import net.kaczmarzyk.spring.data.jpa.domain.LessThanOrEqual;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
+import net.kaczmarzyk.spring.data.jpa.domain.NotEmpty;
+import net.kaczmarzyk.spring.data.jpa.domain.NotEqual;
+import net.kaczmarzyk.spring.data.jpa.domain.NotEqualIgnoreCase;
+import net.kaczmarzyk.spring.data.jpa.domain.NotIn;
+import net.kaczmarzyk.spring.data.jpa.domain.NotLike;
+import net.kaczmarzyk.spring.data.jpa.domain.NotLikeIgnoreCase;
+import net.kaczmarzyk.spring.data.jpa.domain.NotNull;
+import net.kaczmarzyk.spring.data.jpa.domain.Null;
+import net.kaczmarzyk.spring.data.jpa.domain.StartingWith;
+import net.kaczmarzyk.spring.data.jpa.domain.StartingWithIgnoreCase;
+import net.kaczmarzyk.spring.data.jpa.domain.True;
 
 /**
  * Registers the constructors of specifications defined in package net.kaczmarzyk.spring.data.jpa.domain (they are invoked by SimpleSpecificationResolver via reflection).
