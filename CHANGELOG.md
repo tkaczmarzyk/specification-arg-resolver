@@ -1,5 +1,6 @@
 v2.18.0
 =======
+* `IsNull` specification is no longer deprecated
 * Introduced `IsNotNull` specification.
 
 v2.17.0
