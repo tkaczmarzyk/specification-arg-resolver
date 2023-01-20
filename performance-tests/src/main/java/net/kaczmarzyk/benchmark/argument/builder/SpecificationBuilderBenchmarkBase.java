@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.benchmark.arguments.builder;
+package net.kaczmarzyk.benchmark.argument.builder;
 
 import net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder;
 import org.springframework.data.jpa.domain.Specification;
