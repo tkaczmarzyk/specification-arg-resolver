@@ -19,6 +19,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
 @Configuration
 @EnableJpaRepositories
 @EnableAutoConfiguration
+@EntityScan(basePackages = "net.kaczmarzyk.benchmark.model")
 @ComponentScan(basePackages = "net.kaczmarzyk.benchmark.model")
 @EnableMBeanExport(registration = IGNORE_EXISTING)
 public class Application implements WebMvcConfigurer {
