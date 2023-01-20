@@ -1,4 +1,19 @@
-package net.kaczmarzyk.benchmark.specifications;
+/**
+ * Copyright 2014-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.kaczmarzyk.benchmark.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -19,6 +34,11 @@ public class Customer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	private Gender gender;
+
+	private char genderAsChar;
+	private Character genderAsCharacter;
 
 	private String firstName;
 
@@ -69,9 +89,12 @@ public class Customer {
 	public Customer() {
 	}
 
-	public Customer(String firstName, String lastName, Date registrationDate, String street) {
+	public Customer(String firstName, String lastName, Gender gender, Date registrationDate) {
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.gender = gender;
+		this.genderAsChar = gender.name().charAt(0);
+		this.genderAsCharacter = this.genderAsChar;
 		this.registrationDate = registrationDate;
 	}
 
@@ -89,6 +112,16 @@ public class Customer {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+		this.genderAsChar = gender.name().charAt(0);
+		this.genderAsCharacter = this.genderAsChar;
 	}
 
 	public Timestamp getLastSeen() {
