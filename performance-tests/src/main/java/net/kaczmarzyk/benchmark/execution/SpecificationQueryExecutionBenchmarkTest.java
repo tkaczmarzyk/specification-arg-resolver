@@ -34,7 +34,7 @@ import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specific
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
- * <p>Class testing performance differences between native query and corresponding specification.</p>
+ * <p>Class measuring performance differences between native query and corresponding specification.</p>
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
