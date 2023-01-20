@@ -1,5 +1,21 @@
-package net.kaczmarzyk.benchmark.specifications;
+/**
+ * Copyright 2014-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.kaczmarzyk.benchmark.execution;
 
+import net.kaczmarzyk.benchmark.model.Customer;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +26,9 @@ import java.util.Map;
 import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specification;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 
+/**
+ * @author Hubert Gotfryd (Tratif sp. z o.o.)
+ */
 public class SpecificationProvider {
 
 	public static Map<String, Specification<Customer>> testSpecifications() {
@@ -28,7 +47,13 @@ public class SpecificationProvider {
 		specs.put( "equalIntPrimitiveTypeSpec", specification(EqualIntPrimitiveTypeSpec.class).withParam("weightInt", "50").build());
 		specs.put( "equalIntegerObjectSpec", specification(EqualIntegerObjectSpec.class).withParam("weight", "50").build());
 		specs.put( "equalLongPrimitiveTypeSpec", specification(EqualLongPrimitiveTypeSpec.class).withParam("weightLong", "50").build());
-		specs.put( "equalLongObjectSpec", specification(EqualLongPrimitiveTypeSpec.class).withParam("weightLong", "50").build());
+		specs.put( "equalLongObjectSpec", specification(EqualLongObjectSpec.class).withParam("id", "50").build());
+		specs.put( "equalFloatPrimitiveTypeSpec", specification(EqualFloatPrimitiveTypeSpec.class).withParam("weightFloat", "50.0").build());
+		specs.put( "equalDoubleObjectSpec", specification(EqualDoubleObjectSpec.class).withParam("weightDouble", "50.0").build());
+		specs.put( "equalBigDecimalSpec", specification(EqualBigDecimalSpec.class).withParam("weightBigDecimal", "50.0").build());
+		specs.put( "equalUUIDSpec", specification(EqualUUIDSpec.class).withParam("refCode", "2cdf7f82-2e32-4219-be0c-a5457e79c7b1").build());
+		specs.put( "equalCharPrimitiveTypeSpec", specification(EqualCharPrimitiveTypeSpec.class).withParam("genderAsChar", "a").build());
+		specs.put( "equalCharacterObjectSpec", specification(EqualCharacterObjectSpec.class).withParam("genderAsCharacter", "a").build());
 		return specs;
 	}
 
