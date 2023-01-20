@@ -27,6 +27,9 @@ import java.util.concurrent.TimeUnit;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.IGNORE;
 
 /**
+ * This class measures time of building specification using {@code SpecificationBuilder} for all types of passing arguments (params, pathVars, headers, jsonPaths).
+ * Each benchmark is passing various amount of arguments (specified in field with {@code Param} annotation) and uses interface with 15 specifications.
+ *
  * @author Konrad Hajduga (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
