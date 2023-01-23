@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specification;
 
 /**
- * This class measures time of building specification using {@code SpecificationBuilder} for all specification annotations (Spec, Or, And, Disjunction, Conjunction).
+ * This class measures the average time of building specification using {@code SpecificationBuilder} for all specification annotations (Spec, Or, And, Disjunction, Conjunction).
  *
  * @author Konrad Hajduga (Tratif sp. z o.o.)
  */

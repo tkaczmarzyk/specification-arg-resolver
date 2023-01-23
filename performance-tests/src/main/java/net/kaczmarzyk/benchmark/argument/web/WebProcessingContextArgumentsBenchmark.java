@@ -38,7 +38,7 @@ import static org.springframework.web.context.request.RequestAttributes.SCOPE_RE
 import static org.springframework.web.servlet.HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE;
 
 /**
- * This class measures the time of resolving specification using {@code SpecificationFactory} for various types of passing arguments (params, pathVars, headers, jsonPaths).
+ * This class measures the average time of resolving specification using {@code SpecificationFactory} for various types of passing arguments (params, pathVars, headers, jsonPaths).
  * Each benchmark is passing three arguments and uses interface with exact three specifications.
  *
  * @author Konrad Hajduga (Tratif sp. z o.o.)

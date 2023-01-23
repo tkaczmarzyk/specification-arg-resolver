@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This class measures time of building specification using {@code SpecificationBuilder} for all types of passing arguments (params, pathVars, headers, jsonPaths).
+ * This class measures the average time of building specification using {@code SpecificationBuilder} for all types of passing arguments (params, pathVars, headers, jsonPaths).
  * Each benchmark is passing three arguments and uses interface with exact three specifications.
  *
  * @author Konrad Hajduga (Tratif sp. z o.o.)
