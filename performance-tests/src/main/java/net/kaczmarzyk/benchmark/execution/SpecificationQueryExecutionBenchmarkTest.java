@@ -76,11 +76,11 @@ public class SpecificationQueryExecutionBenchmarkTest {
     }
 
     @Benchmark
-	@BenchmarkMode(AverageTime)
-	@OutputTimeUnit(NANOSECONDS)
-	@Warmup(time = 50, timeUnit = MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = MILLISECONDS, iterations = 10)
-	@Fork(2)
+    @BenchmarkMode(AverageTime)
+    @OutputTimeUnit(NANOSECONDS)
+    @Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+    @Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+    @Fork(3)
     public List<Customer> measureSpecWithParam() {
         return customerRepo.findAll(simpleFirstNameSpec);
     }
@@ -88,9 +88,9 @@ public class SpecificationQueryExecutionBenchmarkTest {
     @Benchmark
     @BenchmarkMode(AverageTime)
     @OutputTimeUnit(NANOSECONDS)
-    @Warmup(time = 50, timeUnit = MILLISECONDS, iterations = 10)
-    @Measurement(time = 50, timeUnit = MILLISECONDS, iterations = 10)
-    @Fork(2)
+    @Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+    @Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+    @Fork(3)
     public List<Customer> measureNativeQuery() {
         return customerRepo.findByCustomerName("Homer");
     }

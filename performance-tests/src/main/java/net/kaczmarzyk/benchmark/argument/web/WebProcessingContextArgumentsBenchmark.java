@@ -31,9 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.lang.reflect.Executable;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static org.openjdk.jmh.annotations.Mode.AverageTime;
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 import static org.springframework.web.servlet.HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE;
 
@@ -48,11 +50,11 @@ public class WebProcessingContextArgumentsBenchmark {
 	private static final SpecificationFactory SPECIFICATION_FACTORY = new SpecificationFactory(null, null, Locale.getDefault());
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureCreatingSpecWithMultipleParamsUsingWebProcessingContext(Blackhole blackhole) {
 
 		PerformanceTestsMockWebRequest request = new PerformanceTestsMockWebRequest("/params");
@@ -68,11 +70,11 @@ public class WebProcessingContextArgumentsBenchmark {
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureCreatingSpecWithMultiplePathVarsUsingWebProcessingContext(Blackhole blackhole) {
 
 		PerformanceTestsMockWebRequest request = new PerformanceTestsMockWebRequest("/pathVariables/19/Springfield/false");
@@ -91,11 +93,11 @@ public class WebProcessingContextArgumentsBenchmark {
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureCreatingSpecWithMultipleHeadersUsingWebProcessingContext(Blackhole blackhole) {
 
 		PerformanceTestsMockWebRequest request = new PerformanceTestsMockWebRequest("/headers");
@@ -111,11 +113,11 @@ public class WebProcessingContextArgumentsBenchmark {
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureCreatingSpecWithMultipleJsonPathsUsingWebProcessingContext(Blackhole blackhole) {
 
 		PerformanceTestsMockWebRequest request = new PerformanceTestsMockWebRequest("/jsonPaths");

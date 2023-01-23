@@ -96,9 +96,9 @@ public class ToPredicateExecutionBenchmarkTest {
 	@Benchmark
 	@BenchmarkMode(AverageTime)
 	@OutputTimeUnit(NANOSECONDS)
-	@Warmup(time = 50, timeUnit = MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = MILLISECONDS, iterations = 10)
-	@Fork(2)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureToPredicateSpecMethod(Blackhole blackhole) {
 		blackhole.consume(specs.get(specName).toPredicate(root, criteriaQuery, criteriaBuilder));
 	}

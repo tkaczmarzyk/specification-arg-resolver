@@ -21,9 +21,10 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.concurrent.TimeUnit;
-
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specification;
+import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
  * This class measures the average time of building specification using {@code SpecificationBuilder} for all specification annotations (Spec, Or, And, Disjunction, Conjunction).
@@ -33,11 +34,11 @@ import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specific
 public class SpecificationAnnotationsBenchmark {
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecificationForSpecAnnotation(Blackhole blackhole) {
 		SpecAnnotationSpecification specification = specification(SpecAnnotationSpecification.class)
 			.withParam("age", "19")
@@ -47,11 +48,11 @@ public class SpecificationAnnotationsBenchmark {
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecificationForAndAnnotation(Blackhole blackhole) {
 		AndAnnotationSpecification specification = specification(AndAnnotationSpecification.class)
 			.withParam("age", "19")
@@ -63,11 +64,11 @@ public class SpecificationAnnotationsBenchmark {
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecificationForOrAnnotation(Blackhole blackhole) {
 		OrAnnotationSpecification specification = specification(OrAnnotationSpecification.class)
 			.withParam("age", "19")
@@ -79,11 +80,11 @@ public class SpecificationAnnotationsBenchmark {
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecificationForConjunctionAnnotation(Blackhole blackhole) {
 		ConjunctionAnnotationSpecification specification = specification(ConjunctionAnnotationSpecification.class)
 			.withParam("age", "19")
@@ -95,11 +96,11 @@ public class SpecificationAnnotationsBenchmark {
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecificationForDisjunctionAnnotation(Blackhole blackhole) {
 		DisjunctionAnnotationSpecification specification = specification(DisjunctionAnnotationSpecification.class)
 			.withParam("age", "19")

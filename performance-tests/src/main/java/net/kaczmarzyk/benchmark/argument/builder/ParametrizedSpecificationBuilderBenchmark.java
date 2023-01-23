@@ -22,9 +22,10 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.concurrent.TimeUnit;
-
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.IGNORE;
+import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
  * This class measures the average time of building specification using {@code SpecificationBuilder} for all types of passing arguments (params, pathVars, headers, jsonPaths).
@@ -39,44 +40,44 @@ public class ParametrizedSpecificationBuilderBenchmark extends SpecificationBuil
 	private int argumentsAmount;
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithMultipleParams(Blackhole blackhole) {
 		MultipleParamsSpecification specification = paramsSpecification(MultipleParamsSpecification.class, argumentsAmount);
 		blackhole.consume(specification);
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithMultiplePathVars(Blackhole blackhole) {
 		MultiplePathVarsSpecification specification = pathVarsSpecification(MultiplePathVarsSpecification.class, argumentsAmount);
 		blackhole.consume(specification);
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithMultipleHeaders(Blackhole blackhole) {
 		MultipleHeadersSpecification specification = headersSpecification(MultipleHeadersSpecification.class, argumentsAmount);
 		blackhole.consume(specification);
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithMultipleJsonPaths(Blackhole blackhole) {
 		MultipleJsonPathsSpecification specification = jsonPathsSpecification(MultipleJsonPathsSpecification.class, argumentsAmount);
 		blackhole.consume(specification);

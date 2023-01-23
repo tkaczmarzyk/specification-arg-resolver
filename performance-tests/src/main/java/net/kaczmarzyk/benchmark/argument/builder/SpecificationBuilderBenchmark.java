@@ -22,7 +22,9 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
  * This class measures the average time of building specification using {@code SpecificationBuilder} for all types of passing arguments (params, pathVars, headers, jsonPaths).
@@ -33,11 +35,11 @@ import java.util.concurrent.TimeUnit;
 public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmarkBase {
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithThreeParams(Blackhole blackhole) {
 		ThreeParamsSpecification result = paramsSpecification(ThreeParamsSpecification.class, 3);
 
@@ -45,11 +47,11 @@ public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmark
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithThreePathVars(Blackhole blackhole) {
 		ThreePathVarsSpecification result = pathVarsSpecification(ThreePathVarsSpecification.class, 3);
 
@@ -57,11 +59,11 @@ public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmark
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithThreeHeaders(Blackhole blackhole) {
 		ThreeHeadersSpecification result = headersSpecification(ThreeHeadersSpecification.class, 3);
 
@@ -69,11 +71,11 @@ public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmark
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	@Warmup(time = 500, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Measurement(time = 50, timeUnit = TimeUnit.MILLISECONDS, iterations = 10)
-	@Fork(5)
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
 	public void measureBuildingSpecWithThreeJsonPaths(Blackhole blackhole) {
 		ThreeJsonPathsSpecification result = jsonPathsSpecification(ThreeJsonPathsSpecification.class, 3);
 
