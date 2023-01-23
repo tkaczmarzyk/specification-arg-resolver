@@ -15,47 +15,46 @@
  */
 package net.kaczmarzyk.benchmark.execution;
 
+import net.kaczmarzyk.benchmark.Application;
 import net.kaczmarzyk.benchmark.model.Customer;
 import net.kaczmarzyk.benchmark.model.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.results.format.ResultFormatType;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static net.kaczmarzyk.benchmark.model.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specification;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
  * <p>Class measuring performance differences between native query and corresponding specification.</p>
+ *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
-public class SpecificationQueryExecutionBenchmarkTest extends AbstractBenchmark {
+public class SpecificationQueryExecutionBenchmarkTest {
 
-    private final static Integer MEASUREMENT_ITERATIONS = 5;
-    private final static Integer WARMUP_ITERATIONS = 5;
     private final static Integer NUMBER_OF_HOMER_ENTRIES = 1;
     private final static Integer NUMBER_OF_MARGE_ENTRIES = 1;
 
-    private static CustomerRepository customerRepo;
+    private ConfigurableApplicationContext applicationContext;
+    private CustomerRepository customerRepo;
 
     private SimpleFirstNameSpecification simpleFirstNameSpec;
 
-    @Autowired
-    void setCustomerRepo(CustomerRepository customerRepo) {
-        SpecificationQueryExecutionBenchmarkTest.customerRepo = customerRepo;
-    }
 
     @Setup(Level.Trial)
-    public void initData() {
+    public void setupTestComponentsAndData() {
+        applicationContext = new AnnotationConfigApplicationContext(Application.class);
+        customerRepo = applicationContext.getBean(CustomerRepository.class);
+
         for (int i=0; i<NUMBER_OF_HOMER_ENTRIES; i++) {
             customerRepo.save(customer("Homer", "Simpson_" + i)
                     .build());
@@ -64,6 +63,7 @@ public class SpecificationQueryExecutionBenchmarkTest extends AbstractBenchmark 
             customerRepo.save(customer("Marge", "Simpson_" + i)
                     .build());
         }
+
         simpleFirstNameSpec = specification(SimpleFirstNameSpecification.class)
                 .withParam("firstName", "Homer")
                 .build();
@@ -72,33 +72,27 @@ public class SpecificationQueryExecutionBenchmarkTest extends AbstractBenchmark 
     @TearDown(Level.Trial)
     public void doTearDown() {
         customerRepo.deleteAll();
+        applicationContext.close();
     }
 
     @Benchmark
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 50, timeUnit = MILLISECONDS, iterations = 10)
+	@Measurement(time = 50, timeUnit = MILLISECONDS, iterations = 10)
+	@Fork(2)
     public List<Customer> measureSpecWithParam() {
         return customerRepo.findAll(simpleFirstNameSpec);
     }
 
     @Benchmark
+    @BenchmarkMode(AverageTime)
+    @OutputTimeUnit(NANOSECONDS)
+    @Warmup(time = 50, timeUnit = MILLISECONDS, iterations = 10)
+    @Measurement(time = 50, timeUnit = MILLISECONDS, iterations = 10)
+    @Fork(2)
     public List<Customer> measureNativeQuery() {
         return customerRepo.findByCustomerName("Homer");
-    }
-
-    @Override
-    public Options executionOptions() {
-        return new OptionsBuilder()
-                .include("\\." + this.getClass().getSimpleName() + "\\.")
-                .warmupIterations(WARMUP_ITERATIONS)
-                .measurementIterations(MEASUREMENT_ITERATIONS)
-                .forks(0)  // do not use forking or the benchmark methods will not see references stored within its class (e.g. injected CustomerRepository)
-                .threads(1) // do not use multiple threads
-                .shouldDoGC(true)
-                .shouldFailOnError(true)
-                .resultFormat(ResultFormatType.JSON)
-                .shouldFailOnError(true)
-                .mode(AverageTime)
-                .timeUnit(MILLISECONDS)
-                .build();
     }
 
     @Spec(path="firstName", params = "firstName", spec=Equal.class)

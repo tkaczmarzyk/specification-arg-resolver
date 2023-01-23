@@ -13,31 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kaczmarzyk.benchmark.execution;
+package net.kaczmarzyk.benchmark;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.openjdk.jmh.results.format.ResultFormatType;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING;
-
-@Configuration
+@SpringBootApplication
 @EnableJpaRepositories
-@EnableAutoConfiguration
-@EntityScan(basePackages = "net.kaczmarzyk.benchmark.model")
-@ComponentScan(basePackages = "net.kaczmarzyk.benchmark.model")
-@EnableMBeanExport(registration = IGNORE_EXISTING)
+@EntityScan
 public class Application implements WebMvcConfigurer {
 
 	@PersistenceContext
@@ -51,5 +48,14 @@ public class Application implements WebMvcConfigurer {
 	@Bean
 	public EntityManager entityManager() {
 		return entityManager;
+	}
+
+	public static void main(String[] args) throws RunnerException {
+		Options options = new OptionsBuilder()
+				.shouldFailOnError(true)
+				.resultFormat(ResultFormatType.JSON)
+				.build();
+
+		new Runner(options).run();
 	}
 }

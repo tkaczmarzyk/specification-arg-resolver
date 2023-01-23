@@ -1,18 +1,20 @@
 package net.kaczmarzyk.benchmark.execution;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import net.kaczmarzyk.benchmark.Application;
 import net.kaczmarzyk.benchmark.model.Customer;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.results.format.ResultFormatType;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Map;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static net.kaczmarzyk.benchmark.execution.SpecificationProvider.testSpecifications;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
@@ -25,11 +27,10 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
-public class ToPredicateExecutionBenchmarkTest extends AbstractBenchmark {
+public class ToPredicateExecutionBenchmarkTest {
 
-	private final static Integer MEASUREMENT_ITERATIONS = 5;
-	private final static Integer WARMUP_ITERATIONS = 5;
-
+	private ConfigurableApplicationContext applicationContext;
+	private EntityManager entityManager;
 	private CriteriaBuilder criteriaBuilder;
 	private CriteriaQuery<Customer> criteriaQuery;
 	private Root<Customer> root;
@@ -62,32 +63,28 @@ public class ToPredicateExecutionBenchmarkTest extends AbstractBenchmark {
 	private String specName;
 
 	@Setup(Level.Trial)
-	public void initData() {
+	public void setupTestComponentsAndData() {
+		applicationContext = new AnnotationConfigApplicationContext(Application.class);
+		entityManager = applicationContext.getBean(EntityManager.class);
+
 		criteriaBuilder = entityManager.getCriteriaBuilder();
 		criteriaQuery = criteriaBuilder.createQuery(Customer.class);
 		root = criteriaQuery.from(Customer.class);
 		specs = testSpecifications();
 	}
 
-	@Benchmark
-	public void measureToPredicateSpecMethod(Blackhole blackhole) {
-		blackhole.consume(specs.get(specName).toPredicate(root, criteriaQuery, criteriaBuilder));
+	@TearDown(Level.Trial)
+	public void closeApplicationContext() {
+		applicationContext.close();
 	}
 
-	@Override
-	public Options executionOptions() {
-		return new OptionsBuilder()
-			.include("\\." + this.getClass().getSimpleName() + "\\.")
-			.warmupIterations(WARMUP_ITERATIONS)
-			.measurementIterations(MEASUREMENT_ITERATIONS)
-			.forks(0)
-			.threads(1)
-			.shouldDoGC(true)
-			.shouldFailOnError(true)
-			.resultFormat(ResultFormatType.JSON)
-			.shouldFailOnError(true)
-			.mode(AverageTime)
-			.timeUnit(NANOSECONDS)
-			.build();
+	@Benchmark
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 50, timeUnit = MILLISECONDS, iterations = 10)
+	@Measurement(time = 50, timeUnit = MILLISECONDS, iterations = 10)
+	@Fork(2)
+	public void measureToPredicateSpecMethod(Blackhole blackhole) {
+		blackhole.consume(specs.get(specName).toPredicate(root, criteriaQuery, criteriaBuilder));
 	}
 }
