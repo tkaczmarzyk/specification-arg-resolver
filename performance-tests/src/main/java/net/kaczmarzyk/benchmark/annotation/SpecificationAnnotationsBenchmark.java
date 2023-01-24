@@ -39,7 +39,7 @@ public class SpecificationAnnotationsBenchmark {
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecificationForSpecAnnotation(Blackhole blackhole) {
+	public void measureBuildingOneArgSpecificationForSpecAnnotation(Blackhole blackhole) {
 		SpecAnnotationSpecification specification = specification(SpecAnnotationSpecification.class)
 			.withParam("age", "19")
 			.build();
@@ -53,7 +53,7 @@ public class SpecificationAnnotationsBenchmark {
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecificationForAndAnnotation(Blackhole blackhole) {
+	public void measureBuildingThreeArgsSpecificationForAndAnnotation(Blackhole blackhole) {
 		AndAnnotationSpecification specification = specification(AndAnnotationSpecification.class)
 			.withParam("age", "19")
 			.withParam("city", "Springfield")
@@ -69,7 +69,7 @@ public class SpecificationAnnotationsBenchmark {
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecificationForOrAnnotation(Blackhole blackhole) {
+	public void measureBuildingThreeArgsSpecificationForOrAnnotation(Blackhole blackhole) {
 		OrAnnotationSpecification specification = specification(OrAnnotationSpecification.class)
 			.withParam("age", "19")
 			.withParam("city", "Springfield")
@@ -85,7 +85,7 @@ public class SpecificationAnnotationsBenchmark {
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecificationForConjunctionAnnotation(Blackhole blackhole) {
+	public void measureBuildingThreeArgsSpecificationForConjunctionAnnotation(Blackhole blackhole) {
 		ConjunctionAnnotationSpecification specification = specification(ConjunctionAnnotationSpecification.class)
 			.withParam("age", "19")
 			.withParam("city", "Springfield")
@@ -101,7 +101,7 @@ public class SpecificationAnnotationsBenchmark {
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecificationForDisjunctionAnnotation(Blackhole blackhole) {
+	public void measureBuildingThreeArgsSpecificationForDisjunctionAnnotation(Blackhole blackhole) {
 		DisjunctionAnnotationSpecification specification = specification(DisjunctionAnnotationSpecification.class)
 			.withParam("age", "19")
 			.withParam("city", "Springfield")

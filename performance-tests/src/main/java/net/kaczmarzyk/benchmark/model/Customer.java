@@ -78,6 +78,9 @@ public class Customer {
 	@Column(columnDefinition = "uuid")
 	private UUID refCode;
 
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	private Set<Order> orders;
+
 	@ElementCollection
 	@CollectionTable(name = "customer_phone_numbers", joinColumns = @JoinColumn(name = "id"))
 	private Set<String> phoneNumbers;
@@ -219,6 +222,13 @@ public class Customer {
 
 	public String getNickName() {
 		return nickName;
+	}
+
+	public Collection<Order> getOrders() {
+		if (orders == null) {
+			orders = new HashSet<>();
+		}
+		return orders;
 	}
 
 	@Override
