@@ -26,6 +26,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.GreaterThanOrEqual;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThanOrEqual;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -150,15 +151,21 @@ public class CalendarE2eTest extends E2eTestBase {
         }
     }
 
-    @Test
-    public void findsByEqualDayUsingDefaultConfig() throws Exception {
+    @Before
+    public void setupCustomersWithCalendarContainingTime() {
         customer("Barry", "Benson")
-                .registrationDate(2014, 3, 16)
+                .registrationDate(2014, 3, 16, 0, 0, 0, 0)
                 .build(em);
         customer("Adam", "Flayman")
                 .registrationDate(2014, 3, 14, 23, 59, 59, 999)
                 .build(em);
+        customer("Vanessa", "Bloom")
+                .registrationDate(2014, 3, 15, 14, 29, 4, 0)
+                .build(em);
+    }
 
+    @Test
+    public void findsByEqualDayUsingDefaultConfig() throws Exception {
         mockMvc.perform(get("/customers")
                         .param("registeredEqualDay", "2014-03-15")
                         .accept(MediaType.APPLICATION_JSON))
@@ -166,21 +173,12 @@ public class CalendarE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Homer"))
                 .andExpect(jsonPath("$[1].firstName").value("Moe"))
-                .andExpect(jsonPath("$[2]").doesNotExist());
+                .andExpect(jsonPath("$[2].firstName").value("Vanessa"))
+                .andExpect(jsonPath("$[3]").doesNotExist());
     }
 
     @Test
     public void findsByEqualDayUsingCustomConfigIgnoringTime() throws Exception {
-        customer("Barry", "Benson")
-                .registrationDate(2014, 3, 16)
-                .build(em);
-        customer("Adam", "Flayman")
-                .registrationDate(2014, 3, 14, 23, 59, 59, 999)
-                .build(em);
-        customer("Vanessa", "Bloom")
-                .registrationDate(2014, 3, 15, 14, 29, 4, 123)
-                .build(em);
-
         mockMvc.perform(get("/customers")
                         .param("registeredEqualDayCustomConfig", "2014-03-15T12:34:19")
                         .accept(MediaType.APPLICATION_JSON))
@@ -194,30 +192,19 @@ public class CalendarE2eTest extends E2eTestBase {
 
     @Test
     public void findsByEqualUsingDefaultConfig() throws Exception {
-        customer("Adam", "Flayman")
-                .registrationDate(2015, 3, 4, 0, 0, 0, 0)
-                .build(em);
-
         mockMvc.perform(get("/customers")
-                        .param("registeredEqual", "2015-03-04")
+                        .param("registeredEqual", "2014-03-16")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Adam"))
+                .andExpect(jsonPath("$[0].firstName").value("Barry"))
                 .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
     @Test
     public void findsByEqualWithCustomConfigContainingTime() throws Exception {
-        customer("Adam", "Flayman")
-                .registrationDate(2014, 3, 15, 23, 59, 59, 999)
-                .build(em);
-        customer("Vanessa", "Bloom")
-                .registrationDate(2014, 3, 15, 12, 34, 19, 0)
-                .build(em);
-
         mockMvc.perform(get("/customers")
-                        .param("registeredEqualCustomConfig", "2014-03-15T12:34:19")
+                        .param("registeredEqualCustomConfig", "2014-03-15T14:29:04")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -228,16 +215,17 @@ public class CalendarE2eTest extends E2eTestBase {
     @Test
     public void findsByBetween() throws Exception {
         mockMvc.perform(get("/customers")
-                        .param("registeredAfterDate", "2014-03-16")
-                        .param("registeredBeforeDate", "2014-03-30")
+                        .param("registeredAfterDate", "2014-03-15")
+                        .param("registeredBeforeDate", "2014-03-21")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Marge"))
-                .andExpect(jsonPath("$[1].firstName").value("Bart"))
-                .andExpect(jsonPath("$[2].firstName").value("Lisa"))
-                .andExpect(jsonPath("$[3].firstName").value("Ned"))
-                .andExpect(jsonPath("$[4]").doesNotExist());
+                .andExpect(jsonPath("$[0].firstName").value("Homer"))
+                .andExpect(jsonPath("$[1].firstName").value("Marge"))
+                .andExpect(jsonPath("$[2].firstName").value("Moe"))
+                .andExpect(jsonPath("$[3].firstName").value("Barry"))
+                .andExpect(jsonPath("$[4].firstName").value("Vanessa"))
+                .andExpect(jsonPath("$[5]").doesNotExist());
     }
 
     @Test
@@ -250,8 +238,20 @@ public class CalendarE2eTest extends E2eTestBase {
                 .build(em);
 
         mockMvc.perform(get("/customers")
-                        .param("registeredAfterDateCustomConfig", "2014-03-15T12:34:19")
-                        .param("registeredBeforeDateCustomConfig", "2014-03-31T12:34:19")
+                        .param("registeredAfterDateCustomConfig", "2014-03-15T15:34:19")
+                        .param("registeredBeforeDateCustomConfig", "2014-03-21T12:34:19")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].firstName").value("Marge"))
+                .andExpect(jsonPath("$[1].firstName").value("Barry"))
+                .andExpect(jsonPath("$[2]").doesNotExist());
+    }
+
+    @Test
+    public void findsByGreaterThan() throws Exception {
+        mockMvc.perform(get("/customers")
+                        .param("registeredAfterDate", "2014-03-16")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -259,153 +259,114 @@ public class CalendarE2eTest extends E2eTestBase {
                 .andExpect(jsonPath("$[1].firstName").value("Bart"))
                 .andExpect(jsonPath("$[2].firstName").value("Lisa"))
                 .andExpect(jsonPath("$[3].firstName").value("Maggie"))
-                .andExpect(jsonPath("$[4].firstName").value("Ned"))
-                .andExpect(jsonPath("$[5].firstName").value("Adam"))
+                .andExpect(jsonPath("$[4].firstName").value("Minnie"))
+                .andExpect(jsonPath("$[5].firstName").value("Ned"))
                 .andExpect(jsonPath("$[6]").doesNotExist());
     }
 
     @Test
-    public void findsByGreaterThan() throws Exception {
-        mockMvc.perform(get("/customers")
-                        .param("registeredAfterDate", "2014-03-25")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Lisa"))
-                .andExpect(jsonPath("$[1].firstName").value("Maggie"))
-                .andExpect(jsonPath("$[2].firstName").value("Minnie"))
-                .andExpect(jsonPath("$[3]").doesNotExist());
-    }
-
-    @Test
     public void findsByGreaterThanWithCustomConfigContainingTime() throws Exception {
-        customer("Adam", "Flayman")
-                .registrationDate(2014, 3, 25, 12, 34, 19, 0)
-                .build(em);
-        customer("Vanessa", "Bloom")
-                .registrationDate(2014, 3, 25, 12, 34, 19, 1)
-                .build(em);
-
         mockMvc.perform(get("/customers")
-                        .param("registeredAfterDateCustomConfig", "2014-03-25T12:34:19")
+                        .param("registeredAfterDateCustomConfig", "2014-03-15T14:29:04")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Lisa"))
-                .andExpect(jsonPath("$[1].firstName").value("Maggie"))
-                .andExpect(jsonPath("$[2].firstName").value("Minnie"))
-                .andExpect(jsonPath("$[3].firstName").value("Vanessa"))
-                .andExpect(jsonPath("$[4]").doesNotExist());
+                .andExpect(jsonPath("$[0].firstName").value("Marge"))
+                .andExpect(jsonPath("$[1].firstName").value("Bart"))
+                .andExpect(jsonPath("$[2].firstName").value("Lisa"))
+                .andExpect(jsonPath("$[3].firstName").value("Maggie"))
+                .andExpect(jsonPath("$[4].firstName").value("Minnie"))
+                .andExpect(jsonPath("$[5].firstName").value("Ned"))
+                .andExpect(jsonPath("$[6].firstName").value("Barry"))
+                .andExpect(jsonPath("$[7]").doesNotExist());
     }
 
     @Test
     public void findsByGreaterThanOrEqual() throws Exception {
         mockMvc.perform(get("/customers")
-                        .param("registeredAfterOrEqualDate", "2014-03-25")
+                        .param("registeredAfterOrEqualDate", "2014-03-16")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Bart"))
-                .andExpect(jsonPath("$[1].firstName").value("Lisa"))
-                .andExpect(jsonPath("$[2].firstName").value("Maggie"))
-                .andExpect(jsonPath("$[3].firstName").value("Minnie"))
-                .andExpect(jsonPath("$[4].firstName").value("Ned"))
-                .andExpect(jsonPath("$[5]").doesNotExist());
+                .andExpect(jsonPath("$[0].firstName").value("Marge"))
+                .andExpect(jsonPath("$[1].firstName").value("Bart"))
+                .andExpect(jsonPath("$[2].firstName").value("Lisa"))
+                .andExpect(jsonPath("$[3].firstName").value("Maggie"))
+                .andExpect(jsonPath("$[4].firstName").value("Minnie"))
+                .andExpect(jsonPath("$[5].firstName").value("Ned"))
+                .andExpect(jsonPath("$[6].firstName").value("Barry"))
+                .andExpect(jsonPath("$[7]").doesNotExist());
     }
 
     @Test
     public void findsByGreaterThanOrEqualWithCustomConfigContainingTime() throws Exception {
-        customer("Adam", "Flayman")
-                .registrationDate(2014, 3, 25, 12, 34, 19, 0)
-                .build(em);
-        customer("Vanessa", "Bloom")
-                .registrationDate(2014, 3, 25, 12, 34, 18, 999)
-                .build(em);
-
         mockMvc.perform(get("/customers")
-                        .param("registeredAfterOrEqualDateCustomConfig", "2014-03-25T12:34:19")
+                        .param("registeredAfterOrEqualDateCustomConfig", "2014-03-15T14:29:04")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Lisa"))
-                .andExpect(jsonPath("$[1].firstName").value("Maggie"))
-                .andExpect(jsonPath("$[2].firstName").value("Minnie"))
-                .andExpect(jsonPath("$[3].firstName").value("Adam"))
-                .andExpect(jsonPath("$[4]").doesNotExist());
+                .andExpect(jsonPath("$[0].firstName").value("Marge"))
+                .andExpect(jsonPath("$[1].firstName").value("Bart"))
+                .andExpect(jsonPath("$[2].firstName").value("Lisa"))
+                .andExpect(jsonPath("$[3].firstName").value("Maggie"))
+                .andExpect(jsonPath("$[4].firstName").value("Minnie"))
+                .andExpect(jsonPath("$[5].firstName").value("Ned"))
+                .andExpect(jsonPath("$[6].firstName").value("Barry"))
+                .andExpect(jsonPath("$[7].firstName").value("Vanessa"))
+                .andExpect(jsonPath("$[8]").doesNotExist());
     }
 
     @Test
     public void findsByLessThan() throws Exception {
         mockMvc.perform(get("/customers")
-                        .param("registeredBeforeDate", "2014-03-25")
+                        .param("registeredBeforeDate", "2014-03-15")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].firstName").value("Homer"))
-                .andExpect(jsonPath("$[1].firstName").value("Marge"))
-                .andExpect(jsonPath("$[2].firstName").value("Moe"))
-                .andExpect(jsonPath("$[3]").doesNotExist());
+                .andExpect(jsonPath("$[0].firstName").value("Adam"))
+                .andExpect(jsonPath("$[1]").doesNotExist());
     }
 
     @Test
     public void findsByLessThanWithCustomConfigContainingTime() throws Exception {
-        customer("Adam", "Flayman")
-                .registrationDate(2014, 3, 25, 12, 34, 19, 0)
-                .build(em);
-        customer("Vanessa", "Bloom")
-                .registrationDate(2014, 3, 25, 12, 34, 18, 999)
-                .build(em);
-
         mockMvc.perform(get("/customers")
-                        .param("registeredBeforeDateCustomConfig", "2014-03-25T12:34:19")
+                        .param("registeredBeforeDateCustomConfig", "2014-03-15T14:29:04")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Homer"))
-                .andExpect(jsonPath("$[1].firstName").value("Marge"))
-                .andExpect(jsonPath("$[2].firstName").value("Bart"))
-                .andExpect(jsonPath("$[3].firstName").value("Moe"))
-                .andExpect(jsonPath("$[4].firstName").value("Ned"))
-                .andExpect(jsonPath("$[5].firstName").value("Vanessa"))
-                .andExpect(jsonPath("$[6]").doesNotExist());
+                .andExpect(jsonPath("$[1].firstName").value("Moe"))
+                .andExpect(jsonPath("$[2].firstName").value("Adam"))
+                .andExpect(jsonPath("$[3]").doesNotExist());
     }
 
     @Test
     public void findsByLessThanOrEqual() throws Exception {
         mockMvc.perform(get("/customers")
-                        .param("registeredBeforeOrEqualDate", "2014-03-25")
+                        .param("registeredBeforeOrEqualDate", "2014-03-16")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Homer"))
-                .andExpect(jsonPath("$[1].firstName").value("Marge"))
-                .andExpect(jsonPath("$[2].firstName").value("Bart"))
-                .andExpect(jsonPath("$[3].firstName").value("Moe"))
-                .andExpect(jsonPath("$[4].firstName").value("Ned"))
+                .andExpect(jsonPath("$[1].firstName").value("Moe"))
+                .andExpect(jsonPath("$[2].firstName").value("Barry"))
+                .andExpect(jsonPath("$[3].firstName").value("Adam"))
+                .andExpect(jsonPath("$[4].firstName").value("Vanessa"))
                 .andExpect(jsonPath("$[5]").doesNotExist());
     }
 
     @Test
     public void findsByLessThanOrEqualWithCustomConfigContainingTime() throws Exception {
-        customer("Adam", "Flayman")
-                .registrationDate(2014, 3, 25, 12, 34, 19, 0)
-                .build(em);
-        customer("Vanessa", "Bloom")
-                .registrationDate(2014, 3, 25, 12, 34, 19, 1)
-                .build(em);
-
         mockMvc.perform(get("/customers")
-                        .param("registeredBeforeOrEqualDateCustomConfig", "2014-03-25T12:34:19")
+                        .param("registeredBeforeOrEqualDateCustomConfig", "2014-03-15T14:29:04")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Homer"))
-                .andExpect(jsonPath("$[1].firstName").value("Marge"))
-                .andExpect(jsonPath("$[2].firstName").value("Bart"))
-                .andExpect(jsonPath("$[3].firstName").value("Moe"))
-                .andExpect(jsonPath("$[4].firstName").value("Ned"))
-                .andExpect(jsonPath("$[5].firstName").value("Adam"))
-                .andExpect(jsonPath("$[6]").doesNotExist());
+                .andExpect(jsonPath("$[1].firstName").value("Moe"))
+                .andExpect(jsonPath("$[2].firstName").value("Adam"))
+                .andExpect(jsonPath("$[3].firstName").value("Vanessa"))
+                .andExpect(jsonPath("$[4]").doesNotExist());
     }
 
 }
