@@ -22,7 +22,7 @@ import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * Helper class for building test data
@@ -72,7 +72,7 @@ public class CustomerBuilder {
 		customer.setLastSeen(timestamp);
 		return this;
 	}
-	
+
 	public CustomerBuilder registrationDate(int year, int month, int day) {
 		return registrationDate(year, month, day, 0, 0, 0 ,0);
 	}

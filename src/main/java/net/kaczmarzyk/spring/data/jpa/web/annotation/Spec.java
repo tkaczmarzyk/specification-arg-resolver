@@ -94,7 +94,7 @@ public @interface Spec {
     
     /**
      * <p>Attribute name (or more generally, path in the entity graph) to be filtered.</p>
-     * 
+     *
      * <p>
      * For example, consider a {@code Customer} entity with field {@code String firstName}.
      * If you want to filter customers by id, set {@code @Spec.path} attribute to "id".

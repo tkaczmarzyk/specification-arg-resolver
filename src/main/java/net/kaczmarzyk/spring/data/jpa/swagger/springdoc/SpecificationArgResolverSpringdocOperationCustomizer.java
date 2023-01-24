@@ -39,8 +39,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.springdoc.core.SpringDocUtils;
 import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;

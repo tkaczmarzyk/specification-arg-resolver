@@ -29,6 +29,8 @@ import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * (converted to use LessThanOrEqual after dropping Date-specific specification classes in 3.0.0)
+ * 
  * @author Kamil Sutkowski
  */
 public class DateBeforeInclusiveTest extends IntegrationTestBase {
@@ -46,14 +48,14 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
-        DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>(queryCtx ,"registrationDate", new String[] { "2014-03-12" }, defaultConverter);
+        LessThanOrEqual<Customer> before12th = new LessThanOrEqual<>(queryCtx ,"registrationDate", new String[] { "2014-03-12" }, defaultConverter);
 
         List<Customer> result = customerRepo.findAll(before12th);
         assertThat(result)
                 .hasSize(2)
                 .containsOnly(homerSimpson, margeSimpson);
 
-        DateBeforeInclusive<Customer> before11th = new DateBeforeInclusive<>(queryCtx, "registrationDate", new String[] { "2014-03-11" }, defaultConverter);
+        LessThanOrEqual<Customer> before11th = new LessThanOrEqual<>(queryCtx, "registrationDate", new String[] { "2014-03-11" }, defaultConverter);
 
         result = customerRepo.findAll(before11th);
         assertThat(result)
@@ -63,7 +65,7 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
 
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
-        DateBeforeInclusive<Customer> before12th = new DateBeforeInclusive<>(queryCtx, "registrationDate", new String[]{"12-03-2014"},
+    	LessThanOrEqual<Customer> before12th = new LessThanOrEqual<>(queryCtx, "registrationDate", new String[]{"12-03-2014"},
         		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 
         List<Customer> result = customerRepo.findAll(before12th);
@@ -74,11 +76,11 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new DateBeforeInclusive<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        new LessThanOrEqual<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rejectsMissingArgument() throws ParseException {
-        new DateBeforeInclusive<>(queryCtx, "path", new String[]{}, defaultConverter);
+        new LessThanOrEqual<>(queryCtx, "path", new String[]{}, defaultConverter);
     }
 }

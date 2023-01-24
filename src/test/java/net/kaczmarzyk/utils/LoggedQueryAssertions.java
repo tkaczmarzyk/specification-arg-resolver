@@ -15,12 +15,7 @@
  */
 package net.kaczmarzyk.utils;
 
-import static java.util.stream.Collectors.toList;
-
-import java.util.List;
-
-import javax.persistence.criteria.JoinType;
-
+import jakarta.persistence.criteria.JoinType;
 import org.assertj.core.api.Assertions;
 
 /**
@@ -29,57 +24,48 @@ import org.assertj.core.api.Assertions;
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class LoggedQueryAssertions {
+public class LoggedQueryAssertions<T> {
 
+	private T parentAssertions;
 	private LoggedQuery assertedQuery;
 
-	public LoggedQueryAssertions hasNumberOfJoinsForPath(String joinPath, int expectedCount) {
+	private LoggedQueryAssertions(LoggedQuery assertedQuery) {
+		this.assertedQuery = assertedQuery;
+	}
+
+	LoggedQueryAssertions(T parent, LoggedQuery assertedQuery) {
+		this.parentAssertions = parent;
+		this.assertedQuery = assertedQuery;
+	}
+
+	public static LoggedQueryAssertions assertThat(LoggedQuery loggedQuery) {
+		return new LoggedQueryAssertions(loggedQuery);
+	}
+
+	public T and() {
+		return parentAssertions;
+	}
+
+	public LoggedQueryAssertions hasNumberOfTableJoins(String table, int expectedCount) {
 		assertQueryContextExists();
-		Assertions.assertThat(assertedQuery.countJoinsForPath(joinPath)).isEqualTo(expectedCount);
+		Assertions.assertThat(assertedQuery.countTableJoins(table)).isEqualTo(expectedCount);
 		return this;
 	}
-	
+
 	public LoggedQueryAssertions hasNumberOfJoins(int expectedCount) {
 		assertQueryContextExists();
 		Assertions.assertThat(assertedQuery.countJoins()).isEqualTo(expectedCount);
 		return this;
 	}
-	
+
 	public LoggedQueryAssertions hasNumberOfJoins(int expectedCount, JoinType joinType) {
 		assertQueryContextExists();
 		Assertions.assertThat(assertedQuery.countJoins(joinType)).isEqualTo(expectedCount);
 		return this;
 	}
-
 	private void assertQueryContextExists() throws AssertionError {
 		if (assertedQuery == null) {
 			throw new AssertionError("this method must be executed in context of some query, did you use `queryWithIndex` method?");
 		}
-	}
-	
-	public LoggedQueryAssertions andQueryWithIndex(int index) {
-		this.assertedQuery = loggedQueries().get(index);
-		return this;
-	}
-	
-	public LoggedQueryAssertions theOnlyOneQueryThatWasExecuted() {
-		return numberOfPerformedHqlQueriesIs(1)
-				.andQueryWithIndex(0);
-	}
-	
-	public LoggedQueryAssertions numberOfPerformedHqlQueriesIs(int expectedCount) {
-		Assertions.assertThat(loggedQueries()).hasSize(expectedCount);
-		return this;
-	}
-	
-	private List<LoggedQuery> loggedQueries() {
-		return TestLogAppender.getInterceptedLogs().stream()
-			.filter(log -> log.contains("parse() - HQL: "))
-			.map(LoggedQuery::new)
-			.collect(toList());
-	}
-	
-	public static LoggedQueryAssertions assertThat() {
-		return new LoggedQueryAssertions();
 	}
 }

@@ -29,7 +29,9 @@ import net.kaczmarzyk.utils.ReflectionUtils;
 import org.junit.Test;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
+
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +58,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecification extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", pathVars = "orderIn", spec = In.class),
 			@Spec(path = "t.name", headers = "tag", spec = Equal.class)
@@ -65,8 +67,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithPathVar extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", params = "orderIn", spec = In.class),
 			@Spec(path = "t.name", headers = "tag", spec = Equal.class)
@@ -74,8 +76,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithParam extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t")
 	@Or({
 			@Spec(path = "o.itemName", headers = "orderIn", spec = In.class),
 			@Spec(path = "t.name", params = "tag", spec = Equal.class)
@@ -83,8 +85,8 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 	public interface CustomSpecificationWithHeader extends Specification<Customer> {
 	}
 
-	@Join(path = "orders", alias = "o")
-	@Join(path = "o.tags", alias = "t", type = JoinType.INNER)
+	@Join(path = "orders", alias = "o", type = JoinType.INNER)
+	@Join(path = "o.tags", alias = "t", type = JoinType.LEFT)
 	@Or({
 			@Spec(path = "o.itemName", jsonPaths = "orderIn", spec = In.class),
 			@Spec(path = "t.name", jsonPaths = "tag", spec = Equal.class)
@@ -235,7 +237,7 @@ public class SpecificationBuilderTest extends IntegrationTestBase {
 
 	private Collection<Specification<Object>> innerSpecs(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "arg$2");
+				ReflectionUtils.get(Proxy.getInvocationHandler(resolvedSpec), "arg$1");
 
 		return ReflectionUtils.get(resolvedConjunction, "innerSpecs");
 	}

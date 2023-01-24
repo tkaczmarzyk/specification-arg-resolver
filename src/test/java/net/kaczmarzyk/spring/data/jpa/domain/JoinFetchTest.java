@@ -25,10 +25,15 @@ import nl.jqno.equalsverifier.Warning;
 import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.sql.DataSource;
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -327,25 +332,9 @@ public class JoinFetchTest extends IntegrationTestBase {
         assertThrows(
                 InvalidDataAccessApiUsageException.class,
                 () -> customerRepo.findAll(spec),
-                "Join fetch definition with alias: 'o' not found! " +
-                        "Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'; " +
-                        "nested exception is java.lang.IllegalArgumentException: " +
-                        "Join fetch definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"
-        );
+                "Join fetch definition with alias: 'o' not found! Make sure that join with the alias 'o' is defined before the join with path: 'o.tags'"        );
     }
 
-    @Test
-    public void performsNotDistinctFetchWhenDistinctParamIsSetToFalse() {
-        JoinFetch<Customer> spec = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, false);
-    
-        List<Customer> customers = customerRepo.findAll(spec);
-        
-        assertThat(customers)
-                .hasSize(4)
-                .extracting(Customer::getFirstName)
-                .containsExactly("Homer", "Homer", "Marge", "Bart");
-    }
-    
     @Test
     public void performsDistinctFetchWhenDistinctParamIsSetToTrue() {
         JoinFetch<Customer> spec = new JoinFetch<Customer>(queryCtx, new String[] { "orders" }, "o", JoinType.LEFT, true);

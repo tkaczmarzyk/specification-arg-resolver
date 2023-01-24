@@ -42,6 +42,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
 	private Converter converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null, Locale.getDefault());
 
+
     @Test
     public void returnsNullIfTheWebParameterIsMissing_defaultParameterName() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod1"), 0);
@@ -178,20 +179,6 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void buildsTheSpecUsingCustomMultiValueWebParameterName() throws Exception {
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod3"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new DefaultQueryContext();
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
-
-	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2" }));
-    }
-
-    @Test
     public void skipsEmptyWebParameterValues() {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
@@ -200,22 +187,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         Specification<Object> resolved = resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "value1" }));
-    }
-
-    @Test
-    public void buildsTheSpecUsingCustomMultiValueWebParametersNames() throws Exception {
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod4"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-        QueryContext queryCtx = new DefaultQueryContext();
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] { "theValue", "theValue2" });
-        when(req.getParameterValues("theParameter2")).thenReturn(new String[] { "theValue3", "theValue4" });
-
-	    WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        assertThat(resolved).isEqualTo(new EqualEnum<>(queryCtx, "thePath", new String[] { "theValue", "theValue2", "theValue3", "theValue4" }));
+        assertThat(resolved).isEqualTo(new Equal(queryCtx, "thePath", new String[] { "value1" }, converter));
     }
 
     @Test
@@ -308,7 +280,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
     }
-    
+
     @Test
     public void passesDefaultSystemLocaleToLocaleAwareSpecification() {
     	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpec"), 0);
@@ -319,16 +291,16 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
         Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-        
+
         Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
-        
+
         assertThat(localePassedToSpec).isEqualTo(Locale.getDefault());
     }
-    
+
     @Test
     public void passesGlobalCustomLocaleToLocaleAwareSpecification() {
     	ReflectionUtils.set(resolver, "defaultLocale", new Locale("tr", "TR"));
-    	
+
     	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpec"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
@@ -337,16 +309,16 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
         Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-        
+
         Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
-        
+
         assertThat(localePassedToSpec).isEqualTo(new Locale("tr", "TR"));
     }
-    
+
     @Test
     public void usesCustomLocaleSetInSpecConfigAndPassesItToLocaleAwareSpecification() {
     	ReflectionUtils.set(resolver, "defaultLocale", new Locale("pl", "PL")); // global custom locale that is going to be overriden by @Spec.config
-    	
+
     	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpecAndCustomLocaleConfig"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
@@ -355,9 +327,9 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
         Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-        
+
         Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
-        
+
         assertThat(localePassedToSpec).isEqualTo(new Locale("tr", "TR"));
     }
 
@@ -369,11 +341,11 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         public void testMethod2(@Spec(path = "thePath", params = "theParameter", spec = Like.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
-        public void testMethod3(@Spec(path = "thePath", params = "theParameter", spec = EqualEnum.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        public void testMethod3(@Spec(path = "thePath", params = "theParameter", spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethod4(
-                @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = EqualEnum.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+                @Spec(path = "thePath", params = { "theParameter", "theParameter2" }, spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethod5(
@@ -403,11 +375,11 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         public void testMethod11(
                 @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION, config = {"config1", "config2"}) Specification<Object> spec) {
         }
-        
+
         public void testMethodWithLocaleAwareSpec(
         		@Spec(path = "thePath", params = "theParameter", spec = EqualIgnoreCase.class) Specification<Object> spec) {
         }
-        
+
         public void testMethodWithLocaleAwareSpecAndCustomLocaleConfig(
         		@Spec(path = "thePath", params = "theParameter", spec = EqualIgnoreCase.class, config = "tr_TR") Specification<Object> spec) {
         }

@@ -15,20 +15,21 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
-import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
+import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Objects;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
-import org.springframework.data.jpa.domain.Specification;
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
+import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
 
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import java.util.function.Function;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -59,7 +60,7 @@ public class Join<T> implements Specification<T>, Fake {
 
 		if (!pathToJoinContainsAlias(pathToJoinOn)) {
                         if(!queryContext.existsJoin(alias, root)) {
-                            queryContext.putLazyVal(alias, (r) -> r.join(pathToJoinOn, joinType));
+                        	putValToQueryContext(alias, root, (r) -> r.join(pathToJoinOn, joinType));
                         }
 		} else {
 			String[] pathToJoinOnSplittedByDot = pathToJoinSplittedByDot(pathToJoinOn);
@@ -74,15 +75,29 @@ public class Join<T> implements Specification<T>, Fake {
 			}
 
 			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
-                queryContext.putLazyVal(
+				putValToQueryContext(
                         alias,
+                        root,
                         (r) -> {
-                        	javax.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
+                        	jakarta.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
                         	return evaluated.join(extractedPathToJoin, joinType);
                         }
                 );
 		}
 		return null;
+	}
+
+	private void putValToQueryContext(String alias, Root<T> root, Function<Root<?>, jakarta.persistence.criteria.Join<?, ?>> lazyVal) {
+		// generally we want to evaluate join lazily
+		// because most typical scenario tends to be a LEFT join with distinct = true
+		// and in such scenario if there is no filtering on the joined part (e.g. no related http param was sent)
+		// then we can optimize behaviour by not joining at all
+		queryContext.putLazyVal(alias, lazyVal);
+		// but inner joins or non-distinct queries must have them evaluated eagerly
+		// because they affect query result even when there is no filtering applied
+		if (!distinctQuery || joinType == JoinType.INNER) {
+			queryContext.getEvaluated(alias, root);
+		}
 	}
 
 	@Override

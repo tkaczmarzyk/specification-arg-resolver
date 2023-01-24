@@ -6,9 +6,12 @@ An alternative API for filtering data with Spring MVC &amp; Spring Data JPA.
 
 A thorough introduction and the original rationale behind this component can be found my blog: http://blog.kaczmarzyk.net/2014/03/23/alternative-api-for-filtering-data-with-spring-mvc-and-spring-data/. In this file you can find a summary of all the current features and some API examples.
 
-You can also take a look on a working Spring Boot app that uses this library: https://github.com/tkaczmarzyk/specification-arg-resolver-example.
+You can also take a look on working Spring Boot apps that use this library:
+  * for Spring Boot 3: https://github.com/tratif/specification-arg-resolver-example-springboot3
+    * this includes demonstration of Native Images for GraalVM
+  * for Spring Boot 2: https://github.com/tkaczmarzyk/specification-arg-resolver-example.
 
-* Table of contents 
+## Table of contents 
    * [Basic usage](#basic-usage) -- quick start with the lib
       * [Enabling spec annotations in your Spring app](#enabling-spec-annotations-in-your-spring-app)
    * [Simple specifications](#simple-specifications) -- basic specs, such as `Equal`, `Like`, `GreaterThan` etc.
@@ -188,7 +191,7 @@ The data type of the field specified in `path` can be anything, but the HTTP par
 
 Usage: `@Spec(path="activationDate", params="activationDateNull" spec=Null.class)`.
 
-If you want the query to be static, i.e. not depend on any HTTP param, use `constVal` attribute of `Spec` annotation:
+If you want the query to be static, i.e. not depend on any HTTP param, you can use `IsNull` or `IsNotNull` specifications. Alternatively, you can use `Null` with `constVal` attribute of `Spec` annotation:
 
 For example `@Spec(path="nickname", spec=Null.class, constVal="true")` will always add `nickname is null` to the query.
 
@@ -206,6 +209,22 @@ to handle HTTP requests such as:
     GET http://myhost/customers?isDeleted=false
 
 to return deleted (`deletedDate` not null) and not deleted (`deltedDate` null) respectively.
+
+### IsNull ###
+
+Filters with `is null` where clause for particular field defined under `path` in `Spec` annotation. Does not require any http-parameters to be present, i.e. represents constant part of the query. The same effect can be achieved with `Null` specification and `@Spec.constVal` set to `true`. `IsNull` is just a convenience class that can make the code more explicit.
+
+For example, consider `nickName` field. Then, you can introduce the following mapping:
+
+    @Spec(path="nickName", spec=IsNull.class)
+
+to handle HTTP requests such as:
+
+    GET http://myhost/customersWithoutNickname
+
+to return customers without nickname (`nickName` field with `null` value).
+
+A negation for this specification is also available: `IsNotNull`.
 
 ### Empty ###
 
@@ -473,9 +492,9 @@ public Object findByOrderedItem(
 
 ```
 
-The default join type is `INNER`. You can use `type` attribute of the annotation to specify different value.
+The default join type is `LEFT`. You can use `type` attribute of the annotation to specify different value.
 
-Using `@Join` annotation makes the query distinct by default. While it is the best approach for most of the cases, you can override it by using `distinct` attribute of the annotation.
+Using `@Join` annotation makes the query distinct by default. While it is the best approach for most of the cases, you can override it by using `distinct` attribute of the annotation. Warning for Hibernate users: from Hibernate version 6 onwards, all queries are distinct anyway and there is no way to change it.
 
 You can specify multiple different joins, for example:
 
@@ -557,6 +576,12 @@ public Object findCustomersByOrderedItemTag(
 ```
 
 You can use join annotations with custom [annotated specification interfaces](#annotated-specification-interfaces).
+
+### Join evaluation
+
+Inner joins are always evaluated eagerly, even if there is no filtering applied on the joined part (e.g. due to a missing HTTP parameter associated with the specification). This is due to the fact, that inner joins may narrow the result set (entities with empty associations will be ommited). Warning: this behaviour was different in pre 3.X version, see CHANGELOG.md for more details if you are still using 2.X.
+
+Left and right joins are lazily evaluated for distinct queries, i.e. if the HTTP parameter associated with the specification is not present, join will not be performed (as it would be meaningless). For non-distinct queries evaluation will be eager, as such join may expand the result set (duplicated entities might be returned in the result set). Again, this does not matter for Hibernate 6+ users.
 
 Join fetch
 ----------
@@ -1262,14 +1287,22 @@ Swagger support
 Right now specification argument resolver supports only one library -> `Springdoc-openapi`.
 
 There are two steps in order to enable support for `Springdoc-openapi` library:
-* Add following dependency from `Springdoc-openapi` (tested with `1.6.13` version):
-```xml
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-common</artifactId>
-</dependency>
-```
-
+* Add dependency from `Springdoc-openapi`:
+  * For `specification-arg-resolver 3.0.0` and newer, please use `springdoc-openapi-starter-common` (tested with `2.0.2` version):
+    ```xml
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-common</artifactId>
+    </dependency>
+    ```
+  * For versions older than `specification-arg-resolver 3.0.0`, please use `springdoc-openapi-common` (tested with `1.6.13` version):
+    ```xml
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-common</artifactId>
+    </dependency>
+    ```
+    
 * Create `@Bean` of type `SpecificationArgResolverSpringdocOperationCustomizer` in your app configuration:
 ```java
 @Bean
@@ -1321,6 +1354,7 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
+| `v3.X`                             | `17` or higher   | Compiled and tested against Spring Boot `3.0.0`                                         |
 | `v2.X`                             | `1.8` or higher  | Compiled and tested against Spring Boot `2.7.7`                                         |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
@@ -1336,7 +1370,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>2.17.0</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 

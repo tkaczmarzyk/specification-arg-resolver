@@ -15,13 +15,13 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "item_tags")
 public class ItemTag {
 
-	@Id @GeneratedValue
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(unique = true)

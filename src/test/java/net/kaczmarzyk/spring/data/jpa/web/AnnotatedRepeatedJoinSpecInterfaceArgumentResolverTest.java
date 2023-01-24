@@ -26,7 +26,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import static javax.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.*;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder.nativeWebRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AnnotatedRepeatedJoinSpecInterfaceArgumentResolverTest extends AnnotatedSpecInterfaceTestBase {
 
 	// TC-1. interface with repeated @Join spec
-	@Join(path = "orders", alias = "o", type = LEFT)
-	@Join(path = "badges", alias = "b")
+	@Join(path = "orders", alias = "o")
+	@Join(path = "badges", alias = "b", type = INNER)
 	@And({
 			@Spec(path = "o.itemName", params = "itemName", spec = Equal.class),
 			@Spec(path = "b.badgeType", params = "badgeType", spec = Equal.class)

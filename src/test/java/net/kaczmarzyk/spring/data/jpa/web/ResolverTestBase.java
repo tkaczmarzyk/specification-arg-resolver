@@ -18,11 +18,11 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.utils.ReflectionUtils;
-import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Executable;
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class ResolverTestBase {
 
 	protected Converter defaultConverter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.getDefault());
+	protected Converter defaultConverterForPathVars = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null, Locale.getDefault());
 	
 	protected MethodParameter testMethodParameter(String methodName) {
         return MethodParameter.forExecutable(testMethod(methodName, Specification.class), 0);
@@ -64,14 +65,14 @@ public abstract class ResolverTestBase {
 
 	protected Collection<Specification<Object>> proxiedInnerSpecs(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Conjunction<Object> resolvedConjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "arg$2");
+				ReflectionUtils.get(Proxy.getInvocationHandler(resolvedSpec), "arg$1");
 
 		return ReflectionUtils.get(resolvedConjunction, "innerSpecs");
 	}
 
 	protected Collection<Specification<Object>> innerSpecsFromDisjunction(Specification<?> resolvedSpec) {
 		net.kaczmarzyk.spring.data.jpa.domain.Disjunction<Object> resolvedDisjunction =
-				ReflectionUtils.get(ReflectionUtils.get(resolvedSpec, "CGLIB$CALLBACK_0"), "arg$2");
+				ReflectionUtils.get(Proxy.getInvocationHandler(resolvedSpec), "arg$1");
 
 		return ReflectionUtils.get(resolvedDisjunction, "innerSpecs");
 	}
@@ -79,10 +80,10 @@ public abstract class ResolverTestBase {
 	protected abstract Class<?> controllerClass();
 
 	protected void assertThatSpecIsProxy(Specification<?> specification) {
-		assertThat(Enhancer.isEnhanced(specification.getClass())).isTrue();
+		assertThat(Proxy.isProxyClass(specification.getClass())).isTrue();
 	}
 
 	protected void assertThatSpecIsNotProxy(Specification<?> specification) {
-		assertThat(Enhancer.isEnhanced(specification.getClass())).isFalse();
+		assertThat(Proxy.isProxyClass(specification.getClass())).isFalse();
 	}
 }
