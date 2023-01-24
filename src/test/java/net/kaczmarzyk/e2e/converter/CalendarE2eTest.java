@@ -230,13 +230,6 @@ public class CalendarE2eTest extends E2eTestBase {
 
     @Test
     public void findsByBetweenWithCustomConfigContainingTime() throws Exception {
-        customer("Adam", "Flayman")
-                .registrationDate(2014, 3, 31, 12, 34, 18, 0)
-                .build(em);
-        customer("Vanessa", "Bloom")
-                .registrationDate(2014, 3, 31, 12, 34, 19, 123)
-                .build(em);
-
         mockMvc.perform(get("/customers")
                         .param("registeredAfterDateCustomConfig", "2014-03-15T15:34:19")
                         .param("registeredBeforeDateCustomConfig", "2014-03-21T12:34:19")
