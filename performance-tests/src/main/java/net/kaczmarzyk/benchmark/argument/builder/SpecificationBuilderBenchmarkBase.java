@@ -15,7 +15,10 @@
  */
 package net.kaczmarzyk.benchmark.argument.builder;
 
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Iterator;
@@ -27,6 +30,7 @@ import java.util.function.BiConsumer;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static net.kaczmarzyk.spring.data.jpa.utils.SpecificationBuilder.specification;
+import static net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy.IGNORE;
 
 /**
  * @author Konrad Hajduga (Tratif sp. z o.o.)
@@ -107,5 +111,117 @@ abstract class SpecificationBuilderBenchmarkBase {
 		}
 
 		return specificationBuilder.build();
+	}
+
+	@Or({
+		@Spec(path = "age", params = "age", spec = Equal.class),
+		@Spec(path = "city", params = "city", spec = Equal.class),
+		@Spec(path = "criminalPast", params = "criminalPast", spec = Equal.class),
+	})
+	protected interface ThreeParamsSpecification extends Specification<Object> {
+	}
+
+	@Or({
+		@Spec(path = "age", pathVars = "age", spec = Equal.class),
+		@Spec(path = "city", pathVars = "city", spec = Equal.class),
+		@Spec(path = "criminalPast", pathVars = "criminalPast", spec = Equal.class),
+	})
+	protected interface ThreePathVarsSpecification extends Specification<Object> {
+	}
+
+	@Or({
+		@Spec(path = "age", headers = "age", spec = Equal.class),
+		@Spec(path = "city", headers = "city", spec = Equal.class),
+		@Spec(path = "criminalPast", headers = "criminalPast", spec = Equal.class),
+	})
+	protected interface ThreeHeadersSpecification extends Specification<Object> {
+	}
+
+	@Or({
+		@Spec(path = "age", jsonPaths = "age", spec = Equal.class),
+		@Spec(path = "city", jsonPaths = "city", spec = Equal.class),
+		@Spec(path = "criminalPast", jsonPaths = "criminalPast", spec = Equal.class),
+	})
+	protected interface ThreeJsonPathsSpecification extends Specification<Object> {
+	}
+
+	@Or({
+		@Spec(path = "lastName", params = "lastName", spec = Equal.class),
+		@Spec(path = "firstName", params = "firstName", spec = Equal.class),
+		@Spec(path = "age", params = "age", spec = Equal.class),
+		@Spec(path = "gender", params = "gender", spec = Equal.class),
+		@Spec(path = "hairColor", params = "hairColor", spec = Equal.class),
+		@Spec(path = "iris", params = "iris", spec = Equal.class),
+		@Spec(path = "height", params = "height", spec = Equal.class),
+		@Spec(path = "race", params = "race", spec = Equal.class),
+		@Spec(path = "motherName", params = "motherName", spec = Equal.class),
+		@Spec(path = "fatherName", params = "fatherName", spec = Equal.class),
+		@Spec(path = "vip", params = "vip", spec = Equal.class),
+		@Spec(path = "city", params = "city", spec = Equal.class),
+		@Spec(path = "criminalPast", params = "criminalPast", spec = Equal.class),
+		@Spec(path = "religion", params = "religion", spec = Equal.class),
+		@Spec(path = "state", params = "state", spec = Equal.class),
+	})
+	protected interface FifteenParamsSpecification extends Specification<Object> {
+	}
+
+	@Or({
+		@Spec(path = "lastName", pathVars = "lastName", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "firstName", pathVars = "firstName", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "age", pathVars = "age", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "gender", pathVars = "gender", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "hairColor", pathVars = "hairColor", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "iris", pathVars = "iris", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "height", pathVars = "height", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "race", pathVars = "race", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "motherName", pathVars = "motherName", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "fatherName", pathVars = "fatherName", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "vip", pathVars = "vip", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "city", pathVars = "city", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "criminalPast", pathVars = "criminalPast", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "religion", pathVars = "religion", spec = Equal.class, missingPathVarPolicy = IGNORE),
+		@Spec(path = "state", pathVars = "state", spec = Equal.class, missingPathVarPolicy = IGNORE),
+	})
+	protected interface FifteenPathVarsSpecification extends Specification<Object> {
+	}
+
+	@Or({
+		@Spec(path = "lastName", headers = "lastName", spec = Equal.class),
+		@Spec(path = "firstName", headers = "firstName", spec = Equal.class),
+		@Spec(path = "age", headers = "age", spec = Equal.class),
+		@Spec(path = "gender", headers = "gender", spec = Equal.class),
+		@Spec(path = "hairColor", headers = "hairColor", spec = Equal.class),
+		@Spec(path = "iris", headers = "iris", spec = Equal.class),
+		@Spec(path = "height", headers = "height", spec = Equal.class),
+		@Spec(path = "race", headers = "race", spec = Equal.class),
+		@Spec(path = "motherName", headers = "motherName", spec = Equal.class),
+		@Spec(path = "fatherName", headers = "fatherName", spec = Equal.class),
+		@Spec(path = "vip", headers = "vip", spec = Equal.class),
+		@Spec(path = "city", headers = "city", spec = Equal.class),
+		@Spec(path = "criminalPast", headers = "criminalPast", spec = Equal.class),
+		@Spec(path = "religion", headers = "religion", spec = Equal.class),
+		@Spec(path = "state", headers = "state", spec = Equal.class),
+	})
+	protected interface FifteenHeadersSpecification extends Specification<Object> {
+	}
+
+	@Or({
+		@Spec(path = "lastName", jsonPaths = "lastName", spec = Equal.class),
+		@Spec(path = "firstName", jsonPaths = "firstName", spec = Equal.class),
+		@Spec(path = "age", jsonPaths = "age", spec = Equal.class),
+		@Spec(path = "gender", jsonPaths = "gender", spec = Equal.class),
+		@Spec(path = "hairColor", jsonPaths = "hairColor", spec = Equal.class),
+		@Spec(path = "iris", jsonPaths = "iris", spec = Equal.class),
+		@Spec(path = "height", jsonPaths = "height", spec = Equal.class),
+		@Spec(path = "race", jsonPaths = "race", spec = Equal.class),
+		@Spec(path = "motherName", jsonPaths = "motherName", spec = Equal.class),
+		@Spec(path = "fatherName", jsonPaths = "fatherName", spec = Equal.class),
+		@Spec(path = "vip", jsonPaths = "vip", spec = Equal.class),
+		@Spec(path = "city", jsonPaths = "city", spec = Equal.class),
+		@Spec(path = "criminalPast", jsonPaths = "criminalPast", spec = Equal.class),
+		@Spec(path = "religion", jsonPaths = "religion", spec = Equal.class),
+		@Spec(path = "state", jsonPaths = "state", spec = Equal.class),
+	})
+	protected interface FifteenJsonPathsSpecification extends Specification<Object> {
 	}
 }

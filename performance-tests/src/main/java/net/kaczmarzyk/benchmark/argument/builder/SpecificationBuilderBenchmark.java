@@ -15,12 +15,8 @@
  */
 package net.kaczmarzyk.benchmark.argument.builder;
 
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.springframework.data.jpa.domain.Specification;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -28,7 +24,7 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
  * This class measures the average time of building specification using {@code SpecificationBuilder} for all types of passing arguments (params, pathVars, headers, jsonPaths).
- * Each benchmark is passing three arguments and uses interface with exact three specifications.
+ * Each benchmark is passing three arguments and uses interface with three or fifteen specifications.
  *
  * @author Konrad Hajduga (Tratif sp. z o.o.)
  */
@@ -40,7 +36,7 @@ public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmark
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecWithThreeParams(Blackhole blackhole) {
+	public void measureBuildingSpecWithThreeOfThreeAvailableParams(Blackhole blackhole) {
 		ThreeParamsSpecification result = paramsSpecification(ThreeParamsSpecification.class, 3);
 
 		blackhole.consume(result);
@@ -52,7 +48,7 @@ public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmark
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecWithThreePathVars(Blackhole blackhole) {
+	public void measureBuildingSpecWithThreeOfThreeAvailablePathVars(Blackhole blackhole) {
 		ThreePathVarsSpecification result = pathVarsSpecification(ThreePathVarsSpecification.class, 3);
 
 		blackhole.consume(result);
@@ -64,7 +60,7 @@ public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmark
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecWithThreeHeaders(Blackhole blackhole) {
+	public void measureBuildingSpecWithThreeOfThreeAvailableHeaders(Blackhole blackhole) {
 		ThreeHeadersSpecification result = headersSpecification(ThreeHeadersSpecification.class, 3);
 
 		blackhole.consume(result);
@@ -76,41 +72,57 @@ public class SpecificationBuilderBenchmark extends SpecificationBuilderBenchmark
 	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
 	@Fork(3)
-	public void measureBuildingSpecWithThreeJsonPaths(Blackhole blackhole) {
+	public void measureBuildingSpecWithThreeOfThreeAvailableJsonPaths(Blackhole blackhole) {
 		ThreeJsonPathsSpecification result = jsonPathsSpecification(ThreeJsonPathsSpecification.class, 3);
 
 		blackhole.consume(result);
 	}
 
-	@Or({
-		@Spec(path = "age", params = "age", spec = Equal.class),
-		@Spec(path = "city", params = "city", spec = Equal.class),
-		@Spec(path = "criminalPast", params = "criminalPast", spec = Equal.class),
-	})
-	private interface ThreeParamsSpecification extends Specification<Object> {
+	@Benchmark
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
+	public void measureBuildingSpecWithThreeOfFifteenAvailableParams(Blackhole blackhole) {
+		FifteenParamsSpecification result = paramsSpecification(FifteenParamsSpecification.class, 3);
+
+		blackhole.consume(result);
 	}
 
-	@Or({
-		@Spec(path = "age", pathVars = "age", spec = Equal.class),
-		@Spec(path = "city", pathVars = "city", spec = Equal.class),
-		@Spec(path = "criminalPast", pathVars = "criminalPast", spec = Equal.class),
-	})
-	private interface ThreePathVarsSpecification extends Specification<Object> {
+	@Benchmark
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
+	public void measureBuildingSpecWithThreeOfFifteenAvailablePathVars(Blackhole blackhole) {
+		FifteenPathVarsSpecification result = pathVarsSpecification(FifteenPathVarsSpecification.class, 3);
+
+		blackhole.consume(result);
 	}
 
-	@Or({
-		@Spec(path = "age", headers = "age", spec = Equal.class),
-		@Spec(path = "city", headers = "city", spec = Equal.class),
-		@Spec(path = "criminalPast", headers = "criminalPast", spec = Equal.class),
-	})
-	private interface ThreeHeadersSpecification extends Specification<Object> {
+	@Benchmark
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
+	public void measureBuildingSpecWithThreeOfFifteenAvailableHeaders(Blackhole blackhole) {
+		FifteenHeadersSpecification result = headersSpecification(FifteenHeadersSpecification.class, 3);
+
+		blackhole.consume(result);
 	}
 
-	@Or({
-		@Spec(path = "age", jsonPaths = "age", spec = Equal.class),
-		@Spec(path = "city", jsonPaths = "city", spec = Equal.class),
-		@Spec(path = "criminalPast", jsonPaths = "criminalPast", spec = Equal.class),
-	})
-	private interface ThreeJsonPathsSpecification extends Specification<Object> {
+	@Benchmark
+	@BenchmarkMode(AverageTime)
+	@OutputTimeUnit(NANOSECONDS)
+	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+	@Fork(3)
+	public void measureBuildingSpecWithThreeOfFifteenAvailableJsonPaths(Blackhole blackhole) {
+		FifteenJsonPathsSpecification result = jsonPathsSpecification(FifteenJsonPathsSpecification.class, 3);
+
+		blackhole.consume(result);
 	}
 }
