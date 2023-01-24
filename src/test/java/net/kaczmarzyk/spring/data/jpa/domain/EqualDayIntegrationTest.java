@@ -65,7 +65,9 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 				.nextSpecialOffer(OffsetDateTime.of(2020, 6, 16, 16, 17, 0, 0, ofHours(9)))
 				.build(em);
 
-		joeQuimby = customer("Joe", "Quimby").golden().build(em);
+		joeQuimby = customer("Joe", "Quimby")
+				.golden()
+				.build(em);
 	}
 
 	@Test
@@ -82,7 +84,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filterByInstantWithCustomDateFormat() {
+	public void filtersByInstantWithCustomDateFormat() {
 		EqualDay<Customer> firstDateOfNextSpecialOffer = new EqualDay<>(queryCtx, "dateOfNextSpecialOfferInstant", new String[] { "2020/06/16T02:34" },
 				Converter.withDateFormat("yyyy/MM/dd'T'HH:mm", OnTypeMismatch.EMPTY_RESULT, null));
 		List<Customer> found = customerRepo.findAll(firstDateOfNextSpecialOffer);
@@ -104,7 +106,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filterByTimestampWithCustomDateFormat() {
+	public void filtersByTimestampWithCustomDateFormat() {
 		EqualDay<Customer> firstDateOfNextSpecialOffer = new EqualDay<>(queryCtx, "dateOfNextSpecialOfferTimestamp", new String[] { "2020/06/16T02:34" },
 				Converter.withDateFormat("yyyy/MM/dd'T'HH:mm", OnTypeMismatch.EMPTY_RESULT, null));
 		List<Customer> found = customerRepo.findAll(firstDateOfNextSpecialOffer);
@@ -126,7 +128,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filterByOffsetDateTimeWithCustomDateFormat() {
+	public void filtersByOffsetDateTimeWithCustomDateFormat() {
 		EqualDay<Customer> firstDateOfNextSpecialOffer = new EqualDay<>(queryCtx, "dateOfNextSpecialOffer", new String[] { "2020/06/16T02:34" },
 				Converter.withDateFormat("yyyy/MM/dd'T'HH:mm", OnTypeMismatch.EMPTY_RESULT, null));
 		List<Customer> found = customerRepo.findAll(firstDateOfNextSpecialOffer);
@@ -148,7 +150,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filterByLocalDateWithCustomDateFormat() {
+	public void filtersByLocalDateWithCustomDateFormat() {
 		EqualDay<Customer> birthDate = new EqualDay<>(queryCtx, "birthDate", new String[] { "21-03-1970" },
 				Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 		List<Customer> found = customerRepo.findAll(birthDate);
@@ -170,7 +172,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filterByLocalDateTimeWithCustomDateFormat() {
+	public void filtersByLocalDateTimeWithCustomDateFormat() {
 		EqualDay<Customer> lastOrderTime = new EqualDay<>(queryCtx, "lastOrderTime", new String[] { "2016/08/21T02:34" },
 				Converter.withDateFormat("yyyy/MM/dd'T'HH:mm", OnTypeMismatch.EMPTY_RESULT, null));
 		List<Customer> found = customerRepo.findAll(lastOrderTime);
@@ -192,7 +194,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filterByCalendarWithCustomDateFormat() {
+	public void filtersByCalendarWithCustomDateFormat() {
 		EqualDay<Customer> registrationCalendar = new EqualDay<>(queryCtx, "registrationCalendar", new String[] { "01-03-2015" },
 				Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 		List<Customer> found = customerRepo.findAll(registrationCalendar);
@@ -214,7 +216,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filterByDateWithCustomDateFormat() {
+	public void filtersByDateWithCustomDateFormat() {
 		EqualDay<Customer> registrationDate = new EqualDay<>(queryCtx, "registrationDate", new String[] { "01-03-2015" },
 				Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 		List<Customer> found = customerRepo.findAll(registrationDate);
