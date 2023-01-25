@@ -8,7 +8,7 @@ Basic usage
 There are two ways of executing performance tests:
 
 ### Running main method from Application class ###
-Running `main` method from `Application` class - it will execute all tests from all classes (methods with `@Benchmark` annotation). Testing configuration is achieved with annotations over benchmark methods (e.g. warmup and measurement conditions, benchmark mode etc.). It is possible to specify classes to be executed by specifying additional `include` option in `OptionBuilder` in `Application` main method:
+Running `main` method from `Application` class - it will execute all tests from all classes (methods with `@Benchmark` annotation). Testing configuration is achieved with annotations over benchmark methods (e.g. warmup and measurement conditions, benchmark mode etc.). It is possible to specify classes to be executed by specifying additional `include` option in `OptionsBuilder` in main method from `Application` class:
 ```java
 Options options = new OptionsBuilder()
         .include(CLASS_NAME_TO_EXECUTE.class.getSimpleName())
