@@ -17,10 +17,7 @@ package net.kaczmarzyk.benchmark.execution;
 
 import jakarta.persistence.criteria.JoinType;
 import net.kaczmarzyk.benchmark.model.Customer;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.In;
-import net.kaczmarzyk.spring.data.jpa.domain.IsMember;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -70,6 +67,14 @@ public class SpecificationProvider {
 		entry("inStringSpec", specification(InSpec.class).withParam("firstName", "Joe").build()),
 		entry("isMemberStringSpec", specification(IsMemberSpec.class).withParam("phoneNumber", "123").build()),
 		entry("likeStringSpec", specification(LikeSpec.class).withParam("firstName", "Joe").build())
+	);
+
+	public static final Map<String, Specification<Customer>> DATE_TIME_SPECIFICATIONS = Map.ofEntries(
+			entry("equalLocalDateTimeSpec", specification(EqualLocalDateTimeSpec.class).withParam("lastOrderTime", "2016-10-17T18:29:00").build()),
+			entry("equalDayLocalDateTimeSpec", specification(EqualDayLocalDateTimeSpec.class).withParam("lastOrderTimeEqualDay", "2016-10-17T18:29:00").build()),
+			entry("greaterThanOrEqualLocalDateTimeSpec", specification(GreaterThanOrEqualLocalDateTimeSpec.class).withParam("lastOrderTimeGreaterThanOrEqual", "2016-10-17T18:29:00").build()),
+			entry("lessThanLocalDateTimeSpec", specification(LessThanLocalDateTimeSpec.class).withParam("lastOrderTimeLessThan", "2016-10-17T18:29:00").build()),
+			entry("betweenLocalDateTimeSpec", specification(BetweenLocalDateTimeSpec.class).withParam("lastOrderTimeBetweenAfter", "2016-10-17T18:29:00").withParam("lastOrderTimeBetweenBefore", "2016-10-19T18:29:00").build())
 	);
 
 	@Spec(path="firstName", params = "firstName", spec= Equal.class, onTypeMismatch = EXCEPTION)
@@ -178,4 +183,19 @@ public class SpecificationProvider {
 	interface LikeSpec extends Specification<Customer> {
 	}
 
+	@Spec(path="lastOrderTime", params = "lastOrderTimeEqualDay", spec= EqualDay.class, onTypeMismatch = EXCEPTION)
+	interface EqualDayLocalDateTimeSpec extends Specification<Customer> {
+	}
+
+	@Spec(path="lastOrderTime", params = "lastOrderTimeGreaterThanOrEqual", spec=GreaterThanOrEqual.class, onTypeMismatch = EXCEPTION)
+	interface GreaterThanOrEqualLocalDateTimeSpec extends Specification<Customer> {
+	}
+
+	@Spec(path="lastOrderTime", params = "lastOrderTimeLessThan", spec=LessThan.class, onTypeMismatch = EXCEPTION)
+	interface LessThanLocalDateTimeSpec extends Specification<Customer> {
+	}
+
+	@Spec(path="lastOrderTime", params={ "lastOrderTimeBetweenAfter", "lastOrderTimeBetweenBefore" }, spec=Between.class, onTypeMismatch = EXCEPTION)
+	interface BetweenLocalDateTimeSpec extends Specification<Customer> {
+	}
 }
