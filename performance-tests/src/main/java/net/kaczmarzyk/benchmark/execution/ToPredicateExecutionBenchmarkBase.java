@@ -26,10 +26,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
+ * <p>This class is used as a benchmark base for classes that measure execution of specifications' `toPredicate` methods.</p>
+ *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
-public class ToPredicateExecutionBenchmark {
+public class ToPredicateExecutionBenchmarkBase {
 
 	private ConfigurableApplicationContext applicationContext;
 	protected CriteriaBuilder criteriaBuilder;

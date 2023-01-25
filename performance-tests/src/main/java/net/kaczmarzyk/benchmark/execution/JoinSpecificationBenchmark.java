@@ -27,7 +27,7 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
  * @author Konrad Hajduga (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
-public class JoinSpecificationBenchmark extends ToPredicateExecutionBenchmark {
+public class JoinSpecificationBenchmark extends ToPredicateExecutionBenchmarkBase {
 
 	@Param({
 		"joinSpec",

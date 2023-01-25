@@ -24,14 +24,12 @@ import static net.kaczmarzyk.benchmark.execution.SpecificationProvider.EQUAL_SPE
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
- * <p>This class measures execution of `toPredicate` methods for various specifications.</p>
- *
- * <p>In {@code specName} {@code @Param} annotation the names of specifications to execute should be stored. The names have to have corresponding specification entry in {@code specs} map.</p>
+ * <p>This class measures execution of `toPredicate` methods for `Equal` specifications with various parameter types.</p>
  *
  * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
-public class EqualSpecificationConversionBenchmark extends ToPredicateExecutionBenchmark {
+public class EqualSpecificationConversionBenchmark extends ToPredicateExecutionBenchmarkBase {
 
 	@Param({
 		"equalStringSpec",

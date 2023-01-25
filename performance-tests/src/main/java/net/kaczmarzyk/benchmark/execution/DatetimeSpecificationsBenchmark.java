@@ -20,29 +20,31 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static net.kaczmarzyk.benchmark.execution.SpecificationProvider.STRING_VALUES_SPECIFICATIONS;
+import static net.kaczmarzyk.benchmark.execution.SpecificationProvider.DATE_TIME_SPECIFICATIONS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 /**
- * @author Konrad Hajduga (Tratif sp. z o.o.)
+ * @author Hubert Gotfryd (Tratif sp. z o.o.)
  */
 @State(Scope.Benchmark)
-public class SpecificationsWithStringValuesBenchmark extends ToPredicateExecutionBenchmarkBase {
+public class DatetimeSpecificationsBenchmark extends ToPredicateExecutionBenchmarkBase {
 
-	@Param({
-		"inStringSpec",
-		"isMemberStringSpec",
-		"likeStringSpec"
-	})
-	private String specName;
+    @Param({
+            "equalLocalDateTimeSpec",
+            "equalDayLocalDateTimeSpec",
+            "greaterThanOrEqualLocalDateTimeSpec",
+            "lessThanLocalDateTimeSpec",
+            "betweenLocalDateTimeSpec"
+    })
+    private String specName;
 
-	@Benchmark
-	@BenchmarkMode(AverageTime)
-	@OutputTimeUnit(NANOSECONDS)
-	@Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
-	@Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
-	@Fork(3)
-	public void measureToPredicateSpecMethod(Blackhole blackhole) {
-		blackhole.consume(STRING_VALUES_SPECIFICATIONS.get(specName).toPredicate(root, criteriaQuery, criteriaBuilder));
-	}
+    @Benchmark
+    @BenchmarkMode(AverageTime)
+    @OutputTimeUnit(NANOSECONDS)
+    @Warmup(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+    @Measurement(time = 1000, timeUnit = MILLISECONDS, iterations = 5)
+    @Fork(3)
+    public void measureToPredicateSpecMethod(Blackhole blackhole) {
+        blackhole.consume(DATE_TIME_SPECIFICATIONS.get(specName).toPredicate(root, criteriaQuery, criteriaBuilder));
+    }
 }
