@@ -18,11 +18,6 @@ package net.kaczmarzyk.benchmark;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
-import org.openjdk.jmh.results.format.ResultFormatType;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -50,12 +45,7 @@ public class Application implements WebMvcConfigurer {
 		return entityManager;
 	}
 
-	public static void main(String[] args) throws RunnerException {
-		Options options = new OptionsBuilder()
-				.shouldFailOnError(true)
-				.resultFormat(ResultFormatType.JSON)
-				.build();
-
-		new Runner(options).run();
+	public static void main(String[] args) throws Exception {
+		org.openjdk.jmh.Main.main(args);
 	}
 }

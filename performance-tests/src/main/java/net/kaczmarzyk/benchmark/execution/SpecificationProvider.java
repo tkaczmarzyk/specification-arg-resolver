@@ -66,15 +66,19 @@ public class SpecificationProvider {
 	public static Map<String, Specification<Customer>> STRING_VALUES_SPECIFICATIONS = Map.ofEntries(
 		entry("inStringSpec", specification(InSpec.class).withParam("firstName", "Joe").build()),
 		entry("isMemberStringSpec", specification(IsMemberSpec.class).withParam("phoneNumber", "123").build()),
-		entry("likeStringSpec", specification(LikeSpec.class).withParam("firstName", "Joe").build())
+		entry("likeStringSpec", specification(LikeSpec.class).withParam("firstName", "Joe").build()),
+		entry("emptyStringSpec", specification(EmptySpec.class).withParam("emptyPhoneNumbers", "true").build()),
+		entry("isEmptyStringSpec", specification(IsEmptySpec.class).build()),
+		entry("nullStringSpec", specification(NullSpec.class).withParam("nullFirstName", "true").build()),
+		entry("isNullStringSpec", specification(IsNullSpec.class).build())
 	);
 
 	public static final Map<String, Specification<Customer>> DATE_TIME_SPECIFICATIONS = Map.ofEntries(
-			entry("equalLocalDateTimeSpec", specification(EqualLocalDateTimeSpec.class).withParam("lastOrderTime", "2016-10-17T18:29:00").build()),
-			entry("equalDayLocalDateTimeSpec", specification(EqualDayLocalDateTimeSpec.class).withParam("lastOrderTimeEqualDay", "2016-10-17T18:29:00").build()),
-			entry("greaterThanOrEqualLocalDateTimeSpec", specification(GreaterThanOrEqualLocalDateTimeSpec.class).withParam("lastOrderTimeGreaterThanOrEqual", "2016-10-17T18:29:00").build()),
-			entry("lessThanLocalDateTimeSpec", specification(LessThanLocalDateTimeSpec.class).withParam("lastOrderTimeLessThan", "2016-10-17T18:29:00").build()),
-			entry("betweenLocalDateTimeSpec", specification(BetweenLocalDateTimeSpec.class).withParam("lastOrderTimeBetweenAfter", "2016-10-17T18:29:00").withParam("lastOrderTimeBetweenBefore", "2016-10-19T18:29:00").build())
+		entry("equalLocalDateTimeSpec", specification(EqualLocalDateTimeSpec.class).withParam("lastOrderTime", "2016-10-17T18:29:00").build()),
+		entry("equalDayLocalDateTimeSpec", specification(EqualDayLocalDateTimeSpec.class).withParam("lastOrderTimeEqualDay", "2016-10-17T18:29:00").build()),
+		entry("greaterThanOrEqualLocalDateTimeSpec", specification(GreaterThanOrEqualLocalDateTimeSpec.class).withParam("lastOrderTimeGreaterThanOrEqual", "2016-10-17T18:29:00").build()),
+		entry("lessThanLocalDateTimeSpec", specification(LessThanLocalDateTimeSpec.class).withParam("lastOrderTimeLessThan", "2016-10-17T18:29:00").build()),
+		entry("betweenLocalDateTimeSpec", specification(BetweenLocalDateTimeSpec.class).withParam("lastOrderTimeBetweenAfter", "2016-10-17T18:29:00").withParam("lastOrderTimeBetweenBefore", "2016-10-19T18:29:00").build())
 	);
 
 	@Spec(path="firstName", params = "firstName", spec= Equal.class, onTypeMismatch = EXCEPTION)
@@ -179,8 +183,24 @@ public class SpecificationProvider {
 	interface IsMemberSpec extends Specification<Customer> {
 	}
 
+	@Spec(path="phoneNumbers", params = "emptyPhoneNumbers", spec= Empty.class, onTypeMismatch = EXCEPTION)
+	interface EmptySpec extends Specification<Customer> {
+	}
+
+	@Spec(path="phoneNumbers", spec=IsEmpty.class, onTypeMismatch = EXCEPTION)
+	interface IsEmptySpec extends Specification<Customer> {
+	}
+
 	@Spec(path="firstName", params = "firstName", spec= Like.class, onTypeMismatch = EXCEPTION)
 	interface LikeSpec extends Specification<Customer> {
+	}
+
+	@Spec(path="firstName", params = "nullFirstName", spec= Null.class, onTypeMismatch = EXCEPTION)
+	interface NullSpec extends Specification<Customer> {
+	}
+
+	@Spec(path="firstName", spec= IsNull.class, onTypeMismatch = EXCEPTION)
+	interface IsNullSpec extends Specification<Customer> {
 	}
 
 	@Spec(path="lastOrderTime", params = "lastOrderTimeEqualDay", spec= EqualDay.class, onTypeMismatch = EXCEPTION)

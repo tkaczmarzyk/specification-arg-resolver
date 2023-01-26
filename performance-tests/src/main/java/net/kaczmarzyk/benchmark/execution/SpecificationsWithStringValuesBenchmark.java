@@ -32,7 +32,11 @@ public class SpecificationsWithStringValuesBenchmark extends ToPredicateExecutio
 	@Param({
 		"inStringSpec",
 		"isMemberStringSpec",
-		"likeStringSpec"
+		"likeStringSpec",
+		"emptyStringSpec",
+		"isEmptyStringSpec",
+		"nullStringSpec",
+		"isNullStringSpec"
 	})
 	private String specName;
 
