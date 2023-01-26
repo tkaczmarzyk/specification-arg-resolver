@@ -31,6 +31,7 @@ import static org.openjdk.jmh.annotations.Mode.AverageTime;
 @State(Scope.Benchmark)
 public class ParametrizedSpecificationBuilderBenchmark extends SpecificationBuilderBenchmarkBase {
 
+	// If you want to add more arguments, then you have to add them to specification interfaces and parameters map in SpecificationBuilderBenchmarkBase
 	@Param({"0", "1", "3", "6", "9", "12", "15"})
 	private int argumentsAmount;
 

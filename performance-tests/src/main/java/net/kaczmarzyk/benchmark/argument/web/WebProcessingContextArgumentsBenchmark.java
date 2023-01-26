@@ -123,13 +123,9 @@ public class WebProcessingContextArgumentsBenchmark {
 		PerformanceTestsMockWebRequest request = new PerformanceTestsMockWebRequest("/jsonPaths");
 		MethodParameter methodParameter = testMethodParameter("multipleJsonPaths", MultipleJsonPathsSpecification.class);
 
-		Map<String, String> jsonBody = Map.of(
-			"age", "19",
-			"city", "Springfield",
-			"criminalPast", "false"
-		);
+		String jsonBody = "{ \"age\": \"\", \"city\": \"Springfield\", \"criminalPast\": \"false\" }";
 		WebRequestProcessingContext context = new WebRequestProcessingContext(methodParameter, request);
-		ReflectionTestUtils.setField(context, "bodyParams", JsonBodyParams.parse(serializeMap(jsonBody)));
+		ReflectionTestUtils.setField(context, "bodyParams", JsonBodyParams.parse(jsonBody));
 
 		Specification<?> specification = SPECIFICATION_FACTORY.createSpecificationDependingOn(context);
 		blackhole.consume(specification);
@@ -145,29 +141,6 @@ public class WebProcessingContextArgumentsBenchmark {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private String serializeMap(Map<String, String> mapToConversion) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("{ ");
-
-		mapToConversion.forEach(
-			(key, value) -> stringBuilder
-				.append(wrapInDoubleQuotes(key))
-				.append(": ")
-				.append(wrapInDoubleQuotes(value))
-				.append(","));
-
-		// remove last comma
-		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-
-		stringBuilder.append(" }");
-
-		return stringBuilder.toString();
-	}
-
-	private String wrapInDoubleQuotes(String value) {
-		return "\"" + value + "\"";
 	}
 
 	@Or({
