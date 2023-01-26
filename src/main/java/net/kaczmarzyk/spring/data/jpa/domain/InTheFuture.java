@@ -30,11 +30,11 @@ import javax.persistence.criteria.Expression;
  *
  * <p>Supports date type fields.</p>
  */
-public class InTheFuture<T, TimeType extends Comparable<TimeType>> extends PathSpecification<T> {
+public class InTheFuture<T, TimeType extends Comparable<TimeType>> extends PathSpecification<T> implements ZeroArgSpecification {
 
 	private static final long serialVersionUID = 1L;
 
-	public InTheFuture(QueryContext queryContext, String path) {
+	public InTheFuture(QueryContext queryContext, String path, String[] args) {
 		super(queryContext, path);
 	}
 
