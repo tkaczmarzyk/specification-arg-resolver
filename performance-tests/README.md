@@ -39,3 +39,7 @@ Options options = new OptionsBuilder()
 
 Note: performance tests executed in IDE using main method and executing the same performance tests via `java -jar` command may return different results. It is recommended to run performance tests using `java -jar` command. Running tests via main method in IDE should be used only for development purposes.
 
+
+Results from past
+-----------------
+Results from previous tests execution are stored under `/results` directory.
