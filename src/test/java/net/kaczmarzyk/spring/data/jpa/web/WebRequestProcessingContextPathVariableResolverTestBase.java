@@ -25,28 +25,19 @@ import java.lang.reflect.Executable;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.runners.Parameterized.Parameters;
-
 /**
  * @author Tomasz Kaczmarzyk
  * @author Jakub Radlica
  */
 public abstract class WebRequestProcessingContextPathVariableResolverTestBase {
 
-	@Parameters(name = "TestController: {0}")
-	public static Collection testController() {
+	public static Collection<Class> testControllers() {
 		return Arrays.asList(
 				TestControllerWithClassLevelRequestMappingWithValue.class,
 				TestControllerWithClassLevelRequestMappingWithValueAndPathVarWithRegexp.class,
 				TestControllerWithClassLevelRequestMappingWithPath.class,
 				TestControllerWithClassLevelRequestMappingWithPathAndPathVarWithRegexp.class
 		);
-	}
-
-	protected Class<?> testController;
-
-	public WebRequestProcessingContextPathVariableResolverTestBase(Class<?> testController) {
-		this.testController = testController;
 	}
 
 	@RequestMapping("/customers/{customerId}")
