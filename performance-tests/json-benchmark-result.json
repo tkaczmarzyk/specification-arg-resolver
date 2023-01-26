@@ -1,0 +1,304 @@
+[
+    {
+        "jmhVersion" : "1.36",
+        "benchmark" : "net.kaczmarzyk.benchmark.execution.DatetimeSpecificationsBenchmark.measureToPredicateSpecMethod",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/home/hubi/.sdkman/candidates/java/17.0.5-oracle/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "17.0.5",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "17.0.5+9-LTS-191",
+        "warmupIterations" : 1,
+        "warmupTime" : "1000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "1000 ms",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "specName" : "equalLocalDateTimeSpec"
+        },
+        "primaryMetric" : {
+            "score" : 3050.2282056443005,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3050.2282056443005,
+                "50.0" : 3050.2282056443005,
+                "90.0" : 3050.2282056443005,
+                "95.0" : 3050.2282056443005,
+                "99.0" : 3050.2282056443005,
+                "99.9" : 3050.2282056443005,
+                "99.99" : 3050.2282056443005,
+                "99.999" : 3050.2282056443005,
+                "99.9999" : 3050.2282056443005,
+                "100.0" : 3050.2282056443005
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    3050.2282056443005
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.36",
+        "benchmark" : "net.kaczmarzyk.benchmark.execution.DatetimeSpecificationsBenchmark.measureToPredicateSpecMethod",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/home/hubi/.sdkman/candidates/java/17.0.5-oracle/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "17.0.5",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "17.0.5+9-LTS-191",
+        "warmupIterations" : 1,
+        "warmupTime" : "1000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "1000 ms",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "specName" : "equalDayLocalDateTimeSpec"
+        },
+        "primaryMetric" : {
+            "score" : 2087.838676411339,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2087.838676411339,
+                "50.0" : 2087.838676411339,
+                "90.0" : 2087.838676411339,
+                "95.0" : 2087.838676411339,
+                "99.0" : 2087.838676411339,
+                "99.9" : 2087.838676411339,
+                "99.99" : 2087.838676411339,
+                "99.999" : 2087.838676411339,
+                "99.9999" : 2087.838676411339,
+                "100.0" : 2087.838676411339
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    2087.838676411339
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.36",
+        "benchmark" : "net.kaczmarzyk.benchmark.execution.DatetimeSpecificationsBenchmark.measureToPredicateSpecMethod",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/home/hubi/.sdkman/candidates/java/17.0.5-oracle/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "17.0.5",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "17.0.5+9-LTS-191",
+        "warmupIterations" : 1,
+        "warmupTime" : "1000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "1000 ms",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "specName" : "greaterThanOrEqualLocalDateTimeSpec"
+        },
+        "primaryMetric" : {
+            "score" : 1758.9545874229918,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1758.9545874229918,
+                "50.0" : 1758.9545874229918,
+                "90.0" : 1758.9545874229918,
+                "95.0" : 1758.9545874229918,
+                "99.0" : 1758.9545874229918,
+                "99.9" : 1758.9545874229918,
+                "99.99" : 1758.9545874229918,
+                "99.999" : 1758.9545874229918,
+                "99.9999" : 1758.9545874229918,
+                "100.0" : 1758.9545874229918
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1758.9545874229918
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.36",
+        "benchmark" : "net.kaczmarzyk.benchmark.execution.DatetimeSpecificationsBenchmark.measureToPredicateSpecMethod",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/home/hubi/.sdkman/candidates/java/17.0.5-oracle/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "17.0.5",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "17.0.5+9-LTS-191",
+        "warmupIterations" : 1,
+        "warmupTime" : "1000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "1000 ms",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "specName" : "lessThanLocalDateTimeSpec"
+        },
+        "primaryMetric" : {
+            "score" : 2073.9829487841444,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2073.9829487841444,
+                "50.0" : 2073.9829487841444,
+                "90.0" : 2073.9829487841444,
+                "95.0" : 2073.9829487841444,
+                "99.0" : 2073.9829487841444,
+                "99.9" : 2073.9829487841444,
+                "99.99" : 2073.9829487841444,
+                "99.999" : 2073.9829487841444,
+                "99.9999" : 2073.9829487841444,
+                "100.0" : 2073.9829487841444
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    2073.9829487841444
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.36",
+        "benchmark" : "net.kaczmarzyk.benchmark.execution.DatetimeSpecificationsBenchmark.measureToPredicateSpecMethod",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/home/hubi/.sdkman/candidates/java/17.0.5-oracle/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "17.0.5",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "17.0.5+9-LTS-191",
+        "warmupIterations" : 1,
+        "warmupTime" : "1000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "1000 ms",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "specName" : "betweenLocalDateTimeSpec"
+        },
+        "primaryMetric" : {
+            "score" : 3757.887053687165,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3757.887053687165,
+                "50.0" : 3757.887053687165,
+                "90.0" : 3757.887053687165,
+                "95.0" : 3757.887053687165,
+                "99.0" : 3757.887053687165,
+                "99.9" : 3757.887053687165,
+                "99.99" : 3757.887053687165,
+                "99.999" : 3757.887053687165,
+                "99.9999" : 3757.887053687165,
+                "100.0" : 3757.887053687165
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    3757.887053687165
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.36",
+        "benchmark" : "net.kaczmarzyk.benchmark.execution.DatetimeSpecificationsBenchmark.measureToPredicateSpecMethod",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/home/hubi/.sdkman/candidates/java/17.0.5-oracle/bin/java",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "17.0.5",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "17.0.5+9-LTS-191",
+        "warmupIterations" : 1,
+        "warmupTime" : "1000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "1000 ms",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "specName" : "isEmptyStringSpec"
+        },
+        "primaryMetric" : {
+            "score" : 69.43392551761714,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 69.43392551761714,
+                "50.0" : 69.43392551761714,
+                "90.0" : 69.43392551761714,
+                "95.0" : 69.43392551761714,
+                "99.0" : 69.43392551761714,
+                "99.9" : 69.43392551761714,
+                "99.99" : 69.43392551761714,
+                "99.999" : 69.43392551761714,
+                "99.9999" : 69.43392551761714,
+                "100.0" : 69.43392551761714
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    69.43392551761714
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
