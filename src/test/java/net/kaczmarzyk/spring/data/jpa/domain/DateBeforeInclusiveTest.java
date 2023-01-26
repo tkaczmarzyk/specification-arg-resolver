@@ -19,6 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * (converted to use LessThanOrEqual after dropping Date-specific specification classes in 3.0.0)
@@ -74,13 +76,15 @@ public class DateBeforeInclusiveTest extends IntegrationTestBase {
                 .containsOnly(homerSimpson, margeSimpson);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new LessThanOrEqual<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        assertThatThrownBy(() -> new LessThanOrEqual<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter))
+                .isInstanceOf(IllegalArgumentException.class);;
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsMissingArgument() throws ParseException {
-        new LessThanOrEqual<>(queryCtx, "path", new String[]{}, defaultConverter);
+        assertThatThrownBy(() -> new LessThanOrEqual<>(queryCtx, "path", new String[]{}, defaultConverter))
+                .isInstanceOf(IllegalArgumentException.class);;
     }
 }

@@ -82,11 +82,11 @@ public class InTest extends IntegrationTestBase {
 
 //    @Test // TODO to be replaced with new tests...
     public void rejectsNotExistingEnumConstantName() {
-        In<Customer> genderRobot = new In<>(queryCtx, "gender", new String[] { "ROBOT" }, defaultConverter);
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("rejected values [ROBOT] for class Gender");
-        customerRepo.findAll(genderRobot);
+//        In<Customer> genderRobot = new In<>(queryCtx, "gender", new String[] { "ROBOT" }, defaultConverter);
+//        expectedException.expect(InvalidDataAccessApiUsageException.class);
+//        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
+//        expectedException.expectMessage("rejected values [ROBOT] for class Gender");
+//        customerRepo.findAll(genderRobot);
     }
     
     @Test

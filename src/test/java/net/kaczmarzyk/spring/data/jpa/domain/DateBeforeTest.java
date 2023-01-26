@@ -19,6 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,11 +28,12 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 /**
  * (In 3.0, DateBefore was removed in favour of LessThan)
- * 
+ *
  * @author Tomasz Kaczmarzyk
  */
 public class DateBeforeTest extends IntegrationTestBase {
@@ -39,49 +41,51 @@ public class DateBeforeTest extends IntegrationTestBase {
     Customer homerSimpson;
     Customer margeSimpson;
     Customer moeSzyslak;
-    
+
     @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 07).build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 12).build(em);
         moeSzyslak = customer("Moe", "Szyslak").registrationDate(2014, 03, 18).build(em);
     }
-    
+
     @Test
     public void filtersByRegistrationDateWithDefaultDateFormat() throws ParseException {
         LessThan<Customer> before13th = new LessThan<>(queryCtx, "registrationDate", new String[] { "2014-03-13" }, defaultConverter);
-        
+
         List<Customer> result = customerRepo.findAll(before13th);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
-        
+
         LessThan<Customer> before10th = new LessThan<>(queryCtx, "registrationDate", new String[] {"2014-03-10"}, defaultConverter);
-        
+
         result = customerRepo.findAll(before10th);
         assertThat(result)
             .hasSize(1)
             .containsOnly(homerSimpson);
     }
-    
+
     @Test
     public void filtersByRegistrationDateWithCustomDateFormat() throws ParseException {
     	LessThan<Customer> before13th = new LessThan<>(queryCtx, "registrationDate", new String[] {"13-03-2014"},
         		Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
-        
+
         List<Customer> result = customerRepo.findAll(before13th);
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, margeSimpson);
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+
+    @Test
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new LessThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        assertThatThrownBy(() -> new LessThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter))
+		        .isInstanceOf(IllegalArgumentException.class);
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+
+    @Test
     public void rejectsMissingArgument() throws ParseException {
-        new LessThan<>(queryCtx, "path", new String[] {}, defaultConverter);
+        assertThatThrownBy(() -> new LessThan<>(queryCtx, "path", new String[] {}, defaultConverter))
+		        .isInstanceOf(IllegalArgumentException.class);
     }
 }

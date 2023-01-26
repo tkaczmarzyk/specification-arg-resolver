@@ -106,7 +106,7 @@ public class JsonBodyParamsTest {
 		Collection<String> result = JsonBodyParams.parse(json).getParamValues("key");
 
 		//then
-		Assert.assertTrue(result.isEmpty());
+		assertTrue(result.isEmpty());
 	}
 
 	@Test

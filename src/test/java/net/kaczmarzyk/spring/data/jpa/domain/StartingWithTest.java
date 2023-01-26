@@ -26,6 +26,7 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Matt S.Y. Ho
@@ -65,14 +66,16 @@ public class StartingWithTest extends IntegrationTestBase {
 		assertThat(result).hasSize(0);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void rejectsMissingArgument() {
-		new StartingWith<>(queryCtx, "path", new String[] {});
+		assertThatThrownBy(() -> new StartingWith<>(queryCtx, "path", new String[] {}))
+				.isInstanceOf(IllegalArgumentException.class);;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void rejectsInvalidNumberOfArguments() {
-		new StartingWith<>(queryCtx, "path", new String[] { "a", "b" });
+		assertThatThrownBy(() -> new StartingWith<>(queryCtx, "path", new String[] { "a", "b" }))
+				.isInstanceOf(IllegalArgumentException.class);;
 	}
 
 	@Test

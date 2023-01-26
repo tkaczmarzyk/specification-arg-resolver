@@ -19,6 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,7 @@ import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * 
@@ -71,14 +73,16 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
         assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsMissingArgument() {
-        new LikeIgnoreCase<>(queryCtx, "path", new String[] {});
+        assertThatThrownBy(() -> new LikeIgnoreCase<>(queryCtx, "path", new String[] {}))
+                .isInstanceOf(IllegalArgumentException.class);;
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsInvalidNumberOfArguments() {
-        new LikeIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" });
+        assertThatThrownBy(() -> new LikeIgnoreCase<>(queryCtx, "path", new String[] { "a", "b" }))
+        		.isInstanceOf(IllegalArgumentException.class);;
     }
 
     @Test

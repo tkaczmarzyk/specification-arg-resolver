@@ -23,19 +23,17 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 public class ConverterTest {
@@ -44,9 +42,6 @@ public class ConverterTest {
 		I,
 		İ
 	}
-	
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
 	
 	private Converter converter = Converter.withDateFormat("yyyy-MM-dd", OnTypeMismatch.EMPTY_RESULT, null);
 	private Converter converterWithoutFormat = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EMPTY_RESULT, null, Locale.ENGLISH);
@@ -94,9 +89,10 @@ public class ConverterTest {
 		assertThat(converter.convert("false", boolean.class)).isEqualTo(false);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void throwsExceptionOnInvalidBooleanValue() {
-		converter.convert("TRUE", Boolean.class);
+		assertThatThrownBy(() -> converter.convert("TRUE", Boolean.class))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 	
 	@Test
@@ -107,12 +103,14 @@ public class ConverterTest {
 	
 	@Test
 	public void throwsExceptionWithRejectedEnumNames() {
-		expected.expect(ValuesRejectedException.class);
-		expected.expect(valuesRejected("ROBOT", "ALIEN"));
-		
-		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null, Locale.getDefault());
-		
 		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
+
+		assertThatThrownBy(() -> converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class))
+				.isInstanceOf(ValuesRejectedException.class)
+				.satisfies(exception -> {
+					assertThat(((ValuesRejectedException) exception).getRejectedValues())
+							.containsExactly("ROBOT", "ALIEN");
+				});
 	}
 	
 	@Test

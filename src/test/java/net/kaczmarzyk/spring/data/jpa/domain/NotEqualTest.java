@@ -23,17 +23,15 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-import java.text.ParseException;
-
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static net.kaczmarzyk.spring.data.jpa.Gender.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -87,11 +85,10 @@ public class NotEqualTest extends IntegrationTestBase {
 	public void rejectsNotExistingEnumConstantName() {
 		NotEqual<Customer> genderRobot = notEqualSpec("gender", "ROBOT");
 
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		expectedException.expectCause(CoreMatchers.<IllegalArgumentException>instanceOf(IllegalArgumentException.class));
-		expectedException.expectMessage("could not find value ROBOT for enum class Gender");
-
-		customerRepo.findAll(genderRobot);
+		assertThatThrownBy(() -> customerRepo.findAll(genderRobot))
+				.isInstanceOf(InvalidDataAccessApiUsageException.class)
+				.hasCauseInstanceOf(IllegalArgumentException.class)
+				.hasMessage("could not find value ROBOT for enum class Gender");
 	}
 
 	@Test

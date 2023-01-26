@@ -25,6 +25,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.text.ParseException;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
 
 /**
  * Tests for the GreaterThan Specification.
@@ -125,14 +127,16 @@ public class GreaterThanTest extends ComparableWithConverterTestBase {
     	assertFilterIsEmpty("registrationDate", "02-03-2015", "dd-MM-yyyy");
     }
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void rejectsMissingArgument() throws ParseException {
-		new GreaterThan<>(queryCtx, "path", new String[] {}, defaultConverter);
+		assertThatThrownBy(() -> new GreaterThan<>(queryCtx, "path", new String[] {}, defaultConverter))
+				.isInstanceOf(IllegalArgumentException.class);;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void rejectsTooManyArguments() throws ParseException {
-		new GreaterThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter);
+		assertThatThrownBy(() -> new GreaterThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11", "2014-03-11" }, defaultConverter))
+				.isInstanceOf(IllegalArgumentException.class);;
 	}
 
 	@Test

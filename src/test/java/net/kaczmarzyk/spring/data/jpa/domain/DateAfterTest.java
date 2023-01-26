@@ -27,6 +27,7 @@ import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 
 /**
@@ -75,13 +76,15 @@ public class DateAfterTest extends IntegrationTestBase {
             .containsOnly(moeSzyslak);
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new GreaterThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter);
+        assertThatThrownBy(() -> new GreaterThan<>(queryCtx, "path", new String[] { "2014-03-10", "2014-03-11" }, defaultConverter))
+                .isInstanceOf(IllegalArgumentException.class);;
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsMissingArgument() throws ParseException {
-        new GreaterThan<>(queryCtx, "path", new String[] {}, defaultConverter);
+        assertThatThrownBy(() -> new GreaterThan<>(queryCtx, "path", new String[] {}, defaultConverter))
+        		.isInstanceOf(IllegalArgumentException.class);;
     }
 }

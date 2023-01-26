@@ -33,9 +33,6 @@ import static org.junit.runners.Parameterized.Parameters;
  */
 public abstract class WebRequestProcessingContextPathVariableResolverTestBase {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Parameters(name = "TestController: {0}")
 	public static Collection testController() {
 		return Arrays.asList(

@@ -40,9 +40,6 @@ public abstract class IntegrationTestBaseWithConfiguredCache {
 
 	private static final Customer[] EMPTY_LIST = {};
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-
 	@Autowired
 	protected CustomerRepository customerRepo;
 
