@@ -22,7 +22,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -234,7 +234,7 @@ public class MultiLevelFetchJoinE2eTest extends IntegrationTestBase {
 	@Autowired
 	ItemTagRepository itemTagRepository;
 
-	@After
+	@AfterEach
 	public void cleanupDb() {
 		doInNewTransaction(() -> {
 			customerRepo.deleteAll();

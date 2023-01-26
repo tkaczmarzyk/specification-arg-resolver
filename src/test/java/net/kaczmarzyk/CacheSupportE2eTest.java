@@ -24,7 +24,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.ReflectionUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -95,7 +95,7 @@ public class CacheSupportE2eTest extends IntegrationTestBaseWithConfiguredCache 
 	@Autowired
 	CacheManager customersCacheManager;
 
-	@After
+	@AfterEach
 	public void clearCache() {
 		customersCacheManager.getCache("customers").clear();
 	}
