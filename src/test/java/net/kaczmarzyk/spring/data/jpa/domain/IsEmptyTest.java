@@ -20,8 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class IsEmptyTest extends IntegrationTestBase {
     private Customer margeSimpson;
     private Customer moeSzyslak;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").phoneNumbers("123456789").build(em);
         maggieSimpson = customer("Maggie", "Simpson").phoneNumbers("444444444").build(em);

@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import com.jparams.verifier.tostring.ToStringVerifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultQueryContextTest {
 

@@ -16,14 +16,14 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
 
 /**
  * @author Kacper Leśniak
@@ -32,7 +32,7 @@ public class StandaloneProcessingContextTest {
 
 	private StandaloneProcessingContext context;
 
-	@Before
+	@BeforeEach
 	public void setupContext() {
 		Map<String, String[]> args = new HashMap<>();
 		Map<String, String[]> params = new HashMap<>();
@@ -75,7 +75,10 @@ public class StandaloneProcessingContextTest {
 
 	@Test
 	public void shouldThrowInvalidPathVariableRequestedExceptionWhenPathVariableDoesNotExist() {
-		assertThrows(InvalidPathVariableRequestedException.class, () -> context.getPathVariableValue("notExisting", MissingPathVarPolicy.EXCEPTION));
+		assertThrows(
+				InvalidPathVariableRequestedException.class,
+				() -> context.getPathVariableValue("notExisting", MissingPathVarPolicy.EXCEPTION)
+		);
 	}
 
 	@Test

@@ -21,8 +21,8 @@ import net.kaczmarzyk.spring.data.jpa.IntegrationTestBaseWithGlobalPrefix;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
@@ -60,7 +60,7 @@ public class GlobalPrefixE2eTest extends IntegrationTestBaseWithGlobalPrefix {
 
     }
 
-    @Before
+    @BeforeEach
     public void initializeTestData() {
         customer("Moe", "Szyslak").gender(MALE).build(em);
         customer("Minnie", "Szyslak").gender(FEMALE).build(em);

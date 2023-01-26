@@ -21,19 +21,18 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.ReflectionUtils;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.Locale;
 
 
 public class SimpleSpecificationResolverTest extends ResolverTestBase {
@@ -250,7 +249,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         assertThat(resolved).isEqualTo(new In<>(queryCtx, "thePath", new String[] { "val1", "val2", "val3", "val4", "val5", "val6", "val7" }, converter));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void throwsIllegalStateExceptionWhenIncorrectSpecificationTypeClassWasPassed() {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod9"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
@@ -259,7 +258,8 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+        assertThatThrownBy(() -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)))
+        		.isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -269,7 +269,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         assertThat(resolver.supports(param.getParameterAnnotations()[0])).isTrue();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowIllegalStateExceptionWhenSpecConfigLengthIsMoreThanOne(){
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod11"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
@@ -278,7 +278,8 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
         WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+        assertThatThrownBy(() -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)))
+        		.isInstanceOf(IllegalStateException.class);
     }
 
     @Test

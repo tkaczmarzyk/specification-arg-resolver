@@ -15,30 +15,31 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public abstract class ComparableWithConverterTestBase extends ComparableTestBase {
 
 	@Test
 	public void rejectsNotExistingEnumConstantName() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-		expectedException.expectMessage("could not find value ROBOT for enum class Gender");
-		customerRepo.findAll(makeUUT("gender", "ROBOT"));
+		assertThatThrownBy(() -> customerRepo.findAll(makeUUT("gender", "ROBOT")))
+				.isInstanceOf(InvalidDataAccessApiUsageException.class)
+				.hasCauseInstanceOf(IllegalArgumentException.class)
+				.hasMessage("could not find value ROBOT for enum class Gender");
 	}
 
 	@Test
 	public void rejectsNonIntegerArguments() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		assertFilterIsEmpty("weight", "1.1");
+		assertThatThrownBy(() -> assertFilterIsEmpty("weight", "1.1"))
+				.isInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
 
 	@Test
 	public void rejectsNonNumericArguments() {
-		expectedException.expect(InvalidDataAccessApiUsageException.class);
-		assertFilterIsEmpty("weightDouble", "one");
+		assertThatThrownBy(() -> assertFilterIsEmpty("weightDouble", "one"))
+				.isInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
 
 }

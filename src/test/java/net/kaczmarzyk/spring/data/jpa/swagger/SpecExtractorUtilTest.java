@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa.swagger;
 
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.annotation.Annotation;

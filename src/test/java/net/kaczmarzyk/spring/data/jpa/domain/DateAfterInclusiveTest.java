@@ -17,12 +17,13 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.text.ParseException;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
@@ -41,7 +42,7 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer moeSzyslak;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 07).build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 12).build(em);
@@ -83,13 +84,15 @@ public class DateAfterInclusiveTest extends IntegrationTestBase {
                 .containsOnly(moeSzyslak);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsInvalidNumberOfArguments() throws ParseException {
-        new GreaterThanOrEqual<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter);
+        assertThatThrownBy(() -> new GreaterThanOrEqual<>(queryCtx, "path", new String[] {"2014-03-10", "2014-03-11"}, defaultConverter))
+        		.isInstanceOf(IllegalArgumentException.class);;
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsMissingArgument() throws ParseException {
-        new GreaterThanOrEqual<>(queryCtx, "path", new String[] {}, defaultConverter);
+        assertThatThrownBy(() -> new GreaterThanOrEqual<>(queryCtx, "path", new String[] {}, defaultConverter))
+        		.isInstanceOf(IllegalArgumentException.class);;
     }
 }

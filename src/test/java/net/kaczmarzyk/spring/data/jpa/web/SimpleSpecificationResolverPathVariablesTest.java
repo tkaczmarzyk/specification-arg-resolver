@@ -19,7 +19,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +30,7 @@ import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPath
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariablesInRequestAttributes;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.pathVariables;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -38,7 +39,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 	SimpleSpecificationResolver resolver = new SimpleSpecificationResolver();
 
-	@Test(expected = InvalidPathVariableRequestedException.class)
+	@Test
 	public void throwsExceptionIfPathVariableNotPresent() throws Exception {
 		MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariable");
 		MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
@@ -46,7 +47,8 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-		resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+		assertThatThrownBy(() -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)))
+				.isInstanceOf(InvalidPathVariableRequestedException.class);
 	}
 
 	@Test
@@ -101,14 +103,15 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 		assertThat(resolved).isEqualTo(new Between<>(ctx.queryContext(), "thePath", new String[]{"2019-01-25", "2019-01-27"}, defaultConverterForPathVars));
 	}
 
-	@Test(expected = InvalidPathVariableRequestedException.class)
+	@Test
 	public void throwsExceptionIfPathVariableIsNotPresentUsingResolverFallbackMethod() throws Exception {
 		MethodParameter param = testMethodParameter("testMethodUsingNotExistingPathVariable");
 		MockWebRequest req = new MockWebRequest("/customers/theCustomerIdValue/orders/theOrderIdValue");
 
 		WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-		resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+		assertThatThrownBy(() -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)))
+				.isInstanceOf(InvalidPathVariableRequestedException.class);
 	}
 
 	@Test

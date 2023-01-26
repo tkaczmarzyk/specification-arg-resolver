@@ -26,7 +26,7 @@ import net.kaczmarzyk.spring.data.jpa.web.SpecificationFactory;
 import net.kaczmarzyk.spring.data.jpa.web.StandaloneProcessingContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import net.kaczmarzyk.utils.ReflectionUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.criteria.JoinType;

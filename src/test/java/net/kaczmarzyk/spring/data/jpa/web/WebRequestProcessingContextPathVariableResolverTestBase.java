@@ -16,10 +16,6 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,32 +25,19 @@ import java.lang.reflect.Executable;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.runners.Parameterized.Parameters;
-
 /**
  * @author Tomasz Kaczmarzyk
  * @author Jakub Radlica
  */
-@RunWith(Parameterized.class)
 public abstract class WebRequestProcessingContextPathVariableResolverTestBase {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Parameters(name = "TestController: {0}")
-	public static Collection testController() {
+	public static Collection<Class> testControllers() {
 		return Arrays.asList(
 				TestControllerWithClassLevelRequestMappingWithValue.class,
 				TestControllerWithClassLevelRequestMappingWithValueAndPathVarWithRegexp.class,
 				TestControllerWithClassLevelRequestMappingWithPath.class,
 				TestControllerWithClassLevelRequestMappingWithPathAndPathVarWithRegexp.class
 		);
-	}
-
-	protected Class<?> testController;
-
-	public WebRequestProcessingContextPathVariableResolverTestBase(Class<?> testController) {
-		this.testController = testController;
 	}
 
 	@RequestMapping("/customers/{customerId}")

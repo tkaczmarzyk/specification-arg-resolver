@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EqualTest {
 

@@ -20,8 +20,8 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class IsNotNullTest extends IntegrationTestBase {
     private Customer bartSimpson;
     private Customer lisaSimpson;
 
-    @Before
+    @BeforeEach
     public void initData() {
         bartSimpson = customer("Bart", "Simpson")
                 .nickName("El Barto")

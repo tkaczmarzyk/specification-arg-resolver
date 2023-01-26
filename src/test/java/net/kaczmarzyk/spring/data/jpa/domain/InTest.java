@@ -23,17 +23,14 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.text.ParseException;
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -49,7 +46,7 @@ public class InTest extends IntegrationTestBase {
     private Customer moeSzyslak;
 	private Customer joeQuimby;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
         margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);
@@ -82,11 +79,11 @@ public class InTest extends IntegrationTestBase {
 
 //    @Test // TODO to be replaced with new tests...
     public void rejectsNotExistingEnumConstantName() {
-        In<Customer> genderRobot = new In<>(queryCtx, "gender", new String[] { "ROBOT" }, defaultConverter);
-        expectedException.expect(InvalidDataAccessApiUsageException.class);
-        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
-        expectedException.expectMessage("rejected values [ROBOT] for class Gender");
-        customerRepo.findAll(genderRobot);
+//        In<Customer> genderRobot = new In<>(queryCtx, "gender", new String[] { "ROBOT" }, defaultConverter);
+//        expectedException.expect(InvalidDataAccessApiUsageException.class);
+//        expectedException.expectCause(CoreMatchers.<IllegalArgumentException> instanceOf(IllegalArgumentException.class));
+//        expectedException.expectMessage("rejected values [ROBOT] for class Gender");
+//        customerRepo.findAll(genderRobot);
     }
     
     @Test

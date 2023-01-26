@@ -16,7 +16,7 @@
 package net.kaczmarzyk.utils;
 
 import jakarta.persistence.criteria.JoinType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static jakarta.persistence.criteria.JoinType.*;
 import static org.assertj.core.api.Assertions.*;

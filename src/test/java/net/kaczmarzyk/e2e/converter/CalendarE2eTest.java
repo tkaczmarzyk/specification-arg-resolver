@@ -26,8 +26,8 @@ import net.kaczmarzyk.spring.data.jpa.domain.GreaterThanOrEqual;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThanOrEqual;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -151,7 +151,7 @@ public class CalendarE2eTest extends E2eTestBase {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setupCustomersWithCalendarContainingTime() {
         customer("Barry", "Benson")
                 .registrationDate(2014, 3, 16, 0, 0, 0, 0)

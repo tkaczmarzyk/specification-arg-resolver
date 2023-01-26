@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.time.*;

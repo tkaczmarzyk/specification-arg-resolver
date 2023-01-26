@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.nativeimage;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import net.kaczmarzyk.spring.data.jpa.domain.PathSpecification;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeHint;
 

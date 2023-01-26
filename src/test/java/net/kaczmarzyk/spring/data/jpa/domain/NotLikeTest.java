@@ -20,13 +20,15 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
-import org.junit.Test;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 /**
@@ -38,7 +40,7 @@ public class NotLikeTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer moeSzyslak;
     
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
         margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);
@@ -67,14 +69,16 @@ public class NotLikeTest extends IntegrationTestBase {
         assertThat(result).hasSize(1).containsOnly(moeSzyslak);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsMissingArgument() {
-        new NotLike<>(queryCtx, "path", new String[] {});
+        assertThatThrownBy(() -> new NotLike<>(queryCtx, "path", new String[] {}))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rejectsInvalidNumberOfArguments() {
-        new NotLike<>(queryCtx, "path", new String[] {"a", "b"});
+        assertThatThrownBy(() -> new NotLike<>(queryCtx, "path", new String[] {"a", "b"}))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

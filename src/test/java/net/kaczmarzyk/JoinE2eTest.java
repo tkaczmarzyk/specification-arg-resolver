@@ -24,7 +24,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import static net.kaczmarzyk.utils.InterceptedStatementsAssert.assertThatInterceptedStatements;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

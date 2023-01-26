@@ -16,10 +16,11 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TypeUtilTest {
 
@@ -37,9 +38,10 @@ public class TypeUtilTest {
 
 	public static interface GrandGrandChildIface extends GrandChildIface {}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void throwsExceptionIfProvidedTypeIsNotInterface() {
-		TypeUtil.interfaceTree(Clazz.class);
+		assertThatThrownBy(() -> TypeUtil.interfaceTree(Clazz.class))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

@@ -21,8 +21,8 @@ import net.kaczmarzyk.spring.data.jpa.IntegrationTestBaseWithSARConfiguredWithAp
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.GreaterThanOrEqual;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -139,7 +139,7 @@ public class DefaultSpELValE2eTest extends IntegrationTestBaseWithSARConfiguredW
 		
 	}
 	
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		customer("Homer", "Simpson").birthDate(LocalDate.of(1970, 03, 21));
 		customer("Marge", "Simpson").birthDate(LocalDate.of(1972, 7, 13)).build(em);

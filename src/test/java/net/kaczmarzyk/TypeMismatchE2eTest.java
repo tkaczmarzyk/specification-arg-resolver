@@ -18,16 +18,16 @@ package net.kaczmarzyk;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EMPTY_RESULT;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.DEFAULT;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import jakarta.servlet.ServletException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
@@ -48,9 +48,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
  * @author Tomasz Kaczmarzyk
  */
 public class TypeMismatchE2eTest extends E2eTestBase {
-	
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
 	
 	@Controller
 	public static class TestController {
@@ -160,11 +157,13 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 	
 	@Test
 	public void throwsExceptionIfOneOfSpecifiedEnumValuesIsInvalid() throws Exception {
-		exception.expectCause(ofClass(InvalidDataAccessApiUsageException.class));
-		
-		mockMvc.perform(get("/poly/customers")
-				.param("genderException", "MALE", "FEMALE", "ALIEN")
-				.accept(MediaType.APPLICATION_JSON));
+		assertThatThrownBy(() -> {
+			mockMvc.perform(get("/poly/customers")
+					.param("genderException", "MALE", "FEMALE", "ALIEN")
+					.accept(MediaType.APPLICATION_JSON));
+		})
+				.isInstanceOf(ServletException.class)
+				.hasCauseInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
 	
 	private Matcher<? extends Throwable> ofClass(final Class<?> clazz) { // TODO

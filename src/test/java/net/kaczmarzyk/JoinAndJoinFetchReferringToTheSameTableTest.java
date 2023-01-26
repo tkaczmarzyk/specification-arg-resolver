@@ -25,9 +25,9 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -127,7 +127,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 		}
 	}
 
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		doInNewTransaction(() -> {
 			ItemTag snacksTag = itemTag("#snacks").build(em);
@@ -155,7 +155,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 		em.flush();
 	}
 
-	@After
+	@AfterEach
 	public void cleanupDb() {
 		doInNewTransaction(() -> {
 			customerRepo.deleteAll();
