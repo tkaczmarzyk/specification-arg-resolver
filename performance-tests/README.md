@@ -10,14 +10,14 @@ There are two ways of executing performance tests:
 ### Building and running jar file of performance-tests ###
 Building and executing `jar` file with all performance-tests. By default `jar` file name is `benchmark.jar` placed in `target` directory. Testing configuration is achieved with annotations over benchmark methods (e.g. warmup and measurement conditions, benchmark mode etc.).
 
-Executing all tests with results saved in json format file (`-rf json`) with `json-benchmark-results.json` name (`-rff`) failing on error (`-foe 1`).
+Executing all tests with results saved in json format file (`-rf json`) with `jmh-result.json` name (`-rff`) failing on error (`-foe 1`).
 ```shell
-java -jar target/benchmark.jar -rf json -rff json-benchmark-results.json -foe 1
+java -jar target/benchmark.jar -rf json -rff jmh-result.json -foe 1
 ```
 
 Executing tests from specific class:
 ```shell
-java -jar target/benchmark.jar ClassNameToBeExecuted -rf json -rff json-benchmark-results.json -foe 1
+java -jar target/benchmark.jar ClassNameToBeExecuted -rf json -rff jmh-result.json -foe 1
 ```
 
 For additional command line configuration check:

@@ -34,8 +34,7 @@ public class DatetimeSpecificationsBenchmark extends ToPredicateExecutionBenchma
             "equalDayLocalDateTimeSpec",
             "greaterThanOrEqualLocalDateTimeSpec",
             "lessThanLocalDateTimeSpec",
-            "betweenLocalDateTimeSpec",
-            "isEmptyStringSpec"
+            "betweenLocalDateTimeSpec"
     })
     private String specName;
 

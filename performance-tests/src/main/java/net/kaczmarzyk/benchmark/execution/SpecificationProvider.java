@@ -78,8 +78,7 @@ public class SpecificationProvider {
 		entry("equalDayLocalDateTimeSpec", specification(EqualDayLocalDateTimeSpec.class).withParam("lastOrderTimeEqualDay", "2016-10-17T18:29:00").build()),
 		entry("greaterThanOrEqualLocalDateTimeSpec", specification(GreaterThanOrEqualLocalDateTimeSpec.class).withParam("lastOrderTimeGreaterThanOrEqual", "2016-10-17T18:29:00").build()),
 		entry("lessThanLocalDateTimeSpec", specification(LessThanLocalDateTimeSpec.class).withParam("lastOrderTimeLessThan", "2016-10-17T18:29:00").build()),
-		entry("betweenLocalDateTimeSpec", specification(BetweenLocalDateTimeSpec.class).withParam("lastOrderTimeBetweenAfter", "2016-10-17T18:29:00").withParam("lastOrderTimeBetweenBefore", "2016-10-19T18:29:00").build()),
-		entry("isEmptyStringSpec", specification(IsEmptySpec.class).build())
+		entry("betweenLocalDateTimeSpec", specification(BetweenLocalDateTimeSpec.class).withParam("lastOrderTimeBetweenAfter", "2016-10-17T18:29:00").withParam("lastOrderTimeBetweenBefore", "2016-10-19T18:29:00").build())
 	);
 
 	@Spec(path="firstName", params = "firstName", spec= Equal.class, onTypeMismatch = EXCEPTION)
