@@ -15,6 +15,11 @@ Executing all tests with results saved in json format file (`-rf json`) with `js
 java -jar target/benchmark.jar -rf json -rff json-benchmark-results.json -foe 1
 ```
 
+Executing tests from specific class:
+```shell
+java -jar target/benchmark.jar ClassNameToBeExecuted -rf json -rff json-benchmark-results.json -foe 1
+```
+
 For additional command line configuration check:
 ```shell
 java -jar target/benchmark.jar -h
