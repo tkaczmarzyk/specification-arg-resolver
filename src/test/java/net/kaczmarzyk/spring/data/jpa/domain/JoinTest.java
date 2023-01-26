@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
@@ -213,7 +213,7 @@ public class JoinTest extends IntegrationTestBase {
 			.hasNumberOfJoins(1);
 	}
 	
-	@Ignore // Hibernate 6+ makes all queries distinct, so this test fails
+	@Disabled // Hibernate 6+ makes all queries distinct, so this test fails
 	@Test
 	public void leftJoinIsEvaluatedEvenIfNoFilteringIsAppliedOnTheJoinedPartButQueryIsNotDistinct_multiLevelJoin() {
 		Join<Customer> leftJoinOrders = new Join<>(queryCtx, "orders", "o", LEFT, false);
