@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -31,7 +31,7 @@ public class InThePastTest extends ComparableTestBase {
 	private static final OffsetDateTime FUTURE_DATE_TIME = OffsetDateTime.now().plusDays(10);
 	private static final OffsetDateTime PAST_DATE_TIME = OffsetDateTime.now().minusMonths(10);
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson")
 				.registrationDate(PAST_DATE_TIME.getYear(), PAST_DATE_TIME.getMonth().getValue(), PAST_DATE_TIME.getDayOfMonth() - 1)

@@ -21,7 +21,7 @@ import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class EmptyResultOnTypeMismatchTest extends IntegrationTestBase {
 	private Customer homerSimpson;
 	private Customer margeSimpson;
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
 		margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);

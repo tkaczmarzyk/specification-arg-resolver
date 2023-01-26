@@ -24,7 +24,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
@@ -47,7 +47,7 @@ public class NotEqualTest extends IntegrationTestBase {
 	protected Customer margeSimpson;
 	protected Customer joeQuimby;
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson")
 				.gender(Gender.MALE)

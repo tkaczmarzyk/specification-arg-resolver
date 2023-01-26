@@ -23,7 +23,7 @@ import net.kaczmarzyk.spring.data.jpa.Order;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.hibernate.Hibernate;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -54,7 +54,7 @@ public class JoinFetchTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer bartSimpson;
     
-    @Before
+    @BeforeEach
     public void initData() {
         ItemTag books = itemTag("Books").build(em);
 

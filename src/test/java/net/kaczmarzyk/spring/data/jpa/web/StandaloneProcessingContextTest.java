@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public class StandaloneProcessingContextTest {
 
 	private StandaloneProcessingContext context;
 
-	@Before
+	@BeforeEach
 	public void setupContext() {
 		Map<String, String[]> args = new HashMap<>();
 		Map<String, String[]> params = new HashMap<>();

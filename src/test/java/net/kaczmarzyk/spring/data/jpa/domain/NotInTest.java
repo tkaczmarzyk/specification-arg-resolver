@@ -23,7 +23,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -46,7 +46,7 @@ public class NotInTest extends IntegrationTestBase {
     private Customer moeSzyslak;
 	private Customer joeQuimby;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
         margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);

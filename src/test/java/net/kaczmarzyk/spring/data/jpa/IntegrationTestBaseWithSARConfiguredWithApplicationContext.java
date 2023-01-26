@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,7 +48,7 @@ public abstract class IntegrationTestBaseWithSARConfiguredWithApplicationContext
 	
 	protected MockMvc mockMvc;
 	
-	@Before
+	@BeforeEach
 	public void setupMockMvc() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}

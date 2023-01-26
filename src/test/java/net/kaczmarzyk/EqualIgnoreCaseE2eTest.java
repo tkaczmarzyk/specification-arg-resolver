@@ -20,7 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.domain.EqualIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -73,7 +73,7 @@ public class EqualIgnoreCaseE2eTest extends IntegrationTestBase {
 
 	protected MockMvc mockMvc;
 
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		customer("Homer", "Simpson").gender(MALE).build(em);
 		customer("Marge", "Simpson").gender(FEMALE).build(em);

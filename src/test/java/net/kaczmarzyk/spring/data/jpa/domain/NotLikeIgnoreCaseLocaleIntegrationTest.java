@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.Gender;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class NotLikeIgnoreCaseLocaleIntegrationTest extends IntegrationTestBase 
     private Customer homerWithEnglishCapitalI;
     private Customer homerWithTurkishCapitalI;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerWithLowercaseI = customer("Homer", "Simpson").gender(Gender.MALE).build(em);
         homerWithEnglishCapitalI = customer("Homer", "SIMPSON").gender(Gender.MALE).build(em);

@@ -19,7 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.ApplicationWithConfiguredCache;
 import net.kaczmarzyk.spring.data.jpa.ApplicationWithGlobalPrefix;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -61,7 +61,7 @@ public abstract class IntegrationTestBaseWithGlobalPrefix {
 
 	protected MockMvc mockMvc;
 
-	@Before
+	@BeforeEach
 	public void setupMockMvc() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}

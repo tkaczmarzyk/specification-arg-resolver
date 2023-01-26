@@ -17,7 +17,7 @@ package net.kaczmarzyk.spring.data.jpa;
 
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.data.jpa.domain.Specification;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
@@ -38,7 +38,7 @@ public abstract class ComparableTestBase extends IntegrationTestBase {
 	protected Customer moeSzyslak;
 	protected Customer joeQuimby;
 	
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson").gender(Gender.MALE).registrationDate(2015, 03, 01).weight(121).build(em);
 		margeSimpson = customer("Marge", "Simpson").gender(Gender.FEMALE).registrationDate(2015, 03, 01).weight(55).build(em);

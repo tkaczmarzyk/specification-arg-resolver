@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
@@ -37,7 +37,7 @@ public class EqualIgnoreCaseLocaleIntegrationTest extends IntegrationTestBase {
 	private Customer homerWithEnglishCapitalI;
 	private Customer homerWithTurkishCapitalI;
 	
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerWithLowercaseI = customer("Homer", "Simpson").gender(Gender.MALE).build(em);
 		homerWithEnglishCapitalI = customer("Homer", "SIMPSON").gender(Gender.MALE).build(em);

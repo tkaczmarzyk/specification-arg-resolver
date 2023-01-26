@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -52,7 +52,7 @@ public class JoinTest extends IntegrationTestBase {
 	Customer margeSimpson;
 	Customer bartSimpson;
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		ItemTag books = itemTag("books").build(em);
 

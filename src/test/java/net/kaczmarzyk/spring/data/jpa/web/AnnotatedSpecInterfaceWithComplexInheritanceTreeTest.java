@@ -25,7 +25,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -176,7 +176,7 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 
 	NativeWebRequestBuilder nativeWebRequestBuilder;
 
-	@Before
+	@BeforeEach
 	public void setupNativeWebRequestBuilder() {
 		nativeWebRequestBuilder = nativeWebRequest()
 				.withParameterValues("disjunctionAnd1Param1", "disjunctionAnd1Param1Val")

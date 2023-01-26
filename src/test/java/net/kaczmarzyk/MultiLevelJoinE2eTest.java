@@ -24,7 +24,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.NotEqual;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -84,7 +84,7 @@ public class MultiLevelJoinE2eTest extends IntegrationTestBase {
 
 	}
 
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		ItemTag homerApprovedTag = itemTag("#homerApproved").build(em);
 		ItemTag snacksTag = itemTag("#snacks").build(em);

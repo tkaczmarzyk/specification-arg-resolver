@@ -19,7 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.domain.IsNotEmpty;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -62,7 +62,7 @@ public class IsNotEmptyE2eTest extends E2eTestBase {
         }
     }
 
-    @Before
+    @BeforeEach
     public void initData() {
         customer("Barry", "Benson")
                 .phoneNumbers("123456789")

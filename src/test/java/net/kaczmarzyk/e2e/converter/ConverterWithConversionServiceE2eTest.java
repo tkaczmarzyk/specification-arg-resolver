@@ -20,7 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBaseWithConfiguredConversionService;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -50,7 +50,7 @@ public class ConverterWithConversionServiceE2eTest extends IntegrationTestBaseWi
 		}
 	}
 	
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		customer("Homer", "Simpson")
 				.street("Evergreen Terrace").build(em);

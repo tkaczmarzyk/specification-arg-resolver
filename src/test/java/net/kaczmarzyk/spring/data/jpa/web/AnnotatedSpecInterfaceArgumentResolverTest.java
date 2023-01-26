@@ -24,7 +24,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -147,7 +147,7 @@ public class AnnotatedSpecInterfaceArgumentResolverTest extends AnnotatedSpecInt
 	NativeWebRequest req = mock(NativeWebRequest.class);
 	QueryContext queryCtx = new DefaultQueryContext();
 
-	@Before
+	@BeforeEach
 	public void init() {
 		req = nativeWebRequest()
 				.withParameterValues("deleted", "false")

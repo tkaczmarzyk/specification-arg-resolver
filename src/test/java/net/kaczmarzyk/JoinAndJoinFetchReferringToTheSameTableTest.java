@@ -26,7 +26,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.JoinFetch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -127,7 +127,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 		}
 	}
 
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		doInNewTransaction(() -> {
 			ItemTag snacksTag = itemTag("#snacks").build(em);

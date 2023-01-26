@@ -20,7 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -38,7 +38,7 @@ public class ConjunctionTest extends IntegrationTestBase {
     Customer moeSzyslak;
     Customer nedFlanders;
     
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 15).street("Evergreen Terrace").build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 20).street("Evergreen Terrace").build(em);

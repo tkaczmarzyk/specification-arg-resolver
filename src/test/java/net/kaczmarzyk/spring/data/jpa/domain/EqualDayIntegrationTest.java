@@ -19,7 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -44,7 +44,7 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	protected Customer moeSzyslak;
 	protected Customer joeQuimby;
 
-	@Before
+	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson")
 				.registrationDate(2015, 03, 01)

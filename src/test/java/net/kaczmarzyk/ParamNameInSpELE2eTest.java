@@ -20,7 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBaseWithSARConfiguredWithApplicationContext;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -84,7 +84,7 @@ public class ParamNameInSpELE2eTest extends IntegrationTestBaseWithSARConfigured
 		}
 	}
 	
-	@Before
+	@BeforeEach
 	public void initializeTestData() {
 		customer("Homer", "Simpson").birthDate(LocalDate.of(1970, 03, 21));
 		customer("Marge", "Simpson").birthDate(LocalDate.of(1972, 7, 13)).build(em);

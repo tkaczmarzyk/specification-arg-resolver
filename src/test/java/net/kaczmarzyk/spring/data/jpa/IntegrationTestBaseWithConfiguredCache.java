@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -57,7 +57,7 @@ public abstract class IntegrationTestBaseWithConfiguredCache {
 
 	protected MockMvc mockMvc;
 
-	@Before
+	@BeforeEach
 	public void setupMockMvc() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}

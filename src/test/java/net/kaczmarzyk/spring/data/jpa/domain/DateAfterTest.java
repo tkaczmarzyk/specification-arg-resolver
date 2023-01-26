@@ -19,7 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -40,7 +40,7 @@ public class DateAfterTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer moeSzyslak;
     
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").registrationDate(2014, 03, 07).build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 12).build(em);

@@ -19,7 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class NotLikeIgnoreCaseTest extends IntegrationTestBase {
     Customer margeSimpson;
     Customer moeSzyslak;
 
-    @Before
+    @BeforeEach
     public void initData() {
         homerSimpson = customer("Homer", "Simpson").street("Evergreen Terrace").build(em);
         margeSimpson = customer("Marge", "Simpson").street("Evergreen Terrace").build(em);

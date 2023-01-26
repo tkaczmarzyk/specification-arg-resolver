@@ -19,7 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.DefaultQueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -82,7 +82,7 @@ public abstract class IntegrationTestBase {
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
-	@Before
+	@BeforeEach
 	public void setupMockMvc() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
