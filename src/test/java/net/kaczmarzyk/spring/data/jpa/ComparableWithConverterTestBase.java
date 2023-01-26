@@ -16,7 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 public abstract class ComparableWithConverterTestBase extends ComparableTestBase {

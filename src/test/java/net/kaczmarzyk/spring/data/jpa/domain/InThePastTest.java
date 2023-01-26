@@ -19,7 +19,7 @@ import net.kaczmarzyk.spring.data.jpa.ComparableTestBase;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.OffsetDateTime;

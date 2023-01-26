@@ -27,7 +27,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;

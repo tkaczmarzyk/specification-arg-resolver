@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.pathVariables;
 import static net.kaczmarzyk.spring.data.jpa.web.utils.RequestAttributesWithPathVariablesUtil.setPathVariablesInRequestAttributes;

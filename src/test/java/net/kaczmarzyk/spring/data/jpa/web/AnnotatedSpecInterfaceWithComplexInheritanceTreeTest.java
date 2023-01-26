@@ -26,7 +26,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import net.kaczmarzyk.spring.data.jpa.web.utils.NativeWebRequestBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;

@@ -15,7 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;

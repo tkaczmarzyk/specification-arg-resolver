@@ -27,7 +27,7 @@ import jakarta.persistence.criteria.JoinType;
 
 import net.kaczmarzyk.utils.interceptor.HibernateStatementInspector;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;

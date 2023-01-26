@@ -18,7 +18,7 @@ package net.kaczmarzyk.spring.data.jpa.web;
 import jakarta.servlet.http.HttpServletRequest;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;

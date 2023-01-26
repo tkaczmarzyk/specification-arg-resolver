@@ -23,7 +23,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import java.util.List;
