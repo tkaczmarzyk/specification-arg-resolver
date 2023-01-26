@@ -63,7 +63,7 @@ public class InThePastTest extends ComparableTestBase {
 
 	@Override
 	protected Specification<Customer> makeUUT(String path, String[] value, Converter converter) {
-		return new InThePast<>(queryCtx, path);
+		return new InThePast<>(queryCtx, path, new String[0]);
 	}
 
 	@Test
