@@ -30,6 +30,12 @@ v3.0.0
   * `EqualEnum` - use `Equal`
   * `@Joins` container annotation - use repeated `@Join` and `@JoinFetch`
 
+v2.18.1
+=======
+* Fixed a bug related to specifications that always returned all available values. Fixed specs:
+  * `InThePast`
+  * `InTheFuture`
+
 v2.18.0
 =======
 * `IsNull` specification is no longer deprecated
