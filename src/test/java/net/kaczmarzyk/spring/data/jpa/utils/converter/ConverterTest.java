@@ -103,7 +103,7 @@ public class ConverterTest {
 	
 	@Test
 	public void throwsExceptionWithRejectedEnumNames() {
-		converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class);
+		converter = Converter.withTypeMismatchBehaviour(OnTypeMismatch.EXCEPTION, null, Locale.getDefault());
 
 		assertThatThrownBy(() -> converter.convert(Arrays.asList("MALE", "ROBOT", "FEMALE", "ALIEN"), Gender.class))
 				.isInstanceOf(ValuesRejectedException.class)

@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import jakarta.servlet.ServletException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -161,7 +162,8 @@ public class TypeMismatchE2eTest extends E2eTestBase {
 					.param("genderException", "MALE", "FEMALE", "ALIEN")
 					.accept(MediaType.APPLICATION_JSON));
 		})
-				.isInstanceOf(InvalidDataAccessApiUsageException.class);
+				.isInstanceOf(ServletException.class)
+				.hasCauseInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
 	
 	private Matcher<? extends Throwable> ofClass(final Class<?> clazz) { // TODO
