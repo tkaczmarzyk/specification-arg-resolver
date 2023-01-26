@@ -1,3 +1,9 @@
+v2.18.1
+=======
+* Fixed a bug related to specifications that always returned all available values. Fixed specs:
+  * `InThePast`
+  * `InTheFuture`
+
 v2.18.0
 =======
 * Introduced `IsNotNull` specification.

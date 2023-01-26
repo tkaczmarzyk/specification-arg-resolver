@@ -29,11 +29,11 @@ import javax.persistence.criteria.Expression;
  *
  * <p>Supports date type fields.</p>
  */
-public class InThePast<T, TimeType extends Comparable<TimeType>> extends PathSpecification<T> {
+public class InThePast<T, TimeType extends Comparable<TimeType>> extends PathSpecification<T> implements ZeroArgSpecification {
 
 	private static final long serialVersionUID = 1L;
 
-	public InThePast(QueryContext queryContext, String path) {
+	public InThePast(QueryContext queryContext, String path, String[] args) {
 		super(queryContext, path);
 	}
 

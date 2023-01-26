@@ -62,7 +62,7 @@ public class InTheFutureTest extends ComparableTestBase {
 
 	@Override
 	protected Specification<Customer> makeUUT(String path, String[] value, Converter converter) {
-		return new InTheFuture<>(queryCtx, path);
+		return new InTheFuture<>(queryCtx, path, new String[0]);
 	}
 
 	@Test
