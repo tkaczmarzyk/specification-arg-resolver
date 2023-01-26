@@ -1,3 +1,9 @@
+v3.0.1
+=======
+* Fixed a bug related to specifications that always returned all available values. Fixed specs:
+  * `InThePast`
+  * `InTheFuture`
+
 v3.0.0
 =======
 * Migrated project to spring boot 3.0 and java 17
@@ -23,6 +29,12 @@ v3.0.0
   * `DateBetween` - use `Between`
   * `EqualEnum` - use `Equal`
   * `@Joins` container annotation - use repeated `@Join` and `@JoinFetch`
+
+v2.18.1
+=======
+* Fixed a bug related to specifications that always returned all available values. Fixed specs:
+  * `InThePast`
+  * `InTheFuture`
 
 v2.18.0
 =======

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -130,6 +131,22 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
 
 			return customerRepo.findAll(spec);
 		}
+
+	    @ResponseBody
+	    @RequestMapping(value = "/customersWithSpecialOffer")
+	    public Object findByCustomersWithAvailableSpecialOffer(
+		    @Spec(path="dateOfNextSpecialOffer", spec=InTheFuture.class) Specification<Customer> spec) {
+
+		    return customerRepo.findAll(spec);
+	    }
+
+	    @ResponseBody
+	    @RequestMapping(value = "/customersWithExpiredSpecialOffer")
+	    public Object findByCustomersWithExpiredSpecialOffer(
+		    @Spec(path="dateOfNextSpecialOffer", spec=InThePast.class) Specification<Customer> spec) {
+
+		    return customerRepo.findAll(spec);
+	    }
     }
 
     @Test
@@ -284,4 +301,48 @@ public class LocalDateTimeE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$.[?(@.firstName=='Marge')]").exists())
 				.andExpect(jsonPath("$[1]").doesNotExist());
 	}
+
+	@Test
+	public void findsByNextSpecialOfferFromFuture() throws Exception {
+		customer("Barry", "Benson")
+			.nextSpecialOffer(OffsetDateTime.now().plusDays(7))
+			.build(em);
+		customer("Vanessa", "Bloom")
+			.nextSpecialOffer(OffsetDateTime.now().minusDays(7))
+			.build(em);
+
+		mockMvc.perform(get("/customersWithSpecialOffer")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Barry"))
+			.andExpect(jsonPath("$[0].lastName").value("Benson"))
+			.andExpect(jsonPath("$[1]").doesNotExist());
+	}
+
+	@Test
+	public void findsByNextSpecialOfferFromPast() throws Exception {
+		customer("Barry", "Benson")
+			.nextSpecialOffer(OffsetDateTime.now().plusDays(7))
+			.build(em);
+		customer("Vanessa", "Bloom")
+			.nextSpecialOffer(OffsetDateTime.now().minusDays(7))
+			.build(em);
+
+		mockMvc.perform(get("/customersWithExpiredSpecialOffer")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$[0].firstName").value("Homer"))
+			.andExpect(jsonPath("$[1].firstName").value("Marge"))
+			.andExpect(jsonPath("$[2].firstName").value("Bart"))
+			.andExpect(jsonPath("$[3].firstName").value("Lisa"))
+			.andExpect(jsonPath("$[4].firstName").value("Maggie"))
+			.andExpect(jsonPath("$[5].firstName").value("Moe"))
+			.andExpect(jsonPath("$[6].firstName").value("Minnie"))
+			.andExpect(jsonPath("$[7].firstName").value("Ned"))
+			.andExpect(jsonPath("$[8].firstName").value("Vanessa"))
+			.andExpect(jsonPath("$[9]").doesNotExist());
+	}
+
 }
