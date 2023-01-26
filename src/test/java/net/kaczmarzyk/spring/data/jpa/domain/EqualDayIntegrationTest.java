@@ -30,7 +30,7 @@ import java.util.List;
 import static java.time.ZoneOffset.ofHours;
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Robert Dworak (Tratif sp. z o.o.)

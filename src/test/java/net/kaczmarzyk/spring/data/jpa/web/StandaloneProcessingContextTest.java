@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
 
 /**
  * @author Kacper Leśniak
@@ -75,7 +75,10 @@ public class StandaloneProcessingContextTest {
 
 	@Test
 	public void shouldThrowInvalidPathVariableRequestedExceptionWhenPathVariableDoesNotExist() {
-		assertThrows(InvalidPathVariableRequestedException.class, () -> context.getPathVariableValue("notExisting", MissingPathVarPolicy.EXCEPTION));
+		assertThrows(
+				InvalidPathVariableRequestedException.class,
+				() -> context.getPathVariableValue("notExisting", MissingPathVarPolicy.EXCEPTION)
+		);
 	}
 
 	@Test

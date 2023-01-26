@@ -21,7 +21,7 @@ import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinConta
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
 import static net.kaczmarzyk.spring.data.jpa.utils.ThrowableAssertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JoinPathUtilsTest {
 

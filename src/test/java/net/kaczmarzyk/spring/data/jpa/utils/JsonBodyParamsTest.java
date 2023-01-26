@@ -16,21 +16,14 @@
 package net.kaczmarzyk.spring.data.jpa.utils;
 
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import net.kaczmarzyk.utils.ReflectionUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JsonBodyParamsTest {
 
@@ -158,7 +151,7 @@ public class JsonBodyParamsTest {
 		Collection<String> result = JsonBodyParams.parse(json).getParamValues("key1.innerKey");
 
 		//then
-		Assert.assertTrue(result.isEmpty());
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
