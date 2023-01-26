@@ -15,31 +15,24 @@
  */
 package net.kaczmarzyk.spring.data.jpa;
 
-import net.kaczmarzyk.spring.data.jpa.ApplicationWithConfiguredCache;
-import net.kaczmarzyk.spring.data.jpa.ApplicationWithGlobalPrefix;
-import net.kaczmarzyk.spring.data.jpa.Customer;
-import net.kaczmarzyk.spring.data.jpa.CustomerRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 /**
  * @author Tomasz Kaczmarzyk
  * @author TP Diffenbach
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { ApplicationWithGlobalPrefix.class })
 @WebAppConfiguration
 @Transactional

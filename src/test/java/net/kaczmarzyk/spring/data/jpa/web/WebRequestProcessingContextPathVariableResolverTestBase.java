@@ -16,10 +16,6 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.web.annotation.MissingPathVarPolicy;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +31,6 @@ import static org.junit.runners.Parameterized.Parameters;
  * @author Tomasz Kaczmarzyk
  * @author Jakub Radlica
  */
-@RunWith(Parameterized.class)
 public abstract class WebRequestProcessingContextPathVariableResolverTestBase {
 
 	@Rule
