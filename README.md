@@ -1374,6 +1374,15 @@ Specification argument resolver is available in the Maven Central:
 </dependency>
 ```
 
+Also, there is an autoconfiguration starter you can use:
+```xml
+<dependency>
+    <groupId>net.kaczmarzyk</groupId>
+    <artifactId>sar-spring-boot-starter</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
 If a new version is not yet available in the central repository (or you need a SNAPSHOT version), you can grab it from my private repo:
 
 ```xml
