@@ -1,3 +1,9 @@
+v2.19.0
+=======
+* Json body parameters no longer throws when:
+  * Content-type is omitted
+  * Content-type is any other than application/json
+
 v2.18.1
 =======
 * Fixed a bug related to specifications that always returned all available values. Fixed specs:
