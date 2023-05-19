@@ -4,6 +4,8 @@ v3.1.0
   * Content-type is omitted
   * Content-type is any other than application/json
 
+  This means that empty request body is accepted when json paths are present in specifications.
+
 v3.0.1
 =======
 * Fixed a bug related to specifications that always returned all available values. Fixed specs:
@@ -41,6 +43,8 @@ v2.19.0
 * Json body parameters no longer throws when:
   * Content-type is omitted
   * Content-type is any other than application/json
+
+  This means that empty request body is accepted when json paths are present in specifications.
 
 v2.18.1
 =======
