@@ -246,15 +246,28 @@ public class WebRequestProcessingContextTest {
 		assertThat(getPathVariableFromContext(context, "orderId")).isEqualTo("99");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowIllegalArgumentExceptionWhenContentTypeIsDifferentThanJson() {
+	@Test
+	public void resolvesEmptyBodyParamWhenContentTypeIsDifferentThanJson() {
 		NativeWebRequest req = mock(NativeWebRequest.class);
 
 		when(req.getHeader(CONTENT_TYPE)).thenReturn(MediaType.APPLICATION_PDF.toString());
 
 		WebRequestProcessingContext context = new WebRequestProcessingContext(null, req);
 
-		context.getBodyParamValues("example");
+		String[] bodyParamValues = context.getBodyParamValues("example");
+		assertThat(bodyParamValues).isEmpty();
+	}
+
+	@Test
+	public void resolvesEmptyBodyParamWhenContentTypeIsNotProvided() {
+		NativeWebRequest req = mock(NativeWebRequest.class);
+
+		when(req.getHeader(CONTENT_TYPE)).thenReturn(null);
+
+		WebRequestProcessingContext context = new WebRequestProcessingContext(null, req);
+
+		String[] bodyParamValues = context.getBodyParamValues("example");
+		assertThat(bodyParamValues).isEmpty();
 	}
 
 	@Test(expected = IllegalStateException.class)

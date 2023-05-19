@@ -1114,6 +1114,8 @@ Request `POST /customers/find` with the following body is not valid (`JsonParseE
 }
 ```
 
+Json body parameters are optional in requests, and they can be omitted from the payload. To successfully resolve the parameters, requests must define a Content-type: application/json header and must have a JSON request body, otherwise the parameters will not be recognized and the criteria will not be applied. As most client implementations (e.g. fetch) do not allow GET or DELETE requests with body and Content-type, Json body parameters can be practically used only with POST, PUT and PATCH requests.
+
 Type conversions for HTTP parameters
 -------------------
 

@@ -28,13 +28,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,7 +49,14 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
         CustomerRepository customerRepo;
 
         @PostMapping(value = "/customers/search")
-        public List<Customer> findByIdInBody(
+        public List<Customer> findByIdInBodyPost(
+            @Spec(path = "id", jsonPaths = "customerId", spec = Equal.class) Specification<Customer> spec) {
+
+            return customerRepo.findAll(spec);
+        }
+
+        @GetMapping(value = "/customers/search")
+        public List<Customer> findByIdInBodyGet(
             @Spec(path = "id", jsonPaths = "customerId", spec = Equal.class) Specification<Customer> spec) {
 
             return customerRepo.findAll(spec);
@@ -89,11 +94,23 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
     }
 
     @Test
-    public void findsByIdProvidedInRequestBody() throws Exception {
+    public void findsByIdProvidedInPostRequestBody() throws Exception {
         mockMvc.perform(post("/customers/search")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].firstName").value(homerSimpson.getFirstName()));
+    }
+
+    @Test
+    public void findsByIdProvidedInGetRequestBody() throws Exception {
+        mockMvc.perform(get("/customers/search")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$.length()").value(1))
@@ -146,10 +163,27 @@ public class RequestBodyHandlingE2eTest extends E2eTestBase {
     }
 
     @Test
-    public void returnsBadRequestWhenContentTypeIsNotPresent() throws Exception {
+    public void findsAllWhenPostAndContentTypeIsNotPresent() throws Exception {
         mockMvc.perform(post("/customers/search")
                         .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
-                .andExpect(status().isBadRequest());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(8));
+    }
+
+    @Test
+    public void findsAllWhenGetAndContentTypeIsNotPresent() throws Exception {
+        mockMvc.perform(get("/customers/search")
+                        .content(" { \"customerId\": \"" + homerSimpson.getId() + "\" }"))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(8));
+    }
+
+    @Test
+    public void findsAllWhenContentTypeIsNotPresentAndContentIsEmpty() throws Exception {
+        mockMvc.perform(post("/customers/search"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(8));
     }
 
     @Test

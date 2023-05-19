@@ -15,14 +15,23 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import org.junit.Test;
+
 import java.util.Collection;
-import java.util.Collections;
 
-public interface BodyParams {
+import static org.assertj.core.api.Assertions.assertThat;
 
-	Collection<String> getParamValues(String paramKey);
+public class BodyParamsTest {
 
-	static BodyParams empty() {
-		return paramKey -> Collections.emptyList();
+	@Test
+	public void emptyBodyParamsReturnsEmptyArray() {
+		//given
+		BodyParams emptyBodyParams = BodyParams.empty();
+
+		//when
+		Collection<String> value = emptyBodyParams.getParamValues("key");
+
+		//then
+		assertThat(value).isEmpty();
 	}
 }
