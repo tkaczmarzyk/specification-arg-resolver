@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.io.IOException;
 import java.lang.reflect.Executable;
 
@@ -243,15 +241,27 @@ public class WebRequestProcessingContextTest {
 	}
 
 	@Test
-	public void shouldThrowIllegalArgumentExceptionWhenContentTypeIsDifferentThanJson() {
+	public void resolvesEmptyBodyParamWhenContentTypeIsDifferentThanJson() {
 		NativeWebRequest req = mock(NativeWebRequest.class);
 
 		when(req.getHeader(CONTENT_TYPE)).thenReturn(MediaType.APPLICATION_PDF.toString());
 
 		WebRequestProcessingContext context = new WebRequestProcessingContext(null, req);
 
-		assertThatThrownBy(() -> context.getBodyParamValues("example"))
-				.isInstanceOf(IllegalArgumentException.class);
+		String[] bodyParamValues = context.getBodyParamValues("example");
+		assertThat(bodyParamValues).isEmpty();
+	}
+
+	@Test
+	public void resolvesEmptyBodyParamWhenContentTypeIsNotProvided() {
+		NativeWebRequest req = mock(NativeWebRequest.class);
+
+		when(req.getHeader(CONTENT_TYPE)).thenReturn(null);
+
+		WebRequestProcessingContext context = new WebRequestProcessingContext(null, req);
+
+		String[] bodyParamValues = context.getBodyParamValues("example");
+		assertThat(bodyParamValues).isEmpty();
 	}
 
 	@Test

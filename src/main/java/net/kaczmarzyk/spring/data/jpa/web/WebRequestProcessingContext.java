@@ -107,12 +107,13 @@ public class WebRequestProcessingContext implements ProcessingContext {
 
 	private BodyParams getBodyParams() {
 		if (isNull(bodyParams)) {
+			this.bodyParams = BodyParams.empty();
 			String contentType = getRequestHeaderValue(CONTENT_TYPE);
-			MediaType mediaType = parseMediaType(contentType);
-			if (APPLICATION_JSON.includes(mediaType)) {
-				this.bodyParams = JsonBodyParams.parse(getRequestBody());
-			} else {
-				throw new IllegalArgumentException("Content-type not supported, content-type=" + contentType);
+			if (!isNull(contentType)){
+				MediaType mediaType = parseMediaType(contentType);
+				if (APPLICATION_JSON.includes(mediaType)) {
+					this.bodyParams = JsonBodyParams.parse(getRequestBody());
+				}
 			}
 		}
 		return bodyParams;
