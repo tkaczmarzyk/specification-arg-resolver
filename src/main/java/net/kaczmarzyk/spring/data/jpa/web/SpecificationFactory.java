@@ -136,8 +136,8 @@ public class SpecificationFactory {
 	}
 
 	private void forEachSupportedInterfaceSpecificationDefinition(Class<?> target, Consumer<Annotation> specificationBuilder) {
-		for (Class<? extends Annotation> annotationType : resolversBySupportedType.keySet()) {
-			if (target.getAnnotations().length != 0) {
+		if (target.getAnnotations().length != 0) {
+			for (Class<? extends Annotation> annotationType : resolversBySupportedType.keySet()) {
 				Annotation potentialAnnotation = target.getAnnotation(annotationType);
 				if (potentialAnnotation != null) {
 					specificationBuilder.accept(potentialAnnotation);
