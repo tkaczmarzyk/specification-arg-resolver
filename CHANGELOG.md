@@ -1,4 +1,4 @@
-v3.1.0
+v3.1.1
 =======
 * Optimized distinct query evaluation in join
   * From now on, during join evaluation, the query is set as `distinct` only when the join is actually being evaluated.
