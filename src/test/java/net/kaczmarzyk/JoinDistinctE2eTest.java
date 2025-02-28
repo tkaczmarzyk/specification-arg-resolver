@@ -59,6 +59,19 @@ public class JoinDistinctE2eTest extends E2eTestBase {
 					.collect(toList());
 		}
 
+		@RequestMapping("/join-distinct/customers/optionalParams")
+		public Object joinCountSpecificationOptionalParams(
+				@Join(path = "badges", alias = "b", type = LEFT)
+				@And({
+						@Spec(path = "b.badgeType", params = "badge", spec = NotEqual.class),
+						@Spec(path = "lastName", spec = Equal.class)
+				}) Specification<Customer> spec, Pageable pageable) {
+
+			return customerRepository.findAll(spec, pageable).stream()
+					.map(CustomerDto::from)
+					.collect(toList());
+		}
+
 		@RequestMapping("/join-distinct/customers/distinct-false")
 		public Object joinCountSpecification_distinctAttributeSetToFalse(
 				@Join(path = "badges", alias = "b", distinct = false, type = LEFT)
@@ -121,7 +134,7 @@ public class JoinDistinctE2eTest extends E2eTestBase {
 	}
 
 	@Test
-	public void createsDistinctQueryByDefault() throws Exception {
+	public void createsDistinctQueryByDefaultWhenJoinIsUsedInFiltering() throws Exception {
 		mockMvc.perform(get("/join-distinct/customers")
 						.param("lastName", "Simpson")
 						.accept(MediaType.APPLICATION_JSON))
@@ -132,9 +145,47 @@ public class JoinDistinctE2eTest extends E2eTestBase {
 				.andExpect(jsonPath("$[2].firstName").value("Bart"))
 				.andExpect(jsonPath("$[3]").doesNotExist());
 
-
 		assertThatInterceptedStatements()
 				.hasOneClause("distinct");
+	}
+
+	@Test
+	public void doesNotMarkQueryAsDistinctWhenJoinIsNotBeingEvaluated_requestWithoutAnyParam() throws Exception {
+		mockMvc.perform(get("/join-distinct/customers/optionalParams?page=1&size=1")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
+
+		assertThatInterceptedStatements()
+				.doesNotHaveClause("distinct")
+				.doesNotHaveClause("join");
+	}
+
+	@Test
+	public void doesNotMarkQueryAsDistinctWhenJoinIsNotBeingEvaluated_requestWithParamForNonJoinedColumn() throws Exception {
+		mockMvc.perform(get("/join-distinct/customers/optionalParams?page=1&size=1")
+						.param("lastName", "Simpson")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
+
+		assertThatInterceptedStatements()
+				.doesNotHaveClause("distinct")
+				.doesNotHaveClause("join");
+	}
+
+	@Test
+	public void marksQueryAsDistinctWhenJoinIsBeingEvaluated_requestWithParamForJoinedColumn() throws Exception {
+		mockMvc.perform(get("/join-distinct/customers/optionalParams")
+						.param("lastName", "Simpson")
+						.param("badge", "CyberMondayBadge")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
+
+		assertThatInterceptedStatements()
+				.hasOneClause("distinct")
+				.hasOneClause("join");
 	}
 
 	@Test

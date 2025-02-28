@@ -1,5 +1,51 @@
 v3.1.0
 =======
+* Optimized distinct query evaluation in join
+  * From now on, during join evaluation, the query is set as `distinct` only when the join is actually being evaluated.
+  * Previously, `distinct` was set (depending on the config) unconditionally (even when the join was not evaluated), which could lead to performance issues.
+    * For example, previously for the following specification:
+        ```java
+        @RequestMapping("/join-distinct/customers/optionalParams")
+        public Object joinCountSpecificationOptionalParams(
+                @Join(path = "badges", alias = "b", type = LEFT)
+                @And({
+                        @Spec(path = "b.badgeType", params = "badge", spec = NotEqual.class),
+                        @Spec(path = "lastName", spec = Equal.class)
+                }) Specification<Customer> spec) {
+
+            return customerRepository.findAll(spec).stream()
+                    .map(CustomerDto::from)
+                    .collect(toList());
+        }
+        ``` 
+      and requests:
+      * r1: `GET /join-distinct-customers/optionalParams?page=1&size=1` - no filtering
+      * r2: `GET /join-distinct-customers/optionalParams/?page=1&size=1&lastName=Simpson` - filtering on non-joined columns 
+      following queries were previously generated:
+      * r1 - no filtering
+        * ```sql
+          select distinct c1_0.id,c1_0.street,... from customer c1_0 offset ? rows fetch first ? rows only
+          select distinct count(distinct c1_0.id) from customer c1_0
+          ```
+        * r2 - filtering on non-joined columns
+          ```sql
+          select distinct c1_0.id,c1_0.street,... from customer c1_0 where c1_0.last_name=? offset ? rows fetch first ? rows only,
+          select distinct count(distinct c1_0.id) from customer c1_0 where c1_0.last_name=?
+          ```      
+      * from now, these queries are generated:
+        r1 - no filtering
+        * ```sql
+          select c1_0.id,c1_0.street, ... from customer c1_0 offset ? rows fetch first ? rows only;
+          select count(c1_0.id) from customer c1_0;
+          ```
+        * r2 - filtering on non-joined columns
+          ```sql
+          select c1_0.id,c1_0.street, ... from customer c1_0 where c1_0.last_name=? offset ? rows fetch first ? rows only;
+          select count(c1_0.id) from customer c1_0 where c1_0.last_name=?;
+          ```          
+
+v3.1.0
+=======
 * Json body parameters no longer throws when:
   * Content-type is omitted
   * Content-type is any other than application/json

@@ -15,21 +15,15 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import jakarta.persistence.criteria.*;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Objects;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import java.util.function.Function;
 
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinContainsAlias;
 import static net.kaczmarzyk.spring.data.jpa.utils.JoinPathUtils.pathToJoinSplittedByDot;
-
-import java.util.function.Function;
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -56,33 +50,35 @@ public class Join<T> implements Specification<T>, Fake {
 
 	@Override
 	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-		query.distinct(distinctQuery);
-
 		if (!pathToJoinContainsAlias(pathToJoinOn)) {
-                        if(!queryContext.existsJoin(alias, root)) {
-                        	putValToQueryContext(alias, root, (r) -> r.join(pathToJoinOn, joinType));
-                        }
+			if (!queryContext.existsJoin(alias, root)) {
+				putValToQueryContext(alias, root, (r) -> {
+					query.distinct(distinctQuery);
+					return r.join(pathToJoinOn, joinType);
+				});
+			}
 		} else {
 			String[] pathToJoinOnSplittedByDot = pathToJoinSplittedByDot(pathToJoinOn);
 
 			String extractedAlias = pathToJoinOnSplittedByDot[0];
-			
+
 			if (!queryContext.existsJoin(extractedAlias, root)) {
 				throw new IllegalArgumentException(
 						"Join definition with alias: '" + extractedAlias + "' not found! " +
-								"Make sure that join with the alias '" + extractedAlias +"' is defined before the join with path: '" + pathToJoinOn + "'"
+								"Make sure that join with the alias '" + extractedAlias + "' is defined before the join with path: '" + pathToJoinOn + "'"
 				);
 			}
 
 			String extractedPathToJoin = pathToJoinOnSplittedByDot[1];
-				putValToQueryContext(
-                        alias,
-                        root,
-                        (r) -> {
-                        	jakarta.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
-                        	return evaluated.join(extractedPathToJoin, joinType);
-                        }
-                );
+			putValToQueryContext(
+					alias,
+					root,
+					(r) -> {
+						query.distinct(distinctQuery);
+						jakarta.persistence.criteria.Join<?, ?> evaluated = queryContext.getEvaluated(extractedAlias, root);
+						return evaluated.join(extractedPathToJoin, joinType);
+					}
+			);
 		}
 		return null;
 	}
