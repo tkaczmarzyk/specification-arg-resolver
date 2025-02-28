@@ -21,9 +21,10 @@ v3.1.0
       and requests:
       * r1: `GET /join-distinct-customers/optionalParams?page=1&size=1` - no filtering
       * r2: `GET /join-distinct-customers/optionalParams/?page=1&size=1&lastName=Simpson` - filtering on non-joined columns 
-      following queries were previously generated:
-      * r1 - no filtering
-        * ```sql
+      
+      * following queries were previously generated:
+        * r1 - no filtering
+          ```sql
           select distinct c1_0.id,c1_0.street,... from customer c1_0 offset ? rows fetch first ? rows only
           select distinct count(distinct c1_0.id) from customer c1_0
           ```
@@ -33,8 +34,8 @@ v3.1.0
           select distinct count(distinct c1_0.id) from customer c1_0 where c1_0.last_name=?
           ```      
       * from now, these queries are generated:
-        r1 - no filtering
-        * ```sql
+        * r1 - no filtering
+          ```sql
           select c1_0.id,c1_0.street, ... from customer c1_0 offset ? rows fetch first ? rows only;
           select count(c1_0.id) from customer c1_0;
           ```
