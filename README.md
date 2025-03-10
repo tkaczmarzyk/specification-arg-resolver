@@ -1349,6 +1349,18 @@ To build specification outside the web-layer the `SpecificationBuilder` should b
 
   The builder exposes a method `withArg(<argName>, <values...>)` which allows defining a fallback value. It is recommended to use it unless you really know what you are doing.
 
+Spring Boot Devtools support
+-----------------------------
+
+If you use  [Spring Boot Devtools](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools) in your development environment, and you use interfaces that extend `Specification<T>` to define the specifications,
+you must include the specification arg resolver in `src/main/resources/META-INF/spring-devtools.properties`
+([customizing the classload](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools.restart.customizing-the-classload)).
+```properties
+restart.include.specifications=/specification-arg-resolver-[\\w-]+
+```
+This adds specification arg resolver to the [RestartClassLoader](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/devtools/restart/classloader/RestartClassLoader.html) along with the local classes.
+Otherwise, it will be in the standard class loader and the (local) specification interface will not be visible for the `EnhancerUtil` in specification arg resolver. This will result in a  `java.lang.IllegalArgumentException: com.example.app.MySpecification referenced from a method is not visible from class loader`.
+
 Compatibility notes
 -------------------
 
