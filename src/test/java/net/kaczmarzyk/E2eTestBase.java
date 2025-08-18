@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .birthDate(LocalDate.of(1970, 03, 21))
                 .lastOrderTime(LocalDateTime.of(2016, 8, 21, 14, 51,0))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 6, 16, 16, 17, 0, 0, ofHours(9)))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 13, 11, 54, 23, 0)))
+                .lastSeen(LocalDateTime.of(2022, 12, 13, 11, 54, 23, 0))
                 .notGolden()
                 .build(em);
         margeSimpson = customer("Marge", "Simpson").registrationDate(2014, 03, 20)
@@ -70,7 +70,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .birthDate(LocalDate.of(1972, 7, 13))
                 .lastOrderTime(LocalDateTime.of(2017, 12, 20, 11, 13,0))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 6, 16, 16, 17, 0, 0, ofHours(7)))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 14, 10, 23, 12, 0)))
+                .lastSeen(LocalDateTime.of(2022, 12, 14, 10, 23, 12, 0))
                 .notGolden()
                 .build(em);
         bartSimpson = customer("Bart", "Simpson").nickName("El Barto")
@@ -80,9 +80,9 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .orders("Tomacco")
                 .badges("Tomacco Eater")
                 .birthDate(LocalDate.of(1992, 2, 23))
-                .lastOrderTime(LocalDateTime.of(2017, 11, 21, 11, 13,01))
+                .lastOrderTime(LocalDateTime.of(2017, 11, 21, 11, 13, 01))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 7, 16, 16, 17, 0, 0, ofHours(4)))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 11, 1, 9, 13, 11, 0)))
+                .lastSeen(LocalDateTime.of(2022, 11, 1, 9, 13, 11, 0))
                 .golden()
                 .build(em);
         lisaSimpson = customer("Lisa", "Simpson").registrationDate(2014, 03, 30)
@@ -92,7 +92,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .birthDate(LocalDate.of(1994, 11, 7))
                 .lastOrderTime(LocalDateTime.of(2017, 8, 22, 9, 18,0))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 7, 16, 16, 17, 0, 0, ofHours(3)))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2020, 7, 14, 23, 11, 3, 0)))
+                .lastSeen(LocalDateTime.of(2020, 7, 14, 23, 11, 3, 0))
                 .notGolden()
                 .build(em);
         maggieSimpson = customer("Maggie", "Simpson").registrationDate(2014, 03, 31)
@@ -102,7 +102,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .birthDate(LocalDate.of(1998, 10, 7))
                 .refCode(UUID.fromString("31CFE6A0-7450-48B0-BB0E-5E6CD5071131"))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 7, 16, 16, 17, 0, 0, UTC))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 11, 11, 8, 46, 57, 0)))
+                .lastSeen(LocalDateTime.of(2022, 11, 11, 8, 46, 57, 0))
                 .golden()
                 .build(em);
         moeSzyslak = customer("Moe", "Szyslak")
@@ -115,7 +115,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .lastOrderTime(LocalDateTime.of(2017, 12, 13, 10, 29, 0))
                 .refCode(UUID.fromString("05B79D32-7A97-44D9-9AD7-93FB0CBECC80"))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 7, 17, 16, 17, 0, 0, ofHours(4)))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 10, 12, 22, 17, 12, 0)))
+                .lastSeen(LocalDateTime.of(2022, 10, 12, 22, 17, 12, 0))
                 .notGolden()
                 .build(em);
         minnieSzyslak = customer("Minnie", "Szyslak")
@@ -123,7 +123,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .gender(FEMALE)
                 .nickName("minnie")
                 .nextSpecialOffer(OffsetDateTime.of(2020, 7, 18, 16, 17, 0, 0, ofHours(11)))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 1, 5, 23, 8, 0)))
+                .lastSeen(LocalDateTime.of(2022, 12, 1, 5, 23, 8, 0))
                 .notGolden()
                 .build(em);
         nedFlanders = customer("Ned", "Flanders").golden()
@@ -136,7 +136,7 @@ public abstract class E2eTestBase extends IntegrationTestBase {
                 .refCode(UUID.fromString("63F7714E-594A-44E1-B75B-9D76EA1F42DB"))
                 .lastOrderTime(LocalDateTime.of(2016, 10, 17, 18, 29,0))
                 .nextSpecialOffer(OffsetDateTime.of(2020, 7, 19, 16, 17, 0, 0, ofHours(4)))
-                .lastSeen(Timestamp.valueOf(LocalDateTime.of(2022, 12, 6, 15, 6, 2, 0)))
+                .lastSeen(LocalDateTime.of(2022, 12, 6, 15, 6, 2, 0))
                 .build(em);
 
         HibernateStatementInspector.clearInterceptedStatements();

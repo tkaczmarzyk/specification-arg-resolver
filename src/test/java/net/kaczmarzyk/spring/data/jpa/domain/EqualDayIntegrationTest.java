@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,28 +93,6 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void filtersByTimestampWithDefaultDateFormat() {
-		EqualDay<Customer> firstDateOfNextSpecialOffer = new EqualDay<>(queryCtx, "dateOfNextSpecialOfferTimestamp", new String[] { "2020-06-16T08:34:13.000Z" }, defaultConverter);
-		List<Customer> found = customerRepo.findAll(firstDateOfNextSpecialOffer);
-
-		assertThat(found).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
-
-		EqualDay<Customer> secondDateOfNextSpecialOffer = new EqualDay<>(queryCtx, "dateOfNextSpecialOfferTimestamp", new String[] { "2019-06-05T09:34:13.000Z" }, defaultConverter);
-		found = customerRepo.findAll(secondDateOfNextSpecialOffer);
-
-		assertThat(found).hasSize(1).containsOnly(margeSimpson);
-	}
-
-	@Test
-	public void filtersByTimestampWithCustomDateFormat() {
-		EqualDay<Customer> firstDateOfNextSpecialOffer = new EqualDay<>(queryCtx, "dateOfNextSpecialOfferTimestamp", new String[] { "2020/06/16T02:34" },
-				Converter.withDateFormat("yyyy/MM/dd'T'HH:mm", OnTypeMismatch.EMPTY_RESULT, null));
-		List<Customer> found = customerRepo.findAll(firstDateOfNextSpecialOffer);
-
-		assertThat(found).hasSize(2).containsOnly(homerSimpson,  moeSzyslak);
-	}
-
-	@Test
 	public void filtersByOffsetDateTimeWithDefaultDateFormat() {
 		EqualDay<Customer> firstDateOfNextSpecialOffer = new EqualDay<>(queryCtx, "dateOfNextSpecialOffer", new String[] { "2020-06-16T08:34:13.000+04:00" }, defaultConverter);
 		List<Customer> found = customerRepo.findAll(firstDateOfNextSpecialOffer);
@@ -178,28 +156,6 @@ public class EqualDayIntegrationTest extends IntegrationTestBase {
 		List<Customer> found = customerRepo.findAll(lastOrderTime);
 
 		assertThat(found).hasSize(2).containsOnly(homerSimpson, moeSzyslak);
-	}
-
-	@Test
-	public void filtersByCalendarWithDefaultDateFormat() {
-		EqualDay<Customer> firstRegistrationCalendar = new EqualDay<>(queryCtx, "registrationCalendar", new String[] { "2015-03-01" }, defaultConverter);
-		List<Customer> found = customerRepo.findAll(firstRegistrationCalendar);
-
-		assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
-
-		EqualDay<Customer> secondRegistrationCalendar = new EqualDay<>(queryCtx, "registrationCalendar", new String[] { "2015-03-02" }, defaultConverter);
-		found = customerRepo.findAll(secondRegistrationCalendar);
-
-		assertThat(found).hasSize(1).containsOnly(moeSzyslak);
-	}
-
-	@Test
-	public void filtersByCalendarWithCustomDateFormat() {
-		EqualDay<Customer> registrationCalendar = new EqualDay<>(queryCtx, "registrationCalendar", new String[] { "01-03-2015" },
-				Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
-		List<Customer> found = customerRepo.findAll(registrationCalendar);
-
-		assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 	}
 
 	@Test

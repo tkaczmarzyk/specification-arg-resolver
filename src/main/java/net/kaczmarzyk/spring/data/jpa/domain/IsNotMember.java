@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class IsNotMember<T> extends PathSpecification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        Class<?> typeOnPath = path(root).getJavaType();
+        Class<?> typeOnPath = path(root).getModel().getBindableJavaType();
         Object convertedUnwantedMember = converter.convert(unwantedMember, typeOnPath);
         return criteriaBuilder.isNotMember(convertedUnwantedMember, path(root));
     }

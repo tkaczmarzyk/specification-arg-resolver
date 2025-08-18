@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,18 +47,18 @@ class ConjunctionSpecificationResolver implements SpecificationResolver<Conjunct
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
 		for (Or innerOrDef : def.value()) {
 			Specification<Object> innerOr = orResolver.buildSpecification(context, innerOrDef);
-			if (innerOr != null) {
+			if (innerOr != null && !innerOr.equals(Specification.unrestricted())) {
 				innerSpecs.add(innerOr);
 			}
 		}
 		for (Spec innerDef : def.and()) {
 			Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
-			if (innerSpec != null) {
+			if (innerSpec != null && !innerSpec.equals(Specification.unrestricted())) {
 				innerSpecs.add(innerSpec);
 			}
 		}
 
-		return innerSpecs.isEmpty() ? null : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(innerSpecs);
+		return innerSpecs.isEmpty() ? Specification.unrestricted() : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(innerSpecs);
 	}
 
 }

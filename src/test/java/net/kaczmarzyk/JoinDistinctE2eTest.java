@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -258,7 +258,7 @@ public class JoinDistinctE2eTest extends E2eTestBase {
 
 		assertThatInterceptedStatements()
 				.hasClause("distinct", 2)
-				.hasOneClause("select distinct count(distinct c1_0.id) from customer c1_0 left join badges b1_0 on c1_0.id=b1_0.customer_id where b1_0.badge_type!=? and c1_0.last_name=?");
+				.hasOneClause("select distinct count(distinct c1_0.id) from customer c1_0 left join badges b1_0 on c1_0.id=b1_0.customer_id where b1_0.badge_type<>? and c1_0.last_name=?");
 	}
 
 
@@ -273,7 +273,7 @@ public class JoinDistinctE2eTest extends E2eTestBase {
 
 		assertThatInterceptedStatements()
 				.doesNotHaveClause("distinct")
-				.hasOneClause("select count(c1_0.id) from customer c1_0 left join badges b1_0 on c1_0.id=b1_0.customer_id where b1_0.badge_type!=? and c1_0.last_name=?");
+				.hasOneClause("select count(c1_0.id) from customer c1_0 left join badges b1_0 on c1_0.id=b1_0.customer_id where b1_0.badge_type<>? and c1_0.last_name=?");
 	}
 
 }

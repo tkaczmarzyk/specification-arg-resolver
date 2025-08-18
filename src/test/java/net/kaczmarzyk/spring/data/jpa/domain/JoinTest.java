@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,9 +181,9 @@ public class JoinTest extends IntegrationTestBase {
 	public void innerJoinIsEvaluatedEvenIfNoFilteringIsAppliedOnTheJoinedPart_multiLevelJoin() {
 		Join<Customer> leftJoinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
 		Join<Customer> innerJoinTags = new Join<>(queryCtx, "o.tags", "", INNER, true);
-		
-		List<Customer> found = customerRepo.findAll(Specification.where(leftJoinOrders).and(innerJoinTags));
-		
+
+		List<Customer> found = customerRepo.findAll(leftJoinOrders.and(innerJoinTags));
+
 		assertThat(found)
 			.hasSize(1)
 			.extracting(Customer::getFirstName)
@@ -219,8 +219,8 @@ public class JoinTest extends IntegrationTestBase {
 		Join<Customer> leftJoinOrders = new Join<>(queryCtx, "orders", "o", LEFT, false);
 		Join<Customer> innerJoinTags = new Join<>(queryCtx, "o.tags", "", LEFT, false);
 		
-		List<Customer> found = customerRepo.findAll(Specification.where(leftJoinOrders).and(innerJoinTags));
-		
+		List<Customer> found = customerRepo.findAll(leftJoinOrders.and(innerJoinTags));
+
 		assertThat(found)
 			.hasSize(3) // hibernate 6+ makes query distinct anyway
 			.extracting(Customer::getFirstName)
@@ -255,7 +255,7 @@ public class JoinTest extends IntegrationTestBase {
 		Join<Customer> leftJoinOrders = new Join<>(queryCtx, "orders", "o", LEFT, true);
 		Join<Customer> innerJoinTags = new Join<>(queryCtx, "o.tags", "", LEFT, true);
 		
-		List<Customer> found = customerRepo.findAll(Specification.where(leftJoinOrders).and(innerJoinTags));
+		List<Customer> found = customerRepo.findAll(leftJoinOrders.and(innerJoinTags));
 		
 		assertThat(found)
 			.hasSize(3)

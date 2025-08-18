@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class CustomerBuilder {
 		return this;
 	}
 
-	public CustomerBuilder lastSeen(Timestamp timestamp) {
+	public CustomerBuilder lastSeen(LocalDateTime timestamp) {
 		customer.setLastSeen(timestamp);
 		return this;
 	}
@@ -78,15 +78,15 @@ public class CustomerBuilder {
 	}
 
 	public CustomerBuilder registrationDate(int year, int month, int day, int hour, int minute, int second, int millisecond) {
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.MONTH, month - 1);
-		cal.set(Calendar.DAY_OF_MONTH, day);
-		cal.set(Calendar.HOUR_OF_DAY, hour);
-		cal.set(Calendar.MINUTE, minute);
-		cal.set(Calendar.SECOND, second);
-		cal.set(Calendar.MILLISECOND, millisecond);
-		customer.setRegistrationDate(cal.getTime());
+		LocalDateTime dateTime = LocalDateTime.now()
+			.withYear(year)
+			.withMonth(month)
+			.withDayOfMonth(day)
+			.withHour(hour)
+			.withMinute(minute)
+			.withSecond(second)
+			.withNano(millisecond);
+		customer.setRegistrationDate(dateTime);
 		return this;
 	}
 	

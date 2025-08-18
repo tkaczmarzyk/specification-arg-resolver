@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 
 
@@ -58,14 +53,13 @@ public class Customer {
     private Address address = new Address();
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date registrationDate;
-    private Calendar registrationCalendar;
+    private LocalDate registrationDate;
 
     private LocalDate birthDate;
 
     private String occupation;
 
-    private Timestamp lastSeen;
+    private LocalDateTime lastSeen;
 
     private LocalDateTime lastOrderTime;
 
@@ -82,7 +76,6 @@ public class Customer {
     private Boolean goldObj;
 
     private Instant dateOfNextSpecialOfferInstant;
-    private Timestamp dateOfNextSpecialOfferTimestamp;
     private OffsetDateTime dateOfNextSpecialOffer;
     private ZonedDateTime dateOfNextSpecialOfferZoned;
 
@@ -109,7 +102,7 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String firstName, String lastName, Gender gender, Date registrationDate, String street) {
+    public Customer(String firstName, String lastName, Gender gender, LocalDate registrationDate, String street) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -147,15 +140,15 @@ public class Customer {
         this.genderAsCharacter = this.genderAsChar;
     }
 
-    public Timestamp getLastSeen() {
+    public LocalDateTime getLastSeen() {
         return lastSeen;
     }
 
-    public void setLastSeen(Timestamp lastSeen) {
+    public void setLastSeen(LocalDateTime lastSeen) {
         this.lastSeen = lastSeen;
     }
 
-    public Date getRegistrationDate() {
+    public LocalDate getRegistrationDate() {
         return registrationDate;
     }
 
@@ -167,11 +160,8 @@ public class Customer {
         this.firstName = firstName;
     }
 
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
-
-        this.registrationCalendar = Calendar.getInstance();
-        this.registrationCalendar.setTime(registrationDate);
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate.toLocalDate();
     }
 
     public LocalDate getBirthDate() {
@@ -228,7 +218,6 @@ public class Customer {
     public void setDateOfNextSpecialOffer(OffsetDateTime dateOfNextSpecialOffer) {
         this.dateOfNextSpecialOffer = dateOfNextSpecialOffer;
         this.dateOfNextSpecialOfferInstant = dateOfNextSpecialOffer.toInstant();
-        this.dateOfNextSpecialOfferTimestamp = Timestamp.from(dateOfNextSpecialOffer.toInstant());
         this.dateOfNextSpecialOfferZoned = dateOfNextSpecialOffer.toZonedDateTime();
     }
 

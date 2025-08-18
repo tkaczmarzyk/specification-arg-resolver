@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class SimpleSpecificationResolver implements SpecificationResolver<Spec> {
 		try {
 			Collection<String> args = resolveSpecArguments(context, def);
 			if (args.isEmpty() && !isZeroArgSpec(def)) {
-				return null;
+				return Specification.unrestricted();
 			} else {
 				String[] argsArray = args.toArray(new String[0]);
 				Specification<Object> spec = newSpecification(def, argsArray, context);

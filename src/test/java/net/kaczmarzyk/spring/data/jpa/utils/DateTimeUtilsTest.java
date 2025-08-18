@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,9 @@ public class DateTimeUtilsTest {
 
 		//then
 		assertThat(startOfDayCalendar.getTime())
-				.isWithinYear(2022)
-				.isWithinMonth(12)
-				.isWithinDayOfMonth(28)
+				.hasYear(2022)
+				.hasMonth(12)
+				.hasDayOfMonth(28)
 				.hasHourOfDay(0)
 				.hasMinute(0)
 				.hasSecond(0)
@@ -101,46 +101,6 @@ public class DateTimeUtilsTest {
 	}
 
 	@Test
-	public void shouldReturnStartOfDayForDate() {
-		//given
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2022, DECEMBER, 28, 15, 55, 49);
-		Date date = calendar.getTime();
-
-		//when
-		Date startOfDayDate = DateTimeUtils.startOfDay(date);
-
-		//then
-		assertThat(startOfDayDate)
-				.isWithinYear(2022)
-				.isWithinMonth(12)
-				.isWithinDayOfMonth(28)
-				.hasHourOfDay(0)
-				.hasMinute(0)
-				.hasSecond(0)
-				.hasMillisecond(0);
-	}
-
-	@Test
-	public void shouldReturnStartOfDayForTimestamp() {
-		//given
-		Timestamp date = Timestamp.valueOf(LocalDateTime.of(2022, 12, 28, 15, 22, 42, 11));
-
-		//when
-		Timestamp startOfDayTimestamp = DateTimeUtils.startOfDay(date);
-
-		//then
-		assertThat(startOfDayTimestamp)
-				.hasYear(2022)
-				.hasMonth(12)
-				.hasDayOfMonth(28)
-				.hasHourOfDay(0)
-				.hasMinute(0)
-				.hasSecond(0)
-				.hasMillisecond(0);
-	}
-
-	@Test
 	public void shouldReturnStartOfNextDayForLocalDateTime() {
 		//given
 		LocalDateTime date = LocalDateTime.of(2022, 12, 28, 15, 22, 42, 11);
@@ -164,9 +124,9 @@ public class DateTimeUtilsTest {
 
 		//then
 		assertThat(startOfNextDayCalendar.getTime())
-				.isWithinYear(2022)
-				.isWithinMonth(12)
-				.isWithinDayOfMonth(29)
+				.hasYear(2022)
+				.hasMonth(12)
+				.hasDayOfMonth(29)
 				.hasHourOfDay(0)
 				.hasMinute(0)
 				.hasSecond(0)
@@ -224,9 +184,9 @@ public class DateTimeUtilsTest {
 
 		//then
 		assertThat(startOfNextDayDate)
-				.isWithinYear(2022)
-				.isWithinMonth(12)
-				.isWithinDayOfMonth(29)
+				.hasYear(2022)
+				.hasMonth(12)
+				.hasDayOfMonth(29)
 				.hasHourOfDay(0)
 				.hasMinute(0)
 				.hasSecond(0)

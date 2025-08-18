@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,6 @@ public abstract class DateTimeUtils {
 			return (T) atStartOfDayFor((OffsetDateTime) dateObject);
 		} else if (Instant.class.isAssignableFrom(expectedClass)) {
 			return (T) ((Instant) dateObject).truncatedTo(DAYS);
-		} else if (Timestamp.class.isAssignableFrom(expectedClass)) {
-			Timestamp date = (Timestamp) dateObject;
-			return (T) new Timestamp(date.getYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
-		} else if (Date.class.isAssignableFrom(expectedClass)) {
-			Date date = (Date) dateObject;
-			return (T) new Date(date.getYear(), date.getMonth(), date.getDate());
 		} else {
 			throw new IllegalArgumentException("Could not recognize date object!");
 		}
