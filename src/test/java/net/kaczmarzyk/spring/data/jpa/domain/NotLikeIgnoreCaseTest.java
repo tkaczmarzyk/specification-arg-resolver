@@ -46,14 +46,12 @@ public class NotLikeIgnoreCaseTest extends IntegrationTestBase {
     @Test
     public void filtersFirstLevelPropertyIgnoringCase() {
         NotLikeIgnoreCase<Customer> lastNameSimpson = new NotLikeIgnoreCase<>(queryCtx, "lastName", "sIMPSOn");
-        lastNameSimpson.setLocale(Locale.getDefault());
         List<Customer> result = customerRepo.findAll(lastNameSimpson);
         assertThat(result)
                 .hasSize(1)
                 .containsOnly(moeSzyslak);
 
         NotLikeIgnoreCase<Customer> firstNameWithO = new NotLikeIgnoreCase<>(queryCtx, "firstName", "o");
-        firstNameWithO.setLocale(Locale.getDefault());
         result = customerRepo.findAll(firstNameWithO);
         assertThat(result)
                 .hasSize(1)
@@ -63,7 +61,6 @@ public class NotLikeIgnoreCaseTest extends IntegrationTestBase {
     @Test
     public void filtersByNestedPropertyIgnoringCase() {
         NotLikeIgnoreCase<Customer> streetWithEvergreen = new NotLikeIgnoreCase<>(queryCtx, "address.street", "EvErGReeN");
-        streetWithEvergreen.setLocale(Locale.getDefault());
         List<Customer> result = customerRepo.findAll(streetWithEvergreen);
         assertThat(result)
                 .hasSize(1)

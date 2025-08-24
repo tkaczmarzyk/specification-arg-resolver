@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.domain.IgnoreCaseStrategy;
 import net.kaczmarzyk.spring.data.jpa.utils.TypeUtil;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.convert.ConversionService;
@@ -36,8 +37,21 @@ public class SpecificationFactory {
 
 	private Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
-	public SpecificationFactory(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext, Locale locale) {
-		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(conversionService, abstractApplicationContext, locale);
+	public SpecificationFactory(
+			ConversionService conversionService,
+			AbstractApplicationContext abstractApplicationContext,
+			Locale defaultLocale,
+			IgnoreCaseStrategy defaultIgnoreCaseStrategy
+	) {
+		if (defaultIgnoreCaseStrategy == null) {
+			throw new IllegalArgumentException("IgnoreCaseStrategy must not be null");
+		}
+		SimpleSpecificationResolver simpleSpecificationResolver = new SimpleSpecificationResolver(
+				conversionService,
+				abstractApplicationContext,
+				defaultLocale,
+				defaultIgnoreCaseStrategy
+		);
 
 		resolversBySupportedType = Arrays.asList(
 						simpleSpecificationResolver,
@@ -97,7 +111,7 @@ public class SpecificationFactory {
 	}
 
 	private void resolveSpecFromInterfaceAnnotations(ProcessingContext context,
-													 List<Specification<Object>> accumulator) {
+	                                                 List<Specification<Object>> accumulator) {
 		Collection<Class<?>> ifaceTree = TypeUtil.interfaceTree(context.getParameterType());
 
 		for (Class<?> iface : ifaceTree) {

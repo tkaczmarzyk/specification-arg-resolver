@@ -1,3 +1,9 @@
+v3.2.0
+=======
+* **BREAKING CHANGE**: Fixed case-insensitive specifications (`EqualIgnoreCase`, `NotEqualIgnoreCase`, `LikeIgnoreCase`, `NotLikeIgnoreCase`, `StartingWithIgnoreCase`, `EndingWithIgnoreCase`) to use database `UPPER()` function for both sides of comparison
+  * This fixes incorrect query results when database and application use different locale settings or handle special characters differently (e.g., German ß character)
+  * Please see `Case Insensitive Support` section of README.md for more details.
+
 v3.1.1
 =======
 * Optimized distinct query evaluation in join

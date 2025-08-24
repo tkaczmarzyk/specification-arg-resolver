@@ -114,7 +114,6 @@ public class NotEqualIgnoreCaseTest extends NotEqualTest {
 
 	private <T> NotEqualIgnoreCase<T> notEqualIgnoreCaseSpec(String path, Object expectedValue) {
 		NotEqualIgnoreCase<T> spec = new NotEqualIgnoreCase<>(queryCtx, path, new String[]{expectedValue.toString()}, defaultConverter);
-		spec.setLocale(Locale.getDefault());
 		return spec;
 	}
 

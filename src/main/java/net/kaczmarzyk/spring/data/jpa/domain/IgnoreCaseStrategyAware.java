@@ -15,25 +15,18 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.util.Locale;
-
 /**
- * <p>Specifications that implement this interface will be provided with Locale
- * after instantiation. Locale is important e.g. when {@code String.toUpperCase} is used
- * (typically in case-insensitive comparisons).</p> 
+ * <p>Specifications that implement this interface will be provided with IgnoreCaseStrategy
+ * after instantiation. This strategy determines how case-insensitive comparisons are performed.</p>
  * 
- * @deprecated Use {@link IgnoreCaseStrategy#DATABASE_UPPER} or {@link IgnoreCaseStrategy#DATABASE_LOWER}  instead of relying on application-side
- *             locale handling. This interface is kept for backward compatibility but will be removed in a future version.
- * 
- * @author Tomasz Kaczmarzyk
- * 
+ * @since 3.2
+ *
  * @see EqualIgnoreCase
  * @see NotEqualIgnoreCase
  * @see LikeIgnoreCase
  * @see NotLikeIgnoreCase
  */
-@Deprecated
-public interface LocaleAware {
+public interface IgnoreCaseStrategyAware {
 
-	void setLocale(Locale locale);
+	void setIgnoreCaseStrategy(IgnoreCaseStrategy ignoreCaseStrategy);
 }

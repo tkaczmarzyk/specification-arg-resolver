@@ -49,12 +49,10 @@ public class EndingWithIgnoreCaseTest extends IntegrationTestBase {
 	@Test
 	public void filtersByFirstLevelProperty() {
 		EndingWithIgnoreCase<Customer> lastNameSimpson = new EndingWithIgnoreCase<>(queryCtx, "lastName", "SIMPSON");
-		lastNameSimpson.setLocale(Locale.getDefault());
 		List<Customer> result = customerRepo.findAll(lastNameSimpson);
 		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
 		EndingWithIgnoreCase<Customer> firstNameWithO = new EndingWithIgnoreCase<>(queryCtx, "firstName", "ER");
-		firstNameWithO.setLocale(Locale.getDefault());
 		result = customerRepo.findAll(firstNameWithO);
 		assertThat(result).hasSize(1).containsOnly(homerSimpson);
 	}
@@ -63,13 +61,11 @@ public class EndingWithIgnoreCaseTest extends IntegrationTestBase {
 	public void filtersByNestedProperty() {
 		EndingWithIgnoreCase<Customer> streetWithEvergreen = new EndingWithIgnoreCase<>(queryCtx, "address.street",
 				"TERRACE");
-		streetWithEvergreen.setLocale(Locale.getDefault());
 		List<Customer> result = customerRepo.findAll(streetWithEvergreen);
 		assertThat(result).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
 		EndingWithIgnoreCase<Customer> streetWithSpaceEvergreen = new EndingWithIgnoreCase<>(queryCtx, "address.street",
 				"EVERGREEN");
-		streetWithSpaceEvergreen.setLocale(Locale.getDefault());
 		result = customerRepo.findAll(streetWithSpaceEvergreen);
 		assertThat(result).hasSize(0);
 	}

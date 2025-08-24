@@ -15,9 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
-import java.lang.annotation.Annotation;
-import java.util.Locale;
-
+import net.kaczmarzyk.spring.data.jpa.domain.IgnoreCaseStrategy;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
@@ -27,6 +25,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.lang.annotation.Annotation;
+import java.util.Locale;
+
 
 /**
  * @author Tomasz Kaczmarzyk
@@ -34,38 +35,58 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
+	private static final IgnoreCaseStrategy DEFAULT_IGNORE_CASE_STRATEGY = IgnoreCaseStrategy.DATABASE_UPPER;
+	
 	private SpecificationFactory specificationFactory;
 
 	public SpecificationArgumentResolver() {
-		 this(null, null, Locale.getDefault());
+		 this(null, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
 	}
 	
 	public SpecificationArgumentResolver(ConversionService conversionService) {
-		this(conversionService, null, Locale.getDefault());
+		this(conversionService, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
 	}
 	
 	public SpecificationArgumentResolver(ConversionService conversionService, Locale defaultLocale) {
-		this(conversionService, null, defaultLocale);
+		this(conversionService, null, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
 	}
 	
 	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext) {
-		this(conversionService, abstractApplicationContext, Locale.getDefault());
+		this(conversionService, abstractApplicationContext, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
 	}
 	
 	public SpecificationArgumentResolver(Locale defaultLocale) {
-		this(null, null, defaultLocale);
+		this(null, null, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
 	}
 	
 	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext) {
-		this(null, applicationContext);
+		this(null, applicationContext, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
 	}
 	
 	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext, Locale defaultLocale) {
-		this(null, applicationContext, defaultLocale);
+		this(null, applicationContext, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
 	}
-	
+
 	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext, Locale defaultLocale) {
-		this.specificationFactory = new SpecificationFactory(conversionService, abstractApplicationContext, defaultLocale);
+		this(conversionService, abstractApplicationContext, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
+	}
+
+	public SpecificationArgumentResolver(IgnoreCaseStrategy ignoreCaseStrategy) {
+		this(null, null, Locale.getDefault(), ignoreCaseStrategy);
+	}
+
+	public SpecificationArgumentResolver(ConversionService conversionService, IgnoreCaseStrategy ignoreCaseStrategy) {
+		this(conversionService, null, Locale.getDefault(), ignoreCaseStrategy);
+	}
+
+	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext, IgnoreCaseStrategy ignoreCaseStrategy) {
+		this(null, applicationContext, Locale.getDefault(), ignoreCaseStrategy);
+	}
+
+	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext,
+	                                     Locale defaultLocale, IgnoreCaseStrategy ignoreCaseStrategy) {
+		IgnoreCaseStrategy effectiveStrategy = ignoreCaseStrategy != null ? ignoreCaseStrategy : DEFAULT_IGNORE_CASE_STRATEGY;
+		this.specificationFactory = new SpecificationFactory(conversionService, abstractApplicationContext, defaultLocale, effectiveStrategy);
 	}
 	
 

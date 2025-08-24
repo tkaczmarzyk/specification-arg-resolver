@@ -47,21 +47,41 @@ public class LikeIgnoreCaseLocaleIntegrationTest extends IntegrationTestBase {
 	}
 
 	@Test
-	public void usesLocaleWhenPerformingComparisons() {
-		
-		// English locale
-		LikeIgnoreCase<Customer> simpsons = new LikeIgnoreCase<>(queryCtx, "lastName", new String[] { "i" });
-		simpsons.setLocale(Locale.ENGLISH);
+	public void filtersIgnoringCaseAccordingToDbCollation() {
+		LikeIgnoreCase<Customer> simpsons = new LikeIgnoreCase<>(queryCtx, "lastName", new String[]{"i"});
+		simpsons.setIgnoreCaseStrategy(IgnoreCaseStrategy.DATABASE_UPPER);
 		List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
 
 		assertThat(simpsonsFound).hasSize(2).containsOnly(homerWithLowercaseI, homerWithEnglishCapitalI);
+	}
+	
+	@Test
+	public void filtersIgnoringCaseAccordingToDbCollation_turkishCapitalI() {
+		LikeIgnoreCase<Customer> simpsons = new LikeIgnoreCase<>(queryCtx, "lastName", new String[]{"İ"});
+		simpsons.setIgnoreCaseStrategy(IgnoreCaseStrategy.DATABASE_UPPER);
+		List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
 		
-		// Turkish locale
-		simpsons = new LikeIgnoreCase<>(queryCtx, "lastName", new String[] { "i" });
+		assertThat(simpsonsFound).hasSize(1).containsOnly(homerWithTurkishCapitalI);
+	}
+	
+	@Test
+	public void filtersIgnoringCaseWithDatabaseLowerStrategy_turkishCapitalI() {
+		LikeIgnoreCase<Customer> simpsons = new LikeIgnoreCase<>(queryCtx, "lastName", new String[] { "İ" });
+		simpsons.setIgnoreCaseStrategy(IgnoreCaseStrategy.DATABASE_LOWER);
 		simpsons.setLocale(new Locale("tr", "TR"));
-		simpsonsFound = customerRepo.findAll(simpsons);
+		List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
+		
+		assertThat(simpsonsFound).hasSize(1).containsOnly(homerWithTurkishCapitalI);
+	}
+	
+	@Test
+	public void filtersIgnoringCaseWithApplicationStrategy_turkishCapitalI() {
+		LikeIgnoreCase<Customer> simpsons = new LikeIgnoreCase<>(queryCtx, "lastName", new String[] { "İ" });
+		simpsons.setIgnoreCaseStrategy(IgnoreCaseStrategy.APPLICATION);
+		simpsons.setLocale(new Locale("tr", "TR"));
+		List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
 
-		assertThat(simpsonsFound).hasSize(1).containsOnly(homerWithTurkishCapitalI); // homerWithLowercaseI is not included because test db does not use Turkish collation
+		assertThat(simpsonsFound).hasSize(1).containsOnly(homerWithTurkishCapitalI);
 	}
 }
 
