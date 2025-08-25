@@ -276,12 +276,14 @@ public class AnnotatedSpecInterfaceWithComplexInheritanceTreeTest extends Annota
 
 	private NotEqualIgnoreCase<Object> newNotEqualIgnoreCase(QueryContext queryContext, String path, String[] args, Converter converter) {
 		NotEqualIgnoreCase<Object> spec = new NotEqualIgnoreCase<>(queryContext, path, args, converter);
+		spec.setIgnoreCaseStrategy(IgnoreCaseStrategy.DATABASE_UPPER);
 		spec.setLocale(Locale.getDefault());
 		return spec;
 	}
 
 	private EqualIgnoreCase<Object> newEqualIgnoreCase(QueryContext queryContext, String path, String[] args, Converter converter) {
 		EqualIgnoreCase<Object> spec = new EqualIgnoreCase<>(queryContext, path, args, converter);
+		spec.setIgnoreCaseStrategy(IgnoreCaseStrategy.DATABASE_UPPER);
 		spec.setLocale(Locale.getDefault());
 		return spec;
 	}

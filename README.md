@@ -32,6 +32,7 @@ You can also take a look on working Spring Boot apps that use this library:
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Json Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
+   * [Case insentivity support](#case-insensitive-support) -- information about case-insensitive strategies used for case-insensitive specifications 
    * [Locale support](#locale-support) -- information about `Locale` configuration for case-insensitive matching 
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
@@ -139,7 +140,7 @@ Usage: `@Spec(path="firstName", spec=LikeIgnoreCase.class)`.
 
 There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWithIgnoreCase` and `EndingWithIgnoreCase`.
 
-Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
+Case-insensitive comparisons are performed using the database's `UPPER()` function on both sides of the comparison. The results depend on your database's collation settings. Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 A negation for this specification is also available: `NotLikeIgnoreCase`.
 
@@ -159,7 +160,7 @@ A negation for this specification is also available: `NotEqual`.
 
 Works as `Equal`, but the query is also case-insensitive, could be used for fields of type: `String`, `Enum`.
 
-Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
+Case-insensitive comparisons are performed using the database's `UPPER()` function on both sides of the comparison. The results depend on your database's collation settings. Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 A negation for this specification is also available: `NotEqualIgnoreCase`.
 
@@ -1245,11 +1246,39 @@ public class MyConfig implements WebMvcConfigurer {
 }
 ```
 
+Case Insensitive Support
+--------------
+### In version v3.2.0+
+Starting from v3.2.0, specification-arg-resolver provides configurable strategies for case-insensitive comparisons. The library now uses database functions by default to ensure consistent behavior across different locales and character sets.
+
+You can configure the case-insensitive comparison strategy globally when registering the argument resolver:
+```java
+@Override
+public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+	// Using DATABASE_UPPER strategy (default and recommended)
+	argumentResolvers.add(new SpecificationArgumentResolver(IgnoreCaseStrategy.DATABASE_UPPER));
+	
+	// Or with DATABASE_LOWER strategy
+	argumentResolvers.add(new SpecificationArgumentResolver(IgnoreCaseStrategy.DATABASE_LOWER));
+}
+```
+
+**Available strategies:**
+
+| Strategy | Description | SQL Example                                    | Default |
+|----------|-------------|------------------------------------------------|---------|
+| `DATABASE_UPPER` | Uses database `UPPER()` function on both sides | `WHERE UPPER(name) = UPPER('John')`            | X       |
+| `DATABASE_LOWER` | Uses database `LOWER()` function on both sides | `WHERE LOWER(name) = LOWER('John')`            |         |
+| `APPLICATION` | **Deprecated** - Converts value in Java, uses `UPPER()` on column | `WHERE UPPER(name) = "JOHN".toUpperCase(locale)` |         |
+
+The results of case-insensitive comparisons depend on your database's collation settings. Ensure your database is configured with the appropriate collation for your use case.
+
+### In version equal to or less `3.1.x`
+
+In versions ≤ 3.1.x, specification-arg-resolver uses locale-based case conversion with the `APPLICATION` strategy behavior.
+
 Locale support
 --------------
-
-Locale is important when using case-insensitive specifications such as `EqualIgnoreCase`. For example, in Turkish, the uppercase form of `i` is `İ` (U+0130, not ASCII) and not `I` (U+0049) as in English.
-
 Specification-arg-resolver uses system-default (`Locale.getDefault()`) locale if no explicit configuration is provided. You can configure custom default locale globally, during argument resolver registration:
   ```java
   @Override
@@ -1259,8 +1288,10 @@ Specification-arg-resolver uses system-default (`Locale.getDefault()`) locale if
   ```
 You can also configure it for each individual specfication definition via `@Spec.config` (this overrides the global default mentioned above):
   ```java
-  @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR")
+  @Spec(path = "name", spec = EqualIgnoreCase.class, config = "tr_TR");
   ```
+
+Locale config is used for enum conversions (if enum contains local characters) and for case-insentivie specification if `APPLICATION` [case insensitive strategy](#case-insensitive-support) is used
 
 
 SpEL support

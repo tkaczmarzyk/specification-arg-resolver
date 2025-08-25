@@ -15,14 +15,15 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.CaseConversionHelper;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Filters with {@code path not like %pattern%} where-clause and ignores pattern case
@@ -30,10 +31,10 @@ import java.util.Objects;
  * @author Kacper Leśniak (Tratif sp. z o.o.)
  *
  */
-public class NotLikeIgnoreCase<T> extends NotLike<T> implements LocaleAware {
+public class NotLikeIgnoreCase<T> extends NotLike<T> implements IgnoreCaseStrategyAware, LocaleAware {
 
     private static final long serialVersionUID = 1L;
-
+    private IgnoreCaseStrategy ignoreCaseStrategy;
     private Locale locale;
 
     public NotLikeIgnoreCase(QueryContext queryContext, String path, String... args) {
@@ -42,10 +43,23 @@ public class NotLikeIgnoreCase<T> extends NotLike<T> implements LocaleAware {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        return builder.not(builder.like(builder.upper(this.<String> path(root)), pattern.toUpperCase(locale)));
+        var converted = CaseConversionHelper.applyCaseConversion(
+            builder,
+            this.<String>path(root),
+            pattern,
+            ignoreCaseStrategy,
+            locale
+        );
+        return builder.not(builder.like(converted.column(), converted.value()));
     }
-
+    
     @Override
+    public void setIgnoreCaseStrategy(IgnoreCaseStrategy ignoreCaseStrategy) {
+        this.ignoreCaseStrategy = ignoreCaseStrategy;
+    }
+    
+    @Override
+    @Deprecated
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
@@ -54,7 +68,8 @@ public class NotLikeIgnoreCase<T> extends NotLike<T> implements LocaleAware {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + Objects.hash(locale);
+        result = prime * result + ((ignoreCaseStrategy == null) ? 0 : ignoreCaseStrategy.hashCode());
+        result = prime * result + ((locale == null) ? 0 : locale.hashCode());
         return result;
     }
 
@@ -69,12 +84,22 @@ public class NotLikeIgnoreCase<T> extends NotLike<T> implements LocaleAware {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        NotLikeIgnoreCase other = (NotLikeIgnoreCase) obj;
-        return Objects.equals(locale, other.locale);
+        NotLikeIgnoreCase<?> other = (NotLikeIgnoreCase<?>) obj;
+        if (ignoreCaseStrategy != other.ignoreCaseStrategy) {
+            return false;
+        }
+        if (locale == null) {
+            if (other.locale != null) {
+                return false;
+            }
+        } else if (!locale.equals(other.locale)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "NotLikeIgnoreCase [locale=" + locale + ", pattern=" + pattern + ", path=" + path + "]";
+        return "NotLikeIgnoreCase [pattern=" + pattern + ", path=" + path + ", ignoreCaseStrategy=" + ignoreCaseStrategy + ", locale=" + locale + "]";
     }
 }

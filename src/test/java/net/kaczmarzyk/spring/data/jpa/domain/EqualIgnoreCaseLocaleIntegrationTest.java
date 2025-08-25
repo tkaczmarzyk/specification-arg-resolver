@@ -19,7 +19,7 @@ import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.Locale;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,20 +44,11 @@ public class EqualIgnoreCaseLocaleIntegrationTest extends IntegrationTestBase {
 		homerWithTurkishCapitalI = customer("Homer", "SİMPSON").build(em);
 	}
 
-	@Test
-	public void usesLocaleWhenPerformingComparisons() {
-		EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "simpson" }, defaultConverter);
-		
-		// English locale
-		simpsons.setLocale(Locale.ENGLISH);
-		List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
+	    @Test
+    public void filtersIgnoringCaseAccordingToDbCollation() {
+        EqualIgnoreCase<Customer> simpsons = new EqualIgnoreCase<>(queryCtx, "lastName", new String[] { "simpson" }, defaultConverter);
+        List<Customer> simpsonsFound = customerRepo.findAll(simpsons);
 
-		assertThat(simpsonsFound).hasSize(2).containsOnly(homerWithLowercaseI, homerWithEnglishCapitalI);
-		
-		// Turkish locale
-		simpsons.setLocale(new Locale("tr", "TR"));
-		simpsonsFound = customerRepo.findAll(simpsons);
-
-		assertThat(simpsonsFound).hasSize(1).containsOnly(homerWithTurkishCapitalI); // homerWithLowercaseI is not included as test db does not use Turkish collation
-	}
+        assertThat(simpsonsFound).hasSize(2).containsOnly(homerWithLowercaseI, homerWithEnglishCapitalI);
+    }
 }

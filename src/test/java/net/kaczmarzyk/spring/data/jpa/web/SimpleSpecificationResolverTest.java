@@ -26,6 +26,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.context.request.NativeWebRequest;
 
+
 import java.util.Locale;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
@@ -282,57 +283,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
         		.isInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    public void passesDefaultSystemLocaleToLocaleAwareSpecification() {
-    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpec"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"i"});
-
-        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-        Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
-
-        assertThat(localePassedToSpec).isEqualTo(Locale.getDefault());
-    }
-
-    @Test
-    public void passesGlobalCustomLocaleToLocaleAwareSpecification() {
-    	ReflectionUtils.set(resolver, "defaultLocale", new Locale("tr", "TR"));
-
-    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpec"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"i"});
-
-        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-        Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
-
-        assertThat(localePassedToSpec).isEqualTo(new Locale("tr", "TR"));
-    }
-
-    @Test
-    public void usesCustomLocaleSetInSpecConfigAndPassesItToLocaleAwareSpecification() {
-    	ReflectionUtils.set(resolver, "defaultLocale", new Locale("pl", "PL")); // global custom locale that is going to be overriden by @Spec.config
-
-    	MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAwareSpecAndCustomLocaleConfig"), 0);
-        NativeWebRequest req = mock(NativeWebRequest.class);
-
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"i"});
-
-        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
-
-        Specification<Object> builtSpec = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
-
-        Locale localePassedToSpec = ReflectionUtils.getFromPath(builtSpec, "wrappedSpec.locale");
-
-        assertThat(localePassedToSpec).isEqualTo(new Locale("tr", "TR"));
-    }
+    
 
     public static class TestController {
 

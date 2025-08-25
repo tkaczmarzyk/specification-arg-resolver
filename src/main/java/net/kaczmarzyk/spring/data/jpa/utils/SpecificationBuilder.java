@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.utils;
 
+import net.kaczmarzyk.spring.data.jpa.domain.IgnoreCaseStrategy;
 import net.kaczmarzyk.spring.data.jpa.web.ProcessingContext;
 import net.kaczmarzyk.spring.data.jpa.web.SpecificationFactory;
 import net.kaczmarzyk.spring.data.jpa.web.StandaloneProcessingContext;
@@ -54,7 +55,8 @@ public final class SpecificationBuilder<T extends Specification> {
 	
 	private SpecificationBuilder(Class<T> specInterface, Locale defaultLocale) {
 		this.specInterface = specInterface;
-		this.specificationFactory = new SpecificationFactory(null, null, defaultLocale);
+		// Use DATABASE_UPPER as default strategy for standalone usage
+		this.specificationFactory = new SpecificationFactory(null, null, defaultLocale, IgnoreCaseStrategy.DATABASE_UPPER);
 	}
 
 	public static <T extends Specification<?>> SpecificationBuilder<T> specification(Class<T> specInterface) {

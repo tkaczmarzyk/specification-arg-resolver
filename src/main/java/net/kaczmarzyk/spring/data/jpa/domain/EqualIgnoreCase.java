@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.CaseConversionHelper;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
@@ -36,13 +37,14 @@ import java.util.Objects;
  * @author Ricardo Pardinho
  * @author Tomasz Kaczmarzyk
  */
-public class EqualIgnoreCase<T> extends PathSpecification<T> implements LocaleAware {
+public class EqualIgnoreCase<T> extends PathSpecification<T> implements IgnoreCaseStrategyAware, LocaleAware {
 
     private static final long serialVersionUID = 2L;
 
     protected String expectedValue;
     private Converter converter;
-	private Locale locale = Locale.getDefault();
+    private IgnoreCaseStrategy ignoreCaseStrategy;
+    private Locale locale;
 
     public EqualIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
         super(queryContext, path);
@@ -57,23 +59,36 @@ public class EqualIgnoreCase<T> extends PathSpecification<T> implements LocaleAw
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
         if (path(root).getJavaType().equals(String.class)) {
-            return cb.equal(cb.upper(this.<String>path(root)), expectedValue.toUpperCase(locale));
+            var converted = CaseConversionHelper.applyCaseConversion(
+                cb,
+                this.<String>path(root),
+                expectedValue,
+                ignoreCaseStrategy,
+                locale
+            );
+            return cb.equal(converted.column(), converted.value());
         }
 
         Class<?> typeOnPath = path(root).getJavaType();
         return cb.equal(path(root), converter.convert(expectedValue, typeOnPath, true));
     }
-
+    
     @Override
-    public void setLocale(Locale locale) {
-    	this.locale = locale;
+    public void setIgnoreCaseStrategy(IgnoreCaseStrategy ignoreCaseStrategy) {
+        this.ignoreCaseStrategy = ignoreCaseStrategy;
     }
+
+	@Override
+	@Deprecated
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
 
     @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(converter, expectedValue, locale);
+		result = prime * result + Objects.hash(converter, expectedValue, ignoreCaseStrategy, locale);
 		return result;
 	}
 
@@ -89,12 +104,12 @@ public class EqualIgnoreCase<T> extends PathSpecification<T> implements LocaleAw
 			return false;
 		}
 		EqualIgnoreCase other = (EqualIgnoreCase) obj;
-		return Objects.equals(converter, other.converter) && Objects.equals(expectedValue, other.expectedValue)
-				&& Objects.equals(locale, other.locale);
+		return Objects.equals(converter, other.converter) && Objects.equals(expectedValue, other.expectedValue) 
+			&& Objects.equals(ignoreCaseStrategy, other.ignoreCaseStrategy) && Objects.equals(locale, other.locale);
 	}
 
 	@Override
     public String toString() {
-        return "EqualIgnoreCase [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + ", locale=" + locale + "]";
+        return "EqualIgnoreCase [expectedValue=" + expectedValue + ", converter=" + converter + ", path=" + super.path + ", ignoreCaseStrategy=" + ignoreCaseStrategy + ", locale=" + locale + "]";
     }
 }
