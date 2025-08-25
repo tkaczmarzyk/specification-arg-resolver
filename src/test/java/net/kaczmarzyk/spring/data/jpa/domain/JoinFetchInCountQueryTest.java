@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
 
         Specification<Customer> orderForMoreDuff = new Like<>(queryCtx, "o.itemName", "Duff");
 
-        Specification<Customer> specWithFilterOnJoin = Specification.where(fetchSpec).and(orderForMoreDuff);
+        Specification<Customer> specWithFilterOnJoin = fetchSpec.and(orderForMoreDuff);
 
         Number customerCount = customerRepo.count(specWithFilterOnJoin);
 
@@ -115,7 +115,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     public void doesNotJoinLazyCollectionWhenExecutedInContextOfACountQueryAndNoFilteringOnFetchedPart_aliasExistsButNotNotUsedforFiltering_butIsUsedForNestedFetch() {
         JoinFetch<Customer> ordersFetch = new JoinFetch<Customer>(queryCtx, new String[]{"orders"}, "o", LEFT, true);
         JoinFetch<Customer> tagsFetch = new JoinFetch<Customer>(queryCtx, new String[]{"o.tags"}, "t", LEFT, true);
-        Specification<Customer> fullSpec = Specification.where(ordersFetch).and(tagsFetch);
+        Specification<Customer> fullSpec = ordersFetch.and(tagsFetch);
 
         Number customerCount = customerRepo.count(fullSpec);
 
@@ -132,7 +132,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         JoinFetch<Customer> ordersFetch = new JoinFetch<>(queryCtx, new String[]{"orders"}, "o", LEFT, false);
         JoinFetch<Customer> tagsFetch = new JoinFetch<>(queryCtx, new String[]{"o.tags"}, "t", LEFT, false);
         Specification<Customer> tagsFilter = new Like<>(queryCtx, "t.name", BLACK_FRIDAY_TAG);
-        Specification<Customer> fullSpec = Specification.where(ordersFetch).and(tagsFetch).and(tagsFilter);
+        Specification<Customer> fullSpec = ordersFetch.and(tagsFetch.and(tagsFilter));
 
         Number customerCount = customerRepo.count(fullSpec);
 
@@ -144,7 +144,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
                 .hasNumberOfJoins(3)
                 .hasNumberOfTableJoins("orders", LEFT, 1)
                 .hasNumberOfTableJoins("orders_tags", LEFT, 1)
-                .hasNumberOfTableJoins("item_tags", INNER, 1);
+                .hasNumberOfTableJoins("item_tags", LEFT, 1);
     }
 
     @Test
@@ -199,7 +199,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[]{"orders2"}, "o2", JoinType.INNER, true);
         Specification<Customer> filter2 = new Like<>(queryCtx, "o2.itemName", "Comic");
 
-        Specification<Customer> fullSpec = Specification.where(fetch1).and(fetch2).and(Specification.where(filter1).or(filter2));
+        Specification<Customer> fullSpec = fetch1.and(fetch2.and(filter1.or(filter2)));
 
         Number customerCount = customerRepo.count(fullSpec);
 
@@ -217,7 +217,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         Specification<Customer> filter1 = new Like<>(queryCtx, "o1.itemName", "Duff");
         JoinFetch<Customer> fetch2 = new JoinFetch<Customer>(queryCtx, new String[]{"orders2"}, "o2", LEFT, true);
 
-        Specification<Customer> fullSpec = Specification.where(fetch1).and(fetch2).and(filter1);
+        Specification<Customer> fullSpec = fetch1.and(fetch2.and(filter1));
 
         Number customerCount = customerRepo.count(fullSpec);
 
@@ -234,7 +234,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[]{"orders"}, "o", LEFT, false);
         Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o"); // Homer's Donuts (x2) and Bart's Comic Book
 
-        Specification<Customer> spec = Specification.where(fetch).and(filter);
+        Specification<Customer> spec = fetch.and(filter);
 
         Number count = customerRepo.count(spec);
 
@@ -247,7 +247,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
         JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[]{"orders"}, "o", LEFT, true);
         Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o"); // Homer's Donuts (x2) and Bart's Comic Book
 
-        Specification<Customer> spec = Specification.where(fetch).and(filter);
+        Specification<Customer> spec = fetch.and(filter);
 
         Number count = customerRepo.count(spec);
 
@@ -259,7 +259,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     public void preservesJoinTypeWhenConvertingJoinFetchForCountQuery_innerJoin() {
         JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[]{"orders"}, "o", JoinType.INNER, true);
         Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o");
-        Specification<Customer> spec = Specification.where(fetch).and(filter);
+        Specification<Customer> spec = fetch.and(filter);
         customerRepo.count(spec);
 
         assertThatInterceptedStatements()
@@ -271,7 +271,7 @@ public class JoinFetchInCountQueryTest extends IntegrationTestBase {
     public void preservesJoinTypeWhenConvertingJoinFetchForCountQuery_leftJoin() {
         JoinFetch<Customer> fetch = new JoinFetch<Customer>(queryCtx, new String[]{"orders"}, "o", LEFT, true);
         Specification<Customer> filter = new Like<>(queryCtx, "o.itemName", "o");
-        Specification<Customer> spec = Specification.where(fetch).and(filter);
+        Specification<Customer> spec = fetch.and(filter);
         customerRepo.count(spec);
 
         assertThatInterceptedStatements()

@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,13 @@ class DisjunctionSpecificationResolver implements SpecificationResolver<Disjunct
 		List<Specification<Object>> innerSpecs = new ArrayList<Specification<Object>>();
 		for (And innerAndDef : def.value()) {
 			Specification<Object> innerAnd = andResolver.buildSpecification(context, innerAndDef);
-			if (innerAnd != null) {
+			if (innerAnd != null && !innerAnd.equals(Specification.unrestricted())) {
 				innerSpecs.add(innerAnd);
 			}
 		}
 		for (Spec innerDef : def.or()) {
 			Specification<Object> innerSpec = specResolver.buildSpecification(context, innerDef);
-			if (innerSpec != null) {
+			if (innerSpec != null && !innerSpec.equals(Specification.unrestricted())) {
 				innerSpecs.add(innerSpec);
 			}
 		}

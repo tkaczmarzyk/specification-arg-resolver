@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,12 +52,20 @@ public class Disjunction<T> implements Specification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         Specification<T> combinedSpecs = null;
         for (Specification<T> spec : innerSpecs) {
+            if (spec.equals(Specification.unrestricted())) {
+                continue;
+            }
             if (combinedSpecs == null) {
-                combinedSpecs = Specification.where(spec);
+                combinedSpecs = spec;
             } else {
                 combinedSpecs = combinedSpecs.or(spec);
             }
         }
+
+        if (combinedSpecs == null) {
+            combinedSpecs = Specification.unrestricted();
+        }
+
         return combinedSpecs.toPredicate(root, query, cb);
     }
 

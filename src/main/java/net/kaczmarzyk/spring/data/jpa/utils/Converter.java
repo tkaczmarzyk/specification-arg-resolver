@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,10 +140,6 @@ public final class Converter {
 	public <T> T convert(String value, Class<T> expectedClass, boolean ignoreCase) {
 		if (expectedClass.isEnum()) {
 			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass, ignoreCase);
-		} else if (expectedClass.isAssignableFrom(Date.class)) {
-			return (T) convertToDate(value);
-		} else if (expectedClass.isAssignableFrom(Calendar.class)) {
-			return (T) convertToCalendar(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
 			return (T) convertToBoolean(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
@@ -251,28 +247,6 @@ public final class Converter {
 			return false;
 		} else {
 			throw new ValueRejectedException(value, "unparseable boolean");
-		}
-	}
-	
-	public Date convertToDate(String value) {
-		String dateFormat = getDateFormat(Date.class);
-		try {
-			validateDateFormat(dateFormat, value);
-			return new SimpleDateFormat(dateFormat).parse(value);
-		} catch (ParseException | DateTimeParseException e) {
-			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat, e);
-		}
-	}
-
-	public Calendar convertToCalendar(String value) {
-		String dateFormat = getDateFormat(Date.class);
-		try {
-			validateDateFormat(dateFormat, value);
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(new SimpleDateFormat(dateFormat).parse(value));
-			return cal;
-		} catch (ParseException | DateTimeParseException e) {
-			throw new ValueRejectedException(value, "Date format exception, expected format: " + dateFormat, e);
 		}
 	}
 	

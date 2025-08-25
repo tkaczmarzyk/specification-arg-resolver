@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-		assertThat(resolved).isNull();
+		assertThat(resolved).isEqualTo(Specification.unrestricted());
 	}
 
 	@Test
@@ -124,7 +124,7 @@ public class SimpleSpecificationResolverPathVariablesTest extends ResolverTestBa
 
 		Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-		assertThat(resolved).isNull();
+		assertThat(resolved).isEqualTo(Specification.unrestricted());
 	}
 
 	@Test

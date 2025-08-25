@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,8 @@ public class JoinFetchE2eTest extends E2eTestBase {
 
 		@RequestMapping("/join-fetch/customers")
 		public Object findByFirstName(
-
 				@JoinFetch(paths = "badges")
 				@Spec(path = "firstName", spec = Equal.class) Specification<Customer> spec) {
-
 			return customerRepository.findAll(spec);
 		}
 
@@ -149,7 +147,7 @@ public class JoinFetchE2eTest extends E2eTestBase {
 				.hasNumberOfTableJoins("badges", LEFT, 1)
 				.hasNumberOfTableJoins("orders", LEFT, 1)
 				.hasNumberOfTableJoins("orders_tags", LEFT, 1)
-				.hasNumberOfTableJoins("item_tags", INNER, 1);
+				.hasNumberOfTableJoins("item_tags", LEFT, 1);
 	}
 
 }

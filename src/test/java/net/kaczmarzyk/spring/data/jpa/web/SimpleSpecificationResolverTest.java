@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
 
     @Test
-    public void returnsNullIfTheWebParameterIsMissing_defaultParameterName() throws Exception {
+    public void returnsUnrestrictedSpecificationIfTheWebParameterIsMissing_defaultParameterName() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
@@ -52,7 +52,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
 	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isNull();
+        assertThat(resolved).isEqualTo(Specification.unrestricted());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void returnsNullIfTheWebParameterIsMissing_customParameterName() throws Exception {
+    public void returnsUnrestrictedSpecificationIfTheWebParameterIsMissing_customParameterName() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
@@ -76,11 +76,11 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
 	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isNull();
+        assertThat(resolved).isEqualTo(Specification.unrestricted());
     }
 
     @Test
-    public void returnsNullIfTheWebParameterIsEmpty_defaultParameterName() throws Exception {
+    public void returnsUnrestrictedSpecificationIfTheWebParameterIsEmpty_defaultParameterName() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod1"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "" });
@@ -89,11 +89,11 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
 	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isNull();
+        assertThat(resolved).isEqualTo(Specification.unrestricted());
     }
 
     @Test
-    public void returnsNullIfTheWebParameterIsEmpty_customParameterName() throws Exception {
+    public void returnsUnrestrictedSpecificationIfTheWebParameterIsEmpty_customParameterName() throws Exception {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("theParameter")).thenReturn(new String[] { "" });
@@ -102,25 +102,25 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
 
 	    Specification<?> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
 
-        assertThat(resolved).isNull();
+        assertThat(resolved).isEqualTo(Specification.unrestricted());
     }
 
     @Test
-    public void returnsNullIfAtLeastOneEmptyWebParameter_defaultParameterName() {
+    public void returnsUnrestrictedSpecificationIfAtLeastOneEmptyWebParameter_defaultParameterName() {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod3"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue", "theValue2", "" });
 
-        assertThat(resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class))).isNull();;
+        assertThat(resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class))).isEqualTo(Specification.unrestricted());
     }
 
     @Test
-    public void returnsNullIfAtLeastOneEmptyWebParameter_customParameterName() {
+    public void returnsUnrestrictedSpecificationIfAtLeastOneEmptyWebParameter_customParameterName() {
         MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod2"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
         when(req.getParameterValues("thePath")).thenReturn(new String[] { "theValue", "theValue2", "" });
 
-        assertThat(resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class))).isNull();;
+        assertThat(resolver.buildSpecification(new WebRequestProcessingContext(param, req), param.getParameterAnnotation(Spec.class))).isEqualTo(Specification.unrestricted());
     }
 
     @Test

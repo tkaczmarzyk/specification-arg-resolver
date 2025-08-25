@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 				.hasNumberOfJoins(5)
 				.hasNumberOfTableJoins("orders", LEFT, 1)
 				.hasNumberOfTableJoins("orders_tags", LEFT, 1)
-				.hasNumberOfTableJoins("item_tags", INNER, 3);
+				.hasNumberOfTableJoins("item_tags", LEFT, 1);
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 				.hasNumberOfJoins(3)
                 .hasNumberOfTableJoins("orders", LEFT, 1)
                 .hasNumberOfTableJoins("orders_tags", LEFT, 1)
-                .hasNumberOfTableJoins("item_tags", INNER, 1);
+                .hasNumberOfTableJoins("item_tags", LEFT, 1);
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class JoinAndJoinFetchReferringToTheSameTableTest extends E2eTestBase {
 				.hasNumberOfJoins(6)
 				.hasNumberOfTableJoins("orders", LEFT, 2)
 				.hasNumberOfTableJoins("orders_tags", LEFT, 2)
-				.hasNumberOfTableJoins("item_tags", INNER, 2);
+				.hasNumberOfTableJoins("item_tags", LEFT, 2);
 	}
 
 	@Test

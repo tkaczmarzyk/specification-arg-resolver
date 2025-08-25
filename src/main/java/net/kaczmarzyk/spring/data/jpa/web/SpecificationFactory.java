@@ -1,5 +1,5 @@
-/**
- * Copyright 2014-2023 the original author or authors.
+/*
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class SpecificationFactory {
 		List<Specification<Object>> specs = resolveSpec(context);
 
 		if (specs.isEmpty()) {
-			return null;
+			specs = List.of(Specification.unrestricted());
 		}
 
 		Specification<Object> spec = specs.size() == 1 ? specs.iterator().next() : new net.kaczmarzyk.spring.data.jpa.domain.Conjunction<>(specs);
@@ -103,7 +103,7 @@ public class SpecificationFactory {
 				context.getParameterAnnotations(),
 				specDefinition -> {
 					Specification<Object> specification = buildSpecification(context, specDefinition);
-					if (nonNull(specification)) {
+					if (nonNull(specification) && !specification.equals(Specification.unrestricted())) {
 						accum.add(specification);
 					}
 				}
@@ -118,7 +118,7 @@ public class SpecificationFactory {
 			forEachSupportedInterfaceSpecificationDefinition(iface,
 					(specDefinition) -> {
 						Specification<Object> specification = buildSpecification(context, specDefinition);
-						if (nonNull(specification)) {
+						if (nonNull(specification) && !specification.equals(Specification.unrestricted())) {
 							accumulator.add(specification);
 						}
 					}
