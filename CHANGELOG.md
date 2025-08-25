@@ -1,6 +1,7 @@
 v4.0.0.M1
 =========
 * Build integrated with Spring Boot 4 M1. Spring Boot 4 will be released in November 2005 and will update to Hibernate 7 and JPA 3.2. This PR updates to spring-boot-4.0.0-M1 and deals with breaking changes from the upstream dependencies.
+* If you need a stable release and/or Spring Boot 3.x compatible - please select the latest 3.x version of specification-arg-resolver
 * **BREAKING CHANGE**: Removed support for `Calendar`, `Date` in favour of java.time API (JPA 3.2)
 * **BREAKING CHANGE**: please be aware that new version of Hibernate may generate different queries than the previous version. In context of this library, this is noticable when generating joins. For the same set of annotations and the same request, SAR 3.x will generate `INNER` and SAR 4.x will generate `LEFT` join on implicit join table queries. This is strictly related to Hibernate internals, not SAR-specific behaviour
 * Developed by @sourcloud 🚀
