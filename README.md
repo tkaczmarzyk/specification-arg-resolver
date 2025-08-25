@@ -152,7 +152,7 @@ Supports multiple data types: numbers, booleans, strings, dates, enums.
 
 Usage: `@Spec(path="gender", spec=Equal.class)`.
 
-The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below). If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant` and `Timestamp`) only the date is provided, then the default time value (midnight - UTC time for `OffsetDateTime`) will be used for checking equality. To include all results within particular date (day) use `EqualDay` specification.
+The default date format used for temporal fields is `yyyy-MM-dd`. It can be overriden with a configuration parameter (see `LessThan` below). If for date-time formats which store also time (`LocalDateTime`, `OffsetDateTime`, `Instant`, etc.) only the date is provided, then the default time value (midnight - UTC time for `OffsetDateTime`) will be used for checking equality. To include all results within particular date (day) use `EqualDay` specification.
 
 A negation for this specification is also available: `NotEqual`.
 
@@ -1182,13 +1182,13 @@ List of supported conversions:
   * `String -> double`
   * `String -> Double`
   * `String -> BigDecimal`
-  * `String -> Date` (default format: `yyyy-MM-dd`)
-  * `String -> Calendar` (default format: `yyyy-MM-dd`)
+  * ~~`String -> Date` (default format: `yyyy-MM-dd`)~~ (removed in 4.0.0)
+  * ~~`String -> Calendar` (default format: `yyyy-MM-dd`)~~ (removed in 4.0.0)
   * `String -> LocalDate` (default format: `yyyy-MM-dd`)
   * `String -> LocalDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss`)
   * `String -> OffsetDateTime` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
   * `String -> Instant` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSSXXX`)
-  * `String -> Timestamp` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`)
+  * ~~`String -> Timestamp` (default format: `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`)~~ (removed in 4.0.0)
   * `String -> UUID` 
 
 To use a custom format for temporal types, add `config="custom-format-value"` to `@Spec` params. 
@@ -1399,7 +1399,8 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v3.X`                             | `17` or higher   | Compiled and tested against Spring Boot `3.0.0`                                         |
+| `v4.X`                             | `17` or higher   | Compiled and tested against Spring Boot `4.0.0.M1`                                      |
+| `v3.X`                             | `17` or higher   | Compiled and tested against Spring Boot `3.X`                                           |
 | `v2.X`                             | `1.8` or higher  | Compiled and tested against Spring Boot `2.7.7`                                         |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
 
@@ -1415,7 +1416,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>3.1.0</version>
+    <version>3.2.0</version>
 </dependency>
 ```
 
