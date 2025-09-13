@@ -112,17 +112,24 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 	}
 
 	private List<Annotation> extractAnnotationsFromMethodParameter(MethodParameter methodParameter) {
-
 		List<Annotation> annotations = new ArrayList<>(
 			asList(methodParameter.getParameterAnnotations()));
 
-		if (methodParameter.getParameterType() != Specification.class) {
-			List<Annotation> innerParameterAnnotations = asList(methodParameter.getParameterType().getAnnotations());
-			annotations.addAll(innerParameterAnnotations);
-		}
+    extractAnnotationsRecursive(annotations, methodParameter.getParameterType());
 
 		return annotations;
 	}
+
+  private void extractAnnotationsRecursive(List<Annotation> buffer, Class<?> clazz) {
+    if (clazz != Specification.class) {
+      List<Annotation> innerParameterAnnotations = asList(clazz.getAnnotations());
+      buffer.addAll(innerParameterAnnotations);
+
+      for (Class<?> extendedInterface : clazz.getInterfaces()) {
+        extractAnnotationsRecursive(buffer, extendedInterface);
+      }
+    }
+  }
 
 	private List<Parameter> createParametersFromSpecs(List<Spec> specs, List<String> requiredParams, List<String> requiredHeaders) {
 		List<Parameter> parameters = specs.stream()
