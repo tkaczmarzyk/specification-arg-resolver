@@ -1,3 +1,7 @@
+v3.2.1
+======
+* added support for extended interfaces when generating OpenAPI docs. Developed by @gibbz00 🚀
+
 v3.2.0
 =======
 * **BREAKING CHANGE**: Fixed case-insensitive specifications (`EqualIgnoreCase`, `NotEqualIgnoreCase`, `LikeIgnoreCase`, `NotLikeIgnoreCase`, `StartingWithIgnoreCase`, `EndingWithIgnoreCase`) to use database `UPPER()` function for both sides of comparison
