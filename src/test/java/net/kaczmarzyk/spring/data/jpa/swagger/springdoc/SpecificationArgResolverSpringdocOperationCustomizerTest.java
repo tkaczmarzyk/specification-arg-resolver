@@ -282,6 +282,31 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 	}
 
 	@Test
+	public void shouldCorrectlyReadParametersFromExtendedCustomFilterWithAnnotations() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodAndParameterType("customExtendedFilterWithAnnotationsTestMethod", ExtendedTestFilterWithAnnotations.class);
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(4)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("annotatedFilterThirdParam")
+			.and()
+			.containsParameterAtIndex(1)
+			.withQueryParameterName("annotatedFilterFourthParam")
+      .and()
+			.containsParameterAtIndex(2)
+      .withQueryParameterName("annotatedFilterFirstParam")
+      .and()
+      .containsParameterAtIndex(3)
+      .withQueryParameterName("annotatedFilterSecondParam");
+	}
+
+	@Test
 	public void shouldCorrectlyReadParametersFromCustomFilterWithoutAnnotations() throws NoSuchMethodException {
 		// given
 		HandlerMethod handlerMethod = handlerMethodForControllerMethodAndParameterType("customFilterWithoutAnnotationsTestMethod", TestFilterWithoutAnnotations.class);
@@ -489,6 +514,11 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 		}
 
+		@RequestMapping(value = "/custom-extended-filter-with-annotations")
+		public void customExtendedFilterWithAnnotationsTestMethod(ExtendedTestFilterWithAnnotations filter) {
+
+		}
+
 		@RequestMapping(value = "/custom-filter-without-annotations")
 		public void customFilterWithoutAnnotationsTestMethod(
 			@Or({
@@ -560,8 +590,15 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 
 	}
 
-	private interface TestFilterWithoutAnnotations extends Specification<Object> {
+	@Or({
+		@Spec(path = "", params = "annotatedFilterThirdParam", spec = Like.class),
+		@Spec(path = "", params = "annotatedFilterFourthParam", spec = Like.class),
+	})
+	private interface ExtendedTestFilterWithAnnotations extends TestFilterWithAnnotations {
 
 	}
 
+	private interface TestFilterWithoutAnnotations extends Specification<Object> {
+
+	}
 }
