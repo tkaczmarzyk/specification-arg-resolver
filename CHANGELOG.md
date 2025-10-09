@@ -1,3 +1,7 @@
+v3.2.2
+======
+* bumped commons-lang3 dependency version to 3.18.0 to avoid known security issues
+
 v3.2.1
 ======
 * added support for extended interfaces when generating OpenAPI docs. Developed by @gibbz00 🚀
