@@ -11,6 +11,10 @@ v4.0.0-M1
 * **BREAKING CHANGE**: please be aware that new version of Hibernate may generate different queries than the previous version. In context of this library, this is noticable when generating joins. For the same set of annotations and the same request, SAR 3.x will generate `INNER` and SAR 4.x will generate `LEFT` join on implicit join table queries. This is strictly related to Hibernate internals, not SAR-specific behaviour
 * Developed by @sourcloud 🚀
 
+v3.2.2
+======
+* bumped commons-lang3 dependency version to 3.18.0 to avoid known security issues
+
 v3.2.1
 ======
 * added support for extended interfaces when generating OpenAPI docs. Developed by @gibbz00 🚀
