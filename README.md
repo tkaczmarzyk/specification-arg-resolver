@@ -32,7 +32,7 @@ You can also take a look on working Spring Boot apps that use this library:
    * [Path Variable support](#path-variable-support) -- using uri fragments (resolvable with Spring's `@PathVariable` annotation) in specifications
    * [Json Request Body support](#json-request-body-support) -- using json in request body to get parameters for specification
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
-   * [Case insentivity support](#case-insensitive-support) -- information about case-insensitive strategies used for case-insensitive specifications 
+   * [Case insensitivity support](#case-insensitive-support) -- information about case-insensitive strategies used for case-insensitive specifications 
    * [Locale support](#locale-support) -- information about `Locale` configuration for case-insensitive matching 
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
@@ -183,6 +183,14 @@ or if `paramSeparator` is specified (eg. `@Spec(path="gender", paramSeparator=",
 The default date format used for temporal fields is `yyyy-MM-dd`. It can be overridden with a configuration parameter (see `LessThan` below).
 
 A negation for this specification is also available: `NotIn`.
+
+### InIgnoreCase  ###
+
+Works as `In`, but the query is also case-insensitive.
+
+Usage: `@Spec(path="firstName", spec=InIgnoreCase.class)`.
+
+Case-insensitive comparisons are performed using the database's `UPPER()` function on both sides of the comparison. The results depend on your database's collation settings. Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 ### Null ###
 

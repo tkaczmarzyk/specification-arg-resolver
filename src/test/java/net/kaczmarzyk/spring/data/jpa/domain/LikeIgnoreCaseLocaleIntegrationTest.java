@@ -84,4 +84,3 @@ public class LikeIgnoreCaseLocaleIntegrationTest extends IntegrationTestBase {
 		assertThat(simpsonsFound).hasSize(1).containsOnly(homerWithTurkishCapitalI);
 	}
 }
-
