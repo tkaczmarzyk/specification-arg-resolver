@@ -192,6 +192,8 @@ Usage: `@Spec(path="firstName", spec=InIgnoreCase.class)`.
 
 Case-insensitive comparisons are performed using the database's `UPPER()` function on both sides of the comparison. The results depend on your database's collation settings. Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
+A negation for this specification is also available: `NotInIgnoreCase`.
+
 ### Null ###
 
 Filters using `is null` or `is not null`, depending on the value of the parameter passed in. A value of `true` will filter for `is null`, and a value of `false` will filter for `is not null`.

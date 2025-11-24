@@ -52,6 +52,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.NotEmpty;
 import net.kaczmarzyk.spring.data.jpa.domain.NotEqual;
 import net.kaczmarzyk.spring.data.jpa.domain.NotEqualIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.domain.NotIn;
+import net.kaczmarzyk.spring.data.jpa.domain.NotInIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.domain.NotLike;
 import net.kaczmarzyk.spring.data.jpa.domain.NotLikeIgnoreCase;
 import net.kaczmarzyk.spring.data.jpa.domain.NotNull;
@@ -98,6 +99,7 @@ public class SpecificationArgumentResolverHintRegistrar implements RuntimeHintsR
             NotEqual.class,
             NotEqualIgnoreCase.class,
             NotIn.class,
+            NotInIgnoreCase.class,
             NotLike.class,
             NotLikeIgnoreCase.class,
             NotNull.class,

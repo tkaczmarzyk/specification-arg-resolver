@@ -41,10 +41,10 @@ public class InIgnoreCase<T> extends PathSpecification<T> implements IgnoreCaseS
 
     private static final long serialVersionUID = 1L;
 
-    private String[] allowedValues;
-    private Converter converter;
-    private IgnoreCaseStrategy ignoreCaseStrategy;
-    private Locale locale;
+    protected String[] allowedValues;
+    protected Converter converter;
+    protected IgnoreCaseStrategy ignoreCaseStrategy;
+    protected Locale locale;
 
     public InIgnoreCase(QueryContext queryContext, String path, String[] httpParamValues, Converter converter) {
         super(queryContext, path);
