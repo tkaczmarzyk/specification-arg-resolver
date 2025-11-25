@@ -16,7 +16,9 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import jakarta.persistence.criteria.*;
+import net.kaczmarzyk.spring.data.jpa.utils.Alias;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Objects;
@@ -88,7 +90,7 @@ public class Join<T> implements Specification<T>, Fake {
 		// because most typical scenario tends to be a LEFT join with distinct = true
 		// and in such scenario if there is no filtering on the joined part (e.g. no related http param was sent)
 		// then we can optimize behaviour by not joining at all
-		queryContext.putLazyVal(alias, lazyVal);
+		queryContext.putLazyVal(Alias.of(alias, root), lazyVal);
 		// but inner joins or non-distinct queries must have them evaluated eagerly
 		// because they affect query result even when there is no filtering applied
 		if (!distinctQuery || joinType == JoinType.INNER) {
