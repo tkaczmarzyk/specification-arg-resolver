@@ -145,7 +145,7 @@ public final class Converter {
 		} else if (expectedClass.isAssignableFrom(Calendar.class)) {
 			return (T) convertToCalendar(value);
 		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
-			return (T) convertToBoolean(value);
+			return (T) convertToBoolean(value, ignoreCase);
 		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
 			return (T) convertToLong(value);
 		} else if (isAssignableFromAnyOf(expectedClass, float.class, Float.class)) {
@@ -244,10 +244,11 @@ public final class Converter {
 		}
 	}
 	
-	private Boolean convertToBoolean(String value) {
-		if ("true".equals(value)) {
+	private Boolean convertToBoolean(String value, boolean ignoreCase) {
+        var valueToParse = ignoreCase ? value.toLowerCase() : value;
+		if ("true".equals(valueToParse)) {
 			return true;
-		} else if ("false".equals(value)) {
+		} else if ("false".equals(valueToParse)) {
 			return false;
 		} else {
 			throw new ValueRejectedException(value, "unparseable boolean");

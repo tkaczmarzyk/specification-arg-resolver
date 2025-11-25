@@ -82,16 +82,28 @@ public class ConverterTest {
 		assertThat(converter.convert("true", Boolean.class)).isEqualTo(true);
 		assertThat(converter.convert("false", Boolean.class)).isEqualTo(false);
 	}
-	
+
+	@Test
+	public void convertsToBooleanIgnoringCase() {
+		assertThat(converter.convert("TRUE", Boolean.class, true)).isEqualTo(true);
+		assertThat(converter.convert("FALSE", Boolean.class, true)).isEqualTo(false);
+	}
+
 	@Test
 	public void convertsToBooleanByPrimitiveType() {
 		assertThat(converter.convert("true", boolean.class)).isEqualTo(true);
 		assertThat(converter.convert("false", boolean.class)).isEqualTo(false);
 	}
-	
+
+	@Test
+	public void convertsToBooleanByPrimitiveTypeIgnoringCase() {
+		assertThat(converter.convert("TRUE", boolean.class, true)).isEqualTo(true);
+		assertThat(converter.convert("FALSE", boolean.class, true)).isEqualTo(false);
+	}
+
 	@Test
 	public void throwsExceptionOnInvalidBooleanValue() {
-		assertThatThrownBy(() -> converter.convert("TRUE", Boolean.class))
+		assertThatThrownBy(() -> converter.convert("invalid", Boolean.class))
 				.isInstanceOf(IllegalArgumentException.class);
 	}
 	
