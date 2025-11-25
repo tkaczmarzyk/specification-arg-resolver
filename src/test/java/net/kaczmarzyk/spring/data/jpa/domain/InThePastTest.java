@@ -40,13 +40,13 @@ public class InThePastTest extends ComparableTestBase {
 				.lastOrderTime(PAST_DATE_TIME.toLocalDateTime())
 				.build(em);
 		margeSimpson = customer("Marge", "Simpson")
-				.registrationDate(PAST_DATE_TIME.minusMonths(2).getYear(), PAST_DATE_TIME.minusMonths(2).getMonth().getValue() , PAST_DATE_TIME.getDayOfMonth())
+				.registrationDate(PAST_DATE_TIME.minusDays(1).getYear(), PAST_DATE_TIME.minusDays(1).getMonth().getValue(), PAST_DATE_TIME.minusDays(1).getDayOfMonth())
 				.nextSpecialOffer(FUTURE_DATE_TIME)
 				.birthDate(PAST_DATE_TIME.toLocalDate())
 				.lastOrderTime(PAST_DATE_TIME.toLocalDateTime().minusMonths(2))
 				.build(em);
 		moeSzyslak = customer("Moe", "Szyslak")
-				.registrationDate(FUTURE_DATE_TIME.getYear(), FUTURE_DATE_TIME.getMonth().getValue(), FUTURE_DATE_TIME.getDayOfMonth())
+				.registrationDate(FUTURE_DATE_TIME.getYear(), FUTURE_DATE_TIME.getMonth().getValue() , FUTURE_DATE_TIME.getDayOfMonth())
 				.nextSpecialOffer(PAST_DATE_TIME.minusDays(30))
 				.birthDate(PAST_DATE_TIME.toLocalDate().minusDays(10))
 				.lastOrderTime(FUTURE_DATE_TIME.toLocalDateTime())
