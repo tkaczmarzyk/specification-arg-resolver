@@ -18,7 +18,6 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import jakarta.persistence.criteria.*;
 import net.kaczmarzyk.spring.data.jpa.utils.Alias;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Objects;
