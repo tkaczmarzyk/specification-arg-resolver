@@ -34,19 +34,19 @@ public class InThePastTest extends ComparableTestBase {
 	@BeforeEach
 	public void initData() {
 		homerSimpson = customer("Homer", "Simpson")
-				.registrationDate(PAST_DATE_TIME.getYear(), PAST_DATE_TIME.getMonth().getValue(), PAST_DATE_TIME.getDayOfMonth() - 1)
+				.registrationDate(PAST_DATE_TIME.minusDays(1).getYear(), PAST_DATE_TIME.minusDays(1).getMonth().getValue(), PAST_DATE_TIME.minusDays(1).getDayOfMonth())
 				.nextSpecialOffer(PAST_DATE_TIME)
 				.birthDate(FUTURE_DATE_TIME.toLocalDate())
 				.lastOrderTime(PAST_DATE_TIME.toLocalDateTime())
 				.build(em);
 		margeSimpson = customer("Marge", "Simpson")
-				.registrationDate(PAST_DATE_TIME.getYear(), PAST_DATE_TIME.getMonth().getValue() - 2, PAST_DATE_TIME.getDayOfMonth())
+				.registrationDate(PAST_DATE_TIME.minusDays(1).getYear(), PAST_DATE_TIME.minusDays(1).getMonth().getValue(), PAST_DATE_TIME.minusDays(1).getDayOfMonth())
 				.nextSpecialOffer(FUTURE_DATE_TIME)
 				.birthDate(PAST_DATE_TIME.toLocalDate())
 				.lastOrderTime(PAST_DATE_TIME.toLocalDateTime().minusMonths(2))
 				.build(em);
 		moeSzyslak = customer("Moe", "Szyslak")
-				.registrationDate(FUTURE_DATE_TIME.getYear(), FUTURE_DATE_TIME.getMonth().getValue(), FUTURE_DATE_TIME.getDayOfMonth())
+				.registrationDate(FUTURE_DATE_TIME.getYear(), FUTURE_DATE_TIME.getMonth().getValue() , FUTURE_DATE_TIME.getDayOfMonth())
 				.nextSpecialOffer(PAST_DATE_TIME.minusDays(30))
 				.birthDate(PAST_DATE_TIME.toLocalDate().minusDays(10))
 				.lastOrderTime(FUTURE_DATE_TIME.toLocalDateTime())

@@ -40,7 +40,7 @@ public class InTheFutureTest extends ComparableTestBase {
 				.lastOrderTime(FUTURE_DATE_TIME.toLocalDateTime())
 				.build(em);
 		margeSimpson = customer("Marge", "Simpson")
-				.registrationDate(FUTURE_DATE_TIME.getYear(), FUTURE_DATE_TIME.getMonth().getValue() + 2, FUTURE_DATE_TIME.getDayOfMonth())
+				.registrationDate(FUTURE_DATE_TIME.plusMonths(2).getYear(), FUTURE_DATE_TIME.plusMonths(2).getMonth().getValue(), FUTURE_DATE_TIME.plusMonths(2).getDayOfMonth())
 				.nextSpecialOffer(PAST_DATE_TIME)
 				.birthDate(FUTURE_DATE_TIME.toLocalDate())
 				.lastOrderTime(FUTURE_DATE_TIME.toLocalDateTime().plusMonths(2))
