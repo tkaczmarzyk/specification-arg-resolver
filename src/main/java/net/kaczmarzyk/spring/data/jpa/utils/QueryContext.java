@@ -18,7 +18,6 @@ package net.kaczmarzyk.spring.data.jpa.utils;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.Function;
 
