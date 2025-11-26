@@ -114,6 +114,10 @@ public final class Converter {
 	}
 	
 	public <T> List<T> convert(List<String> values, Class<T> expectedClass) {
+        return convert(values,expectedClass,false);
+    }
+
+	public <T> List<T> convert(List<String> values, Class<T> expectedClass, boolean ignoreCase) {
 		if (expectedClass == String.class) {
 			return (List<T>) values;
 		}
@@ -121,7 +125,7 @@ public final class Converter {
 		List<T> result = new ArrayList<>();
 		for (String value : values) {
 			try {
-				result.add(convert(value, expectedClass));
+				result.add(convert(value, expectedClass, ignoreCase));
 			} catch (ValueRejectedException e) {
 				if (rejected == null) {
 					rejected = new ArrayList<>();
