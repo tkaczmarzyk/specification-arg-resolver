@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.utils.Alias;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -31,10 +32,10 @@ import java.util.function.Function;
  */
 public class DefaultQueryContext implements QueryContext {
 
-	private Map<String, Function<Root<?>, Join<?, ?>>> contextMap;
+	private Map<Alias, Function<Root<?>, Join<?, ?>>> contextMap;
 	private Map<String, Fetch<?, ?>> evaluatedJoinFetch;
 
-	private Map<Pair<String, Root>, Join<?, ?>> rootCache;
+	private Map<Alias, Join<?, ?>> rootCache;
 
 	public DefaultQueryContext() {
 		this.contextMap = new HashMap<>();
@@ -44,18 +45,18 @@ public class DefaultQueryContext implements QueryContext {
 
 	@Override
 	public boolean existsJoin(String key, Root<?> root) {
-		return contextMap.containsKey(key);
+		return contextMap.containsKey(Alias.of(key, root));
 	}
 
 	@Override
 	public Join<?, ?> getEvaluated(String key, Root<?> root) {
-		Function<Root<?>, Join<?, ?>> value = contextMap.get(key);
+		Function<Root<?>, Join<?, ?>> value = contextMap.get(Alias.of(key, root));
 
 		if (value == null) {
 			return null;
 		}
 
-		Pair<String, Root> rootKey = Pair.of(key, root);
+		Alias rootKey = Alias.of(key, root);
 
 		if (!rootCache.containsKey(rootKey)) {
 			Join<?, ?> evaluated = value.apply(root);
@@ -65,7 +66,7 @@ public class DefaultQueryContext implements QueryContext {
 	}
 
 	@Override
-	public void putLazyVal(String key, Function<Root<?>, Join<?, ?>> value) {
+	public void putLazyVal(Alias key, Function<Root<?>, Join<?, ?>> value) {
 		contextMap.put(key, value);
 	}
 
