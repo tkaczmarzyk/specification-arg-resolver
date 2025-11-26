@@ -1409,7 +1409,7 @@ This project has been maintained since 2014. A lot has changed in Java and Sprin
 
 | specification-arg-resolver version | JDK requirements | Spring requirements                                                                     |
 |------------------------------------|------------------|-----------------------------------------------------------------------------------------|
-| `v4.X`                             | `17` or higher   | Compiled and tested against Spring Boot `4.0.0.M1`                                      |
+| `v4.X`                             | `17` or higher   | Compiled and tested against Spring Boot `4.0.0`                                      |
 | `v3.X`                             | `17` or higher   | Compiled and tested against Spring Boot `3.X`                                           |
 | `v2.X`                             | `1.8` or higher  | Compiled and tested against Spring Boot `2.7.7`                                         |
 | `v1.1.1` (or older)                | `1.7` or higher  | Compiled and tested against Spring Boot `1.x`; confirmed to work with Spring boot `2.x` |
@@ -1426,7 +1426,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>3.2.1</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 
