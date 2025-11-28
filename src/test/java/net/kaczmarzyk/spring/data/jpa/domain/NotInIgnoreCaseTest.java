@@ -55,42 +55,42 @@ public class NotInIgnoreCaseTest extends IntegrationTestBase {
 
     @Test
     public void filtersByEnumValueCaseInsensitive_singleValue() {
-        NotInIgnoreCase<Customer> genderMale = notInIgnoreCaseSpec("gender", new String[]{"male"});
-        List<Customer> males = customerRepo.findAll(genderMale);
-        assertThat(males).hasSize(2).containsOnly(margeSimpson, joeQuimby);
+        NotInIgnoreCase<Customer> genderNotMale = notInIgnoreCaseSpec("gender", new String[]{"male"});
+        List<Customer> nonMales = customerRepo.findAll(genderNotMale);
+        assertThat(nonMales).hasSize(2).containsOnly(margeSimpson, joeQuimby);
 
-        NotInIgnoreCase<Customer> genderFemale = notInIgnoreCaseSpec("gender", new String[]{"feMALE"});
-        List<Customer> females = customerRepo.findAll(genderFemale);
-        assertThat(females).hasSize(3).containsOnly(homerSimpson, moeSzyslak, joeQuimby);
+        NotInIgnoreCase<Customer> genderNotFemale = notInIgnoreCaseSpec("gender", new String[]{"feMALE"});
+        List<Customer> nonFemales = customerRepo.findAll(genderNotFemale);
+        assertThat(nonFemales).hasSize(3).containsOnly(homerSimpson, moeSzyslak, joeQuimby);
 
-        NotInIgnoreCase<Customer> genderOther = notInIgnoreCaseSpec("gender", new String[]{"OtHeR"});
-        List<Customer> others = customerRepo.findAll(genderOther);
-        assertThat(others).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
+        NotInIgnoreCase<Customer> genderNotOther = notInIgnoreCaseSpec("gender", new String[]{"OtHeR"});
+        List<Customer> malesAndFemales = customerRepo.findAll(genderNotOther);
+        assertThat(malesAndFemales).hasSize(3).containsOnly(homerSimpson, margeSimpson, moeSzyslak);
     }
 
     @Test
     public void filtersByEnumValueCaseInsensitive_multiValue() {
-        NotInIgnoreCase<Customer> genderMaleOrFemale = notInIgnoreCaseSpec("gender", new String[]{"male", "feMALE"});
-        List<Customer> malesOrFemales = customerRepo.findAll(genderMaleOrFemale);
-        assertThat(malesOrFemales).hasSize(1).containsOnly(joeQuimby);
+        NotInIgnoreCase<Customer> genderNotMaleOrFemale = notInIgnoreCaseSpec("gender", new String[]{"male", "feMALE"});
+        List<Customer> others = customerRepo.findAll(genderNotMaleOrFemale);
+        assertThat(others).hasSize(1).containsOnly(joeQuimby);
     }
 
     @Test
     public void filtersByLongValue() {
-        NotInIgnoreCase<Customer> simpsonsIds = notInIgnoreCaseSpec("id", new String[]{homerSimpson.getId().toString(), margeSimpson.getId().toString()});
+        NotInIgnoreCase<Customer> notInSimpsonsIds = notInIgnoreCaseSpec("id", new String[]{homerSimpson.getId().toString(), margeSimpson.getId().toString()});
 
-        List<Customer> simpsons = customerRepo.findAll(simpsonsIds);
+        List<Customer> notSimpsons = customerRepo.findAll(notInSimpsonsIds);
 
-        assertThat(simpsons).hasSize(2).containsOnly(moeSzyslak, joeQuimby);
+        assertThat(notSimpsons).hasSize(2).containsOnly(moeSzyslak, joeQuimby);
     }
 
     @Test
     public void filtersByLongValue_withAdditionalNonExistingValue() {
-        NotInIgnoreCase<Customer> simpsonsIdsWithTrash = notInIgnoreCaseSpec("id", new String[]{"12345", homerSimpson.getId().toString(), margeSimpson.getId().toString()});
+        NotInIgnoreCase<Customer> notInSimpsonsIdsWithTrash = notInIgnoreCaseSpec("id", new String[]{"12345", homerSimpson.getId().toString(), margeSimpson.getId().toString()});
 
-        List<Customer> simpsons = customerRepo.findAll(simpsonsIdsWithTrash);
+        List<Customer> notSimpsons = customerRepo.findAll(notInSimpsonsIdsWithTrash);
 
-        assertThat(simpsons).hasSize(2).containsOnly(moeSzyslak, joeQuimby);
+        assertThat(notSimpsons).hasSize(2).containsOnly(moeSzyslak, joeQuimby);
     }
 
     @Test
@@ -104,14 +104,14 @@ public class NotInIgnoreCaseTest extends IntegrationTestBase {
 
     @Test
     public void filtersByStringCaseInsensitive() {
-        NotInIgnoreCase<Customer> lastNameSimpson = notInIgnoreCaseSpec("lastName", "sIMPSOn");
-        List<Customer> result = customerRepo.findAll(lastNameSimpson);
+        NotInIgnoreCase<Customer> lastNameNotSimpson = notInIgnoreCaseSpec("lastName", "sIMPSOn");
+        List<Customer> result = customerRepo.findAll(lastNameNotSimpson);
         assertThat(result)
                 .hasSize(2)
                 .containsOnly(moeSzyslak, joeQuimby);
 
-        NotInIgnoreCase<Customer> firstNameWithO = notInIgnoreCaseSpec("firstName", new String[]{"moe", "HOMER"});
-        result = customerRepo.findAll(firstNameWithO);
+        NotInIgnoreCase<Customer> firstNameNotMoeOrHomer = notInIgnoreCaseSpec("firstName", new String[]{"moe", "HOMER"});
+        result = customerRepo.findAll(firstNameNotMoeOrHomer);
         assertThat(result)
                 .hasSize(2)
                 .containsOnly(margeSimpson, joeQuimby);
@@ -119,30 +119,30 @@ public class NotInIgnoreCaseTest extends IntegrationTestBase {
 
     @Test
     public void filtersByDateWithDefaultDateFormat() {
-        NotInIgnoreCase<Customer> registered1stMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"2015-03-02"});
-        List<Customer> found = customerRepo.findAll(registered1stMarch);
+        NotInIgnoreCase<Customer> notRegistered2ndMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"2015-03-02"});
+        List<Customer> found = customerRepo.findAll(notRegistered2ndMarch);
 
         assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-        NotInIgnoreCase<Customer> registered1stOr2ndMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"2015-03-02", "2015-03-01"});
-        found = customerRepo.findAll(registered1stOr2ndMarch);
+        NotInIgnoreCase<Customer> notRegistered1stOr2ndMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"2015-03-02", "2015-03-01"});
+        found = customerRepo.findAll(notRegistered1stOr2ndMarch);
 
         assertThat(found).hasSize(0);
     }
 
     @Test
     public void filterByDateWithCustomDateFormat() {
-        InIgnoreCase<Customer> registered1stMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"02-03-2015"},
+        InIgnoreCase<Customer> notRegistered2ndMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"02-03-2015"},
                 Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 
-        List<Customer> found = customerRepo.findAll(registered1stMarch);
+        List<Customer> found = customerRepo.findAll(notRegistered2ndMarch);
 
         assertThat(found).hasSize(2).containsOnly(homerSimpson, margeSimpson);
 
-        NotInIgnoreCase<Customer> registered1stOr2ndMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"01-03-2015", "02-03-2015"},
+        NotInIgnoreCase<Customer> notRegistered1stOr2ndMarch = notInIgnoreCaseSpec("registrationDate", new String[]{"01-03-2015", "02-03-2015"},
                 Converter.withDateFormat("dd-MM-yyyy", OnTypeMismatch.EMPTY_RESULT, null));
 
-        found = customerRepo.findAll(registered1stOr2ndMarch);
+        found = customerRepo.findAll(notRegistered1stOr2ndMarch);
 
         assertThat(found).hasSize(0);
     }
