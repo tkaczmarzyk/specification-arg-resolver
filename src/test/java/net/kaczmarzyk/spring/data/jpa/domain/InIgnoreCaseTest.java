@@ -110,8 +110,8 @@ public class InIgnoreCaseTest extends IntegrationTestBase {
                 .hasSize(2)
                 .containsOnly(homerSimpson, margeSimpson);
 
-        InIgnoreCase<Customer> firstNameWithO = inIgnoreCaseSpec("firstName", new String[]{"moe", "HOMER"});
-        result = customerRepo.findAll(firstNameWithO);
+        InIgnoreCase<Customer> firstNameMoeOrHomer = inIgnoreCaseSpec("firstName", new String[]{"moe", "HOMER"});
+        result = customerRepo.findAll(firstNameMoeOrHomer);
         assertThat(result)
                 .hasSize(2)
                 .containsOnly(homerSimpson, moeSzyslak);
