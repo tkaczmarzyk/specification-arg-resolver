@@ -17,14 +17,14 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,6 +58,22 @@ public class StartingWithIgnoreCaseTest extends IntegrationTestBase {
 		StartingWithIgnoreCase<Customer> firstNameWithO = new StartingWithIgnoreCase<>(queryCtx, "firstName", "HO");
 		result = customerRepo.findAll(firstNameWithO);
 		assertThat(result).hasSize(1).containsOnly(homerSimpson);
+	}
+
+	@Test
+	public void usesCharEscaper() {
+		customer("any", "Char%Suffix").build(em);
+		customer("any", "Char_Suffix").build(em);
+
+		StartingWithIgnoreCase<Customer> spec = new StartingWithIgnoreCase<>(queryCtx, "lastName", "CHAR%");
+		spec.applyCharEscaper(new CharEscaper('\\', Set.of('%', '_')));
+
+		List<Customer> result = customerRepo.findAll(spec);
+
+		assertThat(result)
+				.hasSize(1)
+				.extracting(Customer::getLastName)
+				.containsOnly("Char%Suffix");
 	}
 
 	@Test

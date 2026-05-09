@@ -50,13 +50,13 @@ public final class SpecificationBuilder<T extends Specification> {
 	private Map<String, String[]> bodyParams = new HashMap<>();
 
 	private SpecificationBuilder(Class<T> specInterface) {
-		this(specInterface, Locale.getDefault());
+		this(specInterface, Locale.getDefault(), CharEscaper.DISABLED);
 	}
 	
-	private SpecificationBuilder(Class<T> specInterface, Locale defaultLocale) {
+	private SpecificationBuilder(Class<T> specInterface, Locale defaultLocale, CharEscaper charEscaper) {
 		this.specInterface = specInterface;
 		// Use DATABASE_UPPER as default strategy for standalone usage
-		this.specificationFactory = new SpecificationFactory(null, null, defaultLocale, IgnoreCaseStrategy.DATABASE_UPPER);
+		this.specificationFactory = new SpecificationFactory(null, null, defaultLocale, IgnoreCaseStrategy.DATABASE_UPPER, charEscaper);
 	}
 
 	public static <T extends Specification<?>> SpecificationBuilder<T> specification(Class<T> specInterface) {

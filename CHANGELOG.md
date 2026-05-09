@@ -1,3 +1,9 @@
+v3.4.0
+======
+* Added character escaping support for `LIKE`-based specifications. It allows to treat special characters (such as `%` and `_`) as literals during database searches - developed by @Nawrok 🚀
+  * Escaping can be configured globally via `SpecificationArgumentResolver` or locally for each `@Spec` definition via `config` attribute.
+  * Please see `Character escaping support` section of [README.md](README.md) for more details.
+
 v3.3.0
 ======
 * added `InIgnoreCase` and `NotInIgnoreCase` - developed by @cschierle 🚀

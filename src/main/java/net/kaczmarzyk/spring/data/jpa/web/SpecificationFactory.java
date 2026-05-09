@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import net.kaczmarzyk.spring.data.jpa.domain.IgnoreCaseStrategy;
 import net.kaczmarzyk.spring.data.jpa.utils.TypeUtil;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -35,13 +36,14 @@ import static java.util.stream.Collectors.toMap;
  */
 public class SpecificationFactory {
 
-	private Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
+	private final Map<Class<? extends Annotation>, SpecificationResolver<? extends Annotation>> resolversBySupportedType;
 
 	public SpecificationFactory(
 			ConversionService conversionService,
 			AbstractApplicationContext abstractApplicationContext,
 			Locale defaultLocale,
-			IgnoreCaseStrategy defaultIgnoreCaseStrategy
+			IgnoreCaseStrategy defaultIgnoreCaseStrategy,
+			CharEscaper defaultCharEscaper
 	) {
 		if (defaultIgnoreCaseStrategy == null) {
 			throw new IllegalArgumentException("IgnoreCaseStrategy must not be null");
@@ -50,7 +52,8 @@ public class SpecificationFactory {
 				conversionService,
 				abstractApplicationContext,
 				defaultLocale,
-				defaultIgnoreCaseStrategy
+				defaultIgnoreCaseStrategy,
+				defaultCharEscaper
 		);
 
 		resolversBySupportedType = Arrays.asList(

@@ -16,6 +16,7 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBaseWithSARConfiguredWithApplicationContext;
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import net.kaczmarzyk.spring.data.jpa.domain.EmptyResultOnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.IgnoreCaseStrategy;
@@ -50,7 +51,7 @@ public class SimpleSpecificationResolverConstValueSpELSupportIntegrationTest ext
 	
 	@BeforeEach
 	public void initializeResolver() {
-		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext, Locale.getDefault(), IgnoreCaseStrategy.DATABASE_UPPER);
+		this.resolver = new SimpleSpecificationResolver(null, abstractApplicationContext, Locale.getDefault(), IgnoreCaseStrategy.DATABASE_UPPER, CharEscaper.DISABLED);
 	}
 	
 	@Test
