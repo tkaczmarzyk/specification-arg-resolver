@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,25 +16,20 @@
 package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
-import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
- * parameter bound with appended %: {@code args[0] + "%"}
- * 
- * @author Matt S.Y. Ho
+ * Interface to be implemented by specifications that support character escaping.
  *
- * @param <T>
+ * @since 3.4
+ * @author Sebastian Nawrocki
  */
-public class StartingWith<T> extends Like<T> {
+public interface CharEscapeAware {
 
-	private static final long serialVersionUID = 1L;
+    /**
+     * Applies the provided {@link CharEscaper} to the specification.
+     *
+     * @param charEscaper the escaper to be used
+     */
+    void applyCharEscaper(CharEscaper charEscaper);
 
-	public StartingWith(QueryContext queryCtx, String path, String... args) {
-		super(queryCtx, path, args);
-	}
-
-	@Override
-	protected String resolvePattern(String argument, CharEscaper charEscaper) {
-		return charEscaper.escape(argument) + "%";
-	}
 }

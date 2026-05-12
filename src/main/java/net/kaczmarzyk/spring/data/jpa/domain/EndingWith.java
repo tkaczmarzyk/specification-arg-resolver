@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
@@ -30,6 +31,10 @@ public class EndingWith<T> extends Like<T> {
 
 	public EndingWith(QueryContext queryContext, String path, String... args) {
 		super(queryContext, path, args);
-		this.pattern = "%" + args[0];
+	}
+
+	@Override
+	protected String resolvePattern(String argument, CharEscaper charEscaper) {
+		return "%" + charEscaper.escape(argument);
 	}
 }

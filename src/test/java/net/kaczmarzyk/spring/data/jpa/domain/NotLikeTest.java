@@ -18,13 +18,14 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +61,21 @@ public class NotLikeTest extends IntegrationTestBase {
         assertThat(result)
             .hasSize(1)
             .containsOnly(margeSimpson);
+    }
+
+    @Test
+    public void usesCharEscaper() {
+        customer("any", "Char%").build(em);
+        customer("any", "Char_").build(em);
+
+        NotLike<Customer> spec = new NotLike<>(queryCtx, "lastName", "Char%");
+        spec.applyCharEscaper(new CharEscaper('\\', Set.of('%', '_')));
+
+        List<Customer> result = customerRepo.findAll(spec);
+
+        assertThat(result)
+                .extracting(Customer::getLastName)
+                .containsOnly("Simpson", "Szyslak", "Char_");
     }
 
     @Test

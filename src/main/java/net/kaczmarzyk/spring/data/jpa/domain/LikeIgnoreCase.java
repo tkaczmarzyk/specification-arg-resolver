@@ -23,7 +23,7 @@ import java.util.Locale;
 
 /**
  * Filters with {@code path like %pattern%} where-clause and ignores pattern case
- * 
+ *
  * @author Michal Jankowski, Hazecod
  * @author Tomasz Kaczmarzyk
  *
@@ -31,30 +31,32 @@ import java.util.Locale;
 public class LikeIgnoreCase<T> extends Like<T> implements IgnoreCaseStrategyAware, LocaleAware {
 
 	private static final long serialVersionUID = 1L;
-	private IgnoreCaseStrategy ignoreCaseStrategy;
-	private Locale locale;
+
+	protected IgnoreCaseStrategy ignoreCaseStrategy;
+	protected Locale locale;
 
 	public LikeIgnoreCase(QueryContext queryCtx, String path, String... args) {
         super(queryCtx, path, args);
     }
-	
+
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
         var converted = CaseConversionHelper.applyCaseConversion(
-            builder, 
-            this.<String>path(root), 
-            pattern, 
+            builder,
+            this.<String>path(root),
+            pattern,
             ignoreCaseStrategy,
             locale
         );
-        return builder.like(converted.column(), converted.value());
+		Expression<Character> escapeLiteral = escapeChar != null ? builder.literal(escapeChar) : null;
+        return builder.like(converted.column(), converted.value(), escapeLiteral);
     }
-    
+
     @Override
     public void setIgnoreCaseStrategy(IgnoreCaseStrategy ignoreCaseStrategy) {
         this.ignoreCaseStrategy = ignoreCaseStrategy;
     }
-    
+
     @Override
     @Deprecated
     public void setLocale(Locale locale) {
@@ -97,6 +99,13 @@ public class LikeIgnoreCase<T> extends Like<T> implements IgnoreCaseStrategyAwar
 
 	@Override
 	public String toString() {
-		return "LikeIgnoreCase [pattern=" + pattern + ", path=" + path + ", ignoreCaseStrategy=" + ignoreCaseStrategy + ", locale=" + locale + "]";
+		return "LikeIgnoreCase[" +
+				"argument='" + argument + '\'' +
+				", escapeChar='" + escapeChar + '\'' +
+				", pattern='" + pattern + '\'' +
+				", path='" + path + '\'' +
+				", ignoreCaseStrategy=" + ignoreCaseStrategy +
+				", locale=" + locale +
+				']';
 	}
 }

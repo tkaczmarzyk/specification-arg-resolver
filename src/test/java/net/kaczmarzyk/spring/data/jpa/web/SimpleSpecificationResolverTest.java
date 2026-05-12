@@ -16,11 +16,11 @@
 package net.kaczmarzyk.spring.data.jpa.web;
 
 import net.kaczmarzyk.spring.data.jpa.domain.*;
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import net.kaczmarzyk.spring.data.jpa.utils.Converter;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import net.kaczmarzyk.utils.ReflectionUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,6 +28,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 
 import java.util.Locale;
+import java.util.Set;
 
 import static net.kaczmarzyk.spring.data.jpa.web.annotation.OnTypeMismatch.EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -271,19 +272,97 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
     }
 
     @Test
-    public void shouldThrowIllegalStateExceptionWhenSpecConfigLengthIsMoreThanOne(){
-        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod11"), 0);
+    public void buildsSpecUsingCharEscaperConfigWhenMoreThanOneConfigValueIsPresentForLocaleAwareSpec() {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithLocaleAndCharEscaperConfig"), 0);
         NativeWebRequest req = mock(NativeWebRequest.class);
 
-        when(req.getParameterValues("theParameter")).thenReturn(new String[] {"example"});
+        when(req.getParameterValues("theParameter")).thenReturn(new String[]{"example"});
 
         WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
 
-        assertThatThrownBy(() -> resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class)))
-        		.isInstanceOf(IllegalStateException.class);
+        Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        LikeIgnoreCase<Object> expected = new LikeIgnoreCase<>(ctx.queryContext(), "thePath", "example");
+        expected.setLocale(new Locale("pl", "PL"));
+        expected.setIgnoreCaseStrategy(IgnoreCaseStrategy.DATABASE_UPPER);
+        expected.applyCharEscaper(new CharEscaper('\\', Set.of('%', '_')));
+
+        assertThat(resolved).isEqualTo(expected);
     }
 
-    
+    @Test
+    public void buildsSpecUsingCharEscaperConfigWhenConfigIsPresentForNonLocaleAwareSpec() {
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithCharEscaperConfig"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+
+        when(req.getParameterValues("theParameter")).thenReturn(new String[]{"example"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        Specification<Object> resolved = resolver.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        Like<Object> expected = new Like<>(ctx.queryContext(), "thePath", "example");
+        expected.applyCharEscaper(new CharEscaper('\\', Set.of('%', '_')));
+
+        assertThat(resolved).isEqualTo(expected);
+    }
+
+    @Test
+    public void buildsSpecUsingGlobalCharEscaperWhenNoLocalConfigIsPresent() {
+        CharEscaper globalEscaper = new CharEscaper('!', Set.of('%'));
+        SimpleSpecificationResolver resolverWithGlobalEscaper = new SimpleSpecificationResolver(null, null, Locale.getDefault(), IgnoreCaseStrategy.DATABASE_UPPER, globalEscaper);
+
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethod1"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameterValues("thePath")).thenReturn(new String[]{"example"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        Specification<Object> resolved = resolverWithGlobalEscaper.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        Like<Object> expected = new Like<>(ctx.queryContext(), "thePath", "example");
+        expected.applyCharEscaper(globalEscaper);
+
+        assertThat(resolved).isEqualTo(expected);
+    }
+
+    @Test
+    public void buildsSpecUsingLocalCharEscaperWhenGlobalEscaperIsPresent() {
+        CharEscaper globalEscaper = new CharEscaper('!', Set.of('%'));
+        SimpleSpecificationResolver resolverWithGlobalEscaper = new SimpleSpecificationResolver(null, null, Locale.getDefault(), IgnoreCaseStrategy.DATABASE_UPPER, globalEscaper);
+
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithCharEscaperConfig"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameterValues("theParameter")).thenReturn(new String[]{"example"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        Specification<Object> resolved = resolverWithGlobalEscaper.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        Like<Object> expected = new Like<>(ctx.queryContext(), "thePath", "example");
+        expected.applyCharEscaper(new CharEscaper('\\', Set.of('%', '_')));
+
+        assertThat(resolved).isEqualTo(expected);
+    }
+
+    @Test
+    public void buildsSpecWithoutCharEscaperWhenExplicitlyDisabledLocallyEvenIfGlobalEscaperIsPresent() {
+        CharEscaper globalEscaper = new CharEscaper('!', Set.of('%'));
+        SimpleSpecificationResolver resolverWithGlobalEscaper = new SimpleSpecificationResolver(null, null, Locale.getDefault(), IgnoreCaseStrategy.DATABASE_UPPER, globalEscaper);
+
+        MethodParameter param = MethodParameter.forExecutable(testMethod("testMethodWithExplicitlyDisabledCharEscaperConfig"), 0);
+        NativeWebRequest req = mock(NativeWebRequest.class);
+        when(req.getParameterValues("theParameter")).thenReturn(new String[]{"example"});
+
+        WebRequestProcessingContext ctx = new WebRequestProcessingContext(param, req);
+
+        Specification<Object> resolved = resolverWithGlobalEscaper.buildSpecification(ctx, param.getParameterAnnotation(Spec.class));
+
+        Like<Object> expected = new Like<>(ctx.queryContext(), "thePath", "example");
+        expected.applyCharEscaper(CharEscaper.DISABLED);
+
+        assertThat(resolved).isEqualTo(expected);
+    }
 
     public static class TestController {
 
@@ -324,8 +403,16 @@ public class SimpleSpecificationResolverTest extends ResolverTestBase {
                 @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
-        public void testMethod11(
-                @Spec(path = "thePath", params = "theParameter", paramSeparator = ',', spec = Equal.class, onTypeMismatch = EXCEPTION, config = {"config1", "config2"}) Specification<Object> spec) {
+        public void testMethodWithLocaleAndCharEscaperConfig(
+                @Spec(path = "thePath", params = "theParameter", spec = LikeIgnoreCase.class, config = {"pl_PL", "\\%_"}, onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethodWithCharEscaperConfig(
+                @Spec(path = "thePath", params = "theParameter", spec = Like.class, config = "\\%_", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
+        }
+
+        public void testMethodWithExplicitlyDisabledCharEscaperConfig(
+                @Spec(path = "thePath", params = "theParameter", spec = Like.class, config = "", onTypeMismatch = EXCEPTION) Specification<Object> spec) {
         }
 
         public void testMethodWithLocaleAwareSpec(

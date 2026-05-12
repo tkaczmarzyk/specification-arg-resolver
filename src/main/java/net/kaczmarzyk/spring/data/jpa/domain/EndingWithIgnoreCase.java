@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
@@ -30,6 +31,10 @@ public class EndingWithIgnoreCase<T> extends LikeIgnoreCase<T> {
 
 	public EndingWithIgnoreCase(QueryContext queryCtx, String path, String... args) {
 		super(queryCtx, path, args);
-		this.pattern = "%" + args[0];
+	}
+
+	@Override
+	protected String resolvePattern(String argument, CharEscaper charEscaper) {
+		return "%" + charEscaper.escape(argument);
 	}
 }

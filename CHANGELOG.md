@@ -1,3 +1,9 @@
+v4.1.0
+======
+* Added character escaping support for `LIKE`-based specifications. It allows to treat special characters (such as `%` and `_`) as literals during database searches - developed by @Nawrok 🚀
+  * Escaping can be configured globally via `SpecificationArgumentResolver` or locally for each `@Spec` definition via `config` attribute.
+  * Please see `Character escaping support` section of [README.md](README.md) for more details.
+
 v4.0.0
 ======
 * Build integrated with Spring Boot 4 (and related Hibernate version). This version updates to spring-boot-dependencies-4.0.0 and deals with breaking changes from the upstream dependencies.
@@ -9,6 +15,12 @@ v4.0.0
 * bumped dependency versions
 * added `InIgnoreCase` and `NotInIgnoreCase` - developed by @cschierle 🚀
 * added case insensitivity support to boolean parameter values - developed by @cschierle 🚀
+
+v3.4.0
+======
+* Added character escaping support for `LIKE`-based specifications. It allows to treat special characters (such as `%` and `_`) as literals during database searches - developed by @Nawrok 🚀
+  * Escaping can be configured globally via `SpecificationArgumentResolver` or locally for each `@Spec` definition via `config` attribute.
+  * Please see `Character escaping support` section of [README.md](README.md) for more details.
 
 v3.3.0
 ======

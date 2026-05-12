@@ -15,6 +15,7 @@
  */
 package net.kaczmarzyk.spring.data.jpa.web;
 
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import net.kaczmarzyk.spring.data.jpa.domain.IgnoreCaseStrategy;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.MethodParameter;
@@ -36,59 +37,85 @@ import java.util.Locale;
 public class SpecificationArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private static final IgnoreCaseStrategy DEFAULT_IGNORE_CASE_STRATEGY = IgnoreCaseStrategy.DATABASE_UPPER;
-	
-	private SpecificationFactory specificationFactory;
+	private static final CharEscaper DEFAULT_CHAR_ESCAPER = CharEscaper.DISABLED;
+
+	private final SpecificationFactory specificationFactory;
 
 	public SpecificationArgumentResolver() {
-		 this(null, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
+		 this(null, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
-	
+
 	public SpecificationArgumentResolver(ConversionService conversionService) {
-		this(conversionService, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
+		this(conversionService, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
-	
+
 	public SpecificationArgumentResolver(ConversionService conversionService, Locale defaultLocale) {
-		this(conversionService, null, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
+		this(conversionService, null, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
-	
+
 	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext) {
-		this(conversionService, abstractApplicationContext, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
+		this(conversionService, abstractApplicationContext, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
-	
+
 	public SpecificationArgumentResolver(Locale defaultLocale) {
-		this(null, null, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
+		this(null, null, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
-	
+
 	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext) {
-		this(null, applicationContext, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY);
+		this(null, applicationContext, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
-	
+
 	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext, Locale defaultLocale) {
-		this(null, applicationContext, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
+		this(null, applicationContext, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
 
 	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext, Locale defaultLocale) {
-		this(conversionService, abstractApplicationContext, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY);
+		this(conversionService, abstractApplicationContext, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY, DEFAULT_CHAR_ESCAPER);
 	}
 
 	public SpecificationArgumentResolver(IgnoreCaseStrategy ignoreCaseStrategy) {
-		this(null, null, Locale.getDefault(), ignoreCaseStrategy);
+		this(null, null, Locale.getDefault(), ignoreCaseStrategy, DEFAULT_CHAR_ESCAPER);
 	}
 
 	public SpecificationArgumentResolver(ConversionService conversionService, IgnoreCaseStrategy ignoreCaseStrategy) {
-		this(conversionService, null, Locale.getDefault(), ignoreCaseStrategy);
+		this(conversionService, null, Locale.getDefault(), ignoreCaseStrategy, DEFAULT_CHAR_ESCAPER);
 	}
 
 	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext, IgnoreCaseStrategy ignoreCaseStrategy) {
-		this(null, applicationContext, Locale.getDefault(), ignoreCaseStrategy);
+		this(null, applicationContext, Locale.getDefault(), ignoreCaseStrategy, DEFAULT_CHAR_ESCAPER);
+	}
+
+	public SpecificationArgumentResolver(CharEscaper charEscaper) {
+		this(null, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY, charEscaper);
+	}
+
+	public SpecificationArgumentResolver(ConversionService conversionService, CharEscaper charEscaper) {
+		this(conversionService, null, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY, charEscaper);
+	}
+
+	public SpecificationArgumentResolver(AbstractApplicationContext applicationContext, CharEscaper charEscaper) {
+		this(null, applicationContext, Locale.getDefault(), DEFAULT_IGNORE_CASE_STRATEGY, charEscaper);
+	}
+
+	public SpecificationArgumentResolver(Locale defaultLocale, CharEscaper charEscaper) {
+		this(null, null, defaultLocale, DEFAULT_IGNORE_CASE_STRATEGY, charEscaper);
+	}
+
+	public SpecificationArgumentResolver(IgnoreCaseStrategy ignoreCaseStrategy, CharEscaper charEscaper) {
+		this(null, null, Locale.getDefault(), ignoreCaseStrategy, charEscaper);
+	}
+
+	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext applicationContext,
+	                                     Locale defaultLocale, IgnoreCaseStrategy ignoreCaseStrategy) {
+		this(conversionService, applicationContext, defaultLocale, ignoreCaseStrategy, DEFAULT_CHAR_ESCAPER);
 	}
 
 	public SpecificationArgumentResolver(ConversionService conversionService, AbstractApplicationContext abstractApplicationContext,
-	                                     Locale defaultLocale, IgnoreCaseStrategy ignoreCaseStrategy) {
+										 Locale defaultLocale, IgnoreCaseStrategy ignoreCaseStrategy, CharEscaper charEscaper) {
 		IgnoreCaseStrategy effectiveStrategy = ignoreCaseStrategy != null ? ignoreCaseStrategy : DEFAULT_IGNORE_CASE_STRATEGY;
-		this.specificationFactory = new SpecificationFactory(conversionService, abstractApplicationContext, defaultLocale, effectiveStrategy);
+		CharEscaper effectiveCharEscaper = charEscaper != null ? charEscaper : DEFAULT_CHAR_ESCAPER;
+		this.specificationFactory = new SpecificationFactory(conversionService, abstractApplicationContext, defaultLocale, effectiveStrategy, effectiveCharEscaper);
 	}
-	
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {

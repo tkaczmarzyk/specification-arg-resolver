@@ -17,14 +17,14 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,6 +61,22 @@ public class LikeIgnoreCaseTest extends IntegrationTestBase {
         assertThat(result)
             .hasSize(2)
             .containsOnly(homerSimpson, moeSzyslak);
+    }
+
+    @Test
+    public void usesCharEscaper() {
+        customer("any", "Char%").build(em);
+        customer("any", "Char_").build(em);
+
+        LikeIgnoreCase<Customer> spec = new LikeIgnoreCase<>(queryCtx, "lastName", "CHAR%");
+        spec.applyCharEscaper(new CharEscaper('\\', Set.of('%', '_')));
+
+        List<Customer> result = customerRepo.findAll(spec);
+
+        assertThat(result)
+                .hasSize(1)
+                .extracting(Customer::getLastName)
+                .containsOnly("Char%");
     }
 
     @Test
