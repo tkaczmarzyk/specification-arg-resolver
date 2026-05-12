@@ -17,12 +17,14 @@ package net.kaczmarzyk.spring.data.jpa.domain;
 
 import net.kaczmarzyk.spring.data.jpa.Customer;
 import net.kaczmarzyk.spring.data.jpa.IntegrationTestBase;
+import net.kaczmarzyk.spring.data.jpa.utils.CharEscaper;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static net.kaczmarzyk.spring.data.jpa.CustomerBuilder.customer;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +55,22 @@ public class EndingWithTest extends IntegrationTestBase {
 		EndingWith<Customer> firstNameWithO = new EndingWith<>(queryCtx, "firstName", "er");
 		result = customerRepo.findAll(firstNameWithO);
 		assertThat(result).hasSize(1).containsOnly(homerSimpson);
+	}
+
+	@Test
+	public void usesCharEscaper() {
+		customer("any", "Prefix%Char").build(em);
+		customer("any", "Prefix_Char").build(em);
+
+		EndingWith<Customer> spec = new EndingWith<>(queryCtx, "lastName", "%Char");
+		spec.applyCharEscaper(new CharEscaper('\\', Set.of('%', '_')));
+
+		List<Customer> result = customerRepo.findAll(spec);
+
+		assertThat(result)
+				.hasSize(1)
+				.extracting(Customer::getLastName)
+				.containsOnly("Prefix%Char");
 	}
 
 	@Test

@@ -34,6 +34,7 @@ You can also take a look on working Spring Boot apps that use this library:
    * [Type conversions for HTTP parameters](#type-conversions-for-http-parameters) -- information about supported type conversions (i.e. ability to convert HTTP parameters into Java types such as `LocalDateTime`, etc.) and the support of defining custom converters
    * [Case insensitivity support](#case-insensitive-support) -- information about case-insensitive strategies used for case-insensitive specifications 
    * [Locale support](#locale-support) -- information about `Locale` configuration for case-insensitive matching 
+   * [Character escaping support](#character-escaping-support) -- information about escaping special characters in LIKE-based specifications
    * [SpEL support](#spel-support) -- information about Spring Expression Language support
    * [Swagger support](#swagger-support) -- information about support for generation of swagger documentation
    * [Building specifications outside the web layer](#building-specifications-outside-the-web-layer)
@@ -130,7 +131,9 @@ Usage: `@Spec(path="firstName", spec=Like.class)`.
 
 There are also other variants which apply the wildcard only on the beginning or the ending of the provided value: `StartingWith` and `EndingWith`.
 
-The negated version is available: `NotLike` which executes queries such as `(..) where firstName not like %Homer%`
+The negated version is available: `NotLike` which executes queries such as `(..) where firstName not like %Homer%`.
+
+All `Like`-based specifications support [character escaping](#character-escaping-support).
 
 ### LikeIgnoreCase  ###
 
@@ -143,6 +146,8 @@ There are also other variants which apply the wildcard only on the beginning or 
 Case-insensitive comparisons are performed using the database's `UPPER()` function on both sides of the comparison. The results depend on your database's collation settings. Locale settings is important for case-insensitive searches. Please check the [Locale support](#locale-support) section for details.
 
 A negation for this specification is also available: `NotLikeIgnoreCase`.
+
+All `Like`-based specifications support [character escaping](#character-escaping-support).
 
 ### Equal ###
 
@@ -1303,6 +1308,52 @@ You can also configure it for each individual specfication definition via `@Spec
 
 Locale config is used for enum conversions (if enum contains local characters) and for case-insentivie specification if `APPLICATION` [case insensitive strategy](#case-insensitive-support) is used
 
+Character escaping support
+--------------
+### In version v3.4.0+
+Specification-arg-resolver allows escaping special characters (such as `%` and `_`) in `LIKE`-based specifications. This ensures that these characters are treated as literals rather than wildcards during database searches.
+
+**By default, character escaping is disabled** (`CharEscaper.DISABLED)`) to maintain the existing behavior.
+
+You can configure the character escaper globally when registering the argument resolver:
+```java
+@Override
+public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+    // Using backslash as escape char and escaping % and _
+    argumentResolvers.add(new SpecificationArgumentResolver(new CharEscaper('\\', Set.of('%', '_'))));
+}
+```
+
+> **Note:** The library does not provide any preconfigured `CharEscaper` instances due to the diversity of escaping mechanisms across different database systems. For instance:
+> *   In **PostgreSQL**, the default escape character for `LIKE` patterns is a backslash `\` (see [PostgreSQL Documentation](https://www.postgresql.org/docs/current/functions-matching.html#FUNCTIONS-LIKE)).
+> *   In **Microsoft SQL Server**, while it supports the `ESCAPE` clause, it often uses bracket-based syntax (e.g., `[%]`) for literal matching (see [MSSQL Documentation](https://learn.microsoft.com/en-us/sql/t-sql/language-elements/like-transact-sql)).
+>
+> Therefore, it is the user's responsibility to configure the `CharEscaper` appropriately based on the specific database driver and dialect used in their project.
+
+You can also configure escaping for each individual specification definition via `@Spec.config`. The configuration value is a single string where:
+*   The **first character** of the string is the **escape character** (e.g., `\`).
+*   All **subsequent characters** are the **characters to be escaped** (e.g., `%` and `_`).
+
+For standard `LIKE` specifications:
+```java
+// config = "escapeChar" + "charsToEscape..."
+@Spec(path = "name", spec = Like.class, config = "\\%_")
+```
+
+For specifications that are also `LocaleAware` (e.g., `LikeIgnoreCase`), the library supports a multi-slot `config` array to maintain **backward compatibility**. In this case:
+*   The **first element** (`config[0]`) is used for the **Locale**.
+*   The **second element** (`config[1]`) is used for the **escaping configuration**.
+
+```java
+@Spec(path = "name", spec = LikeIgnoreCase.class, config = {"pl_PL", "\\%_"})
+```
+
+To explicitly disable escaping for a specific definition even if a global default is present, use an empty string as the configuration value:
+```java
+@Spec(path = "name", spec = Like.class, config = "")
+```
+
+The character escaping is supported by `Like`, `StartingWith`, `EndingWith`, `NotLike` and their `IgnoreCase` variants.
 
 SpEL support
 ------------

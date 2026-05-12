@@ -15,14 +15,10 @@
  */
 package net.kaczmarzyk.spring.data.jpa.domain;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-
 import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
 
 /**
@@ -32,53 +28,26 @@ import net.kaczmarzyk.spring.data.jpa.utils.QueryContext;
  * 
  * @author Tomasz Kaczmarzyk
  */
-public class NotLike<T> extends PathSpecification<T> implements WithoutTypeConversion {
+public class NotLike<T> extends Like<T> {
 	
 	private static final long serialVersionUID = 1L;
-	
-	protected String pattern;
 
-    public NotLike(QueryContext queryContext, String path, String... args) {
-        super(queryContext, path);
-        if (args == null || args.length != 1) {
-            throw new IllegalArgumentException("Expected exactly one argument (the fragment to match against), but got: " + Arrays.toString(args));
-        } else {
-            this.pattern = "%" + args[0] + "%";
-        }
-    }
-
-    @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        return builder.not(builder.like(this.<String>path(root), pattern));
-    }
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((pattern == null) ? 0 : pattern.hashCode());
-		return result;
+	public NotLike(QueryContext queryContext, String path, String... args) {
+		super(queryContext, path, args);
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		if (!super.equals(o)) {
-			return false;
-		}
-		NotLike<?> notLike = (NotLike<?>) o;
-		return Objects.equals(pattern, notLike.pattern);
+	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+		Predicate likePredicate = super.toPredicate(root, query, builder);
+		return builder.not(likePredicate);
 	}
 
 	@Override
 	public String toString() {
 		return "NotLike[" +
-				"pattern='" + pattern + '\'' +
+				"argument='" + argument + '\'' +
+				", escapeChar='" + escapeChar + '\'' +
+				", pattern='" + pattern + '\'' +
 				", path='" + path + '\'' +
 				']';
 	}
