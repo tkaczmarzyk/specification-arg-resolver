@@ -336,12 +336,12 @@
 		<repository>
 			<id>kaczmarzyk.net</id>
 			<name>kaczmarzyk.net repository</name>
-			<url>ftp://repo.kaczmarzyk.net</url>
+			<url>ftps://repo.kaczmarzyk.net</url>
 		</repository>
 		<snapshotRepository>
 			<id>kaczmarzyk.net</id>
 			<name>kaczmarzyk.net repository</name>
-			<url>ftp://repo.kaczmarzyk.net</url>
+			<url>ftps://repo.kaczmarzyk.net</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
