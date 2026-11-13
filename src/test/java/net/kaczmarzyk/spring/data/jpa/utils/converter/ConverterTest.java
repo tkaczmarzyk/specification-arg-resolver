@@ -135,6 +135,60 @@ public class ConverterTest {
 	}
 	
 	@Test
+	public void convertsToInt() {
+		assertThat(converter.convert("10", Integer.class)).isEqualTo(Integer.valueOf(10));
+	}
+
+	@Test
+	public void convertsToIntPrimitive() {
+		assertThat(converter.convert("10", int.class)).isEqualTo(10);
+	}
+
+	@Test
+	public void throwsExceptionOnInvalidIntValue() {
+		assertThrows(
+				ValueRejectedException.class,
+				() -> converter.convert("10.8", Integer.class),
+				"number format exception"
+		);
+		assertThrows(
+				ValueRejectedException.class,
+				() -> converter.convert("10.8", int.class),
+				"number format exception"
+		);
+	}
+
+	@Test
+	public void convertsToLong() {
+		assertThat(converter.convert("10", Long.class)).isEqualTo(Long.valueOf(10L));
+	}
+
+	@Test
+	public void convertsToLongPrimitive() {
+		assertThat(converter.convert("10", long.class)).isEqualTo(10L);
+	}
+
+	@Test
+	public void throwsExceptionOnInvalidLongValue() {
+		assertThrows(
+				ValueRejectedException.class,
+				() -> converter.convert("10.8", Long.class),
+				"number format exception"
+		);
+		assertThrows(
+				ValueRejectedException.class,
+				() -> converter.convert("10.8", long.class),
+				"number format exception"
+		);
+	}
+
+	@Test
+	public void convertsToLongWhenExpectedTypeIsNumber() {
+		assertThat(converter.convert("10", Number.class)).isEqualTo(Long.valueOf(10L));
+		assertThat(converter.convert("3000000000", Number.class)).isEqualTo(Long.valueOf(3000000000L));
+	}
+
+	@Test
 	public void convertsValueWithoutDecimalPointToFloat() {
 		assertThat(converter.convert("10", Float.class)).isEqualTo(Float.valueOf(10.0f));
 	}
