@@ -84,29 +84,33 @@ public class ConverterFallbackMechanismTest {
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForIntegerType() {
-		converter.convert("1", Integer.class);
+		Integer converted = converter.convert("1", Integer.class);
 		
+		assertThat(converted).isEqualTo(1);
 		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForIntegerPrimitiveType() {
-		converter.convert("1", int.class);
+		int converted = converter.convert("1", int.class);
 		
+		assertThat(converted).isEqualTo(1);
 		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForLongType() {
-		converter.convert("1", Long.class);
+		Long converted = converter.convert("1", Long.class);
 		
+		assertThat(converted).isEqualTo(1L);
 		verifyNoInteractions(conversionService);
 	}
 	
 	@Test
 	public void shouldNotUseFallbackMechanismForLongPrimitveType() {
-		converter.convert("1", long.class);
+		long converted = converter.convert("1", long.class);
 		
+		assertThat(converted).isEqualTo(1L);
 		verifyNoInteractions(conversionService);
 	}
 	

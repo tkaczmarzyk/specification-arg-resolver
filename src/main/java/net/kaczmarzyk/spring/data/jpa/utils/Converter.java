@@ -146,8 +146,11 @@ public final class Converter {
 			return (T) convertToEnum(value, (Class<? extends Enum<?>>) expectedClass, ignoreCase);
 		} else if (isAssignableFromAnyOf(expectedClass, Boolean.class, boolean.class)) {
 			return (T) convertToBoolean(value, ignoreCase);
-		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class, Long.class, long.class)) {
+		} else if (isAssignableFromAnyOf(expectedClass, Long.class, long.class)) {
+			// Long must be checked before Integer so that supertypes of both (e.g. Number) are still converted to Long, which has the wider range
 			return (T) convertToLong(value);
+		} else if (isAssignableFromAnyOf(expectedClass, Integer.class, int.class)) {
+			return (T) convertToInt(value);
 		} else if (isAssignableFromAnyOf(expectedClass, float.class, Float.class)) {
 			return (T) convertToFloat(value);
 		} else if (isAssignableFromAnyOf(expectedClass, double.class, Double.class)) {
@@ -204,6 +207,14 @@ public final class Converter {
 		}
 	}
 	
+	private Integer convertToInt(String value) {
+		try {
+			return Integer.valueOf(value);
+		} catch (NumberFormatException e) {
+			throw new ValueRejectedException(value, "number format exception", e);
+		}
+	}
+
 	private Long convertToLong(String value) {
 		try {
 			return Long.valueOf(value);

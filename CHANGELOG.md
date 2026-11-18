@@ -1,3 +1,8 @@
+v4.1.1
+======
+* Fixed `Integer` and `int` parameter conversion in `Converter` so that it returns `Integer` instead of `Long`
+  * As a consequence, values outside of the `int` range (e.g. `3000000000`) passed for `Integer`/`int` fields are now rejected by the converter and handled according to `onTypeMismatch` (the same way as non-numeric values)
+
 v4.1.0
 ======
 * Added character escaping support for `LIKE`-based specifications. It allows to treat special characters (such as `%` and `_`) as literals during database searches - developed by @Nawrok 🚀
