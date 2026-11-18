@@ -1,3 +1,7 @@
+v4.1.2
+======
+* udpated Jackson dependency
+
 v4.1.1
 ======
 * Fixed `Integer` and `int` parameter conversion in `Converter` so that it returns `Integer` instead of `Long`
