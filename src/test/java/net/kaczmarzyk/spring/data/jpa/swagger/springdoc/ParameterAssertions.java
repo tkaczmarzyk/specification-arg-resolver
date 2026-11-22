@@ -69,6 +69,20 @@ class ParameterAssertions extends AbstractAssert<ParameterAssertions, Parameter>
 		return this;
 	}
 
+	public ParameterAssertions hasDescription(String description) {
+		isNotNull();
+		assertThat(actual.getDescription())
+			.isEqualTo(description);
+		return this;
+	}
+
+	public ParameterAssertions hasNoDescription() {
+		isNotNull();
+		assertThat(actual.getDescription())
+			.isNull();
+		return this;
+	}
+
 	public ParameterAssertions isLocatedIn(String parameterIn) {
 		isNotNull();
 		assertThat(actual.getIn())

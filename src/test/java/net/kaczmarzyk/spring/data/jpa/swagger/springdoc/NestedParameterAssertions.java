@@ -79,6 +79,16 @@ class NestedParameterAssertions extends AbstractAssert<NestedParameterAssertions
 		return this;
 	}
 
+	public NestedParameterAssertions withDescription(String description) {
+		assertThatParameter(actual).hasDescription(description);
+		return this;
+	}
+
+	public NestedParameterAssertions withoutDescription() {
+		assertThatParameter(actual).hasNoDescription();
+		return this;
+	}
+
 	public OperationAssertions and() {
 		return parent;
 	}

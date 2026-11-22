@@ -94,6 +94,16 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 
 	private void addOrUpdateParameter(Operation operation, Parameter parameter) {
 		if (nonNull(operation.getParameters())) {
+			if (isNull(parameter.getDescription())) {
+				// the same param can be defined in more than one @Spec (e.g. in @Or) or in @Parameter,
+				// so keep the existing description if this @Spec has none
+				operation.getParameters().stream()
+					.filter(operationParameter -> parametersRepresentTheSameProperty(operationParameter, parameter))
+					.map(Parameter::getDescription)
+					.filter(Objects::nonNull)
+					.findFirst()
+					.ifPresent(parameter::setDescription);
+			}
 			operation.getParameters().removeIf(operationParameter ->
 				parametersRepresentTheSameProperty(operationParameter, parameter));
 		}
@@ -135,9 +145,9 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		List<Parameter> parameters = specs.stream()
 			.map(spec -> {
 				List<Parameter> specParameters = new ArrayList<>();
-				specParameters.addAll(createParameters(spec.params(), requiredParams, QUERY));
-				specParameters.addAll(createParameters(spec.pathVars(), emptyList(), PATH));
-				specParameters.addAll(createParameters(spec.headers(), requiredHeaders, HEADER));
+				specParameters.addAll(createParameters(spec.params(), requiredParams, QUERY, spec.description()));
+				specParameters.addAll(createParameters(spec.pathVars(), emptyList(), PATH, spec.description()));
+				specParameters.addAll(createParameters(spec.headers(), requiredHeaders, HEADER, spec.description()));
 
 				return specParameters;
 			})
@@ -149,13 +159,16 @@ public class SpecificationArgResolverSpringdocOperationCustomizer implements Ope
 		return parameters;
 	}
 
-	private List<Parameter> createParameters(String[] parameters, List<String> requiredParameters, ParameterIn parameterIn) {
+	private List<Parameter> createParameters(String[] parameters, List<String> requiredParameters, ParameterIn parameterIn, String description) {
 		return stream(parameters)
 			.map(parameterName -> {
 				Parameter specParam = generateParameterFromParameterIn(parameterIn);
 				specParam.setName(parameterName);
 				specParam.setRequired(requiredParameters.contains(parameterName) || parameterIn == PATH);
 				specParam.setSchema(STRING_PARAMETER_SCHEMA);
+				if (!description.isEmpty()) {
+					specParam.setDescription(description);
+				}
 
 				return specParam;
 			})

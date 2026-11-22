@@ -119,4 +119,9 @@ public @interface Spec {
     @SuppressWarnings("rawtypes")
     Class<? extends Specification> spec();
 
+    /**
+     * Description of the HTTP parameters, used in the generated OpenAPI documentation (see "Swagger support" in README.md).
+     */
+    String description() default "";
+
 }
