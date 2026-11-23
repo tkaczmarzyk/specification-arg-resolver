@@ -20,6 +20,7 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -430,6 +431,123 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 			.withQueryParameterName("specParam");
 	}
 
+	@Test
+	public void shouldSetDescriptionOfParametersDefinedInSpec() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("andWithDescriptionsTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(5)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("describedQueryParam")
+			.withDescription("query param description")
+			.and()
+			.containsParameterAtIndex(1)
+			.withPathParameterName("describedPathVarParam")
+			.withDescription("path variable description")
+			.and()
+			.containsParameterAtIndex(2)
+			.withHeaderParameterName("describedHeaderParam")
+			.withDescription("header description")
+			.and()
+			.containsParameterAtIndex(3)
+			.withQueryParameterName("describedRangeFromParam")
+			.withDescription("range description")
+			.and()
+			.containsParameterAtIndex(4)
+			.withQueryParameterName("describedRangeToParam")
+			.withDescription("range description");
+	}
+
+	@Test
+	public void shouldNotSetDescriptionWhenItIsNotDefinedInSpec() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("specParam")
+			.withoutDescription();
+	}
+
+	@Test
+	public void shouldKeepDescriptionWhenTheSameParameterIsDefinedAlsoInSpecWithoutDescription() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("orWithDuplicatedParamAndSingleDescriptionTestMethod");
+		Operation operation = new Operation();
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("duplicatedParam")
+			.withDescription("duplicated param description");
+	}
+
+	@Test
+	public void shouldKeepDescriptionOfAlreadyExistingParameterWhenSpecDoesNotDefineDescription() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specTestMethod");
+
+		Operation operation = new Operation();
+
+		Parameter specParameter = new Parameter();
+		specParameter.setName("specParam");
+		specParameter.setIn("query");
+		specParameter.setDescription("already existing description");
+
+		operation.addParametersItem(specParameter);
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("specParam")
+			.withDescription("already existing description");
+	}
+
+	@Test
+	public void shouldOverrideDescriptionOfAlreadyExistingParameterWhenSpecDefinesDescription() throws NoSuchMethodException {
+		// given
+		HandlerMethod handlerMethod = handlerMethodForControllerMethodWithSpecification("specWithDescriptionTestMethod");
+
+		Operation operation = new Operation();
+
+		Parameter specParameter = new Parameter();
+		specParameter.setName("specParam");
+		specParameter.setIn("query");
+		specParameter.setDescription("already existing description");
+
+		operation.addParametersItem(specParameter);
+
+		// when
+		Operation customizedOperation = springdocOperationCustomizer.customize(operation, handlerMethod);
+
+		// then
+		assertThatOperation(customizedOperation)
+			.hasParametersCount(1)
+			.containsParameterAtIndex(0)
+			.withQueryParameterName("specParam")
+			.withDescription("spec description");
+	}
+
 	private HandlerMethod handlerMethodForControllerMethodWithSpecification(String controllerMethodName) throws NoSuchMethodException {
 
 		return handlerMethodForControllerMethodAndParameterType(controllerMethodName, Specification.class);
@@ -572,6 +690,32 @@ public class SpecificationArgResolverSpringdocOperationCustomizerTest {
 		@RequestMapping(value = "/spec-json-path")
 		public void specWithJsonPathParamTestMethod(
 			@Spec(path = "", jsonPaths = "specPath", spec = Like.class) Specification<Object> spec) {
+
+		}
+
+		@RequestMapping(value = "/and-descriptions/{describedPathVarParam}")
+		public void andWithDescriptionsTestMethod(
+			@And({
+				@Spec(path = "", params = "describedQueryParam", spec = Like.class, description = "query param description"),
+				@Spec(path = "", pathVars = "describedPathVarParam", spec = Like.class, description = "path variable description"),
+				@Spec(path = "", headers = "describedHeaderParam", spec = Like.class, description = "header description"),
+				@Spec(path = "", params = { "describedRangeFromParam", "describedRangeToParam" }, spec = Between.class, description = "range description")
+			}) Specification<Object> spec) {
+
+		}
+
+		@RequestMapping(value = "/or-duplicated-param-single-description")
+		public void orWithDuplicatedParamAndSingleDescriptionTestMethod(
+			@Or({
+				@Spec(path = "a", params = "duplicatedParam", spec = Like.class, description = "duplicated param description"),
+				@Spec(path = "b", params = "duplicatedParam", spec = Like.class)
+			}) Specification<Object> spec) {
+
+		}
+
+		@RequestMapping(value = "/spec-description")
+		public void specWithDescriptionTestMethod(
+			@Spec(path = "", params = "specParam", spec = Like.class, description = "spec description") Specification<Object> spec) {
 
 		}
 

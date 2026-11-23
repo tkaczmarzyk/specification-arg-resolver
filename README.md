@@ -1405,6 +1405,27 @@ public SpecificationArgResolverSpringdocOperationCustomizer specificationArgReso
 }
 ```
 
+### Parameter descriptions ###
+
+Use the `description` attribute of `@Spec` to describe its HTTP parameters (query params, path variables and headers) in the generated documentation. It does not change filtering:
+
+```java
+@RequestMapping("/customers")
+public Iterable<Customer> findCustomers(
+      @And({
+          @Spec(path = "firstName", params = "name", spec = Like.class, description = "Customer first name"),
+          @Spec(path = "registrationDate", params = { "registeredAfter", "registeredBefore" }, spec = Between.class, description = "Registration date range boundary")
+      }) Specification<Customer> spec) {
+
+    return customerRepo.findAll(spec);
+}
+```
+
+Notes:
+* If `@Spec` has more than one parameter, all of them get the same description.
+* If more than one `@Spec` uses the same parameter, set `description` in only one of them.
+* `description` is not supported for `jsonPaths`.
+
 Cache support
 ------------
 

@@ -1,3 +1,7 @@
+v4.2.0
+======
+* Added `description` attribute to `@Spec`. It describes HTTP parameters in the generated OpenAPI documentation. See `Swagger support` in [README.md](README.md).
+
 v4.1.2
 ======
 * udpated Jackson dependency
