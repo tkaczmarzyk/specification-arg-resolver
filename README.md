@@ -1498,7 +1498,7 @@ Specification argument resolver is available in the Maven Central:
 <dependency>
     <groupId>net.kaczmarzyk</groupId>
     <artifactId>specification-arg-resolver</artifactId>
-    <version>4.1.0</version>
+    <version>4.2.0</version>
 </dependency>
 ```
 
